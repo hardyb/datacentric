@@ -75,6 +75,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
         controlPackets.setName("ControlPackets");
 
         m_moduleName    = getParentModule()->getFullName();
+        mpNb = NotificationBoardAccess().get();
+        mpNb->subscribe(this, NF_LINK_BREAK);
 
         m_debug                     = par("debug");
         isPANCoor                   = par("isPANCoor");
@@ -133,6 +135,48 @@ void DataCentricNetworkLayer::finish()
     recordScalar("num of pkts forwarded", numForward);
 }
 
+
+
+void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPolymorphic *details)
+{
+    Ieee802154Frame * f;
+
+    rd = &(moduleRD);
+
+    switch (category)
+    {
+
+        //if (check_and_cast<RadioState *>(details)->getRadioId()!=getRadioModuleId())
+          //  return;
+
+    case NF_LINK_BREAK:
+        if ( f = check_and_cast<Ieee802154Frame *>(details) )
+        {
+            //MACAddress dest = f->getDstAddr();
+            NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
+            DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
+            f->setName("InterfaceDown");
+            scheduleAt(simTime(), f);
+
+
+            InterfaceNode* i = FindInterfaceNode(rd->interfaceTree, dest);
+            i->i->up = 0;
+
+
+
+        }
+        break;
+    case NF_RADIOSTATE_CHANGED:
+        break;
+    default:
+        break;
+    }
+
+}
+
+
+
+
 /////////////////////////////// Msg handler ///////////////////////////////////////
 void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 {
@@ -151,6 +195,32 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     {
         StartUp();
         return;
+
+    }
+
+    if ( true ) // Broken link
+    {
+        Ieee802154Frame * f;
+        f = check_and_cast<Ieee802154Frame *>(msg);
+        uint64 dest = f->getDstAddr().getInt();
+        DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
+
+
+
+
+        //Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
+        //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
+        unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+
+        if ( this->getParentModule()->getIndex() == 15 )
+        {
+            temp = 1;
+
+        }
+
+        handle_message(pkt, previousAddress);
+        free(pkt);
 
     }
 

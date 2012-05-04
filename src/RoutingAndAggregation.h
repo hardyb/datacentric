@@ -654,7 +654,7 @@ InterfaceNode* newInterfaceNode(int interfaceName);
 StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
 InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
-bool TraversInterfaceNodes(InterfaceNode* tree, void* caller, void process(Interface* i, void* c));
+bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, void* c));
 StateNode* FindStateNode(StateNode* tree, int val);
 InterfaceNode* FindInterfaceNode(InterfaceNode* tree, NEIGHBOUR_ADDR val);
 struct KDGradientNode* newKDGradientNode(int sName, int iName, int obtain, int deliver);

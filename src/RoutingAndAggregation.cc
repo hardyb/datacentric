@@ -645,14 +645,43 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 
+void ProcessInterface(Interface* i, State* s)
+{
+    //insertKDGradientNode2(s, i, costType, pCost, treeNode, lev);
+    if ( i->up )
+    {
+        insertKDGradientNode2(s, i, DELIVER, 0, rd->grTree, 0);
+    }
+
+}
 
 
 
 
 
+void InterfaceDown(Interface* i, State* s)
+{
+    /*
+     * Initial idea - needs some work
+     *
+     */
+
+    i->up = 0;
+    s->bestGradientToDeliver = 0;
+
+    /*
+     * So now, call this repeatedly for same state for each interface
+     * except the one that is down
+     *
+     * providing a very high cost so that the existing cost will remain, but the
+     * null best grad will be set with a new best
+     */
+    TraversInterfaceNodes(rd->interfaceTree, s, ProcessInterface);
 
 
 
+
+}
 
 
 
@@ -661,18 +690,18 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 /*
  * LOOKS OK, NOT USED RIGHT NOW BUT VERY PROBABLY IN THE FUTURE
  */
- bool TraversInterfaceNodes(InterfaceNode* tree, void* caller, void process(Interface* i, void* c))
+ bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s))
  {
 	 if ( tree )
 	 {
-		 process(tree->i, caller);
+		 process(tree->i, s);
 	 }
 	 else
 	 {
 		 return false;
 	 }
-	 TraversInterfaceNodes(tree->left, caller, process);
-	 TraversInterfaceNodes(tree->right, caller, process);
+	 TraversInterfaceNodes(tree->left, s, process);
+	 TraversInterfaceNodes(tree->right, s, process);
 	 return true;
  }
 

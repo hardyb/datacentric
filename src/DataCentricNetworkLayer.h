@@ -20,7 +20,7 @@
 
 
 
-class DataCentricNetworkLayer : public cSimpleModule
+class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 {
   public:
     virtual int    numInitStages    () const { return 2; }
@@ -48,6 +48,7 @@ class DataCentricNetworkLayer : public cSimpleModule
   protected:
     // Message handle functions
     void                handleMessage           (cMessage*);
+    virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
     // debugging enabled for this node? Used in the definition of EV
     bool                m_debug;
@@ -56,6 +57,7 @@ class DataCentricNetworkLayer : public cSimpleModule
     std::string         mTheAddressString;
     uint64              mAddress;
     const char*     m_moduleName;
+    NotificationBoard* mpNb;
 
     // module gate ID
     int             mUpperLayerIn;
