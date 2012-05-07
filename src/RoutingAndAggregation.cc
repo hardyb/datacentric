@@ -145,7 +145,8 @@ unsigned char* write_packet()
     outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
 	unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
 			+ outgoing_packet.length +   sizeof(outgoing_packet.path_value)
-			+  sizeof(outgoing_packet.excepted_interface);
+            +  sizeof(outgoing_packet.excepted_interface)
+            +  sizeof(outgoing_packet.down_interface);
 	unsigned char* pkt = (unsigned char*)malloc(size);
 	unsigned int pkt_index = 0;
 
@@ -167,6 +168,9 @@ unsigned char* write_packet()
     pkt_index+=sizeof(outgoing_packet.path_value);
 
     neighbour_addr_into_buf(outgoing_packet.excepted_interface, &(pkt[pkt_index]));
+    pkt_index += sizeof(outgoing_packet.excepted_interface);
+
+    neighbour_addr_into_buf(outgoing_packet.down_interface, &(pkt[pkt_index]));
 
 	//pkt[pkt_index] = (char)(outgoing_packet.path_value & 0xFF); // lsb goes first in buff;
 	//pkt[pkt_index+1] = (char)(outgoing_packet.path_value >> 8); // msb goes second in buff;
@@ -644,13 +648,122 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 
+ void ucast_best_gradient(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+  {
+    if ( s->bestGradientToObtain && (((*_data) & MSB2) == PUBLICATION) )
+    {
+        outgoing_packet.message_type = ADVERT;
+        outgoing_packet.length = strlen(queue);
+        outgoing_packet.data = (unsigned char*)queue;
+        outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
+        sendAMessage(_if, write_packet());
+    }
+    if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
+    {
+        outgoing_packet.message_type = INTEREST;
+        outgoing_packet.length = strlen(queue);
+        outgoing_packet.data = (unsigned char*)queue;
+        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+        sendAMessage(_if, write_packet());
+    }
 
+
+    /*
+     * Not quite sure how to deal with collaborations
+     */
+    if ( s->bestGradientToDeliver && (((*_data) & MSB2) == COLLABORATIONBASED) )
+    {
+        outgoing_packet.message_type = COLLABORATION;
+        outgoing_packet.length = strlen(queue);
+        outgoing_packet.data = (unsigned char*)queue;
+        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+        sendAMessage(_if, write_packet());
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+ //void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
+
+ //void setDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
+
+
+ //struct KDGradientNode* insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+
+
+//void ProcessInterface(Interface* i, State* s)
 void ProcessInterface(Interface* i, State* s)
 {
+
+     //trie* t = trie_add(rd->top_state, _d, STATE);
+     //State* s = t->s;
+     //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName)->i;
+
+
     //insertKDGradientNode2(s, i, costType, pCost, treeNode, lev);
     if ( i->up )
     {
-        insertKDGradientNode2(s, i, DELIVER, 0, rd->grTree, 0);
+        //insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+        insertKDGradientNode2(s, i, DELIVER, 9999, rd->grTree, 0);
+    }
+    /*
+     * By this method (could improve it)
+     * we now have all interfacesstill set the same
+     * and a new best gradient set
+     */
+
+
+
+
+
+}
+
+
+
+
+void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
+//void InterfaceDown(Interface* i, State* s)
+{
+    /*
+     * Initial idea - needs some work
+     *
+     */
+
+    read_packet(pkt);
+    incoming_packet.data;
+    incoming_packet.path_value;
+    incoming_packet.down_interface;
+    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    State* s = t->s;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf)->i;
+    i->up = 0;
+    s->bestGradientToDeliver = 0;
+
+    /*
+     * So now, call this repeatedly for same state for each interface
+     * except the one that is down
+     *
+     * providing a very high cost so that the existing cost on each grad will remain, but the
+     * null best grad will be set with a new best
+     */
+
+    TraversInterfaceNodes(rd->interfaceTree, s, ProcessInterface);
+    if ( s->bestGradientToDeliver && (((incoming_packet.data) & MSB2) == RECORD) )
+    {
+        outgoing_packet.message_type = INTEREST_CORRECTION; //???
+        outgoing_packet.length = incoming_packet.length;
+        outgoing_packet.data = incoming_packet.data; // safe?
+        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+        outgoing_packet.down_interface = inf;
+        outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
+        bcastAMessage(write_packet());
     }
 
 }
@@ -659,29 +772,34 @@ void ProcessInterface(Interface* i, State* s)
 
 
 
-void InterfaceDown(Interface* i, State* s)
+
+void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 {
-    /*
-     * Initial idea - needs some work
-     *
-     */
+    trie* t;
 
-    i->up = 0;
-    s->bestGradientToDeliver = 0;
-
-    /*
-     * So now, call this repeatedly for same state for each interface
-     * except the one that is down
-     *
-     * providing a very high cost so that the existing cost will remain, but the
-     * null best grad will be set with a new best
-     */
-    TraversInterfaceNodes(rd->interfaceTree, s, ProcessInterface);
+    t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+    setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
 
 
+
+
+    if ( t )
+    {
+        if ( t->s->bestGradientToDeliverUpdated )
+        {
+            t->s->bestGradientToDeliverUpdated = false;
+            outgoing_packet.message_type = INTEREST;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.excepted_interface = _interface;
+            bcastAMessage(write_packet());
+        }
+    }
 
 }
+
 
 
 
@@ -2021,7 +2139,8 @@ handle_neighbor_bcast,
 handle_neighbor_ucast,
 handle_reinforce_interest,
 handle_collaboration,
-handle_reinforce_collaboration
+handle_reinforce_collaboration,
+handle_interest_correction
 };
 
 

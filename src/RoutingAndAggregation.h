@@ -189,6 +189,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define REINFORCE_INTEREST 6
 #define COLLABORATION 7
 #define REINFORCE_COLLABORATION 8
+#define INTEREST_CORRECTION 9
 
 
 
@@ -383,7 +384,8 @@ struct new_packet
 	unsigned char length;
 	unsigned char* data;
 	signed short path_value;
-	NEIGHBOUR_ADDR excepted_interface;
+    NEIGHBOUR_ADDR excepted_interface;
+    NEIGHBOUR_ADDR down_interface;
 };
 
 
