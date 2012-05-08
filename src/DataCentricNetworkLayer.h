@@ -68,6 +68,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     double          numForward;
 
     cMessage *mpStartMessage;
+    cMessage *mpDownMessage;
+    cMessage *mpUpMessage;
 
 
 };

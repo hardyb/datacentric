@@ -195,6 +195,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define COLLABORATION 7
 #define REINFORCE_COLLABORATION 8
 #define INTEREST_CORRECTION 9
+#define REINFORCE_INTEREST_CANCEL 10
 
 
 
@@ -655,18 +656,19 @@ extern "C" {
 */
 
 
+void removeIF(struct InterfaceList** l, struct Interface* _i);
 void add(struct InterfaceList** q, struct Interface* _i);
 StateNode* newStateNode(int stateDataname);
 InterfaceNode* newInterfaceNode(int interfaceName);
 StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
 InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
-bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, void* c));
+bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
 StateNode* FindStateNode(StateNode* tree, int val);
 InterfaceNode* FindInterfaceNode(InterfaceNode* tree, NEIGHBOUR_ADDR val);
 struct KDGradientNode* newKDGradientNode(int sName, int iName, int obtain, int deliver);
 struct KDGradientNode* insertKDGradientNode( int sName, int iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev );
-void reinforceDeliverGradient(int sName, NEIGHBOUR_ADDR iName);
+void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName);
 void reinforceObtainGradient(int sName, NEIGHBOUR_ADDR iName);
 void setObtainGradient(int sName, int iName, int pCost);
 void setDeliverGradient(int sName, int iName, int pCost);
@@ -678,6 +680,10 @@ struct KDGradientNode* SearchForKDGradientNode2( State* s, Interface* i, struct 
 KDNode* SearchForKDNode( int stateDataname[], KDNode* treeNode );
 int getNewState(int input);
 int SearchForKDNodeTransition(int input);
+
+struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev );
+
+
 
 /*
 #ifdef MY_C_PLUSPLUS
@@ -727,11 +733,19 @@ void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface);
 void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 void handle_collaboration(NEIGHBOUR_ADDR _interface);
 void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface);
+void handle_interest_correction(NEIGHBOUR_ADDR _interface);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);
 void getLongestContextTrie(trie *t, char* str, char* i, char* longestContext);
 void getShortestContextTrie(trie *t, char* str, char* i, char* shortestContext);
+
+
+void UpdateBestGradient(Interface* i, State* s);
+
+void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf);
+
+
 
 
 state* state_new(void);

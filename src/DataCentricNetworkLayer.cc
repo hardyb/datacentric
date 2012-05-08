@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include "DataCentricNetworkLayer.h"
 #include "Ieee802Ctrl_m.h"
+#include "Ieee802154Frame_m.h"
 
 //#include "InterfaceTableAccess.h"
 //#include "MACAddress.h"
@@ -67,6 +68,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
     if (0 == aStage)
     {
         mpStartMessage = new cMessage("StartMessage");
+        mpDownMessage = new cMessage("DownMessage");
+        mpUpMessage = new cMessage("UpMessage");
         // WirelessMacBase stuff...
         mUpperLayerIn  = findGate("upperLayerIn");
         mUpperLayerOut = findGate("upperLayerOut");
@@ -115,6 +118,9 @@ void DataCentricNetworkLayer::initialize(int aStage)
         cModule* nicModule = this->getParentModule()->getSubmodule("nic");
         cModule* macModule = check_and_cast<cModule*>(nicModule->getSubmodule("mac"));
         mPhyModule = check_and_cast<Ieee802154Phy*>(nicModule->getSubmodule("phy"));
+
+        //mPhyModule->disableModule();
+
         string tempAddressString = macModule->par("address");
         MACAddress addrObj(tempAddressString.c_str());
         //MACAddress addrObj(mTheAddressString.c_str());
@@ -125,6 +131,11 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         WriteModuleListFile();
+        if ( this->getParentModule()->getFullName() == "host[15]" )
+        {
+            scheduleAt(simTime() + 10.0, mpDownMessage);
+
+        }
     }
 
 
@@ -155,15 +166,12 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             //MACAddress dest = f->getDstAddr();
             NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
             DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
-            f->setName("InterfaceDown");
-            scheduleAt(simTime(), f);
+            //f->setName("InterfaceDown");
+            //scheduleAt(simTime(), f);
 
-
-            InterfaceNode* i = FindInterfaceNode(rd->interfaceTree, dest);
-            i->i->up = 0;
-
-
-
+            unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
+            std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+            InterfaceDown(pkt, dest);
         }
         break;
     case NF_RADIOSTATE_CHANGED:
@@ -191,6 +199,15 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     std::string fName = this->getParentModule()->getFullName();
 
+    if (msg == mpDownMessage )
+    {
+        //mPhyModule->callFinish();
+        mPhyModule->disableModule();
+        //scheduleAt(simTime() + 4.0, mpUpMessage);
+        return;
+
+    }
+
     if (msg == mpStartMessage)
     {
         StartUp();
@@ -198,29 +215,29 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     }
 
-    if ( true ) // Broken link
+    if ( false ) // Broken link
     {
-        Ieee802154Frame * f;
-        f = check_and_cast<Ieee802154Frame *>(msg);
-        uint64 dest = f->getDstAddr().getInt();
-        DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
+        //Ieee802154Frame * f;
+        //f = check_and_cast<Ieee802154Frame *>(msg);
+        //uint64 dest = f->getDstAddr().getInt();
+        //DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
 
 
 
 
         //Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
         //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
-        unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
-        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+        //unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
+        //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
 
-        if ( this->getParentModule()->getIndex() == 15 )
-        {
-            temp = 1;
+        //if ( this->getParentModule()->getIndex() == 15 )
+        //{
+        //    temp = 1;
 
-        }
+        //}
 
-        handle_message(pkt, previousAddress);
-        free(pkt);
+        //handle_message(pkt, previousAddress);
+        //free(pkt);
 
     }
 

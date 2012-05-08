@@ -647,7 +647,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 
-
+/*
  void ucast_best_gradient(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
   {
     if ( s->bestGradientToObtain && (((*_data) & MSB2) == PUBLICATION) )
@@ -668,9 +668,6 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
     }
 
 
-    /*
-     * Not quite sure how to deal with collaborations
-     */
     if ( s->bestGradientToDeliver && (((*_data) & MSB2) == COLLABORATIONBASED) )
     {
         outgoing_packet.message_type = COLLABORATION;
@@ -683,6 +680,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
   }
 
+*/
 
 
 
@@ -748,6 +746,11 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
     i->up = 0;
     s->bestGradientToDeliver = 0;
 
+    //void removeIF(struct InterfaceList** l, struct Interface* _i);
+    removeIF(&(s->deliveryInterfaces), i);
+    removeIF(&(s->obtainInterfaces), i);
+
+
     /*
      * So now, call this repeatedly for same state for each interface
      * except the one that is down
@@ -755,9 +758,11 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      * providing a very high cost so that the existing cost on each grad will remain, but the
      * null best grad will be set with a new best
      */
+    incoming_packet.data
 
     TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
-    if ( s->bestGradientToDeliver && (((incoming_packet.data) & MSB2) == RECORD) )
+
+    if ( s->bestGradientToDeliver && ((    (incoming_packet.data) & MSB2) == RECORD) )
     {
         outgoing_packet.message_type = INTEREST_CORRECTION; //???
         outgoing_packet.length = incoming_packet.length;
@@ -766,6 +771,18 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
         outgoing_packet.down_interface = inf;
         outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
         bcastAMessage(write_packet());
+
+
+        NEIGHBOUR_ADDR newinf = s->bestGradientToDeliver->key2->iName;
+        reinforceDeliverGradient((char*)incoming_packet.data, newinf);
+        outgoing_packet.message_type = REINFORCE_INTEREST;
+        outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.path_value = 0;
+        sendAMessage(newinf, write_packet());
+
+
+
+
     }
 
 }
@@ -796,10 +813,11 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
     {
         down_i->up = 0;
     }
+    removeIF(&(s->deliveryInterfaces), down_i);
+    removeIF(&(s->obtainInterfaces), down_i);
 
-    incoming_packet.excepted_interface;
-    if ( incoming_packet.excepted_interface == thisAddress )
-    {
+    //if ( incoming_packet.excepted_interface == thisAddress )
+    //{
         /*
          * So, for a regular interest, we just would NOT add a gradient back to
          * _interface
@@ -811,13 +829,15 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
          * a removal function yet
          */
         // Just correct this gradient
-        insertKDGradientNode2(s, i, DELIVER_CORRECTION, 9999, rd->grTree, 0);
-    }
-    else
-    {
+        //insertKDGradientNode2(s, i, DELIVER_CORRECTION, 9999, rd->grTree, 0);
+        // NBNBNB:
+        // We don't really want to add a 9999 one if there is already not one there any way!!!
+    //}
+    //else
+    //{
         // Just correct this gradient
         insertKDGradientNode2(s, i, DELIVER_CORRECTION, incoming_packet.path_value, rd->grTree, 0);
-    }
+    //}
 
 
 
@@ -828,13 +848,13 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
     TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
 
     // if a new best cost then broadcast it
-    if ( s->bestGradientToDeliver->costToDeliver != oldBestCost ) // best gradient changed
+    if ( s->bestGradientToDeliver->costToDeliver != oldBestCost )//??? // best gradient changed
     {
-        t->s->bestGradientToDeliverUpdated = false;
+        s->bestGradientToDeliverUpdated = false;
         outgoing_packet.message_type = INTEREST_CORRECTION;
         outgoing_packet.data = incoming_packet.data;
         outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver+nodeConstraint;
-        outgoing_packet.excepted_interface = _interface;
+        outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;//_interface;
         outgoing_packet.down_interface = incoming_packet.down_interface;
         bcastAMessage(write_packet());
     }
@@ -1745,6 +1765,45 @@ void displayState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 	}
  }
 #endif
+
+
+
+
+
+
+
+
+void removeIF(struct InterfaceList** l, struct Interface* _i)
+{
+    if(*l==NULL)
+    {
+        return;
+    }
+
+    struct InterfaceList *old,*temp;
+    temp=*l;
+    while( temp != NULL )
+    {
+        if(temp->i  == _i)
+        {
+            if( temp == *l )
+            {
+                *l=temp->link;
+            }
+            else
+            {
+                old->link=temp->link;
+            }
+            free(temp);
+            temp = 0;
+        }
+        else
+        {
+            old=temp;
+            temp=temp->link;
+        }
+    }
+}
 
 
 
