@@ -699,7 +699,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 //void ProcessInterface(Interface* i, State* s)
-void ProcessInterface(Interface* i, State* s)
+void UpdateBestGradient(Interface* i, State* s)
 {
 
      //trie* t = trie_add(rd->top_state, _d, STATE);
@@ -711,7 +711,7 @@ void ProcessInterface(Interface* i, State* s)
     if ( i->up )
     {
         //insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
-        insertKDGradientNode2(s, i, DELIVER, 9999, rd->grTree, 0);
+        insertKDGradientNode2(s, i, DELIVER_NOCHANGE, 0, rd->grTree, 0);
     }
     /*
      * By this method (could improve it)
@@ -740,6 +740,8 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
     incoming_packet.data;
     incoming_packet.path_value;
     incoming_packet.down_interface;
+    incoming_packet.excepted_interface;
+    incoming_packet.length;
     trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
     State* s = t->s;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf)->i;
@@ -754,7 +756,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      * null best grad will be set with a new best
      */
 
-    TraversInterfaceNodes(rd->interfaceTree, s, ProcessInterface);
+    TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
     if ( s->bestGradientToDeliver && (((incoming_packet.data) & MSB2) == RECORD) )
     {
         outgoing_packet.message_type = INTEREST_CORRECTION; //???
@@ -775,27 +777,66 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 {
-    trie* t;
-
-    t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    // find incoming state s and interface i and current best cost
+    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    State* s = t->s;
+    int oldBestCost = s->bestGradientToDeliver->costToDeliver;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
-    setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
+    //incoming_packet.data;
+    //incoming_packet.path_value;
+    //incoming_packet.down_interface;
+    //incoming_packet.excepted_interface;
+    //incoming_packet.length;
+    //setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
-
-
-
-    if ( t )
+    // mark down_interface down if we have it also
+    Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
+    if ( down_i )
     {
-        if ( t->s->bestGradientToDeliverUpdated )
-        {
-            t->s->bestGradientToDeliverUpdated = false;
-            outgoing_packet.message_type = INTEREST;
-            outgoing_packet.data = incoming_packet.data;
-            outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
-            outgoing_packet.excepted_interface = _interface;
-            bcastAMessage(write_packet());
-        }
+        down_i->up = 0;
+    }
+
+    incoming_packet.excepted_interface;
+    if ( incoming_packet.excepted_interface == thisAddress )
+    {
+        /*
+         * So, for a regular interest, we just would NOT add a gradient back to
+         * _interface
+         *
+         * However, in this case this is a correction, so we may ALREADY have a gradient,
+         * in which case we will probably want to remove it
+         *
+         * for the moment perhaps we should set path cost 9999 since we don't have
+         * a removal function yet
+         */
+        // Just correct this gradient
+        insertKDGradientNode2(s, i, DELIVER_CORRECTION, 9999, rd->grTree, 0);
+    }
+    else
+    {
+        // Just correct this gradient
+        insertKDGradientNode2(s, i, DELIVER_CORRECTION, incoming_packet.path_value, rd->grTree, 0);
+    }
+
+
+
+
+
+    // Now select new best gradient
+    s->bestGradientToDeliver = 0;
+    TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
+
+    // if a new best cost then broadcast it
+    if ( s->bestGradientToDeliver->costToDeliver != oldBestCost ) // best gradient changed
+    {
+        t->s->bestGradientToDeliverUpdated = false;
+        outgoing_packet.message_type = INTEREST_CORRECTION;
+        outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver+nodeConstraint;
+        outgoing_packet.excepted_interface = _interface;
+        outgoing_packet.down_interface = incoming_packet.down_interface;
+        bcastAMessage(write_packet());
     }
 
 }
@@ -986,6 +1027,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 			case OBTAIN:
 				treeNode = newKDGradientNode2(s, i, pCost, 9999);
 				break;
+            case DELIVER_CORRECTION:
 			case DELIVER:
 				treeNode = newKDGradientNode2(s, i, 9999, pCost);
 				break;
@@ -1017,9 +1059,17 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 					if ( pCost < treeNode->costToObtain )
 					{
 						treeNode->costToObtain = pCost;
+                        if ( treeNode == treeNode->key1->bestGradientToObtain )
+                        {
+                            // still same best interface but better cost
+                            treeNode->key1->bestGradientToObtainUpdated = TRUE;
+                        }
 					}
 					break;
-				case DELIVER:
+                case DELIVER_CORRECTION:
+                    treeNode->costToDeliver = pCost;
+                    break;
+                case DELIVER:
 					if ( pCost < treeNode->costToDeliver )
 					{
 						treeNode->costToDeliver = pCost;
@@ -1086,7 +1136,8 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 				treeNode->key1->bestGradientToObtainUpdated = TRUE;
 			}
 			break;
-		case DELIVER:
+        case DELIVER:
+        case DELIVER_NOCHANGE:
 		case REINFORCE_DELIVER:
             if (!treeNode->key1)
             {
