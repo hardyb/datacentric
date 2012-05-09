@@ -99,8 +99,15 @@ void read_packet(unsigned char* pkt)
 	signed short* x = (signed short*)(pkt+2+incoming_packet.length); // cast from 1st byte in buffer ie lsb
 	incoming_packet.path_value = *x;
 
-	NEIGHBOUR_ADDR* excepted_interface_ptr = (NEIGHBOUR_ADDR*)(pkt+2+incoming_packet.length+2);
+	NEIGHBOUR_ADDR* excepted_interface_ptr = (NEIGHBOUR_ADDR*)(pkt+2+incoming_packet.length+
+	        sizeof(signed short));
 	incoming_packet.excepted_interface = *excepted_interface_ptr;
+
+
+    NEIGHBOUR_ADDR* down_interface_ptr = (NEIGHBOUR_ADDR*)(pkt+2+incoming_packet.length+
+            sizeof(signed short) + sizeof(NEIGHBOUR_ADDR));
+    incoming_packet.down_interface = *down_interface_ptr;
+
 
 }
 
@@ -135,6 +142,25 @@ void neighbour_addr_into_buf(NEIGHBOUR_ADDR _var, unsigned char* _buf)
 }
 
 
+unsigned int size_needed_for_outgoing_packet()
+{
+    unsigned int _size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
+            + outgoing_packet.length +   sizeof(outgoing_packet.path_value)
+            +  sizeof(outgoing_packet.excepted_interface)
+            +  sizeof(outgoing_packet.down_interface);
+    return _size;
+}
+
+
+
+unsigned int sizeof_existing_packet(unsigned char* pkt)
+{
+    unsigned int _size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
+            + pkt[1] +   sizeof(outgoing_packet.path_value)
+            +  sizeof(outgoing_packet.excepted_interface)
+            +  sizeof(outgoing_packet.down_interface);
+    return _size;
+}
 
 
 /*
@@ -143,10 +169,11 @@ void neighbour_addr_into_buf(NEIGHBOUR_ADDR _var, unsigned char* _buf)
 unsigned char* write_packet()
 {
     outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
-	unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
-			+ outgoing_packet.length +   sizeof(outgoing_packet.path_value)
-            +  sizeof(outgoing_packet.excepted_interface)
-            +  sizeof(outgoing_packet.down_interface);
+    unsigned int size = size_needed_for_outgoing_packet();
+	//unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
+	//		+ outgoing_packet.length +   sizeof(outgoing_packet.path_value)
+    //        +  sizeof(outgoing_packet.excepted_interface)
+    //        +  sizeof(outgoing_packet.down_interface);
 	unsigned char* pkt = (unsigned char*)malloc(size);
 	unsigned int pkt_index = 0;
 
@@ -758,11 +785,9 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      * providing a very high cost so that the existing cost on each grad will remain, but the
      * null best grad will be set with a new best
      */
-    incoming_packet.data
-
     TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
 
-    if ( s->bestGradientToDeliver && ((    (incoming_packet.data) & MSB2) == RECORD) )
+    if ( s->bestGradientToDeliver && ((    *(incoming_packet.data) & MSB2) == RECORD) )
     {
         outgoing_packet.message_type = INTEREST_CORRECTION; //???
         outgoing_packet.length = incoming_packet.length;
@@ -2239,7 +2264,7 @@ void kickFSM()
 
 
 
-void (*h[9]) (NEIGHBOUR_ADDR _interface) =
+void (*h[10]) (NEIGHBOUR_ADDR _interface) =
 {
 handle_advert,
 handle_interest,

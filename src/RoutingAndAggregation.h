@@ -724,6 +724,8 @@ void weAreCollaboratorFor(char* _data);
 void weAreCollaboratorInitiatorFor(char* _data);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf);
 void read_packet(unsigned char* pkt);
+unsigned int size_needed_for_outgoing_packet();
+unsigned int sizeof_existing_packet(unsigned char* pkt);
 void handle_advert(NEIGHBOUR_ADDR _interface);
 void handle_interest(NEIGHBOUR_ADDR _interface);
 void handle_reinforce(NEIGHBOUR_ADDR _interface);

@@ -161,7 +161,8 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
           //  return;
 
     case NF_LINK_BREAK:
-        if ( f = check_and_cast<Ieee802154Frame *>(details) )
+        f = check_and_cast<Ieee802154Frame *>(details);
+        if ( f )
         {
             //MACAddress dest = f->getDstAddr();
             NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
@@ -171,7 +172,10 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-            InterfaceDown(pkt, dest);
+            if ( *pkt == DATA )
+            {
+                InterfaceDown(pkt, dest);
+            }
         }
         break;
     case NF_RADIOSTATE_CHANGED:
@@ -469,7 +473,8 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->setDataName("");
 
-    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
+    //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
+    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
     appPkt->setCreationTime(simTime());
@@ -523,7 +528,9 @@ static void cb_bcast_message(unsigned char* _msg)
     currentModule->controlPackets.record(numControlPackets);
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
-    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
+    //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
+    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
+
     appPkt->setCreationTime(simTime());
 
     Ieee802Ctrl *controlInfo = new Ieee802Ctrl();

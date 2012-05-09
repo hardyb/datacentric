@@ -5,5 +5,5 @@ best_deliver_to
 AAA0000002D
 D
 best_obtain_from
-no_best_obtain_from
-not applicable
+AAA0000001B
+270F

@@ -2,8 +2,8 @@ CONNECTION
 ÿ
 AAA0000005C
 best_deliver_to
-AAA0000003E
-F
+AAA0000003F
+D
 best_obtain_from
 no_best_obtain_from
 not applicable

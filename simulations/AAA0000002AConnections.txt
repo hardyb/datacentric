@@ -5,5 +5,5 @@ best_deliver_to
 AAA00000015
 9
 best_obtain_from
-AAA00000018
+AAA0000002D
 270F
