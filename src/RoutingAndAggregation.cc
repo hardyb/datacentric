@@ -1088,6 +1088,9 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 				//treeNode->key1->obtainInterface = treeNode->key2;
 				add(&(treeNode->key1->obtainInterfaces), treeNode->key2);
 				break;
+	        case DELIVER_NOCHANGE:
+	            return treeNode;
+	            break;
 		}
 
 	}

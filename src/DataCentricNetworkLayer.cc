@@ -131,11 +131,12 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         WriteModuleListFile();
-        if ( this->getParentModule()->getFullName() == "host[15]" )
+        if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
         {
-            scheduleAt(simTime() + 10.0, mpDownMessage);
+            scheduleAt(simTime() + 8.0, mpDownMessage);
 
         }
+        this->getParentModule()->getFullName();
     }
 
 
@@ -150,6 +151,8 @@ void DataCentricNetworkLayer::finish()
 
 void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPolymorphic *details)
 {
+    //Enter_Method("receiveChangeNotification()");
+    Enter_Method("receiveChangeNotification(int category, const cPolymorphic *details)");
     Ieee802154Frame * f;
 
     rd = &(moduleRD);
@@ -162,6 +165,10 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
     case NF_LINK_BREAK:
         f = check_and_cast<Ieee802154Frame *>(details);
+        //f->setName("NF_LINK_BREAK");
+        //scheduleAt(simTime(), f);
+        //return;
+
         if ( f )
         {
             //MACAddress dest = f->getDstAddr();
@@ -202,6 +209,23 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     ////////////////////////////////////////////
 
     std::string fName = this->getParentModule()->getFullName();
+
+    if ( !strcmp(msg->getName(), "NF_LINK_BREAK") )
+    {
+        Ieee802154Frame * f = check_and_cast<Ieee802154Frame *>(msg);
+        if ( f )
+        {
+            NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
+            DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
+            unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
+            std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+            if ( *pkt == DATA )
+            {
+                InterfaceDown(pkt, dest);
+            }
+        }
+
+    }
 
     if (msg == mpDownMessage )
     {
