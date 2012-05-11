@@ -756,6 +756,7 @@ trie* trie_new(void);
 trie* trie_at_level(trie *t, char c);
 trie* trie_add(trie *t, const char *str, int object);
 void write_connections(void process(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if));
+bool write_gradients(void process(KDGradientNode* g));
 
 
 

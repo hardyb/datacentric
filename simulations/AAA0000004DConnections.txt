@@ -3,7 +3,7 @@ CONNECTION
 AAA0000004D
 best_deliver_to
 AAA0000002E
-E
+11
 best_obtain_from
 no_best_obtain_from
 not applicable

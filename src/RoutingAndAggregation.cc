@@ -505,6 +505,11 @@ struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
 
 
 
+bool write_gradients(void process(KDGradientNode* g, char* _name))
+{
+     return TraversGradientNodes(rd->grTree, process);
+
+}
 
 
 
@@ -1051,9 +1056,101 @@ struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, in
 
 
 
+int GetStateStr(trie *t, State* _s, char* str)
+{
+       if ( t != NULL )
+       {
+           if ( t->keyelem )
+           {
+               *(str) = t->keyelem;
+               *(str+1) = 0;
+               str++;
+           }
+           //if ( t->s )
+           if ( t->s == _s )
+           {
+               //process(t->s, (unsigned char*)queue, inf);
+               // we are finished
+               return 1;
+
+
+               //printf("key: %s    -    ", queue);
+               //printf("obj: %s\n", t->s->full_name);
+           }
+           t = t->first_child;
+           while(t != NULL)
+           {
+               if ( GetStateStr(t, _s, str) )
+                   return 1;
+               t = t->next_sibling;
+           }
+       }
+       return 0;
+}
 
 
 
+
+bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, char* _name))
+{
+    static char sName[20];
+    if ( tree )
+    {
+        *sName = 0;
+        GetStateStr(rd->top_state, tree->key1, sName);
+        process(tree, sName);
+    }
+    else
+    {
+        return false;
+    }
+    TraversGradientNodes(tree->left, process);
+    TraversGradientNodes(tree->right, process);
+    return true;
+}
+
+
+
+
+/*
+struct KDGradientNode* traverseKDGradientNode(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+{
+        if ( s == treeNode->key1 && i == treeNode->key2 )
+        {
+        }
+        else
+        {
+            if ( lev == 0 )
+            {
+                if ( s > treeNode->key1 )
+                {
+                    treeNode->right = traverseKDGradientNode( s, i, costType, pCost, treeNode->right, (lev+1)%K );
+                }
+                else
+                {
+                    treeNode->left  = traverseKDGradientNode( s, i, costType, pCost, treeNode->left, (lev+1)%K );
+                }
+            }
+
+            if ( lev == 1 )
+            {
+                if ( i > treeNode->key2 )
+                {
+                    treeNode->right = traverseKDGradientNode( s, i, costType, pCost, treeNode->right, (lev+1)%K );
+                }
+                else
+                {
+                    treeNode->left  = traverseKDGradientNode( s, i, costType, pCost, treeNode->left, (lev+1)%K );
+                }
+            }
+
+            return treeNode;
+        }
+
+
+    return treeNode;
+}
+*/
 
 
 
@@ -1166,6 +1263,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 				}
 			}
 
+		    return treeNode;
 		}
 	}
 

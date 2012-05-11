@@ -2,8 +2,8 @@ CONNECTION
 ÿ
 AAA0000002E
 best_deliver_to
-AAA0000002D
-D
+AAA00000024
+10
 best_obtain_from
 AAA0000001B
 270F

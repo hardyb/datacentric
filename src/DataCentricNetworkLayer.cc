@@ -56,6 +56,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
+static void write_one_gradient(KDGradientNode* g, char* _name);
 
 
 //============================= LIFECYCLE ===================================
@@ -171,17 +172,16 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
         if ( f )
         {
-            //MACAddress dest = f->getDstAddr();
-            NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
+            MACAddress destMac = f->getDstAddr();
+            destMac.convert48();
+            NEIGHBOUR_ADDR destIF = destMac.getInt();
             DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
-            //f->setName("InterfaceDown");
-            //scheduleAt(simTime(), f);
 
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
             if ( *pkt == DATA )
             {
-                InterfaceDown(pkt, dest);
+                InterfaceDown(pkt, destIF);
             }
         }
         break;
@@ -210,22 +210,6 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     std::string fName = this->getParentModule()->getFullName();
 
-    if ( !strcmp(msg->getName(), "NF_LINK_BREAK") )
-    {
-        Ieee802154Frame * f = check_and_cast<Ieee802154Frame *>(msg);
-        if ( f )
-        {
-            NEIGHBOUR_ADDR dest = f->getDstAddr().getInt();
-            DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
-            unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
-            std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-            if ( *pkt == DATA )
-            {
-                InterfaceDown(pkt, dest);
-            }
-        }
-
-    }
 
     if (msg == mpDownMessage )
     {
@@ -243,31 +227,6 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     }
 
-    if ( false ) // Broken link
-    {
-        //Ieee802154Frame * f;
-        //f = check_and_cast<Ieee802154Frame *>(msg);
-        //uint64 dest = f->getDstAddr().getInt();
-        //DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
-
-
-
-
-        //Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
-        //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
-        //unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
-        //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-
-        //if ( this->getParentModule()->getIndex() == 15 )
-        //{
-        //    temp = 1;
-
-        //}
-
-        //handle_message(pkt, previousAddress);
-        //free(pkt);
-
-    }
 
 
     if ( msg->isSelfMessage() )
@@ -288,7 +247,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         myfile.open (ss.str().c_str(), std::ios::app);
 
         // need to improve this
-        write_connections(write_one_connection);
+        //write_connections(write_one_connection);
+        write_gradients(write_one_gradient);
         myfile.close();
 
 #ifdef ANDREW_DEBUG
@@ -434,6 +394,25 @@ void DataCentricNetworkLayer::WriteModuleListFile()
 
 }
 
+
+static void write_one_gradient(KDGradientNode* g, char* _name)
+{
+    g->costToDeliver;
+    g->costToObtain;
+    g->key1;
+    g->key2;
+    char sName[10];
+
+    myfile << "CONNECTION" << std::endl;
+    for ( int i = 0; _name[i] != 0; i++ )
+    {
+        myfile << hex << uppercase << (unsigned int)_name[i];
+    }
+    myfile << hex << uppercase << thisAddress << std::endl;
+
+
+
+}
 
 
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)

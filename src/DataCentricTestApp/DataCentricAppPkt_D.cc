@@ -4,6 +4,7 @@
 
 #include "DataCentricAppPkt_D.h"
 
+#include "RoutingAndAggregation.h"
 
 
 
@@ -32,6 +33,12 @@ const char *DataCentricAppPkt::getDisplayString() const
             break;
         case 0x03: // data
             return "b=10,10,oval,blue,blue,1";
+            break;
+        case INTEREST_CORRECTION: // INTEREST_CORRECTION
+            return "b=10,10,oval,white,green,5";
+            break;
+        case 0x0A: // REINFORCE_INTEREST_CANCEL
+            return "b=10,10,oval,red,green,5";
             break;
         default:
             return "b=20,20,rect";
