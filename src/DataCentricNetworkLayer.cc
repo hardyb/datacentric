@@ -56,7 +56,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
-static void write_one_gradient(KDGradientNode* g, char* _name);
+static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
 
 
 //============================= LIFECYCLE ===================================
@@ -395,22 +395,27 @@ void DataCentricNetworkLayer::WriteModuleListFile()
 }
 
 
-static void write_one_gradient(KDGradientNode* g, char* _name)
+static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
 {
-    g->costToDeliver;
-    g->costToObtain;
-    g->key1;
-    g->key2;
-    char sName[10];
-
     myfile << "CONNECTION" << std::endl;
+    myfile << hex << uppercase << thisAddress << std::endl;
     for ( int i = 0; _name[i] != 0; i++ )
     {
+        //unsigned char ch = (unsigned char)_name[i];
+        myfile.width(2);
+        myfile.fill('0');
         myfile << hex << uppercase << (unsigned int)_name[i];
     }
-    myfile << hex << uppercase << thisAddress << std::endl;
-
-
+    myfile << std::endl;
+    myfile << dec << g->key1->action << std::endl;
+    myfile << hex << uppercase << g->key2->iName << std::endl;
+    myfile << boolalpha << (bool)g->key2->up << std::endl;
+    myfile << dec << g->costToDeliver << std::endl;
+    myfile << dec<< g->costToObtain << std::endl;
+    myfile << boolalpha << (g->key1->bestGradientToDeliver == g) << std::endl;
+    myfile << boolalpha <<  deliverReinforced(g) << std::endl;
+    myfile << boolalpha << (g->key1->bestGradientToObtain == g) << std::endl;
+    myfile << boolalpha <<  obtainReinforced(g) << std::endl;
 
 }
 

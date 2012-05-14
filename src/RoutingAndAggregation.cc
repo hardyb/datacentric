@@ -505,7 +505,7 @@ struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
 
 
 
-bool write_gradients(void process(KDGradientNode* g, char* _name))
+bool write_gradients(void process(KDGradientNode* g, unsigned char* _name))
 {
      return TraversGradientNodes(rd->grTree, process);
 
@@ -1056,7 +1056,7 @@ struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, in
 
 
 
-int GetStateStr(trie *t, State* _s, char* str)
+int GetStateStr(trie *t, State* _s, unsigned char* str)
 {
        if ( t != NULL )
        {
@@ -1091,9 +1091,9 @@ int GetStateStr(trie *t, State* _s, char* str)
 
 
 
-bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, char* _name))
+bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name))
 {
-    static char sName[20];
+    static unsigned char sName[20];
     if ( tree )
     {
         *sName = 0;
@@ -1929,6 +1929,39 @@ void removeIF(struct InterfaceList** l, struct Interface* _i)
             temp=temp->link;
         }
     }
+}
+
+
+
+bool deliverReinforced(KDGradientNode* g)
+{
+    InterfaceList* temp = g->key1->deliveryInterfaces;
+    while( temp !=NULL )
+    {
+        if ( temp->i->iName == g->key2->iName )
+        {
+            return true;
+        }
+        temp = temp->link;
+    }
+    return false;
+}
+
+
+
+
+bool obtainReinforced(KDGradientNode* g)
+{
+    InterfaceList* temp = g->key1->obtainInterfaces;
+    while( temp !=NULL )
+    {
+        if ( temp->i->iName == g->key2->iName )
+        {
+            return true;
+        }
+        temp = temp->link;
+    }
+    return false;
 }
 
 

@@ -664,6 +664,9 @@ StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
 InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
+bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
+bool deliverReinforced(KDGradientNode* g);
+bool obtainReinforced(KDGradientNode* g);
 StateNode* FindStateNode(StateNode* tree, int val);
 InterfaceNode* FindInterfaceNode(InterfaceNode* tree, NEIGHBOUR_ADDR val);
 struct KDGradientNode* newKDGradientNode(int sName, int iName, int obtain, int deliver);
@@ -756,7 +759,7 @@ trie* trie_new(void);
 trie* trie_at_level(trie *t, char c);
 trie* trie_add(trie *t, const char *str, int object);
 void write_connections(void process(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if));
-bool write_gradients(void process(KDGradientNode* g));
+bool write_gradients(void process(KDGradientNode* g, unsigned char* _name));
 
 
 
