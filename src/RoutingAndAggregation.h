@@ -3,6 +3,7 @@
 
 #define MY_C_PLUSPLUS 1
 
+#define GRAD_FILES 1
 
 #ifdef MY_C_PLUSPLUS
 #include<iostream>

@@ -2555,6 +2555,66 @@ void weAreCollaboratorInitiatorFor(char* _data)
 
 
 
+#ifdef GRAD_FILES
+
+static std::ofstream myfile;
+
+
+
+static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
+{
+    myfile << "CONNECTION" << std::endl;
+    myfile << std::hex << std::uppercase << thisAddress << std::endl;
+    for ( int i = 0; _name[i] != 0; i++ )
+    {
+        //unsigned char ch = (unsigned char)_name[i];
+        myfile.width(2);
+        myfile.fill('0');
+        myfile << std::hex << std::uppercase << (unsigned int)_name[i];
+    }
+    myfile << std::endl;
+    myfile << std::dec << g->key1->action << std::endl;
+    myfile << std::hex << std::uppercase << g->key2->iName << std::endl;
+    myfile << std::boolalpha << (bool)g->key2->up << std::endl;
+    myfile << std::dec << g->costToDeliver << std::endl;
+    myfile << std::dec<< g->costToObtain << std::endl;
+    myfile << std::boolalpha << (g->key1->bestGradientToDeliver == g) << std::endl;
+    myfile << std::boolalpha <<  deliverReinforced(g) << std::endl;
+    myfile << std::boolalpha << (g->key1->bestGradientToObtain == g) << std::endl;
+    myfile << std::boolalpha <<  obtainReinforced(g) << std::endl;
+
+}
+
+
+
+void UpdateGradientFile()
+{
+    std::string s;
+    std::ostringstream ss;
+    ss.clear();
+    ss.str(s);
+    ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+
+    //int remove_failure = std::remove(ss.str().c_str());
+    //if ( remove_failure )
+    //{
+    //    EV << "File removal failure " << remove_failure << " \n";
+    //}
+    myfile.open (ss.str().c_str(), std::ios::trunc);
+
+    // need to improve this
+    //write_connections(write_one_connection);
+    write_gradients(write_one_gradient);
+    myfile.close();
+
+}
+
+#endif
+
+
+
+
+
 
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf)
 {
@@ -2567,7 +2627,26 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf)
 	//(*h[incoming_packet.the_message.message_type]) (inf);
 	(*h[incoming_packet.message_type]) (inf);
 
+#ifdef GRAD_FILES
+	switch ( incoming_packet.message_type )
+	{
+    case ADVERT:
+    case INTEREST:
+    case REINFORCE:
+    case REINFORCE_INTEREST:
+    case INTEREST_CORRECTION:
+    case REINFORCE_INTEREST_CANCEL:
+        UpdateGradientFile();
+	    break;
+	}
+#endif
+
 }
+
+
+
+
+
 
 
 

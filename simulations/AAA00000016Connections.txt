@@ -27,7 +27,7 @@ AAA00000016
 0202FF06
 3
 AAA0000002A
-true
+false
 12
 9999
 false
@@ -124,7 +124,7 @@ AAA00000016
 3
 AAA00000034
 true
-17
+18
 9999
 false
 false

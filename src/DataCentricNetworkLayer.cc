@@ -56,7 +56,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
-static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
+//static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
 
 
 //============================= LIFECYCLE ===================================
@@ -239,17 +239,17 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         ss.str(s);
         ss << ".\\" << hex << uppercase << thisAddress << "Connections.txt";
 
-        int remove_failure = std::remove(ss.str().c_str());
-        if ( remove_failure )
-        {
-            EV << "File removal failure " << remove_failure << " \n";
-        }
-        myfile.open (ss.str().c_str(), std::ios::app);
+        //int remove_failure = std::remove(ss.str().c_str());
+        //if ( remove_failure )
+        //{
+        //    EV << "File removal failure " << remove_failure << " \n";
+        //}
+        //myfile.open (ss.str().c_str(), std::ios::app);
 
         // need to improve this
         //write_connections(write_one_connection);
-        write_gradients(write_one_gradient);
-        myfile.close();
+        //write_gradients(write_one_gradient);
+        //myfile.close();
 
 #ifdef ANDREW_DEBUG
         // perhaps new public method not best way to get noise
@@ -394,7 +394,7 @@ void DataCentricNetworkLayer::WriteModuleListFile()
 
 }
 
-
+/*
 static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
 {
     myfile << "CONNECTION" << std::endl;
@@ -418,6 +418,7 @@ static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
     myfile << boolalpha <<  obtainReinforced(g) << std::endl;
 
 }
+*/
 
 
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
@@ -458,7 +459,6 @@ static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR 
 
 }
 
-
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 {
     /*
@@ -498,6 +498,8 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
     ev << "UCAST   to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 }
+
+
 
 static void cb_bcast_message(unsigned char* _msg)
 {
@@ -559,6 +561,7 @@ static void cb_bcast_message(unsigned char* _msg)
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 }
+
 
 
 static void cb_handle_application_data(unsigned char* _msg)
