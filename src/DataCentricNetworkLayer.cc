@@ -156,6 +156,9 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
     Enter_Method("receiveChangeNotification(int category, const cPolymorphic *details)");
     Ieee802154Frame * f;
 
+    nodeConstraint = nodeConstraintValue;
+    currentModuleId = this->getId();
+    thisAddress = mAddress;
     rd = &(moduleRD);
 
     switch (category)
@@ -179,9 +182,13 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-            if ( *pkt == DATA )
+            switch ( *pkt )
             {
-                InterfaceDown(pkt, destIF);
+                case DATA:
+                case REINFORCE:
+                case REINFORCE_INTEREST:
+                    InterfaceDown(pkt, destIF);
+                    break;
             }
         }
         break;
@@ -203,8 +210,6 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     nodeConstraint = nodeConstraintValue;
     currentModuleId = this->getId();
     thisAddress = mAddress;
-
-
     rd = &(moduleRD);
     ////////////////////////////////////////////
 

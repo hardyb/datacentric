@@ -28,7 +28,7 @@ AAA00000001
 3
 AAA0000000B
 true
-19
+21
 9999
 false
 false
@@ -64,7 +64,7 @@ AAA00000001
 3
 AAA0000000D
 true
-21
+23
 9999
 false
 false
@@ -88,7 +88,7 @@ AAA00000001
 3
 AAA00000020
 true
-16
+17
 9999
 false
 false

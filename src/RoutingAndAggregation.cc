@@ -808,6 +808,8 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
         outgoing_packet.message_type = REINFORCE_INTEREST;
         outgoing_packet.data = incoming_packet.data;
         outgoing_packet.path_value = 0;
+        //outgoing_packet.excepted_interface = 0;
+        outgoing_packet.down_interface = inf;
         sendAMessage(newinf, write_packet());
 
 
@@ -824,6 +826,11 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 {
+    if ( incoming_packet.excepted_interface == thisAddress )
+    {
+        return;
+    }
+
     // find incoming state s and interface i and current best cost
     trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
     State* s = t->s;
@@ -2620,10 +2627,10 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf)
 {
 	//memcpy(incoming_packet.packet_bytes, _msg, MESSAGE_SIZE);
 	read_packet(_msg);
-	if ( incoming_packet.excepted_interface == thisAddress )
-	{
-	    return;
-	}
+	//if ( incoming_packet.excepted_interface == thisAddress )
+	//{
+	//    return;
+	//}
 	//(*h[incoming_packet.the_message.message_type]) (inf);
 	(*h[incoming_packet.message_type]) (inf);
 
@@ -2652,6 +2659,11 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf)
 
 void handle_advert(NEIGHBOUR_ADDR _interface)
 {
+    if ( incoming_packet.excepted_interface == thisAddress )
+    {
+        return;
+    }
+
 	//static rpacket p;
 	//static struct StateNode* n;
 	trie* t;
@@ -2819,6 +2831,11 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
 
 void handle_interest(NEIGHBOUR_ADDR _interface)
 {
+    if ( incoming_packet.excepted_interface == thisAddress )
+    {
+        return;
+    }
+
 // TODO
 // Do this later
 
