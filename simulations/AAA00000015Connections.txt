@@ -7,7 +7,7 @@ true
 0
 9999
 true
-true
+false
 false
 false
 CONNECTION
@@ -16,7 +16,7 @@ AAA00000015
 1
 AAA0000000B
 true
-21
+19
 9999
 false
 false
@@ -27,12 +27,12 @@ AAA00000015
 0202FF06
 1
 AAA0000002A
-false
+true
 17
 9999
 false
 false
-true
+false
 false
 CONNECTION
 AAA00000015
@@ -40,7 +40,7 @@ AAA00000015
 1
 AAA00000021
 true
-17
+16
 9999
 false
 false
@@ -52,7 +52,7 @@ AAA00000015
 1
 AAA0000000D
 true
-23
+21
 9999
 false
 false
@@ -76,7 +76,7 @@ AAA00000015
 1
 AAA00000017
 true
-18
+16
 9999
 false
 false
@@ -88,7 +88,7 @@ AAA00000015
 1
 AAA00000020
 true
-17
+16
 9999
 false
 false

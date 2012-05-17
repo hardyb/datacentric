@@ -481,9 +481,36 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
     //{
     //    msg->setData(i, _msg[i]);
     //}
+    DataCentricAppPkt* appPkt;
 
+    switch ( *_msg )
+    {
+        case REINFORCE:
+            appPkt = new DataCentricAppPkt("Rein_DataCentricAppPkt");
+            break;
+        case DATA:
+            appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
+            break;
+        case REINFORCE_INTEREST:
+            appPkt = new DataCentricAppPkt("ReinIN_DataCentricAppPkt");
+            break;
+        default:
+            appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+            break;
+    }
 
-    DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+//#define ADVERT 0
+//#define INTEREST 1 // Need to look at this - it is being used by two bits of code differently!!!!!!!!!
+//#define REINFORCE 2
+//#define DATA 3
+//#define NEIGHBOR_BCAST 4
+//#define NEIGHBOR_UCAST 5
+//#define REINFORCE_INTEREST 6
+//#define COLLABORATION 7
+//#define REINFORCE_COLLABORATION 8
+//#define INTEREST_CORRECTION 9
+//#define REINFORCE_INTEREST_CANCEL 10
+
     //appPkt->setDataName("");
 
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));

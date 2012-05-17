@@ -720,38 +720,23 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 
- //void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
-
- //void setDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
 
 
- //struct KDGradientNode* insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
-
-
-//void ProcessInterface(Interface* i, State* s)
 void UpdateBestGradient(Interface* i, State* s)
 {
-
-     //trie* t = trie_add(rd->top_state, _d, STATE);
-     //State* s = t->s;
-     //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName)->i;
-
-
-    //insertKDGradientNode2(s, i, costType, pCost, treeNode, lev);
     if ( i->up )
     {
-        //insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
         insertKDGradientNode2(s, i, DELIVER_NOCHANGE, 0, rd->grTree, 0);
     }
-    /*
-     * By this method (could improve it)
-     * we now have all interfacesstill set the same
-     * and a new best gradient set
-     */
+}
 
 
-
-
+void MarkIFDown(Interface* i, State* s)
+{
+    if ( i->iName == incoming_packet.down_interface )
+    {
+        i->up = 0;
+    }
 
 }
 
@@ -762,25 +747,21 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 //void InterfaceDown(Interface* i, State* s)
 {
     /*
+     * JUST FOR INTERESTS SO FAR
+     *
      * Initial idea - needs some work
      *
      */
 
     read_packet(pkt);
-    incoming_packet.data;
-    incoming_packet.path_value;
-    incoming_packet.down_interface;
-    incoming_packet.excepted_interface;
-    incoming_packet.length;
     trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
     State* s = t->s;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf)->i;
     i->up = 0;
-    s->bestGradientToDeliver = 0;
 
     //void removeIF(struct InterfaceList** l, struct Interface* _i);
-    removeIF(&(s->deliveryInterfaces), i);
-    removeIF(&(s->obtainInterfaces), i);
+    //removeIF(&(s->deliveryInterfaces), i);
+    //removeIF(&(s->obtainInterfaces), i);
 
 
     /*
@@ -790,27 +771,30 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      * providing a very high cost so that the existing cost on each grad will remain, but the
      * null best grad will be set with a new best
      */
+    KDGradientNode* saveBestGradientToDeliver = s->bestGradientToDeliver;
+    s->bestGradientToDeliver = 0;
     TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
+    KDGradientNode* alternativeBestGradientToDeliver = s->bestGradientToDeliver;
+    s->bestGradientToDeliver = saveBestGradientToDeliver;
 
-    if ( s->bestGradientToDeliver && ((    *(incoming_packet.data) & MSB2) == RECORD) )
+    if ( alternativeBestGradientToDeliver && ((    *(incoming_packet.data) & MSB2) == RECORD) )
     {
-        outgoing_packet.message_type = INTEREST_CORRECTION; //???
-        outgoing_packet.length = incoming_packet.length;
-        outgoing_packet.data = incoming_packet.data; // safe?
-        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
-        outgoing_packet.down_interface = inf;
-        outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-        bcastAMessage(write_packet());
+        //outgoing_packet.message_type = INTEREST_CORRECTION; //???
+        //outgoing_packet.length = incoming_packet.length;
+        //outgoing_packet.data = incoming_packet.data; // safe?
+        //outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+        //outgoing_packet.down_interface = inf;
+        //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
+        //bcastAMessage(write_packet());
 
 
-        NEIGHBOUR_ADDR newinf = s->bestGradientToDeliver->key2->iName;
-        reinforceDeliverGradient((char*)incoming_packet.data, newinf);
+        add(&(s->deliveryInterfaces), alternativeBestGradientToDeliver->key2);
         outgoing_packet.message_type = REINFORCE_INTEREST;
         outgoing_packet.data = incoming_packet.data;
         outgoing_packet.path_value = 0;
         //outgoing_packet.excepted_interface = 0;
         outgoing_packet.down_interface = inf;
-        sendAMessage(newinf, write_packet());
+        sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
 
 
 
@@ -845,7 +829,8 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
     //setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
     // mark down_interface down if we have it also
-    Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
+    // I THINK MAYBE WE SHOULDNT INSERT THIS IF WE DONT ALREADY HAVE IT ASAN INTERFACE
+    //Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
     if ( down_i )
     {
         down_i->up = 0;
@@ -1978,6 +1963,8 @@ bool obtainReinforced(KDGradientNode* g)
  * Basic Linked List specifically for storing a set of reinforced
  * obtain or deliver interfaces
  *
+ * Definitely looks like it adds it at the end
+ *
  * SEEMS OK
  *
  */
@@ -2108,12 +2095,15 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
         //incoming_packet.path_value = 0;
         //handle_data(SELF_INTERFACE);
 
+        bool query_based = ( (*(outgoing_packet.data)&MSB2) == RECORD );
+        bool event_based = ( (*(outgoing_packet.data)&MSB2) == PUBLICATION );
+        bool collaberation_based = ( (*(outgoing_packet.data)&MSB2) == COLLABORATIONBASED );
+
         InterfaceList* temp = s->deliveryInterfaces;
         while( temp !=NULL )
         {
-            if ( temp->i->iName != excludedInterface )
+            if ( temp->i->up && temp->i->iName != excludedInterface )
             {
-                // we have temporarily made some assumptions in the above and below code
                 if ( temp->i->iName == SELF_INTERFACE )
                 {
                     // is the data item enough for the application
@@ -2123,6 +2113,10 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
                 else
                 {
                     sendAMessage(temp->i->iName, write_packet());
+                }
+                if ( query_based )
+                {
+                    break;
                 }
             }
             temp = temp->link;
@@ -2949,53 +2943,54 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 {
 
-    // reinforce the the preceding interface in the direction of sink
-	// CHANGE_
 	reinforceObtainGradient((char*)incoming_packet.data, _interface);
 
-	//StateNode* sn = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value);
-	//trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, (const char*)incoming_packet.data);
-
-	/*
-	 * Lets try matching on prefix at reinforcement initiation then just reinforce the
-	 * same key string as used in the interest
-	 */
 	trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
 
-    // a reinforced obtain gradient to self indicates this is the source, so stop
-    // and ultimately allow this source to send data
-    //KDGradientNode* gn;
-	//if ( (gn = SearchForKDGradientNode(incoming_packet.the_message.data_value, SELF_INTERFACE, rd->grTree)) )
-			//&& gn->key1->obtainInterface == gn->key2 )
-	//{
-	//	return;
-	//}
 
-	//if ( sn && sn->s->bestGradientToDeliver )
 	if ( t && t->s->bestGradientToDeliver )
 	{
-		// next hop already reinforced so stop here
-		//if ( g->key1->bestGradientToObtain->obtainReinforcement )
-		if ( t->s->deliveryInterfaces )
-			return;
+        KDGradientNode* selectedGradientToDeliver = t->s->bestGradientToDeliver;
+        TraversInterfaceNodes(rd->interfaceTree, 0, MarkIFDown);
 
-		// find the next interface to reinforce
-		NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
+        InterfaceList* temp = t->s->deliveryInterfaces;
+        while( temp !=NULL )
+        {
+            if ( temp->i->up )
+                return;
+            temp = temp->link;
+        }
 
-        // also reinforce the path to the source for breakage messages
-		// even if it is self
-		reinforceDeliverGradient((char*)incoming_packet.data, interface);
+        if ( !selectedGradientToDeliver->key2->up )
+        {
+            KDGradientNode* saveBestGradientToDeliver = t->s->bestGradientToDeliver;
+            t->s->bestGradientToDeliver = 0;
+            TraversInterfaceNodes(rd->interfaceTree, t->s, UpdateBestGradient);
+            selectedGradientToDeliver = t->s->bestGradientToDeliver;
+            t->s->bestGradientToDeliver = saveBestGradientToDeliver;
+        }
 
-		// If interface is self do not send message on
-		if ( interface == SELF_INTERFACE )
-			return;
 
-		outgoing_packet.message_type = REINFORCE_INTEREST;
-		outgoing_packet.data = incoming_packet.data;
-		outgoing_packet.path_value = 0;
-		sendAMessage(interface, write_packet());
+        if ( selectedGradientToDeliver )
+        {
+            NEIGHBOUR_ADDR interface = selectedGradientToDeliver->key2->iName;
+            //reinforceDeliverGradient((char*)incoming_packet.data, interface); //???
+            add(&(t->s->deliveryInterfaces), selectedGradientToDeliver->key2); //maybe
 
+            if ( interface == SELF_INTERFACE )
+                return;
+
+            outgoing_packet.message_type = REINFORCE_INTEREST;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.path_value = 0;
+            outgoing_packet.down_interface = incoming_packet.down_interface;
+            sendAMessage(interface, write_packet());
+
+        }
 	}
+
+
+
 
 }
 
@@ -3139,6 +3134,7 @@ void start_reinforce_interest(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 		outgoing_packet.message_type = REINFORCE_INTEREST;
 		outgoing_packet.data = (unsigned char*)fullyqualifiedname;
 		outgoing_packet.path_value = 0;
+		outgoing_packet.down_interface = UNKNOWN_INTERFACE;
 		sendAMessage(interface, write_packet());
 
 	}
@@ -4028,3 +4024,64 @@ void iterateNameDataForSpecificPurpose(NameNode* Head)
 	printf("\n\n");
 }
 
+
+
+
+
+
+/*
+ *
+void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
+{
+
+    // reinforce the the preceding interface in the direction of sink
+    // CHANGE_
+    reinforceObtainGradient((char*)incoming_packet.data, _interface);
+
+    //StateNode* sn = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value);
+    //trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, (const char*)incoming_packet.data);
+
+
+      - Lets try matching on prefix at reinforcement initiation then just reinforce the
+      - same key string as used in the interest
+
+    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+
+    // a reinforced obtain gradient to self indicates this is the source, so stop
+    // and ultimately allow this source to send data
+    //KDGradientNode* gn;
+    //if ( (gn = SearchForKDGradientNode(incoming_packet.the_message.data_value, SELF_INTERFACE, rd->grTree)) )
+            //&& gn->key1->obtainInterface == gn->key2 )
+    //{
+    //  return;
+    //}
+
+    //if ( sn && sn->s->bestGradientToDeliver )
+    if ( t && t->s->bestGradientToDeliver )
+    {
+        // next hop already reinforced so stop here
+        //if ( g->key1->bestGradientToObtain->obtainReinforcement )
+        if ( t->s->deliveryInterfaces )
+            return;
+
+        // find the next interface to reinforce
+        NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
+
+        // also reinforce the path to the source for breakage messages
+        // even if it is self
+        reinforceDeliverGradient((char*)incoming_packet.data, interface);
+
+        // If interface is self do not send message on
+        if ( interface == SELF_INTERFACE )
+            return;
+
+        outgoing_packet.message_type = REINFORCE_INTEREST;
+        outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.path_value = 0;
+        sendAMessage(interface, write_packet());
+
+    }
+
+}
+
+ */
