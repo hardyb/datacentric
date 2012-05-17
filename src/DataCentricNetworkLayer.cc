@@ -216,11 +216,33 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     std::string fName = this->getParentModule()->getFullName();
 
 
-    if (msg == mpDownMessage )
+    if (msg == mpDownMessage || msg == mpUpMessage )
     {
         //mPhyModule->callFinish();
-        mPhyModule->disableModule();
-        //scheduleAt(simTime() + 4.0, mpUpMessage);
+
+        if ( mPhyModule->isEnabled() )
+        {
+            mPhyModule->disableModule();
+
+            // reset routing data
+            freeKDGradientNode(moduleRD.grTree);
+            freeInterfaceNode(moduleRD.interfaceTree);
+            trie_free(moduleRD.top_context);
+            trie_free(moduleRD.top_state);
+            moduleRD.grTree = NULL;
+            moduleRD.interfaceTree = NULL;
+            moduleRD.top_context = trie_new();
+            moduleRD.top_state = trie_new();
+        }
+        else
+        {
+            mPhyModule->enableModule();
+            StartUp();
+        }
+
+
+
+        scheduleAt(simTime() + 4.0, mpUpMessage);
         return;
 
     }

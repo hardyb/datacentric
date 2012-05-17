@@ -661,6 +661,7 @@ void removeIF(struct InterfaceList** l, struct Interface* _i);
 void add(struct InterfaceList** q, struct Interface* _i);
 StateNode* newStateNode(int stateDataname);
 InterfaceNode* newInterfaceNode(int interfaceName);
+void freeInterfaceNode(InterfaceNode* n);
 StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
 InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
@@ -671,6 +672,7 @@ bool obtainReinforced(KDGradientNode* g);
 StateNode* FindStateNode(StateNode* tree, int val);
 InterfaceNode* FindInterfaceNode(InterfaceNode* tree, NEIGHBOUR_ADDR val);
 struct KDGradientNode* newKDGradientNode(int sName, int iName, int obtain, int deliver);
+void freeKDGradientNode(KDGradientNode* g);
 struct KDGradientNode* insertKDGradientNode( int sName, int iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev );
 void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName);
 void reinforceObtainGradient(int sName, NEIGHBOUR_ADDR iName);
@@ -757,10 +759,12 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf);
 state* state_new(void);
 context* context_new(void);
 trie* trie_new(void);
+void trie_free(trie* t);
 trie* trie_at_level(trie *t, char c);
 trie* trie_add(trie *t, const char *str, int object);
 void write_connections(void process(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if));
 bool write_gradients(void process(KDGradientNode* g, unsigned char* _name));
+void UpdateGradientFile();
 
 
 

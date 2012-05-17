@@ -250,6 +250,21 @@ struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
 
 
 
+void freeInterfaceNode(InterfaceNode* n)
+{
+    if ( n )
+    {
+        free(n->i);
+        freeInterfaceNode(n->left);
+        freeInterfaceNode(n->right);
+        free(n);
+    }
+}
+
+
+
+
+
 /*
  * This may be for removal - StateNode BST replaced by trie
  */
@@ -476,6 +491,7 @@ struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
  		outgoing_packet.length = strlen(queue);
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
+ 		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
  		sendAMessage(_if, write_packet());
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
@@ -484,6 +500,7 @@ struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
  		outgoing_packet.length = strlen(queue);
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+ 		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
  		sendAMessage(_if, write_packet());
  	}
 
@@ -795,11 +812,10 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
         //outgoing_packet.excepted_interface = 0;
         outgoing_packet.down_interface = inf;
         sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
-
-
-
-
     }
+#ifdef GRAD_FILES
+    UpdateGradientFile();
+#endif
 
 }
 
@@ -830,7 +846,7 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 
     // mark down_interface down if we have it also
     // I THINK MAYBE WE SHOULDNT INSERT THIS IF WE DONT ALREADY HAVE IT ASAN INTERFACE
-    //Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
+    Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
     if ( down_i )
     {
         down_i->up = 0;
@@ -1018,6 +1034,25 @@ struct KDGradientNode* newKDGradientNode(char* fullyqualifiedname, NEIGHBOUR_ADD
 	n->right =NULL;
 	return n;
 }
+
+
+
+
+
+
+void freeKDGradientNode(KDGradientNode* g)
+{
+    if ( g )
+    {
+        // not removing n->key1 here
+        // not removing n->key2 here
+        freeKDGradientNode(g->left);
+        freeKDGradientNode(g->right);
+        free(g);
+    }
+}
+
+
 
 
 
@@ -1992,6 +2027,23 @@ void add(struct InterfaceList** l, struct Interface* _i)
 		temp->link = r;
 	}
 }
+
+
+
+
+
+void freeInterfaceList(struct InterfaceList* l)
+{
+    if (l)
+    {
+        freeInterfaceList(l->link);
+        free(l);
+    }
+}
+
+
+
+
 
 /*=============================== FSM VARS =====================================*/
 
@@ -3234,7 +3286,9 @@ void handle_data(NEIGHBOUR_ADDR _interface)
 
 void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
 {
-	InsertInterfaceNode(&(rd->interfaceTree), _interface);
+    InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface);
+    in->i->up = 1;
+
 	printf("Inserted interface\n");
 
 	//outgoing_packet.message_type = NEIGHBOR_UCAST;
@@ -3734,6 +3788,23 @@ struct State* newStateObject()
 
 
 
+void freeStateObject(State* s)
+{
+    if (s)
+    {
+        // not removing s->bestGradientToObtain here, use freeKDGradientNode()
+        // not removing s->bestGradientToDeliver here, use freeKDGradientNode()
+        // not removing actual 'Interface' here, use freeInterfaceNode()
+        // not removing actual 'Interface' here, use freeInterfaceNode()
+        freeInterfaceList(s->deliveryInterfaces);
+        freeInterfaceList(s->obtainInterfaces);
+        free (s);
+    }
+}
+
+
+
+
 
 
 
@@ -3753,6 +3824,19 @@ context* context_new()
 
 
 
+void context_free(context* c)
+{
+    if (c)
+    {
+        free(c);
+    }
+}
+
+
+
+
+
+
 
 trie* trie_new()
 {
@@ -3766,6 +3850,26 @@ trie* trie_new()
 
    return t;
 }
+
+
+
+
+
+
+void trie_free(trie* t)
+{
+   if (t)
+   {
+       trie_free(t->first_child);
+       trie_free(t->next_sibling);
+       freeStateObject(t->s);
+       context_free(t->c);
+       free(t);
+   }
+}
+
+
+
 
 
 
