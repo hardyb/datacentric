@@ -20,6 +20,7 @@
 //package datacentric;
 
 import datacentric.DataCentricNode;
+import datacentric.DataCentricNetworkMan;
 import inet.world.radio.ChannelControl;
 
 network DataCentricNet
@@ -52,6 +53,7 @@ network DataCentricNet
                   @display("i=device/pocketpc_s;r=,,#707070");
                   //@display("i=device/pocketpc_s;r=,,#707070;p=84,57");
         }
+        dataCentricNetworkMan : DataCentricNetworkMan;
         channelControl: ChannelControl {
             parameters:
                 @display("p=-65,20;i=misc/sun");
