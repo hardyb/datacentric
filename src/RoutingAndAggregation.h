@@ -666,6 +666,7 @@ StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
 InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
+unsigned int CountInterfaceNodes(InterfaceNode* tree);
 bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
 bool deliverReinforced(KDGradientNode* g);
 bool obtainReinforced(KDGradientNode* g);

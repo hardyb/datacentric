@@ -7,7 +7,6 @@
 
 #include <omnetpp.h>
 
-
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
 
@@ -16,9 +15,15 @@ class DataCentricNetworkMan : public cSimpleModule
   public:
     virtual void initialize(int);
     virtual void finish();
+    void updateControlPacketData();
 
   protected:
+    void handleMessage(cMessage*);
 
+    double numControlPackets;
+    cOutVector controlPackets;
+    cOutVector controlPacketFrequency;
+    cMessage *mpControlPacketFrequencyMessage;
     // OPERATIONS
     //virtual void handleSelfMsg(cMessage*);
     //virtual void handleLowerMsg(cMessage*);

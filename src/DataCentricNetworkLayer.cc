@@ -119,8 +119,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
         cModule* nicModule = this->getParentModule()->getSubmodule("nic");
         cModule* macModule = check_and_cast<cModule*>(nicModule->getSubmodule("mac"));
         mPhyModule = check_and_cast<Ieee802154Phy*>(nicModule->getSubmodule("phy"));
+        mPhyModule->disableModule();
+        cSimulation* sim =  cSimulation::getActiveSimulation();
+        mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
 
-        //mPhyModule->disableModule();
 
         string tempAddressString = macModule->par("address");
         MACAddress addrObj(tempAddressString.c_str());
@@ -145,6 +147,12 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 void DataCentricNetworkLayer::finish()
 {
+    nodeConstraint = nodeConstraintValue;
+    currentModuleId = this->getId();
+    thisAddress = mAddress;
+    rd = &(moduleRD);
+
+    recordScalar("NumberOfNeighbours", CountInterfaceNodes(rd->interfaceTree));
     recordScalar("num of pkts forwarded", numForward);
 }
 
@@ -249,6 +257,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpStartMessage)
     {
+        mPhyModule->enableModule();
         StartUp();
         return;
 
@@ -587,9 +596,9 @@ static void cb_bcast_message(unsigned char* _msg)
     //}
 
     //controlPackets
-    static double numControlPackets = 0;
-    numControlPackets++;
-    currentModule->controlPackets.record(numControlPackets);
+
+
+    currentModule->mNetMan->updateControlPacketData();
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));

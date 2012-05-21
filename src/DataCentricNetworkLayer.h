@@ -15,6 +15,8 @@
 #include "RoutingAndAggregation.h"
 
 #include "Ieee802154Phy.h"
+#include "DataCentricNetworkMan.h"
+
 
 #define IMAGEPATH "C:/omnetpp-4.2.1/images/"
 
@@ -40,6 +42,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     //cModule* macModule;
     //cModule* mPhyModule;
     Ieee802154Phy* mPhyModule;
+    DataCentricNetworkMan* mNetMan;
 
     // accessed from C function call back
     int             mLowerLayerOut;

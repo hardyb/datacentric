@@ -311,7 +311,8 @@ void freeInterfaceNode(InterfaceNode* n)
   * A: IT CORRECTLY RETURNS THE EXISTING ONE
   *
   */
- struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName)
+//struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName, int* inserted)
+struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName)
  {
      if (*treeNode == NULL)
 	 {
@@ -319,6 +320,7 @@ void freeInterfaceNode(InterfaceNode* n)
 #ifdef DEBUG
 		std::cout << "Inserted interface: " << interfaceName << " = true" << std::endl;
 #endif
+		//*inserted = 1;
 		return *treeNode;
 	 }
 
@@ -327,6 +329,7 @@ void freeInterfaceNode(InterfaceNode* n)
 #ifdef DEBUG
 		 std::cout << "Inserted interface: " << interfaceName << " = FALSE" << std::endl;
 #endif
+        //*inserted = 0;
 		 return *treeNode;
 	 }
 
@@ -492,7 +495,9 @@ void freeInterfaceNode(InterfaceNode* n)
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
- 		sendAMessage(_if, write_packet());
+
+        //sendAMessage(_if, write_packet());
+        bcastAMessage(write_packet());
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
@@ -501,7 +506,8 @@ void freeInterfaceNode(InterfaceNode* n)
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
- 		sendAMessage(_if, write_packet());
+        //sendAMessage(_if, write_packet());
+        bcastAMessage(write_packet());
  	}
 
 
@@ -920,6 +926,26 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 	 TraversInterfaceNodes(tree->left, s, process);
 	 TraversInterfaceNodes(tree->right, s, process);
 	 return true;
+ }
+
+
+
+
+
+ unsigned int CountInterfaceNodes(InterfaceNode* tree)
+ {
+     unsigned int count = 0;
+     if ( tree )
+     {
+         count++;
+     }
+     else
+     {
+         return count;
+     }
+     count += CountInterfaceNodes(tree->left);
+     count += CountInterfaceNodes(tree->right);
+     return count;
  }
 
 
@@ -2908,8 +2934,13 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 	//}
 
 
+	//int inserted;
+    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+
+
+
 	t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
-	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
 	setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
 

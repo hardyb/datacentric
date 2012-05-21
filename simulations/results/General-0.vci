@@ -1,118 +1,22 @@
-                                                                
+file 8386 1337607862                                            
 version 2
-run General-0-20120517-16:48:43-3076
+run General-0-20120521-14:31:38-1444
 attr configname General
-attr datetime 20120517-16:48:43
+attr datetime 20120521-14:31:38
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 3076
+attr processid 1444
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 
-vector 103  DataCentricNet.host[0].net  ControlPackets  ETV
-vector 107  DataCentricNet.host[1].net  ControlPackets  ETV
-vector 111  DataCentricNet.host[2].net  ControlPackets  ETV
-vector 115  DataCentricNet.host[3].net  ControlPackets  ETV
-vector 119  DataCentricNet.host[4].net  ControlPackets  ETV
-vector 123  DataCentricNet.host[5].net  ControlPackets  ETV
-vector 127  DataCentricNet.host[6].net  ControlPackets  ETV
-vector 131  DataCentricNet.host[7].net  ControlPackets  ETV
-vector 135  DataCentricNet.host[8].net  ControlPackets  ETV
-vector 139  DataCentricNet.host[9].net  ControlPackets  ETV
-vector 143  DataCentricNet.host[10].net  ControlPackets  ETV
-vector 147  DataCentricNet.host[11].net  ControlPackets  ETV
-vector 151  DataCentricNet.host[12].net  ControlPackets  ETV
-vector 155  DataCentricNet.host[13].net  ControlPackets  ETV
-vector 159  DataCentricNet.host[14].net  ControlPackets  ETV
-vector 163  DataCentricNet.host[15].net  ControlPackets  ETV
-vector 167  DataCentricNet.host[16].net  ControlPackets  ETV
-vector 171  DataCentricNet.host[17].net  ControlPackets  ETV
-vector 175  DataCentricNet.host[18].net  ControlPackets  ETV
-vector 179  DataCentricNet.host[19].net  ControlPackets  ETV
-vector 183  DataCentricNet.host[20].net  ControlPackets  ETV
-vector 187  DataCentricNet.host[21].net  ControlPackets  ETV
-vector 191  DataCentricNet.host[22].net  ControlPackets  ETV
-vector 195  DataCentricNet.host[23].net  ControlPackets  ETV
-vector 199  DataCentricNet.host[24].net  ControlPackets  ETV
-vector 203  DataCentricNet.host[25].net  ControlPackets  ETV
-vector 207  DataCentricNet.host[26].net  ControlPackets  ETV
-vector 211  DataCentricNet.host[27].net  ControlPackets  ETV
-vector 215  DataCentricNet.host[28].net  ControlPackets  ETV
-vector 219  DataCentricNet.host[29].net  ControlPackets  ETV
-vector 223  DataCentricNet.host[30].net  ControlPackets  ETV
-vector 227  DataCentricNet.host[31].net  ControlPackets  ETV
-vector 231  DataCentricNet.host[32].net  ControlPackets  ETV
-vector 235  DataCentricNet.host[33].net  ControlPackets  ETV
-vector 239  DataCentricNet.host[34].net  ControlPackets  ETV
-vector 243  DataCentricNet.host[35].net  ControlPackets  ETV
-vector 247  DataCentricNet.host[36].net  ControlPackets  ETV
-vector 251  DataCentricNet.host[37].net  ControlPackets  ETV
-vector 255  DataCentricNet.host[38].net  ControlPackets  ETV
-vector 259  DataCentricNet.host[39].net  ControlPackets  ETV
-vector 263  DataCentricNet.host[40].net  ControlPackets  ETV
-vector 267  DataCentricNet.host[41].net  ControlPackets  ETV
-vector 271  DataCentricNet.host[42].net  ControlPackets  ETV
-vector 275  DataCentricNet.host[43].net  ControlPackets  ETV
-vector 279  DataCentricNet.host[44].net  ControlPackets  ETV
-vector 283  DataCentricNet.host[45].net  ControlPackets  ETV
-vector 287  DataCentricNet.host[46].net  ControlPackets  ETV
-vector 291  DataCentricNet.host[47].net  ControlPackets  ETV
-vector 295  DataCentricNet.host[48].net  ControlPackets  ETV
-vector 299  DataCentricNet.host[49].net  ControlPackets  ETV
-vector 303  DataCentricNet.host[50].net  ControlPackets  ETV
-vector 307  DataCentricNet.host[51].net  ControlPackets  ETV
-vector 311  DataCentricNet.host[52].net  ControlPackets  ETV
-vector 315  DataCentricNet.host[53].net  ControlPackets  ETV
-vector 319  DataCentricNet.host[54].net  ControlPackets  ETV
-vector 323  DataCentricNet.host[55].net  ControlPackets  ETV
-vector 327  DataCentricNet.host[56].net  ControlPackets  ETV
-vector 331  DataCentricNet.host[57].net  ControlPackets  ETV
-vector 335  DataCentricNet.host[58].net  ControlPackets  ETV
-vector 339  DataCentricNet.host[59].net  ControlPackets  ETV
-vector 343  DataCentricNet.host[60].net  ControlPackets  ETV
-vector 347  DataCentricNet.host[61].net  ControlPackets  ETV
-vector 351  DataCentricNet.host[62].net  ControlPackets  ETV
-vector 355  DataCentricNet.host[63].net  ControlPackets  ETV
-vector 359  DataCentricNet.host[64].net  ControlPackets  ETV
-vector 363  DataCentricNet.host[65].net  ControlPackets  ETV
-vector 367  DataCentricNet.host[66].net  ControlPackets  ETV
-vector 371  DataCentricNet.host[67].net  ControlPackets  ETV
-vector 375  DataCentricNet.host[68].net  ControlPackets  ETV
-vector 379  DataCentricNet.host[69].net  ControlPackets  ETV
-vector 383  DataCentricNet.host[70].net  ControlPackets  ETV
-vector 387  DataCentricNet.host[71].net  ControlPackets  ETV
-vector 391  DataCentricNet.host[72].net  ControlPackets  ETV
-vector 395  DataCentricNet.host[73].net  ControlPackets  ETV
-vector 399  DataCentricNet.host[74].net  ControlPackets  ETV
-vector 403  DataCentricNet.host[75].net  ControlPackets  ETV
-vector 407  DataCentricNet.host[76].net  ControlPackets  ETV
-vector 411  DataCentricNet.host[77].net  ControlPackets  ETV
-vector 415  DataCentricNet.host[78].net  ControlPackets  ETV
-vector 419  DataCentricNet.host[79].net  ControlPackets  ETV
-vector 423  DataCentricNet.host[80].net  ControlPackets  ETV
-vector 427  DataCentricNet.host[81].net  ControlPackets  ETV
-vector 431  DataCentricNet.host[82].net  ControlPackets  ETV
-vector 435  DataCentricNet.host[83].net  ControlPackets  ETV
-vector 439  DataCentricNet.host[84].net  ControlPackets  ETV
-vector 443  DataCentricNet.host[85].net  ControlPackets  ETV
-vector 447  DataCentricNet.host[86].net  ControlPackets  ETV
-vector 451  DataCentricNet.host[87].net  ControlPackets  ETV
-vector 455  DataCentricNet.host[88].net  ControlPackets  ETV
-vector 459  DataCentricNet.host[89].net  ControlPackets  ETV
-vector 463  DataCentricNet.host[90].net  ControlPackets  ETV
-vector 467  DataCentricNet.host[91].net  ControlPackets  ETV
-vector 471  DataCentricNet.host[92].net  ControlPackets  ETV
-vector 475  DataCentricNet.host[93].net  ControlPackets  ETV
-vector 479  DataCentricNet.host[94].net  ControlPackets  ETV
-vector 483  DataCentricNet.host[95].net  ControlPackets  ETV
-vector 487  DataCentricNet.host[96].net  ControlPackets  ETV
-vector 491  DataCentricNet.host[97].net  ControlPackets  ETV
-vector 495  DataCentricNet.host[98].net  ControlPackets  ETV
-vector 499  DataCentricNet.host[99].net  ControlPackets  ETV
+vector 500  DataCentricNet.dataCentricNetworkMan  ControlPackets  ETV
+vector 501  DataCentricNet.dataCentricNetworkMan  controlPacketFrequency  ETV
+500	537 7409 301 71785 3 3.080121631895 312 1 100 7489 379407
+501	7946 440 8678 72790 3.005 3.088000221177 16 0 100 312 14666

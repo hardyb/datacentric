@@ -13,6 +13,15 @@ void DataCentricNetworkMan::initialize(int aStage)
 
     if (0 == aStage)
     {
+        std::string fName = this->getFullPath();
+        std::string fName2 = this->getFullPath();
+        numControlPackets = 0;
+        controlPackets.setName("ControlPackets");
+        controlPacketFrequency.setName("controlPacketFrequency");
+        mpControlPacketFrequencyMessage = new cMessage("ControlPacketFrequencyMessage");
+
+
+
         //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         //mpStartMessage = new cMessage("StartMessage");
         //m_debug             = par("debug");
@@ -36,15 +45,50 @@ void DataCentricNetworkMan::initialize(int aStage)
 
 }
 
+
+void DataCentricNetworkMan::handleMessage(cMessage* msg)
+{
+    //nodeConstraint = nodeConstraintValue;
+    //currentModuleId = this->getId();
+    //thisAddress = mAddress;
+    //rd = &(moduleRD);
+
+
+
+    if ( msg == mpControlPacketFrequencyMessage )
+    {
+        controlPacketFrequency.record(numControlPackets);
+        if ( numControlPackets != 0 )
+        {
+            scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
+        }
+        numControlPackets = 0;
+
+
+    }
+
+
+}
+
 void DataCentricNetworkMan::finish()
 {
-    //recordScalar("trafficSent", mNumTrafficMsgs);
     //recordScalar("total bytes received", totalByteRecv);
     //recordScalar("total time", simTime() - FirstPacketTime());
     //recordScalar("goodput (Bytes/s)", totalByteRecv / (simTime() - FirstPacketTime()));
 }
 
 
+
+void DataCentricNetworkMan::updateControlPacketData()
+{
+    Enter_Method("updateControlPacketData()");
+    if ( !mpControlPacketFrequencyMessage->isScheduled() )
+    {
+        scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
+    }
+    numControlPackets++;
+    controlPackets.record(numControlPackets);
+}
 
 
 
