@@ -663,7 +663,7 @@ StateNode* newStateNode(int stateDataname);
 InterfaceNode* newInterfaceNode(int interfaceName);
 void freeInterfaceNode(InterfaceNode* n);
 StateNode* InsertStateNode(StateNode** treeNode, int stateDataname);
-InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName);
+InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName, int* inserted);
 bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
 unsigned int CountInterfaceNodes(InterfaceNode* tree);

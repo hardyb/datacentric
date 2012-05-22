@@ -311,8 +311,8 @@ void freeInterfaceNode(InterfaceNode* n)
   * A: IT CORRECTLY RETURNS THE EXISTING ONE
   *
   */
-//struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName, int* inserted)
-struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName)
+struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName, int* inserted)
+//struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGHBOUR_ADDR interfaceName)
  {
      if (*treeNode == NULL)
 	 {
@@ -320,7 +320,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 #ifdef DEBUG
 		std::cout << "Inserted interface: " << interfaceName << " = true" << std::endl;
 #endif
-		//*inserted = 1;
+		*inserted = 1;
 		return *treeNode;
 	 }
 
@@ -329,7 +329,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 #ifdef DEBUG
 		 std::cout << "Inserted interface: " << interfaceName << " = FALSE" << std::endl;
 #endif
-        //*inserted = 0;
+        *inserted = 0;
 		 return *treeNode;
 	 }
 
@@ -3321,15 +3321,24 @@ void handle_data(NEIGHBOUR_ADDR _interface)
 
 void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
 {
-    InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface);
+    int inserted;
+    InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
+
+
     outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-    if ( !in->i->up )
+    if ( !inserted )
     {
+        // we have seen this node before
+        // it has just come back up
         outgoing_packet.down_interface = _interface;
         in->i->up = 1;
+        printf("Existing interface back up\n");
+    }
+    else
+    {
+        printf("Inserted interface\n");
     }
 
-	printf("Inserted interface\n");
 
 	//outgoing_packet.message_type = NEIGHBOR_UCAST;
 	//outgoing_packet.length = 0;
