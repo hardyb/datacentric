@@ -10,9 +10,11 @@
       <items xsi:type="scave:LineChart" name="Control Packet Frequency" lineNameFormat=""/>
       <items xsi:type="scave:Add" filterPattern="NumberOfNeighbours"/>
       <items xsi:type="scave:BarChart" name="Neighbours"/>
+      <items xsi:type="scave:Add" filterPattern="num of collisions"/>
+      <items xsi:type="scave:BarChart" name="Collisions"/>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.3"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.5"/>
   </chartSheets>
 </scave:Analysis>

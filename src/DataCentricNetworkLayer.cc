@@ -241,6 +241,13 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             moduleRD.interfaceTree = NULL;
             moduleRD.top_context = trie_new();
             moduleRD.top_state = trie_new();
+
+            std::string s;
+            std::ostringstream ss;
+            ss.clear();
+            ss.str(s);
+            ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+            std::remove(ss.str().c_str());
         }
         else
         {

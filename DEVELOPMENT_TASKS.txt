@@ -1,0 +1,179 @@
+
+DEVELOPMENT TASKS
+=====================
+
+
+the down interface will probably not have been marked down
+in the surrounding nodes if there has been
+no traffic
+
+we need to know that the neioghbour bcast is for an existing node 
+and not a new node in order to indicatethat it just came up
+so when it gets its newgrads it will not forward them
+
+
+
+setup aodv node
+
+
+
+
+
+Need to make starting up better
+so it covers all eventualities
+including a rec sink or adv source
+phy->disable /enable may not do it fully
+
+
+need to delete all txt files at start of simulation
+
+
+
+
+add more debug to get more visability
+
+
+
+
+
+
+
+
+
+
+
+
+
+correct with regard to excluded interface on receipt of correction
+
+look at what happens when the newreinfocement went to the 2nd best node when 1st was down
+
+
+
+
+
+
+Add more #def values to switch statement in DataCentricAppPkt::getDisplayString
+
+
+
+
+
+
+
+
+IMPORTANT TO REMEMBER
+============================
+
+
+stuff added recently
+=====================
+
+unknown interface for no interface currently down
+
+add in exception interface for ucast all gradients to nodes just come up
+
+cos may be sending one already got and if its a route TO the neighbour who just came up we
+don't want it to use it (back to itself)
+
+also marking interface UP when back up
+
+
+
+stuff still in but not used pob for later removal
+===================================================
+
+
+handle interest correction
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+============================================================================
+
+SCRAP
+===============
+
+
+
+call interfacedown with
+dest = 768427781619974186
+
+AAA00FEFF00002A
+
+
+
+s->bestGradientToDeliver->key2->iName = 11725260718104
+
+s->bestGradientToDeliver->key2->iName = 11725260718122
+
+11725260718122
+11725260718122
+
+
+AAA0000002A
+
+
+
+
+
+11725260718134
+11725260718133
+11725260718103
+11725260718094
+11725260718095
+11725260718124
+11725260718116
+11725260718113
+11725260718104
+11725260718112
+11725260718114
+11725260718115
+11725260718123
+11725260718122		DOWN
+11725260718117
+11725260718126
+
+
+
+
+
+
+

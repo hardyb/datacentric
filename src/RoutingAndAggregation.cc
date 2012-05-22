@@ -496,8 +496,8 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
 
-        //sendAMessage(_if, write_packet());
-        bcastAMessage(write_packet());
+        sendAMessage(_if, write_packet());
+        //bcastAMessage(write_packet());
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
@@ -506,8 +506,8 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-        //sendAMessage(_if, write_packet());
-        bcastAMessage(write_packet());
+        sendAMessage(_if, write_packet());
+        //bcastAMessage(write_packet());
  	}
 
 
@@ -2934,6 +2934,7 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 	//}
 
 
+
 	//int inserted;
     //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
@@ -2943,6 +2944,8 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 	t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
 	setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
+    if ( incoming_packet.down_interface == thisAddress )
+        return;
 
 	//if ( (n = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value)) )
 	if ( t )
@@ -2954,6 +2957,7 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 			outgoing_packet.data = incoming_packet.data;
 			outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.excepted_interface = _interface;
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             bcastAMessage(write_packet());
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
 		}
@@ -3318,7 +3322,12 @@ void handle_data(NEIGHBOUR_ADDR _interface)
 void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
 {
     InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface);
-    in->i->up = 1;
+    outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+    if ( !in->i->up )
+    {
+        outgoing_packet.down_interface = _interface;
+        in->i->up = 1;
+    }
 
 	printf("Inserted interface\n");
 
@@ -3691,6 +3700,7 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 		        // TEMP REMOVAL
 		        action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), (const char*)_data,
 		               current_prefix_name, _if, consider_reinforce_interest);
+		        UpdateGradientFile();
 
 
 	             //incoming_packet.message_type = DATA;
