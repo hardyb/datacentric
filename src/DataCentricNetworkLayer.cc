@@ -311,7 +311,7 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     switch ( appPkt->getKind() )
     {
         case DATA_PACKET:
-            SendData(appPkt);
+            SendDataWithLongestContext(appPkt);
             break;
         case STARTUP_MESSAGE:
             StartUp();
@@ -333,13 +333,32 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 }
 
 
-void DataCentricNetworkLayer::SendData(DataCentricAppPkt* appPkt)
+void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
 {
     unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
     send_data(appPkt->getPktData().size(), data);
     free(data);
 }
+
+
+
+void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appPkt)
+{
+    // MOVE THIS BIT INTO FRAMEWORK
+    char temp[30];
+    char x[20];
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), x);
+    int datalen = appPkt->getPktData().size();
+    x[datalen] = DOT;
+    getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+    datalen = strlen(x);
+    unsigned char* data = (unsigned char*)malloc(datalen);
+    memcpy(data, x, datalen);
+    send_data(datalen, data);
+    free(data);
+}
+
 
 
 

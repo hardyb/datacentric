@@ -36,6 +36,47 @@ void DataCentricTestApp::initialize(int aStage)
         e2eDelayVec.setName("End-to-end delay");
         meanE2EDelayVec.setName("Mean end-to-end delay");
 
+        ifstream scheduleFile;
+        string activities = par("activities").stringValue();
+        mActivityFile.open(activities.c_str());
+
+
+
+        string actionThreadsString = par("actionThreads").stringValue();
+        std::vector<std::string> actionThreads = cStringTokenizer(actionThreadsString.c_str()).asVector();
+        for (std::vector<std::string>::iterator i = actionThreads.begin();
+                i != actionThreads.end(); ++i)
+        {
+            // version with map
+            ifstream* actionStream = new ifstream();
+            actionStream->open(i->c_str());
+            ActionStreamHierarchy* ash = new ActionStreamHierarchy();
+            ash->push_back(actionStream);
+            cMessage* m = new cMessage(i->c_str());
+            mActionThreads[m] = ash;
+            scheduleAt(simTime() + 1.0, m);
+
+            // version without map
+            //ActionThread* at = new ActionThread();
+            //ifstream* actionStream = new ifstream();
+            //actionStream->open(i->c_str());
+            //at->ash = new ActionStreamHierarchy();
+            //at->ash->push_back(actionStream);
+            //at->msg = new cMessage(i->c_str());
+            //mActionThreads.insert(at);
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         contextData = par("nodeContext").stringValue();
@@ -137,13 +178,21 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
     //typedef std::vector<PeriodOfOperation> OperationSchedule;
     //typedef std::map<string, OperationSchedule> SecheduleSet;
 
+    std::string temp2 = par("sinkFor").stringValue();
+    if ( temp2.size() )
+    {
+        DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+        appPkt2->setKind(SINK_MESSAGE);
+        send(appPkt2, mLowerLayerOut);
+    }
 
 
     std::string temp1 = par("sourceFor").stringValue();
     if ( temp1.size() )
     {
 
-        std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
+        std::vector<std::string> sinksData = cStringTokenizer(temp1.c_str()).asVector();
         for (std::vector<std::string>::iterator i = sinksData.begin();
                 i != sinksData.end(); ++i)
         {
@@ -152,6 +201,10 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
             mSecheduleSet.insert(pair<string, OperationSchedule>(*i, operationSchedule));
 
 
+            DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+            appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+            appPkt2->setKind(DATA_PACKET);
+            send(appPkt2, mLowerLayerOut);
 
 
             int datalen = strlen(i->c_str());
@@ -218,59 +271,149 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
 
 
 
+#define UNKNOWN_ACTIVITY 0
+#define SENSOR_READING 1
+#define SET_PROGRAM 1
 
-
-
-
-
-
-
-
-
-
-
-
-    if (apMsg == mpStartMessage)
+    ActionThreadsIterator i = mActionThreads.find(apMsg);
+    if (i != mActionThreads.end() )
     {
-        rd = &(netModule->moduleRD);
+        //ActionStreamHierarchy* ash = i->second;
+        ifstream* ifs = i->second->back();
 
-        trie_add(rd->top_context, contextData.c_str(), CONTEXT);
 
-        char temp[30];
-        for (std::vector<std::string>::iterator i = sinksData.begin();
-                i != sinksData.end(); ++i)
+    //}
+
+    //if (apMsg == mpStartMessage)  // next action
+    //{
+    //    mActionThreads.begin();
+
+        int action = getNextAction(i->second->back());
+        //int action = getNextAction(ifs);
+        //switch ( action )
+        switch ( getNextAction(i->second->back()) )
         {
-            char x[20];
-            int datalen = strlen(i->c_str());
-            memcpy(x, i->c_str(), datalen);
-            x[datalen] = DOT;
-            getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
-            weAreSinkFor(x);
+            case SENSOR_READING:
+                int reading = getReading(ifs);
+                actionReading(reading);
+                break;
+            case SET_PROGRAM:
+                string program = getProgram(ifs);
+                startProgram(program);
+                actionProgramItem(program);
+                break;
+            case UNKNOWN_ACTIVITY:
+                break;
+            default:
+                break;
         }
-        for (std::vector<std::string>::iterator i = sourcesData.begin();
-                i != sourcesData.end(); ++i)
-        {
-            char x[20];
-            int datalen = strlen(i->c_str());
-            memcpy(x, i->c_str(), datalen);
-            x[datalen] = DOT;
-            getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
-            weAreSourceFor(x);
-        }
-
-
-
-
-        //StartUp();
 
     }
+
+
+
+
+
+
+
+
 
     TrafGenPar::handleSelfMsg(apMsg);
 }
 
 
 
+int DataCentricTestApp::getNextAction(ifstream* ifs)
+{
+    if ( ifs->good() && !ifs->eof() )
+    {
+        string action;
+        *ifs >> action;
+        if ( action == "SENSOR_READING" )
+        {
+            return SENSOR_READING;
+        }
+        if ( action == "SET_PROGRAM" )
+        {
+            return SET_PROGRAM;
+        }
+    }
+    return UNKNOWN_ACTIVITY;
+}
 
+
+int DataCentricTestApp::getReading(ifstream* ifs)
+{
+    int reading;
+    *ifs >> reading;
+    return reading;
+}
+
+
+string DataCentricTestApp::getProgram(ifstream* ifs)
+{
+    string program;
+    *ifs >> program;
+
+
+    ifstream* newIfs = new ifstream();
+    newIfs->open("");
+    i->second->push_back(newIfs)
+
+
+
+
+
+
+
+
+    return program;
+}
+
+
+void DataCentricTestApp::actionReading(int reading)
+{
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+    std::ostringstream ss;
+    ss.clear();
+    ss << "\x3\x1\x" << hex << reading << "\x0";
+    std::string s(ss.str());
+    appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
+    appPkt->setKind(DATA_PACKET);
+    send(appPkt, mLowerLayerOut);
+
+    double period;
+    mActivityFile >> period;
+    scheduleAt(simTime() + period, mpUpMessage);
+
+
+
+}
+
+
+void DataCentricTestApp::startProgram(string program)
+{
+    if ( mProgramFile.is_open() )
+        mProgramFile.close();
+    mProgramFile.open(program.c_str());
+
+
+    "\x2\x2\x0"
+
+}
+
+
+
+void DataCentricTestApp::actionProgramItem(string program)
+{
+    if ( mProgramFile.is_open() )
+        mProgramFile.close();
+    mProgramFile.open(program.c_str());
+
+
+    "\x2\x2\x0"
+
+}
 
 
 

@@ -13,7 +13,7 @@
 
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
-
+#include <INode.h>
 
 
 
@@ -54,6 +54,14 @@ class DataCentricTestApp : public TrafGenPar
     void readFile(char* filePath, OperationSchedule& operationSchedule);
     virtual void handleLowerMsg(cMessage*);
 
+
+
+    int getNextAction(ifstream* ifs);
+    int getReading();
+    string getProgram();
+    void actionReading(int reading);
+    void actionProgram(string program);
+
     virtual void SendTraf(cPacket *msg, const char*);
 
     // sibling module IDs
@@ -81,6 +89,21 @@ class DataCentricTestApp : public TrafGenPar
     cOutVector meanE2EDelayVec;
 
     cMessage *mpStartMessage;
+    ifstream mActivityFile;
+    ifstream mProgramFile;
+
+
+    typedef list<ifstream*> ActionStreamHierarchy;
+    typedef struct ActionThread
+    {
+        ActionStreamHierarchy* ash;
+        cMessage* msg;
+    };
+    //set<ActionThread*> mActionThreads;
+    map<cMessage*, ActionStreamHierarchy*> mActionThreads;
+    typedef map<cMessage*, ActionStreamHierarchy*>::iterator ActionThreadsIterator;
+
+
 
 
 };

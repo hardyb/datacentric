@@ -58,7 +58,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     void SetCurrentModuleInCLanguageFramework();
     void handleLowerLayerMessage(DataCentricAppPkt* appPkt);
     void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
-    void SendData(DataCentricAppPkt* appPkt);
+    void SendDataAsIs(DataCentricAppPkt* appPkt);
+    void SendDataWithLongestContext(DataCentricAppPkt* appPkt);
     void StartUp();
     void SetContext(DataCentricAppPkt* appPkt);
     void SetSourceWithLongestContext(DataCentricAppPkt* appPkt);
