@@ -20,7 +20,11 @@
 
 #define IMAGEPATH "C:/omnetpp-4.2.1/images/"
 
-
+#define DATA_PACKET 1
+#define STARTUP_MESSAGE 2
+#define CONTEXT_MESSAGE 3
+#define SOURCE_MESSAGE 4
+#define SINK_MESSAGE 5
 
 class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 {
@@ -51,6 +55,15 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
   protected:
     // Message handle functions
     void                handleMessage           (cMessage*);
+    void SetCurrentModuleInCLanguageFramework();
+    void handleLowerLayerMessage(DataCentricAppPkt* appPkt);
+    void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
+    void SendData(DataCentricAppPkt* appPkt);
+    void StartUp();
+    void SetContext(DataCentricAppPkt* appPkt);
+    void SetSourceWithLongestContext(DataCentricAppPkt* appPkt);
+    void SetSinkWithShortestContext(DataCentricAppPkt* appPkt);
+
     virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 
     // debugging enabled for this node? Used in the definition of EV

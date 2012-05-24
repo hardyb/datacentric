@@ -108,7 +108,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
         cMessage* rcMessage = new cMessage("RegularCheck");
         scheduleAt(simTime()+2.0, rcMessage);
-        scheduleAt(simTime() + StartTime(), mpStartMessage);
+        //scheduleAt(simTime() + StartTime(), mpStartMessage);
 
 
 
@@ -147,10 +147,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 void DataCentricNetworkLayer::finish()
 {
-    nodeConstraint = nodeConstraintValue;
-    currentModuleId = this->getId();
-    thisAddress = mAddress;
-    rd = &(moduleRD);
+    SetCurrentModuleInCLanguageFramework();
 
     recordScalar("NumberOfNeighbours", CountInterfaceNodes(rd->interfaceTree));
     recordScalar("num of pkts forwarded", numForward);
@@ -160,27 +157,14 @@ void DataCentricNetworkLayer::finish()
 
 void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPolymorphic *details)
 {
-    //Enter_Method("receiveChangeNotification()");
     Enter_Method("receiveChangeNotification(int category, const cPolymorphic *details)");
+    SetCurrentModuleInCLanguageFramework();
+
     Ieee802154Frame * f;
-
-    nodeConstraint = nodeConstraintValue;
-    currentModuleId = this->getId();
-    thisAddress = mAddress;
-    rd = &(moduleRD);
-
     switch (category)
     {
-
-        //if (check_and_cast<RadioState *>(details)->getRadioId()!=getRadioModuleId())
-          //  return;
-
     case NF_LINK_BREAK:
         f = check_and_cast<Ieee802154Frame *>(details);
-        //f->setName("NF_LINK_BREAK");
-        //scheduleAt(simTime(), f);
-        //return;
-
         if ( f )
         {
             MACAddress destMac = f->getDstAddr();
@@ -211,15 +195,9 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
 
 
-/////////////////////////////// Msg handler ///////////////////////////////////////
 void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 {
-    // only necessary in this simulation due to combined C++ & C
-    nodeConstraint = nodeConstraintValue;
-    currentModuleId = this->getId();
-    thisAddress = mAddress;
-    rd = &(moduleRD);
-    ////////////////////////////////////////////
+    SetCurrentModuleInCLanguageFramework();
 
     std::string fName = this->getParentModule()->getFullName();
 
@@ -262,13 +240,13 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     }
 
-    if (msg == mpStartMessage)
-    {
-        mPhyModule->enableModule();
-        StartUp();
-        return;
+    //if (msg == mpStartMessage)
+    //{
+    //    mPhyModule->enableModule();
+    //    StartUp();
+    //    return;
 
-    }
+    //}
 
 
 
@@ -282,24 +260,6 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         ss.str(s);
         ss << ".\\" << hex << uppercase << thisAddress << "Connections.txt";
 
-        //int remove_failure = std::remove(ss.str().c_str());
-        //if ( remove_failure )
-        //{
-        //    EV << "File removal failure " << remove_failure << " \n";
-        //}
-        //myfile.open (ss.str().c_str(), std::ios::app);
-
-        // need to improve this
-        //write_connections(write_one_connection);
-        //write_gradients(write_one_gradient);
-        //myfile.close();
-
-#ifdef ANDREW_DEBUG
-        // perhaps new public method not best way to get noise
-        // maybe regular write back to a param, then here readthat param
-        EV << "[SNR]" << this->getParentModule()->getFullName()
-            << ": Current Phy.noiseLevel: " << mPhyModule->getNoiseLevel();
-#endif
 
         scheduleAt(simTime()+2.0, msg);
         return;
@@ -308,80 +268,145 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(msg);
 
 
-    // coming from App layer
     if (msg->getArrivalGateId() == mUpperLayerIn)
     {
-
-        //incoming_packet.message_type = DATA;
-        //incoming_packet.length = strlen((char*)_data);
-        //incoming_packet.data = _data;
-        //incoming_packet.path_value = 0;
-        //handle_data(SELF_INTERFACE);
-
-
-
-
-        //int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
-        //        + outgoing_packet.length +   sizeof(outgoing_packet.path_value);
-
-        int datalen = appPkt->getPktData().size();
-        unsigned char* pkt = (unsigned char*)malloc(datalen+4);
-        appPkt->getPktData().size();
-
-        pkt[0] = DATA;
-        pkt[1] = datalen;
-        //memcpy(&(pkt[2]), data, datalen);
-
-        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), &(pkt[2]));
-
-
-        //static MACAddress broadcastAddr("FF:FF:FF:FF:FF:FF");
-        // NEW
-        //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
-        //controlInfo->s
-        //controlInfo->setDest(broadcastAddr);
-        //controlInfo->setEtherType(ETHERTYPE_IPv4);
-        //msg->setControlInfo(controlInfo);
-        //send(appPkt, mLowerLayerOut);
-        //Ieee802154NetworkCtrlInfo *control_info = new Ieee802154NetworkCtrlInfo();
-        //control_info->
-        // next line temp - to be deleted
-        //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4))
-
-
-        //handle_message((unsigned char *)x, SELF_INTERFACE);
-        handle_message(pkt, SELF_INTERFACE);
-        free(pkt);
-
-
+        handleUpperLayerMessage(appPkt);
     }
-    // coming from MAC layer
-    else if (msg->getArrivalGateId() == mLowerLayerIn)
+
+    if (msg->getArrivalGateId() == mLowerLayerIn)
     {
-        //RSSI
-        int temp = 0;
-        Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
-        //incomingControlInfo-
-        //string prevAddressString = incomingControlInfo->getSrc().str();
-        uint64 previousAddress = incomingControlInfo->getSrc().getInt();
-        //previousAddress &= 0x0000FFFFFFFFFFFF;
-        unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
-        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-
-        if ( this->getParentModule()->getIndex() == 15 )
-        {
-            temp = 1;
-
-        }
-
-        handle_message(pkt, previousAddress);
-        free(pkt);
+        handleLowerLayerMessage(appPkt);
     }
-    else
-    {
-        // not defined
-    }
+
 }
+
+
+void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
+{
+    // Framework is non-object-oriented C Code.  In the Omnet++
+    // simulation we must repeatedly reset the C Code to reflect the module
+    // currently being simulated.
+    // In the real world a copy of the C Code will be deployed in each device
+
+    nodeConstraint = nodeConstraintValue;
+    currentModuleId = this->getId();
+    thisAddress = mAddress;
+    rd = &(moduleRD);
+}
+
+
+void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
+{
+    Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
+    uint64 previousAddress = incomingControlInfo->getSrc().getInt();
+    unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+    handle_message(pkt, previousAddress);
+    free(pkt);
+}
+
+
+void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
+{
+    switch ( appPkt->getKind() )
+    {
+        case DATA_PACKET:
+            SendData(appPkt);
+            break;
+        case STARTUP_MESSAGE:
+            StartUp();
+            break;
+        case CONTEXT_MESSAGE:
+            SetContext(appPkt);
+            break;
+        case SOURCE_MESSAGE:
+            SetSourceWithLongestContext(appPkt);
+            break;
+        case SINK_MESSAGE:
+            SetSinkWithShortestContext(appPkt);
+            break;
+        default:
+            break;
+    }
+
+
+}
+
+
+void DataCentricNetworkLayer::SendData(DataCentricAppPkt* appPkt)
+{
+    unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
+    send_data(appPkt->getPktData().size(), data);
+    free(data);
+}
+
+
+
+void DataCentricNetworkLayer::StartUp()
+{
+    mPhyModule->enableModule();
+    StartUp();
+}
+
+
+
+
+
+void DataCentricNetworkLayer::SetContext(DataCentricAppPkt* appPkt)
+{
+    string contextData;
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), contextData.begin());
+    trie_add(rd->top_context, contextData.c_str(), CONTEXT);
+
+}
+
+
+void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* appPkt)
+{
+    string sourceData;
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+    std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str()).asVector();
+    char temp[30];
+    for (std::vector<std::string>::iterator i = sourcesData.begin();
+            i != sourcesData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = DOT;
+        getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+        weAreSourceFor(x);
+    }
+
+}
+
+
+
+void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appPkt)
+{
+    string sinkData;
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+    std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
+    char temp[30];
+    for (std::vector<std::string>::iterator i = sinksData.begin();
+            i != sinksData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = DOT;
+        getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+        weAreSinkFor(x);
+    }
+
+}
+
+
+
+
 
 
 double DataCentricNetworkLayer::StartTime()

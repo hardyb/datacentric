@@ -2691,7 +2691,19 @@ void UpdateGradientFile()
 #endif
 
 
-
+void send_data(int len, unsigned char* _data)
+{
+    incoming_packet.message_type = DATA;
+    incoming_packet.length = len;
+    free(incoming_packet.data);
+    incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+    memcpy(incoming_packet.data, _data, incoming_packet.length);
+    incoming_packet.data[incoming_packet.length] = 0;
+    incoming_packet.path_value = 0;
+    incoming_packet.down_interface = UNKNOWN_INTERFACE;
+    incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
+    handle_data(SELF_INTERFACE);
+}
 
 
 

@@ -21,11 +21,10 @@ void DataCentricTestApp::initialize(int aStage)
 
         mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");
-        contextData = par("nodeContext").stringValue();
-        std::string temp1 = par("sourceFor").stringValue();
-        sourcesData = cStringTokenizer(temp1.c_str()).asVector();
-        std::string temp2 = par("sinkFor").stringValue();
-        sinksData = cStringTokenizer(temp2.c_str()).asVector();
+        //std::string temp1 = par("sourceFor").stringValue();
+        //sourcesData = cStringTokenizer(temp1.c_str()).asVector();
+        //std::string temp2 = par("sinkFor").stringValue();
+        //sinksData = cStringTokenizer(temp2.c_str()).asVector();
 
         mLowerLayerIn        = findGate("lowerLayerIn");
         mLowerLayerOut       = findGate("lowerLayerOut");
@@ -38,7 +37,36 @@ void DataCentricTestApp::initialize(int aStage)
         meanE2EDelayVec.setName("Mean end-to-end delay");
 
 
-        scheduleAt(simTime() + StartTime(), mpStartMessage);
+
+        contextData = par("nodeContext").stringValue();
+        DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt->getPktData().insert(appPkt->getPktData().end(), contextData.begin(), contextData.end());
+        appPkt->setKind(CONTEXT_MESSAGE);
+        send(appPkt, mLowerLayerOut);
+
+        std::string temp1 = par("sourceFor").stringValue();
+        if ( temp1.size() )
+        {
+            DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
+            appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
+            appPkt1->setKind(SOURCE_MESSAGE);
+            send(appPkt1, mLowerLayerOut);
+            // read operational schedule
+            scheduleAt(simTime() + 4.0, mpUpMessage);
+        }
+
+        std::string temp2 = par("sinkFor").stringValue();
+        if ( temp2.size() )
+        {
+            DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+            appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+            appPkt2->setKind(SINK_MESSAGE);
+            send(appPkt2, mLowerLayerOut);
+        }
+
+        DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt3->setKind(STARTUP_MESSAGE);
+        sendDelayed(appPkt3, StartTime(), mLowerLayerOut);
 
     }
 
@@ -73,6 +101,135 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 //***************************************************************
 void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
 {
+
+
+    // sending data ideas
+
+    unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
+    send_data(appPkt->getPktData().size(), data);
+    free(data);
+
+    incoming_packet.message_type = DATA;
+    incoming_packet.length = len;
+    free(incoming_packet.data);
+    incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+    memcpy(incoming_packet.data, _data, incoming_packet.length);
+    incoming_packet.data[incoming_packet.length] = 0;
+    incoming_packet.path_value = 0;
+    incoming_packet.down_interface = UNKNOWN_INTERFACE;
+    incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
+    handle_data(SELF_INTERFACE);
+
+
+
+    //typedef struct Program
+    //{
+    //    string programName;
+    //    int watts;
+    //}Program;
+
+    //typedef struct PeriodOfOperation
+    //{
+    //    Program program;
+    //    int period;
+    //}PeriodOfOperation;
+    //typedef std::vector<PeriodOfOperation> OperationSchedule;
+    //typedef std::map<string, OperationSchedule> SecheduleSet;
+
+
+
+    std::string temp1 = par("sourceFor").stringValue();
+    if ( temp1.size() )
+    {
+
+        std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
+        for (std::vector<std::string>::iterator i = sinksData.begin();
+                i != sinksData.end(); ++i)
+        {
+            OperationSchedule operationSchedule;
+            readFile("", operationSchedule);
+            mSecheduleSet.insert(pair<string, OperationSchedule>(*i, operationSchedule));
+
+
+
+
+            int datalen = strlen(i->c_str());
+            memcpy(x, i->c_str(), datalen);
+
+        }
+
+
+
+
+
+
+        DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
+        appPkt1->setKind(SOURCE_MESSAGE);
+        send(appPkt1, mLowerLayerOut);
+        // read operational schedule
+        scheduleAt(simTime() + 4.0, mpUpMessage);
+    }
+
+
+
+
+
+
+    PeriodOfOperation periodOfOperation;
+    Program program;
+    program.programName = "Off";
+    program.watts = 0;
+    periodOfOperation.program = program;
+    periodOfOperation.period = 180;
+
+    operationSchedule.push_back(periodOfOperation);
+
+    mSecheduleSet.insert(pair<string, OperationSchedule>("", operationSchedule));
+
+    ifstream scheduleFile;
+    char output[100];
+    string programIN;
+    int periodIN;
+    scheduleFile.open("test.txt");
+    while ( !scheduleFile.eof() )
+    {
+        PeriodOfOperation periodOfOperation;
+        Program program;
+        scheduleFile >> program.programName;
+        //program.watts = 0;
+        periodOfOperation.program = program;
+        scheduleFile >> periodOfOperation.period;
+        //periodOfOperation.period = 180;
+
+
+        //scheduleFile >> programIN;
+        //scheduleFile >> periodIN;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     if (apMsg == mpStartMessage)
     {
         rd = &(netModule->moduleRD);
@@ -110,6 +267,32 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
 
     TrafGenPar::handleSelfMsg(apMsg);
 }
+
+
+
+
+
+
+
+void DataCentricTestApp::readFile(char* filePath, OperationSchedule& operationSchedule)
+{
+    ifstream scheduleFile;
+    scheduleFile.open(filePath);
+    while ( !scheduleFile.eof() )
+    {
+        PeriodOfOperation periodOfOperation;
+        Program program;
+        scheduleFile >> program.programName;
+        periodOfOperation.program = program;
+        scheduleFile >> periodOfOperation.period;
+        operationSchedule.push_back(periodOfOperation);
+    }
+}
+
+
+
+
+
 
 /** this function has to be redefined in every application derived from the
     TrafGen class.
@@ -150,7 +333,9 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
         getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
         appPkt->getPktData().insert(appPkt->getPktData().end(), x, x+strlen(x));
         mNumTrafficMsgs++;
-        //send(appPkt, mLowerLayerOut);
+
+        appPkt->setKind(DATA_PACKET);
+        send(appPkt, mLowerLayerOut);
 
         //incoming_packet.message_type = DATA;
         //incoming_packet.length = strlen((char*)_data);

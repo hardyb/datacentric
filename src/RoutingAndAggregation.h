@@ -729,6 +729,7 @@ void weAreSourceFor(char* _data);
 void weAreSinkFor(char* _data);
 void weAreCollaboratorFor(char* _data);
 void weAreCollaboratorInitiatorFor(char* _data);
+void send_data(int len, unsigned char* _data);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf);
 void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();

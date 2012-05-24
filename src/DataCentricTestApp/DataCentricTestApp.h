@@ -14,9 +14,31 @@
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
 
+
+
+
+
+
 class DataCentricTestApp : public TrafGenPar
 {
   public:
+    typedef struct Program
+    {
+        string programName;
+        int watts;
+    }Program;
+
+    typedef struct PeriodOfOperation
+    {
+        Program program;
+        int period;
+    }PeriodOfOperation;
+
+    typedef std::vector<PeriodOfOperation> OperationSchedule;
+
+    typedef std::map<string, OperationSchedule> SecheduleSet;
+
+    SecheduleSet mSecheduleSet;
 
     // LIFECYCLE
     // this takes care of constructors and destructors
@@ -29,6 +51,7 @@ class DataCentricTestApp : public TrafGenPar
 
     // OPERATIONS
     virtual void handleSelfMsg(cMessage*);
+    void readFile(char* filePath, OperationSchedule& operationSchedule);
     virtual void handleLowerMsg(cMessage*);
 
     virtual void SendTraf(cPacket *msg, const char*);
