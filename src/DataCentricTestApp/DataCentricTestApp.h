@@ -13,7 +13,7 @@
 
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
-#include <INode.h>
+//#include <INode.h>
 
 
 
@@ -22,6 +22,7 @@
 class DataCentricTestApp : public TrafGenPar
 {
   public:
+    /*
     typedef struct Program
     {
         string programName;
@@ -33,12 +34,25 @@ class DataCentricTestApp : public TrafGenPar
         Program program;
         int period;
     }PeriodOfOperation;
+    */
 
-    typedef std::vector<PeriodOfOperation> OperationSchedule;
 
-    typedef std::map<string, OperationSchedule> SecheduleSet;
+    //typedef std::vector<PeriodOfOperation> OperationSchedule;
 
-    SecheduleSet mSecheduleSet;
+    //typedef std::map<string, OperationSchedule> SecheduleSet;
+
+    /////////////////////////////////////////////////
+
+    typedef list<ifstream*> ActionStreamHierarchy;
+    //typedef struct ActionThread
+    //{
+    //    ActionStreamHierarchy* ash;
+    //    cMessage* msg;
+    //};
+    typedef map<cMessage*, ActionStreamHierarchy*>::iterator ActionThreadsIterator;
+
+
+    //SecheduleSet mSecheduleSet;
 
     // LIFECYCLE
     // this takes care of constructors and destructors
@@ -51,16 +65,19 @@ class DataCentricTestApp : public TrafGenPar
 
     // OPERATIONS
     virtual void handleSelfMsg(cMessage*);
-    void readFile(char* filePath, OperationSchedule& operationSchedule);
+    //void readFile(char* filePath, OperationSchedule& operationSchedule);
     virtual void handleLowerMsg(cMessage*);
 
 
 
-    int getNextAction(ifstream* ifs);
-    int getReading();
-    string getProgram();
-    void actionReading(int reading);
-    void actionProgram(string program);
+    int getNextAction(ActionThreadsIterator& i);
+    //int getReading(ifstream* ifs);
+    void processWatts(ActionThreadsIterator& i);
+    void startProgram(ActionThreadsIterator& i);
+    //void actionReading(int reading);
+    //void actionProgram(string program);
+    void FileEnd(ActionThreadsIterator& i);
+    void SensorReading(ActionThreadsIterator& i);
 
     virtual void SendTraf(cPacket *msg, const char*);
 
@@ -89,19 +106,12 @@ class DataCentricTestApp : public TrafGenPar
     cOutVector meanE2EDelayVec;
 
     cMessage *mpStartMessage;
-    ifstream mActivityFile;
-    ifstream mProgramFile;
+    //ifstream mActivityFile;
+    //ifstream mProgramFile;
 
 
-    typedef list<ifstream*> ActionStreamHierarchy;
-    typedef struct ActionThread
-    {
-        ActionStreamHierarchy* ash;
-        cMessage* msg;
-    };
-    //set<ActionThread*> mActionThreads;
+
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;
-    typedef map<cMessage*, ActionStreamHierarchy*>::iterator ActionThreadsIterator;
 
 
 

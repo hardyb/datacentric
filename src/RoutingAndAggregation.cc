@@ -335,11 +335,11 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 
 	 if ( interfaceName < (*treeNode)->i->iName )
 	 {
-		 return InsertInterfaceNode(&((*treeNode)->left), interfaceName);
+		 return InsertInterfaceNode(&((*treeNode)->left), interfaceName, inserted);
 	 }
 	 else
 	 {
-		return InsertInterfaceNode(&((*treeNode)->right), interfaceName);
+		return InsertInterfaceNode(&((*treeNode)->right), interfaceName, inserted);
 	 }
  }
 
@@ -779,7 +779,8 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
     read_packet(pkt);
     trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
     State* s = t->s;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf)->i;
+    int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf, &inserted)->i;
     i->up = 0;
 
     //void removeIF(struct InterfaceList** l, struct Interface* _i);
@@ -841,7 +842,8 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
     trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
     State* s = t->s;
     int oldBestCost = s->bestGradientToDeliver->costToDeliver;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+    int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
 
     //incoming_packet.data;
     //incoming_packet.path_value;
@@ -852,7 +854,7 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 
     // mark down_interface down if we have it also
     // I THINK MAYBE WE SHOULDNT INSERT THIS IF WE DONT ALREADY HAVE IT ASAN INTERFACE
-    Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface)->i;
+    Interface* down_i = InsertInterfaceNode(&(rd->interfaceTree), incoming_packet.down_interface, &inserted)->i;
     if ( down_i )
     {
         down_i->up = 0;
@@ -1051,7 +1053,8 @@ struct KDGradientNode* newKDGradientNode(char* fullyqualifiedname, NEIGHBOUR_ADD
 	trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
 	n->key1 = t->s;
 
-	n->key2 = InsertInterfaceNode(&(rd->interfaceTree), iName)->i;
+	int inserted;
+	n->key2 = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted)->i;
 	n->costToObtain = obtain;
 	n->costToDeliver = deliver;
 	n->deliveryReinforcement = FALSE;
@@ -1363,7 +1366,8 @@ struct KDGradientNode* insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR
 	// have t and i passed in
 	trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
 	State* s = t->s;
-	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName)->i;
+	int inserted;
+	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted)->i;
 
 	return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev);
 }
@@ -1634,7 +1638,8 @@ struct KDGradientNode* SearchForKDGradientNode1( unsigned char* _data, NEIGHBOUR
 	 */
 
 	trie* t = trie_add(rd->top_state, (const char*)_data, STATE);
-	struct InterfaceNode* i = InsertInterfaceNode(&(rd->interfaceTree), iName);
+	int inserted;
+	struct InterfaceNode* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted);
 
 	if ( t && i )
 	{
@@ -2795,7 +2800,8 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 
 
 	t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
-	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+	int inserted;
+	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
 	setObtainGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
 
@@ -2890,7 +2896,8 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
     static struct KDGradientNode* k;
 
     t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+    int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
     setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
     if ( t )
@@ -2947,9 +2954,9 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 
 
 
-	//int inserted;
-    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+	int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
 
 
 
@@ -3367,7 +3374,8 @@ void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
 
 void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface)
 {
-	InsertInterfaceNode(&(rd->interfaceTree), _interface);
+    int inserted;
+	InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
 	printf("Inserted interface\n");
 
 	int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
@@ -3739,19 +3747,16 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 		}
 
 
-        // TEMP REMOVAL
-		incoming_packet.message_type = DATA;
-
-        incoming_packet.length = strlen((char*)_data);
-
-        free(incoming_packet.data);
-        incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
-        //strcpy(incoming_packet.data, _data);
-        memcpy(incoming_packet.data, _data, incoming_packet.length);
-        incoming_packet.data[incoming_packet.length] = 0;
-
-        incoming_packet.path_value = 0;
-        handle_data(SELF_INTERFACE);
+        // COMMENT OUT
+		// THIS INITIATED IN THE APP NOW
+		//incoming_packet.message_type = DATA;
+        //incoming_packet.length = strlen((char*)_data);
+        //free(incoming_packet.data);
+        //incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+        //memcpy(incoming_packet.data, _data, incoming_packet.length);
+        //incoming_packet.data[incoming_packet.length] = 0;
+        //incoming_packet.path_value = 0;
+        //handle_data(SELF_INTERFACE);
 
 
 

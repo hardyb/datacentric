@@ -12,7 +12,7 @@ simple DataCentricTestApp extends TrafGenPar
         string nodeContext;
         bool mains;
         double probabilityDown;
-        string activities;
+        string actionThreads;
         
         //sourceFor[5]: string;
         //int x[5];

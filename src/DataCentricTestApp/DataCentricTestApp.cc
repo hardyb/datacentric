@@ -4,6 +4,14 @@
 #include <string.h>
 
 
+#define UNKNOWN_ACTIVITY 0
+#define SENSOR_READING 1
+#define SET_PROGRAM 2
+#define WATTS 3
+#define FILE_END 4
+
+
+
 //#undef EV
 //#define EV (ev.isDisabled() || !m_debug) ? std::cout : ev ==> EV is now part of <omnetpp.h>
 
@@ -19,7 +27,7 @@ void DataCentricTestApp::initialize(int aStage)
     {
         netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
 
-        mpStartMessage = new cMessage("StartMessage");
+        //mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");
         //std::string temp1 = par("sourceFor").stringValue();
         //sourcesData = cStringTokenizer(temp1.c_str()).asVector();
@@ -36,9 +44,9 @@ void DataCentricTestApp::initialize(int aStage)
         e2eDelayVec.setName("End-to-end delay");
         meanE2EDelayVec.setName("Mean end-to-end delay");
 
-        ifstream scheduleFile;
-        string activities = par("activities").stringValue();
-        mActivityFile.open(activities.c_str());
+        //ifstream scheduleFile;
+        //string activities = par("activities").stringValue();
+        //mActivityFile.open(activities.c_str());
 
 
 
@@ -47,7 +55,6 @@ void DataCentricTestApp::initialize(int aStage)
         for (std::vector<std::string>::iterator i = actionThreads.begin();
                 i != actionThreads.end(); ++i)
         {
-            // version with map
             ifstream* actionStream = new ifstream();
             actionStream->open(i->c_str());
             ActionStreamHierarchy* ash = new ActionStreamHierarchy();
@@ -55,29 +62,7 @@ void DataCentricTestApp::initialize(int aStage)
             cMessage* m = new cMessage(i->c_str());
             mActionThreads[m] = ash;
             scheduleAt(simTime() + 1.0, m);
-
-            // version without map
-            //ActionThread* at = new ActionThread();
-            //ifstream* actionStream = new ifstream();
-            //actionStream->open(i->c_str());
-            //at->ash = new ActionStreamHierarchy();
-            //at->ash->push_back(actionStream);
-            //at->msg = new cMessage(i->c_str());
-            //mActionThreads.insert(at);
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         contextData = par("nodeContext").stringValue();
         DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
@@ -92,8 +77,6 @@ void DataCentricTestApp::initialize(int aStage)
             appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
             appPkt1->setKind(SOURCE_MESSAGE);
             send(appPkt1, mLowerLayerOut);
-            // read operational schedule
-            scheduleAt(simTime() + 4.0, mpUpMessage);
         }
 
         std::string temp2 = par("sinkFor").stringValue();
@@ -143,164 +126,22 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
 {
 
-
-    // sending data ideas
-
-    unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
-    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
-    send_data(appPkt->getPktData().size(), data);
-    free(data);
-
-    incoming_packet.message_type = DATA;
-    incoming_packet.length = len;
-    free(incoming_packet.data);
-    incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
-    memcpy(incoming_packet.data, _data, incoming_packet.length);
-    incoming_packet.data[incoming_packet.length] = 0;
-    incoming_packet.path_value = 0;
-    incoming_packet.down_interface = UNKNOWN_INTERFACE;
-    incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
-    handle_data(SELF_INTERFACE);
-
-
-
-    //typedef struct Program
-    //{
-    //    string programName;
-    //    int watts;
-    //}Program;
-
-    //typedef struct PeriodOfOperation
-    //{
-    //    Program program;
-    //    int period;
-    //}PeriodOfOperation;
-    //typedef std::vector<PeriodOfOperation> OperationSchedule;
-    //typedef std::map<string, OperationSchedule> SecheduleSet;
-
-    std::string temp2 = par("sinkFor").stringValue();
-    if ( temp2.size() )
-    {
-        DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
-        appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
-        appPkt2->setKind(SINK_MESSAGE);
-        send(appPkt2, mLowerLayerOut);
-    }
-
-
-    std::string temp1 = par("sourceFor").stringValue();
-    if ( temp1.size() )
-    {
-
-        std::vector<std::string> sinksData = cStringTokenizer(temp1.c_str()).asVector();
-        for (std::vector<std::string>::iterator i = sinksData.begin();
-                i != sinksData.end(); ++i)
-        {
-            OperationSchedule operationSchedule;
-            readFile("", operationSchedule);
-            mSecheduleSet.insert(pair<string, OperationSchedule>(*i, operationSchedule));
-
-
-            DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
-            appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
-            appPkt2->setKind(DATA_PACKET);
-            send(appPkt2, mLowerLayerOut);
-
-
-            int datalen = strlen(i->c_str());
-            memcpy(x, i->c_str(), datalen);
-
-        }
-
-
-
-
-
-
-        DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
-        appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
-        appPkt1->setKind(SOURCE_MESSAGE);
-        send(appPkt1, mLowerLayerOut);
-        // read operational schedule
-        scheduleAt(simTime() + 4.0, mpUpMessage);
-    }
-
-
-
-
-
-
-    PeriodOfOperation periodOfOperation;
-    Program program;
-    program.programName = "Off";
-    program.watts = 0;
-    periodOfOperation.program = program;
-    periodOfOperation.period = 180;
-
-    operationSchedule.push_back(periodOfOperation);
-
-    mSecheduleSet.insert(pair<string, OperationSchedule>("", operationSchedule));
-
-    ifstream scheduleFile;
-    char output[100];
-    string programIN;
-    int periodIN;
-    scheduleFile.open("test.txt");
-    while ( !scheduleFile.eof() )
-    {
-        PeriodOfOperation periodOfOperation;
-        Program program;
-        scheduleFile >> program.programName;
-        //program.watts = 0;
-        periodOfOperation.program = program;
-        scheduleFile >> periodOfOperation.period;
-        //periodOfOperation.period = 180;
-
-
-        //scheduleFile >> programIN;
-        //scheduleFile >> periodIN;
-    }
-
-
-
-
-
-
-
-
-
-
-
-#define UNKNOWN_ACTIVITY 0
-#define SENSOR_READING 1
-#define SET_PROGRAM 1
-
     ActionThreadsIterator i = mActionThreads.find(apMsg);
     if (i != mActionThreads.end() )
     {
-        //ActionStreamHierarchy* ash = i->second;
-        ifstream* ifs = i->second->back();
-
-
-    //}
-
-    //if (apMsg == mpStartMessage)  // next action
-    //{
-    //    mActionThreads.begin();
-
-        int action = getNextAction(i->second->back());
-        //int action = getNextAction(ifs);
-        //switch ( action )
-        switch ( getNextAction(i->second->back()) )
+        switch ( getNextAction(i) )
         {
             case SENSOR_READING:
-                int reading = getReading(ifs);
-                actionReading(reading);
+                SensorReading(i);
                 break;
             case SET_PROGRAM:
-                string program = getProgram(ifs);
-                startProgram(program);
-                actionProgramItem(program);
+                startProgram(i);
+                break;
+            case WATTS:
+                processWatts(i);
+                break;
+            case FILE_END:
+                FileEnd(i);
                 break;
             case UNKNOWN_ACTIVITY:
                 break;
@@ -310,22 +151,15 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
 
     }
 
-
-
-
-
-
-
-
-
     TrafGenPar::handleSelfMsg(apMsg);
 }
 
 
 
-int DataCentricTestApp::getNextAction(ifstream* ifs)
+int DataCentricTestApp::getNextAction(ActionThreadsIterator& i)
 {
-    if ( ifs->good() && !ifs->eof() )
+    ifstream* ifs = i->second->back();
+    if ( !ifs->eof() )
     {
         string action;
         *ifs >> action;
@@ -337,86 +171,128 @@ int DataCentricTestApp::getNextAction(ifstream* ifs)
         {
             return SET_PROGRAM;
         }
+        if ( action == "WATTS" )
+        {
+            return WATTS;
+        }
+        return UNKNOWN_ACTIVITY;
     }
-    return UNKNOWN_ACTIVITY;
+    else
+    {
+        return FILE_END;
+    }
 }
 
 
-int DataCentricTestApp::getReading(ifstream* ifs)
+void DataCentricTestApp::FileEnd(ActionThreadsIterator& i)
 {
-    int reading;
-    *ifs >> reading;
-    return reading;
+    ifstream* ifs = i->second->back();
+    i->second->pop_back();
+    ifs->close();
+    delete ifs;
+    scheduleAt(simTime(), i->first);
 }
 
 
-string DataCentricTestApp::getProgram(ifstream* ifs)
+
+
+//int DataCentricTestApp::getReading(ifstream* ifs)
+//{
+//    int reading;
+//    *ifs >> reading;
+//    return reading;
+//}
+
+
+
+void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
 {
-    string program;
-    *ifs >> program;
+    unsigned short watts;
+    double period;
+    ifstream* ifs = i->second->back();
+    *ifs >> watts;
+    *ifs >> period;
 
-
-    ifstream* newIfs = new ifstream();
-    newIfs->open("");
-    i->second->push_back(newIfs)
-
-
-
-
-
-
-
-
-    return program;
-}
-
-
-void DataCentricTestApp::actionReading(int reading)
-{
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     std::ostringstream ss;
     ss.clear();
-    ss << "\x3\x1\x" << hex << reading << "\x0";
+    ss << "\x2\x2";
+    ss << (unsigned char)(watts & 0xff);
+    ss << (unsigned char)((watts >>8) & 0xff);
+    ss << "\x0";
+    //ss << "\x2\x2\x" << hex << watts << "\x0";
+    std::string s(ss.str());
+    unsigned int a = s.size();
+    appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
+    appPkt->setKind(DATA_PACKET);
+    send(appPkt, mLowerLayerOut);
+    scheduleAt(simTime()+period, i->first);
+
+
+}
+
+
+
+
+void DataCentricTestApp::startProgram(ActionThreadsIterator& i)
+{
+    string program;
+    ifstream* ifs = i->second->back();
+    *ifs >> program;
+
+    ifstream* newIfs = new ifstream();
+    newIfs->open(program.c_str());
+    i->second->push_back(newIfs);
+    scheduleAt(simTime(), i->first);
+
+}
+
+
+void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
+{
+    ifstream* ifs = i->second->back();
+
+    unsigned short reading;
+    double period;
+    *ifs >> reading;
+    *ifs >> period;
+
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+    std::ostringstream ss;
+    ss.clear();
+    ss << "\x3\x1";
+    ss << (unsigned char)(reading & 0xff);
+    ss << (unsigned char)((reading >>8) & 0xff);
+    ss << "\x0";
     std::string s(ss.str());
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
     send(appPkt, mLowerLayerOut);
 
-    double period;
-    mActivityFile >> period;
-    scheduleAt(simTime() + period, mpUpMessage);
-
-
-
+    scheduleAt(simTime() + period, i->first);
 }
 
 
-void DataCentricTestApp::startProgram(string program)
-{
-    if ( mProgramFile.is_open() )
-        mProgramFile.close();
-    mProgramFile.open(program.c_str());
-
-
-    "\x2\x2\x0"
-
-}
+//void DataCentricTestApp::start2Program(string program)
+//{
+//    if ( mProgramFile.is_open() )
+//        mProgramFile.close();
+//    mProgramFile.open(program.c_str());
+//    "\x2\x2\x0"
+//}
 
 
 
-void DataCentricTestApp::actionProgramItem(string program)
-{
-    if ( mProgramFile.is_open() )
-        mProgramFile.close();
-    mProgramFile.open(program.c_str());
+//void DataCentricTestApp::actionProgramItem(string program)
+//{
+//    if ( mProgramFile.is_open() )
+//        mProgramFile.close();
+//    mProgramFile.open(program.c_str());
+//    "\x2\x2\x0"
+//}
 
 
-    "\x2\x2\x0"
-
-}
-
-
-
+/*
 void DataCentricTestApp::readFile(char* filePath, OperationSchedule& operationSchedule)
 {
     ifstream scheduleFile;
@@ -431,6 +307,7 @@ void DataCentricTestApp::readFile(char* filePath, OperationSchedule& operationSc
         operationSchedule.push_back(periodOfOperation);
     }
 }
+*/
 
 
 
@@ -451,7 +328,13 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
 {
     delete apMsg;
 
-    rd = &(netModule->moduleRD);
+    // for the moment don't use TrafGenPar, but in the future
+    // may be have choice between TrafGenPar, ie very regular
+    // random hits, and run from schedule file
+
+    return;
+
+    //rd = &(netModule->moduleRD);
 
     char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
@@ -478,7 +361,7 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
         mNumTrafficMsgs++;
 
         appPkt->setKind(DATA_PACKET);
-        send(appPkt, mLowerLayerOut);
+        //send(appPkt, mLowerLayerOut);
 
         //incoming_packet.message_type = DATA;
         //incoming_packet.length = strlen((char*)_data);
@@ -495,3 +378,49 @@ double DataCentricTestApp::StartTime()
 {
     return par("startTime").doubleValue();
 }
+
+
+
+
+
+
+
+
+
+
+// sending data ideas
+/*
+unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
+std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
+send_data(appPkt->getPktData().size(), data);
+free(data);
+incoming_packet.message_type = DATA;
+incoming_packet.length = len;
+free(incoming_packet.data);
+incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+memcpy(incoming_packet.data, _data, incoming_packet.length);
+incoming_packet.data[incoming_packet.length] = 0;
+incoming_packet.path_value = 0;
+incoming_packet.down_interface = UNKNOWN_INTERFACE;
+incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
+handle_data(SELF_INTERFACE);
+*/
+
+
+/*
+operationSchedule.push_back(periodOfOperation);
+mSecheduleSet.insert(pair<string, OperationSchedule>("", operationSchedule));
+ifstream scheduleFile;
+char output[100];
+string programIN;
+int periodIN;
+scheduleFile.open("test.txt");
+while ( !scheduleFile.eof() )
+{
+    PeriodOfOperation periodOfOperation;
+    Program program;
+    scheduleFile >> program.programName;
+    periodOfOperation.program = program;
+    scheduleFile >> periodOfOperation.period;
+}
+*/

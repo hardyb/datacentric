@@ -35,8 +35,8 @@ network DataCentricNet
         //string CURRENT = "\x2";
         //string BID = "\x1";
         //string OCCUPANCY = "\x1";
-		host[*].app.startTime = 1.0;
-		host[*].app.nodeContext = "\x06";
+		//host[*].app.startTime = 1.0;
+		//host[*].app.nodeContext = "\x06";
 		//host[4].app.sourceFor = DEMAND_QUERYBASED+CURRENT+STRINGEND;
 //		host[*].app.sourceFor = "";
 		//host{1..24}.app.sourceFor = "";

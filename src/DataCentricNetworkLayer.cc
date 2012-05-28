@@ -107,7 +107,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         setApplicationCallBack(cb_handle_application_data);
 
         cMessage* rcMessage = new cMessage("RegularCheck");
-        scheduleAt(simTime()+2.0, rcMessage);
+        scheduleAt(simTime()+200.0, rcMessage);
         //scheduleAt(simTime() + StartTime(), mpStartMessage);
 
 
@@ -136,7 +136,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         WriteModuleListFile();
         if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
         {
-            scheduleAt(simTime() + 8.0, mpDownMessage);
+            //scheduleAt(simTime() + 8.0, mpDownMessage);
 
         }
         this->getParentModule()->getFullName();
@@ -314,7 +314,7 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             SendDataWithLongestContext(appPkt);
             break;
         case STARTUP_MESSAGE:
-            StartUp();
+            StartUpModule();
             break;
         case CONTEXT_MESSAGE:
             SetContext(appPkt);
@@ -362,7 +362,7 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
 
 
 
-void DataCentricNetworkLayer::StartUp()
+void DataCentricNetworkLayer::StartUpModule()
 {
     mPhyModule->enableModule();
     StartUp();

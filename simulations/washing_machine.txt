@@ -1,0 +1,2 @@
+SET_PROGRAM washA.txt
+WATTS 0 72000
