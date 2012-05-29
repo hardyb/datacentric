@@ -782,6 +782,7 @@ every name in the incoming message
 trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str);
 
 
+void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIGHBOUR_ADDR _if, void process(State* s, char* _buf, NEIGHBOUR_ADDR _if));
 
 
 

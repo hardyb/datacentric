@@ -1,0 +1,29 @@
+
+
+CAREFUL TESTING OF STRLEN FIXESANDDOWN INTERFACE REQUIRED
+==============================================================
+
+
+
+
+Basic test
+=============
+
+
+
+
+
+create an interest 3 and 32 context 6
+send data 3250 context 62
+
+use break points
+
+
+
+Interfacedown test
+===================
+
+
+
+
+

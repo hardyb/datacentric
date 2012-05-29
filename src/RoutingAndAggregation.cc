@@ -3,6 +3,7 @@
 //#include "contiki.h"
 #define NULL 0
 
+char current_prefix_name[100];
 
 
 
@@ -168,7 +169,7 @@ unsigned int sizeof_existing_packet(unsigned char* pkt)
  */
 unsigned char* write_packet()
 {
-    outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
+    //outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
     unsigned int size = size_needed_for_outgoing_packet();
 	//unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
 	//		+ outgoing_packet.length +   sizeof(outgoing_packet.path_value)
@@ -491,7 +492,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  	if ( s->bestGradientToObtain && (((*_data) & MSB2) == PUBLICATION) )
  	{
  		outgoing_packet.message_type = ADVERT;
- 		outgoing_packet.length = strlen(queue);
+ 		outgoing_packet.length = strlen(queue); // strlen ok in this case
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
@@ -502,7 +503,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
  		outgoing_packet.message_type = INTEREST;
- 		outgoing_packet.length = strlen(queue);
+ 		outgoing_packet.length = strlen(queue); // strlen ok in this case
  		outgoing_packet.data = (unsigned char*)queue;
  		outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
  		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
@@ -517,7 +518,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == COLLABORATIONBASED) )
     {
         outgoing_packet.message_type = COLLABORATION;
-        outgoing_packet.length = strlen(queue);
+        outgoing_packet.length = strlen(queue); // strlen ok in this case
         outgoing_packet.data = (unsigned char*)queue;
         outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
         sendAMessage(_if, write_packet());
@@ -616,6 +617,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 /*
  * LOOKS OK NOW
  */
+/*
  int SendToAllInterfacesExcept(InterfaceNode* tree, NEIGHBOUR_ADDR _exception)
  {
 	 if ( tree )
@@ -640,6 +642,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 	 SendToAllInterfacesExcept(tree->right, _exception);
 	 return 1;
  }
+*/
 
 
 
@@ -764,6 +767,32 @@ void MarkIFDown(Interface* i, State* s)
 }
 
 
+void InterfaceDownCallBack(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+{
+    if ( !s->bestGradientToDeliver->key2->up )
+    {
+        KDGradientNode* saveBestGradientToDeliver = s->bestGradientToDeliver;
+        s->bestGradientToDeliver = 0;
+        TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
+        KDGradientNode* alternativeBestGradientToDeliver = s->bestGradientToDeliver;
+        s->bestGradientToDeliver = saveBestGradientToDeliver;
+
+        if ( alternativeBestGradientToDeliver && ((    *(incoming_packet.data) & MSB2) == RECORD) )
+        {
+            add(&(s->deliveryInterfaces), alternativeBestGradientToDeliver->key2);
+            outgoing_packet.message_type = REINFORCE_INTEREST;
+            //outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.data = (unsigned char*)_buf;
+            outgoing_packet.length = strlen(_buf); // strl ok here
+            outgoing_packet.path_value = 0;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.down_interface = _if;
+            sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
+        }
+    }
+
+}
+
 
 
 void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
@@ -775,13 +804,29 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      * Initial idea - needs some work
      *
      */
-
-    read_packet(pkt);
-    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
-    State* s = t->s;
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf, &inserted)->i;
     i->up = 0;
+
+    read_packet(pkt);
+    action_all_prefixes(rd->top_state, 0, incoming_packet.length,
+            (const char*)incoming_packet.data,
+            current_prefix_name, inf, InterfaceDownCallBack);
+
+#ifdef GRAD_FILES
+    UpdateGradientFile();
+#endif
+
+
+    return;
+
+    // POS DELETE WHATS BELOW WHEN WE KNOW ITS WORKING
+
+    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+
+
+
+    State* s = t->s;
 
     //void removeIF(struct InterfaceList** l, struct Interface* _i);
     //removeIF(&(s->deliveryInterfaces), i);
@@ -815,6 +860,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
         add(&(s->deliveryInterfaces), alternativeBestGradientToDeliver->key2);
         outgoing_packet.message_type = REINFORCE_INTEREST;
         outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.length = strlen((const char*)incoming_packet.data); // strl ok here
         outgoing_packet.path_value = 0;
         //outgoing_packet.excepted_interface = 0;
         outgoing_packet.down_interface = inf;
@@ -830,7 +876,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 
 
-
+// PROBABLY DOING AWAY WITH THIS
 void handle_interest_correction(NEIGHBOUR_ADDR _interface)
 {
     if ( incoming_packet.excepted_interface == thisAddress )
@@ -899,6 +945,7 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
         s->bestGradientToDeliverUpdated = false;
         outgoing_packet.message_type = INTEREST_CORRECTION;
         outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.length = strlen((const char*)incoming_packet.data);  // strlen ok here
         outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver+nodeConstraint;
         outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;//_interface;
         outgoing_packet.down_interface = incoming_packet.down_interface;
@@ -2196,6 +2243,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
                 else
                 {
                     sendAMessage(temp->i->iName, write_packet());
+                    // length taken from incoming/outgoing message not strlen
                 }
                 if ( query_based )
                 {
@@ -2212,7 +2260,6 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 
 
 
-char current_prefix_name[100];
 void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIGHBOUR_ADDR _if, void process(State* s, char* _buf, NEIGHBOUR_ADDR _if))
 {
       trie *current = t;
@@ -2283,7 +2330,9 @@ bool deliver(void* p1, void* p2)
 
 
 
-    action_all_prefixes(rd->top_state, 0, strlen((const char*)outgoing_packet.data), (const char*)outgoing_packet.data,
+    //action_all_prefixes(rd->top_state, 0, strlen((const char*)outgoing_packet.data), (const char*)outgoing_packet.data,
+    //        current_prefix_name, 0, consider_sending_data);
+    action_all_prefixes(rd->top_state, 0, outgoing_packet.length, (const char*)outgoing_packet.data,
             current_prefix_name, 0, consider_sending_data);
     return true;
 
@@ -2334,6 +2383,8 @@ bool forward(void* p1, void* p2)
 	outgoing_packet.data = incoming_packet.data;
 	outgoing_packet.length = incoming_packet.length;
 	outgoing_packet.path_value = incoming_packet.path_value;
+	outgoing_packet.down_interface = incoming_packet.down_interface;
+	outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
 
 	deliver(p1, p2);
 	return false;
@@ -2848,8 +2899,9 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 		{
 			t->s->bestGradientToObtainUpdated = false;
 			outgoing_packet.message_type = ADVERT;
-            outgoing_packet.length = strlen((char*)incoming_packet.data);
-			outgoing_packet.data = incoming_packet.data;
+            //outgoing_packet.length = strlen((char*)incoming_packet.data);
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
 			outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
 			outgoing_packet.excepted_interface = _interface;
 		    bcastAMessage(write_packet());
@@ -2907,6 +2959,7 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
             t->s->bestGradientToDeliverUpdated = false;
             outgoing_packet.message_type = COLLABORATION;
             outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
             outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.excepted_interface = _interface;
             bcastAMessage(write_packet());
@@ -2973,7 +3026,8 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 		{
 			t->s->bestGradientToDeliverUpdated = false;
 			outgoing_packet.message_type = INTEREST;
-			outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
 			outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
@@ -3035,8 +3089,11 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 			return;
 
 		outgoing_packet.message_type = REINFORCE;
-		outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.length = incoming_packet.length;
 		outgoing_packet.path_value = 0;
+        outgoing_packet.down_interface = incoming_packet.down_interface;
+        outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
 		sendAMessage(interface, write_packet());
 
 	}
@@ -3088,8 +3145,10 @@ void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 
             outgoing_packet.message_type = REINFORCE_INTEREST;
             outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
             outgoing_packet.path_value = 0;
             outgoing_packet.down_interface = incoming_packet.down_interface;
+            outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
             sendAMessage(interface, write_packet());
 
         }
@@ -3135,7 +3194,10 @@ void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
 
         outgoing_packet.message_type = REINFORCE_COLLABORATION;
         outgoing_packet.data = incoming_packet.data;
+        outgoing_packet.length = incoming_packet.length;
         outgoing_packet.path_value = 0;
+        outgoing_packet.down_interface = incoming_packet.down_interface;
+        outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
         sendAMessage(interface, write_packet());
     }
 
@@ -3196,6 +3258,9 @@ void start_reinforce(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 
 		outgoing_packet.message_type = REINFORCE;
 		outgoing_packet.data = (unsigned char*)fullyqualifiedname;
+		outgoing_packet.length = strlen((const char*)outgoing_packet.data);
+		outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+		outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
 		sendAMessage(interface, write_packet());
 
@@ -3239,8 +3304,10 @@ void start_reinforce_interest(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 
 		outgoing_packet.message_type = REINFORCE_INTEREST;
 		outgoing_packet.data = (unsigned char*)fullyqualifiedname;
+        outgoing_packet.length = strlen((const char*)outgoing_packet.data);
+        outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+        outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0;
-		outgoing_packet.down_interface = UNKNOWN_INTERFACE;
 		sendAMessage(interface, write_packet());
 
 	}
@@ -3287,6 +3354,9 @@ void start_reinforce_collaboration(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 
         outgoing_packet.message_type = REINFORCE_COLLABORATION;
         outgoing_packet.data = (unsigned char*)fullyqualifiedname;
+        outgoing_packet.length = strlen((const char*)outgoing_packet.data);
+        outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+        outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
         outgoing_packet.path_value = 0;
         sendAMessage(interface, write_packet());
 
@@ -3394,6 +3464,9 @@ void StartUp()
 
 	outgoing_packet.message_type = NEIGHBOR_BCAST;
 	outgoing_packet.data = 0;
+    outgoing_packet.length = 0;
+    outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+    outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 	outgoing_packet.path_value = 0;
 	bcastAMessage(write_packet());
 

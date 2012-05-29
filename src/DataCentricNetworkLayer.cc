@@ -177,8 +177,8 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             switch ( *pkt )
             {
                 case DATA:
-                case REINFORCE:
-                case REINFORCE_INTEREST:
+                //case REINFORCE:
+                //case REINFORCE_INTEREST:
                     InterfaceDown(pkt, destIF);
                     break;
             }
@@ -348,14 +348,18 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
     // MOVE THIS BIT INTO FRAMEWORK
     char temp[30];
     char x[20];
-    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), x);
-    int datalen = appPkt->getPktData().size();
-    x[datalen] = DOT;
-    getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
-    datalen = strlen(x);
-    unsigned char* data = (unsigned char*)malloc(datalen);
-    memcpy(data, x, datalen);
-    send_data(datalen, data);
+    char* index = x;
+    int stateLen = appPkt->getPktData().size();
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), index);
+    index += stateLen++;
+    *index = DOT;
+    //x[stateLen] = DOT;
+    //getLongestContextTrie(rd->top_context, temp, temp, &(x[stateLen+1]));
+    getLongestContextTrie(rd->top_context, temp, temp, ++index);
+    stateLen += strlen(index);
+    unsigned char* data = (unsigned char*)malloc(stateLen);
+    memcpy(data, x, stateLen);
+    send_data(stateLen, data);
     free(data);
 }
 

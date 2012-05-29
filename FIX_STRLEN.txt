@@ -1,0 +1,67 @@
+NBNB:
+SEE NOTE IN CAPITALS BELOW.
+
+
+
+void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+strlen(_data) is used
+
+
+
+trie* trie_add(trie *t, const char *str, int object)
+strlen(str) is used
+in this trie it is Ok because it doesn't include data
+
+
+
+trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str)
+uses strlen(str)
+this method does not appear to be used!!!
+
+trie* trie_lookup2(trie *t, const char *str)
+strlen(str)
+just used in handle_advert to lookup  context so ok
+
+
+void new_one(trie *t, const char *str, NEIGHBOUR_ADDR _if)
+uses strlen(str)
+this method does not appear to be used!!!
+
+
+unsigned char* write_packet()
+strlen((const char*)outgoing_packet.data)
+should be setting length correctly before write_packet is called
+
+
+void ucast_best_gradient(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+strlen(queue) - same thing as strlen(_data) see callee
+probably should pass in length?
+OR...  Does it really matter since it is state/gradient NOT data that is being checked
+
+
+NOTE:
+========
+NBNBNB:
+THINK ABOUT ALL THIS AGAIN, WE ONLY NEED TO CONSIDER WHEN THIS AFFECTS THE READING
+OF THE DATA BEING SENT
+ALL  (YES ALL) STATE NAMES HELD ON RECORDWILL NOT HAVE ZEROS!!!!!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
