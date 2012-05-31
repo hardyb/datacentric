@@ -1,0 +1,15 @@
+
+
+
+
+functions with params which may need changing to unsigned char
+
+newKDGradientNode
+insertKDGradientNode1
+weAreSourceFor
+weAreSinkFor
+weAreCollaboratorInitiatorFor
+weAreCollaboratorFor
+start_reinforce
+start_reinforce_interest
+start_reinforce_collaboration

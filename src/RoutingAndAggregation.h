@@ -99,7 +99,7 @@ typedef struct trie
 {
    struct State* s;
    struct context* c;
-   char keyelem;
+   unsigned char keyelem;
    struct trie *first_child;
    struct trie *next_sibling;
    struct trie *rec;

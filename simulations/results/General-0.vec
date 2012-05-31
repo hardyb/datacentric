@@ -1,0 +1,19 @@
+version 2
+run General-0-20120530-22:38:18-3312
+attr configname General
+attr datetime 20120530-22:38:18
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network DataCentricNet
+attr processid 3312
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 400  DataCentricNet.dataCentricNetworkMan  ControlPackets  ETV
+vector 401  DataCentricNet.dataCentricNetworkMan  controlPacketFrequency  ETV

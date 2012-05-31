@@ -16,7 +16,8 @@ simple DataCentricTestApp extends TrafGenPar
         
         //sourceFor[5]: string;
         //int x[5];
-        double startTime;
+        double nodeStartTime;
+        double scheduleStartTime;
         
         //sinks[numSinks] : 
         //byte y;

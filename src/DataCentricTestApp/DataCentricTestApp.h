@@ -59,7 +59,8 @@ class DataCentricTestApp : public TrafGenPar
 
     virtual void initialize(int);
     virtual void finish();
-    double StartTime();
+    double NodeStartTime();
+    double ScheduleStartTime();
 
   protected:
 

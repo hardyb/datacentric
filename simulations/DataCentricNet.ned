@@ -53,10 +53,13 @@ network DataCentricNet
                   @display("i=device/pocketpc_s;r=,,#707070");
                   //@display("i=device/pocketpc_s;r=,,#707070;p=84,57");
         }
-        dataCentricNetworkMan : DataCentricNetworkMan;
+        dataCentricNetworkMan : DataCentricNetworkMan{
+            parameters:
+                @display("p=-10,30");
+        }
         channelControl: ChannelControl {
             parameters:
-                @display("p=-65,20;i=misc/sun");
+                @display("p=-10,20;i=misc/sun");
         }
         connections allowunconnected:
 }

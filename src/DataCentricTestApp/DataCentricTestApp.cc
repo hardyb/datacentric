@@ -61,7 +61,7 @@ void DataCentricTestApp::initialize(int aStage)
             ash->push_back(actionStream);
             cMessage* m = new cMessage(i->c_str());
             mActionThreads[m] = ash;
-            scheduleAt(simTime() + 1.0, m);
+            scheduleAt(simTime() + ScheduleStartTime(), m);
         }
 
         contextData = par("nodeContext").stringValue();
@@ -90,7 +90,7 @@ void DataCentricTestApp::initialize(int aStage)
 
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);
-        sendDelayed(appPkt3, StartTime(), mLowerLayerOut);
+        sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
 
     }
 
@@ -374,11 +374,16 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
 }
 
 
-double DataCentricTestApp::StartTime()
+double DataCentricTestApp::NodeStartTime()
 {
-    return par("startTime").doubleValue();
+    return par("nodeStartTime").doubleValue();
 }
 
+
+double DataCentricTestApp::ScheduleStartTime()
+{
+    return par("scheduleStartTime").doubleValue();
+}
 
 
 

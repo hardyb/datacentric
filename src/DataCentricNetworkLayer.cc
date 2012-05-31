@@ -107,7 +107,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         setApplicationCallBack(cb_handle_application_data);
 
         cMessage* rcMessage = new cMessage("RegularCheck");
-        scheduleAt(simTime()+200.0, rcMessage);
+        scheduleAt(simTime()+2.0, rcMessage);
         //scheduleAt(simTime() + StartTime(), mpStartMessage);
 
 
@@ -379,7 +379,10 @@ void DataCentricNetworkLayer::StartUpModule()
 void DataCentricNetworkLayer::SetContext(DataCentricAppPkt* appPkt)
 {
     string contextData;
+    contextData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), contextData.begin());
+    int size = appPkt->getPktData().size();
+    size = contextData.size();
     trie_add(rd->top_context, contextData.c_str(), CONTEXT);
 
 }
@@ -388,7 +391,10 @@ void DataCentricNetworkLayer::SetContext(DataCentricAppPkt* appPkt)
 void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* appPkt)
 {
     string sourceData;
+    sourceData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+    int size = appPkt->getPktData().size();
+    size = sourceData.size();
     std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str()).asVector();
     char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
@@ -410,7 +416,10 @@ void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* app
 void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appPkt)
 {
     string sinkData;
+    sinkData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+    int size = appPkt->getPktData().size();
+    size = sinkData.size();
     std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
     char temp[30];
     for (std::vector<std::string>::iterator i = sinksData.begin();

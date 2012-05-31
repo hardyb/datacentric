@@ -3,7 +3,7 @@
 //#include "contiki.h"
 #define NULL 0
 
-char current_prefix_name[100];
+unsigned char current_prefix_name[100];
 
 
 
@@ -810,7 +810,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
     read_packet(pkt);
     action_all_prefixes(rd->top_state, 0, incoming_packet.length,
-            (const char*)incoming_packet.data,
+            incoming_packet.data,
             current_prefix_name, inf, InterfaceDownCallBack);
 
 #ifdef GRAD_FILES
@@ -822,7 +822,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
     // POS DELETE WHATS BELOW WHEN WE KNOW ITS WORKING
 
-    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
 
 
@@ -885,7 +885,7 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
     }
 
     // find incoming state s and interface i and current best cost
-    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
     State* s = t->s;
     int oldBestCost = s->bestGradientToDeliver->costToDeliver;
     int inserted;
@@ -1684,7 +1684,7 @@ struct KDGradientNode* SearchForKDGradientNode1( unsigned char* _data, NEIGHBOUR
 	 * Need to check which tri search to do here to see if we already have an existing state
 	 */
 
-	trie* t = trie_add(rd->top_state, (const char*)_data, STATE);
+	trie* t = trie_add(rd->top_state, _data, STATE);
 	int inserted;
 	struct InterfaceNode* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted);
 
@@ -2260,7 +2260,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 
 
 
-void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIGHBOUR_ADDR _if, void process(State* s, char* _buf, NEIGHBOUR_ADDR _if))
+void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, void process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if))
 {
       trie *current = t;
 
@@ -2277,7 +2277,7 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
            return;
       }
 
-      const char c = str[i];
+      unsigned char c = str[i];
       t = t->first_child;
       t = trie_at_level(t,c);
       if(t == NULL)
@@ -2332,7 +2332,7 @@ bool deliver(void* p1, void* p2)
 
     //action_all_prefixes(rd->top_state, 0, strlen((const char*)outgoing_packet.data), (const char*)outgoing_packet.data,
     //        current_prefix_name, 0, consider_sending_data);
-    action_all_prefixes(rd->top_state, 0, outgoing_packet.length, (const char*)outgoing_packet.data,
+    action_all_prefixes(rd->top_state, 0, outgoing_packet.length, outgoing_packet.data,
             current_prefix_name, 0, consider_sending_data);
     return true;
 
@@ -2850,7 +2850,7 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 	}
 
 
-	t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+	t = trie_add(rd->top_state, incoming_packet.data, STATE);
 	int inserted;
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
 	setObtainGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
@@ -2947,7 +2947,7 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
     trie* t;
     static struct KDGradientNode* k;
 
-    t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    t = trie_add(rd->top_state, incoming_packet.data, STATE);
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
     setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
@@ -3013,7 +3013,7 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 
 
 
-	t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+	t = trie_add(rd->top_state, incoming_packet.data, STATE);
 	setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
 
     if ( incoming_packet.down_interface == thisAddress )
@@ -3057,7 +3057,7 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 	// the gradient then a straight match (add method?) will probably be ok
 	//
 	//trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, outgoing_packet.data);
-	trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
 
 
@@ -3108,7 +3108,7 @@ void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 
 	reinforceObtainGradient((char*)incoming_packet.data, _interface);
 
-	trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
 
 	if ( t && t->s->bestGradientToDeliver )
@@ -3167,7 +3167,7 @@ void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
 {
     reinforceObtainGradient((char*)incoming_packet.data, _interface);
 
-    trie* t = trie_add(rd->top_state, (const char*)incoming_packet.data, STATE);
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
     if ( t && t->s->bestGradientToDeliver )
     {
@@ -3692,7 +3692,7 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
         if ( s->bestGradientToObtain && !s->obtainInterfaces )
         {
             numSinks = 0;
-            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), (const char*)_data,
+            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
                     current_prefix_name, _if, count_sink);
             if ( numSinks )
             {
@@ -3757,7 +3757,7 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
              * This function actions every stored full data name prefix for a given full data name
              * the action is to consider collaborative reinforcement of each best deliver gradient
              */
-            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), (const char*)_data,
+            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
                     current_prefix_name, _if, consider_reinforce_collaberation);
         }
 
@@ -3800,7 +3800,7 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 		     * the action is to consider reinforcing each best deliver gradient
 		     */
 		        // TEMP REMOVAL
-		        action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), (const char*)_data,
+		        action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
 		               current_prefix_name, _if, consider_reinforce_interest);
 		        UpdateGradientFile();
 
@@ -4018,7 +4018,7 @@ void trie_free(trie* t)
 The function is used to traverses the siblings
 this one puts a line '-' if already have node we are looking for
 */
-trie* trie_at_level(trie *t, char c)
+trie* trie_at_level(trie *t, unsigned char c)
 {
    while(t != NULL)
    {
@@ -4044,7 +4044,7 @@ in the key string
  */
 
 // t must already be a new starting trie
-trie* trie_add(trie *t, const char *str, int object)
+trie* trie_add(trie *t, unsigned char *str, int object)
 {
    const int n = strlen(str);
    int i;
@@ -4058,7 +4058,7 @@ trie* trie_add(trie *t, const char *str, int object)
 
    for(i=0; i<n; i++)
    {
-      const char c = str[i];
+      unsigned char c = str[i];
       trie* parent = t;
 
       t = t->first_child;
@@ -4110,8 +4110,8 @@ trie* trie_add(trie *t, const char *str, int object)
 
 ///////////////////////////////////////////////////////////////////////////////////
 
-
-trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str)
+// Not used we think...
+trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
 {
    const int n = strlen(str);
    int i;
@@ -4121,7 +4121,7 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str)
 
    for(i=0; i<n; i++, current = t)
    {
-      const char c = str[i];
+      unsigned char c = str[i];
       t = t->first_child;
       t = trie_at_level(t,c);
       if(t == NULL)
@@ -4148,14 +4148,14 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str)
 
 
 
-trie* trie_lookup2(trie *t, const char *str)
+trie* trie_lookup2(trie *t, unsigned char *str)
 {
    const int n = strlen(str);
    int i;
 
    for(i=0; i<n; i++)
    {
-      const char c = str[i];
+      unsigned char c = str[i];
       t = t->first_child;
       t = trie_at_level(t,c);
       if(t == NULL)
@@ -4171,7 +4171,8 @@ trie* trie_lookup2(trie *t, const char *str)
 
 
 
-trie* f(trie *t, int i, int n, const char *str, trie *rec)
+// Not used we think...
+trie* f(trie *t, int i, int n, unsigned char *str, trie *rec)
 {
 	  trie *current = t;
 
@@ -4193,7 +4194,7 @@ trie* f(trie *t, int i, int n, const char *str, trie *rec)
 		   }
 	  }
 
-      const char c = str[i];
+      unsigned char c = str[i];
 	  t = t->first_child;
       //t = trie_at_level_noline(t,c);
       t = trie_at_level(t,c);
@@ -4224,7 +4225,7 @@ trie* f(trie *t, int i, int n, const char *str, trie *rec)
 
 
 
-void new_one(trie *t, const char *str, NEIGHBOUR_ADDR _if)
+void new_one(trie *t, unsigned char *str, NEIGHBOUR_ADDR _if)
 {
    const int n = strlen(str);
    //f(t, 0, n, str, t);
