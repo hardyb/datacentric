@@ -4,7 +4,19 @@ AAA00000044
 3
 AAA00000043
 true
-30
+26
+9999
+false
+false
+false
+false
+CONNECTION
+AAA00000044
+0202FF06
+3
+AAA0000004D
+true
+28
 9999
 false
 false
@@ -16,7 +28,7 @@ AAA00000044
 3
 AAA0000004E
 true
-51
+26
 9999
 false
 false
@@ -28,7 +40,7 @@ AAA00000044
 3
 AAA0000003A
 true
-34
+32
 9999
 false
 false
@@ -40,7 +52,7 @@ AAA00000044
 3
 AAA00000045
 true
-39
+31
 9999
 false
 false
@@ -52,7 +64,7 @@ AAA00000044
 3
 AAA0000003B
 true
-36
+35
 9999
 false
 false
@@ -64,7 +76,7 @@ AAA00000044
 3
 AAA00000039
 true
-27
+24
 9999
 true
 false

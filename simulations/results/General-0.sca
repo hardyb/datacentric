@@ -1,0 +1,117 @@
+version 2
+run General-0-20120531-16:21:36-4088
+attr configname General
+attr datetime 20120531-16:21:36
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network DataCentricNet
+attr processid 4088
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar DataCentricNet.host[0].net 	NumberOfNeighbours 	3
+scalar DataCentricNet.host[1].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[2].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[3].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[4].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[5].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[6].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[7].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[8].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[9].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[10].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[11].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[12].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[13].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[14].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[15].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[16].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[17].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[18].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[19].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[20].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[21].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[22].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[23].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[24].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[25].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[26].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[27].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[28].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[29].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[30].net 	NumberOfNeighbours 	3
+scalar DataCentricNet.host[31].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[32].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[33].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[34].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[35].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[36].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[37].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[38].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[39].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[40].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[41].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[42].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[43].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[44].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[45].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[46].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[47].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[48].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[49].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[50].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[51].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[52].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[53].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[54].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[55].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[56].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[57].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[58].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[59].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[60].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[61].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[62].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[63].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[64].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[65].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[66].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[67].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[68].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[69].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[70].net 	NumberOfNeighbours 	3
+scalar DataCentricNet.host[71].net 	NumberOfNeighbours 	6
+scalar DataCentricNet.host[72].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[73].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[74].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[75].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[76].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[77].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[78].net 	NumberOfNeighbours 	8
+scalar DataCentricNet.host[79].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[80].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[81].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[82].net 	NumberOfNeighbours 	3
+scalar DataCentricNet.host[83].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[84].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[85].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[86].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[87].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[88].net 	NumberOfNeighbours 	7
+scalar DataCentricNet.host[89].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[90].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[91].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[92].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[93].net 	NumberOfNeighbours 	4
+scalar DataCentricNet.host[94].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[95].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[96].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[97].net 	NumberOfNeighbours 	3
+scalar DataCentricNet.host[98].net 	NumberOfNeighbours 	5
+scalar DataCentricNet.host[99].net 	NumberOfNeighbours 	3

@@ -13,3 +13,19 @@ weAreCollaboratorFor
 start_reinforce
 start_reinforce_interest
 start_reinforce_collaboration
+
+
+
+
+
+assignments signed to unsigned and unsigned to signed retains bit pattern
+not sure about passing into functions
+
+key issue is comparison
+they must be being treated as identical types for the comparison 
+result to be accurate
+
+#defines are unsigned char/int
+
+in the long term we need to make all the stuff
+to do with the elements of the tries unsigned char

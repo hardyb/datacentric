@@ -260,7 +260,7 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     std::ostringstream ss;
     ss.clear();
-    ss << "\x3\x1";
+    ss << "\x83\x2";
     ss << (unsigned char)(reading & 0xff);
     ss << (unsigned char)((reading >>8) & 0xff);
     ss << "\x0";
@@ -336,6 +336,7 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
 
     //rd = &(netModule->moduleRD);
 
+    /*
     char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
             i != sourcesData.end(); ++i)
@@ -348,9 +349,9 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
         //appPkt->setDestName(apDest);
         appPkt->setCreationTime(simTime());
 
-        /*Ieee802154UpperCtrlInfo *control_info = new Ieee802154UpperCtrlInfo();
-        control_info->setDestName(apDest);
-        appPkt->setControlInfo(control_info);*/
+        //Ieee802154UpperCtrlInfo *control_info = new Ieee802154UpperCtrlInfo();
+        //control_info->setDestName(apDest);
+        //appPkt->setControlInfo(control_info);
 
         char x[20];
         int datalen = strlen(i->c_str());
@@ -370,6 +371,8 @@ void DataCentricTestApp::SendTraf(cPacket* apMsg, const char* apDest)
         //handle_data(SELF_INTERFACE);
 
     }
+*/
+
 
 }
 

@@ -346,9 +346,9 @@ void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
 void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appPkt)
 {
     // MOVE THIS BIT INTO FRAMEWORK
-    char temp[30];
-    char x[20];
-    char* index = x;
+    unsigned char temp[30];
+    unsigned char x[20];
+    unsigned char* index = x;
     int stateLen = appPkt->getPktData().size();
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), index);
     index += stateLen++;
@@ -356,7 +356,7 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
     //x[stateLen] = DOT;
     //getLongestContextTrie(rd->top_context, temp, temp, &(x[stateLen+1]));
     getLongestContextTrie(rd->top_context, temp, temp, ++index);
-    stateLen += strlen(index);
+    stateLen += strlen((const char*)index);
     unsigned char* data = (unsigned char*)malloc(stateLen);
     memcpy(data, x, stateLen);
     send_data(stateLen, data);
@@ -383,8 +383,9 @@ void DataCentricNetworkLayer::SetContext(DataCentricAppPkt* appPkt)
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), contextData.begin());
     int size = appPkt->getPktData().size();
     size = contextData.size();
-    trie_add(rd->top_context, contextData.c_str(), CONTEXT);
-
+    unsigned char x[30];
+    memcpy(x, contextData.c_str(), strlen(contextData.c_str()));
+    trie_add(rd->top_context, x, CONTEXT);
 }
 
 
@@ -396,12 +397,12 @@ void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* app
     int size = appPkt->getPktData().size();
     size = sourceData.size();
     std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str()).asVector();
-    char temp[30];
+    unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
             i != sourcesData.end(); ++i)
     {
         // MOVE THIS BIT INTO FRAMEWORK
-        char x[20];
+        unsigned char x[20];
         int datalen = strlen(i->c_str());
         memcpy(x, i->c_str(), datalen);
         x[datalen] = DOT;
@@ -421,12 +422,12 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
     int size = appPkt->getPktData().size();
     size = sinkData.size();
     std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
-    char temp[30];
+    unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sinksData.begin();
             i != sinksData.end(); ++i)
     {
         // MOVE THIS BIT INTO FRAMEWORK
-        char x[20];
+        unsigned char x[20];
         int datalen = strlen(i->c_str());
         memcpy(x, i->c_str(), datalen);
         x[datalen] = DOT;
@@ -594,6 +595,17 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
             break;
     }
 
+    switch ( *_msg )
+    {
+        case DATA:
+            break;
+        default:
+            currentModule->mNetMan->updateControlPacketData();
+            break;
+    }
+
+
+
 //#define ADVERT 0
 //#define INTEREST 1 // Need to look at this - it is being used by two bits of code differently!!!!!!!!!
 //#define REINFORCE 2
@@ -662,7 +674,14 @@ static void cb_bcast_message(unsigned char* _msg)
     //controlPackets
 
 
-    currentModule->mNetMan->updateControlPacketData();
+    switch ( *_msg )
+    {
+        case DATA:
+            break;
+        default:
+            currentModule->mNetMan->updateControlPacketData();
+            break;
+    }
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));

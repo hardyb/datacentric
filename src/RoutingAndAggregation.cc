@@ -392,7 +392,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
   * to obtain the shortest context
   * current version assumes there is only one of these!!
   */
-  void getShortestContextTrie(trie *t, char* str, char* i, char* shortestContext)
+  void getShortestContextTrie(trie *t, unsigned char* str, unsigned char* i, unsigned char* shortestContext)
   {
          if ( t != NULL )
          {
@@ -405,7 +405,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
              if ( t->c )
              {
                  //if (!t->first_child)
-                     strcpy(shortestContext, str);
+                     strcpy((char*)shortestContext, (const char*)str);
                      return;
                      //memcpy(longestContext, queue, strlen(queue));
                      //process(t->c, (unsigned char*)queue);
@@ -429,7 +429,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  * to obtain the longest context
  * current version assumes there is only one of these!!
  */
- void getLongestContextTrie(trie *t, char* str, char* i, char* longestContext)
+ void getLongestContextTrie(trie *t, unsigned char* str, unsigned char* i, unsigned char* longestContext)
  {
         if ( t != NULL )
         {
@@ -442,7 +442,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
             if ( t->c )
             {
                 if (!t->first_child)
-                    strcpy(longestContext, str);
+                    strcpy((char*)longestContext, (const char*)str);
                     //memcpy(longestContext, queue, strlen(queue));
                     //process(t->c, (unsigned char*)queue);
                 //printf("key: %s    -    ", queue);
@@ -767,7 +767,7 @@ void MarkIFDown(Interface* i, State* s)
 }
 
 
-void InterfaceDownCallBack(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+void InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( !s->bestGradientToDeliver->key2->up )
     {
@@ -782,8 +782,8 @@ void InterfaceDownCallBack(State* s, char* _buf, NEIGHBOUR_ADDR _if)
             add(&(s->deliveryInterfaces), alternativeBestGradientToDeliver->key2);
             outgoing_packet.message_type = REINFORCE_INTEREST;
             //outgoing_packet.data = incoming_packet.data;
-            outgoing_packet.data = (unsigned char*)_buf;
-            outgoing_packet.length = strlen(_buf); // strl ok here
+            outgoing_packet.data = _buf;
+            outgoing_packet.length = strlen((const char*)_buf); // strl ok here
             outgoing_packet.path_value = 0;
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
             outgoing_packet.down_interface = _if;
@@ -1089,6 +1089,9 @@ struct InterfaceNode* FindInterfaceNode(struct InterfaceNode* tree, NEIGHBOUR_AD
 /*
  * Just about OK
  */
+/*
+
+NOT USED???
 struct KDGradientNode* newKDGradientNode(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int obtain, int deliver)
 {
 	struct KDGradientNode* n = (struct KDGradientNode *)malloc(sizeof(struct KDGradientNode));
@@ -1110,7 +1113,7 @@ struct KDGradientNode* newKDGradientNode(char* fullyqualifiedname, NEIGHBOUR_ADD
 	n->right =NULL;
 	return n;
 }
-
+ */
 
 
 
@@ -1407,7 +1410,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 
 
 
-struct KDGradientNode* insertKDGradientNode1(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
 {
 	// possibly remove these at some point
 	// have t and i passed in
@@ -1545,26 +1548,26 @@ struct KDGradientNode* insertKDGradientNode(char* fullyqualifiedname, int iName,
 
 
 
-void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
+void reinforceDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
 {
 	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, REINFORCE_DELIVER, 0, rd->grTree, 0);
 }
 
 
-void reinforceObtainGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
+void reinforceObtainGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName)
 {
 	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, REINFORCE_OBTAIN, 0, rd->grTree, 0);
 }
 
 
 
-void setObtainGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
+void setObtainGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
 {
 	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, OBTAIN, pCost, rd->grTree, 0);
 }
 
 
-void setDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
+void setDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
 {
 	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, DELIVER, pCost, rd->grTree, 0);
 }
@@ -2208,7 +2211,7 @@ bool copyMessageIn(void* p1, void* p2)
 
 
 NEIGHBOUR_ADDR excludedInterface;
-void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     // but it's the query SOURCE data we need to send not the
 
@@ -2588,7 +2591,7 @@ void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg)
 
 
 
-void weAreSourceFor(char* _data)
+void weAreSourceFor(unsigned char* _data)
 {
 	if ( ((*_data) & MSB2) == PUBLICATION )
 	{
@@ -2612,7 +2615,7 @@ void weAreSourceFor(char* _data)
 }
 
 
-void weAreSinkFor(char* _data)
+void weAreSinkFor(unsigned char* _data)
 {
 	if ( ((*_data) & MSB2) == RECORD )
 	{
@@ -2630,7 +2633,7 @@ void weAreSinkFor(char* _data)
 
 
 
-void weAreCollaboratorInitiatorFor(char* _data)
+void weAreCollaboratorInitiatorFor(unsigned char* _data)
 {
     if ( ((*_data) & MSB2) == COLLABORATIONBASED )
     {
@@ -2651,7 +2654,7 @@ void weAreCollaboratorInitiatorFor(char* _data)
 
 
 
-void weAreCollaboratorFor(char* _data)
+void weAreCollaboratorFor(unsigned char* _data)
 {
     if ( ((*_data) & MSB2) == COLLABORATIONBASED )
     {
@@ -2836,7 +2839,8 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 	// here is where (instead of this old style scope) we need to run one of the
 	// trie prefix functions - not sure which one
 
-	char* ptr = strchr((const char*)incoming_packet.data, DOT);
+	char dot = DOT;
+	unsigned char* ptr = (unsigned char*)strchr((char*)incoming_packet.data, dot);
 	if ( ptr )
 	{
 		t = trie_lookup2(rd->top_context, ptr+1);
@@ -2853,7 +2857,7 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
 	int inserted;
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-	setObtainGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
+	setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value);
 
 
 	//void setObtainGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
@@ -2950,7 +2954,7 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
     t = trie_add(rd->top_state, incoming_packet.data, STATE);
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
+    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
 
     if ( t )
     {
@@ -3014,7 +3018,7 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 
 
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
-	setDeliverGradient((char*)incoming_packet.data, _interface, incoming_packet.path_value);
+	setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
 
     if ( incoming_packet.down_interface == thisAddress )
         return;
@@ -3046,7 +3050,7 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
     // reinforce the the preceding interface in the direction of sink
 	// CHANGE_
 	//reinforceDeliverGradient(incoming_packet.data    .the_message.data_value, _interface);
-	reinforceDeliverGradient((char*)incoming_packet.data, _interface);
+	reinforceDeliverGradient(incoming_packet.data, _interface);
 	//StateNode* sn = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value);
 
 	// not sure whether we want this or an add to obtain the trie node
@@ -3082,7 +3086,7 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 
         // also reinforce the path to the source for breakage messages
 		// even if it is self
-		reinforceObtainGradient((char*)incoming_packet.data, interface);
+		reinforceObtainGradient(incoming_packet.data, interface);
 
 		// If interface is self do not send message on
 		if ( interface == SELF_INTERFACE )
@@ -3106,7 +3110,7 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 {
 
-	reinforceObtainGradient((char*)incoming_packet.data, _interface);
+	reinforceObtainGradient(incoming_packet.data, _interface);
 
 	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
@@ -3165,7 +3169,7 @@ void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 
 void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
 {
-    reinforceObtainGradient((char*)incoming_packet.data, _interface);
+    reinforceObtainGradient(incoming_packet.data, _interface);
 
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
@@ -3173,18 +3177,18 @@ void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
     {
         if ( t->s->deliveryInterfaces )
         {
-            reinforceDeliverGradient((char*)incoming_packet.data, _interface);
+            reinforceDeliverGradient(incoming_packet.data, _interface);
             return;
         }
 
-        reinforceDeliverGradient((char*)incoming_packet.data, _interface);
+        reinforceDeliverGradient(incoming_packet.data, _interface);
 
         // find the next interface to reinforce
         NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
 
         // IS THIS COMMENT IN RIGHT PLACE?                  also reinforce the path to the source for breakage messages
         // even if it is self
-        reinforceDeliverGradient((char*)incoming_packet.data, interface);
+        reinforceDeliverGradient(incoming_packet.data, interface);
 
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )
@@ -3228,7 +3232,7 @@ void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
  * only treat as arrived from SELF?
  */
 // probably not thread safe
-void start_reinforce(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
+void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 {
 	// did we already do this at start up when we made us a sink for this name?
 	// NO!!! I think we did set best grad but did not REINFORCE
@@ -3279,7 +3283,7 @@ void start_reinforce(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
  * only treat as arrived from SELF?
  */
 // probably not thread safe
-void start_reinforce_interest(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
+void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 {
 	reinforceObtainGradient(fullyqualifiedname, SELF_INTERFACE);
 	//StateNode* sn = FindStateNode(rd->stateTree, specific_data_value._dataname_struct1.the_dataname);
@@ -3324,7 +3328,7 @@ void start_reinforce_interest(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
  * Should these start_reinforce... functions be incorporated into the handle ones
  * only treat as arrived from SELF?
  */
-void start_reinforce_collaboration(char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
+void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if)
 {
     reinforceObtainGradient(fullyqualifiedname, SELF_INTERFACE);
     //StateNode* sn = FindStateNode(rd->stateTree, specific_data_value._dataname_struct1.the_dataname);
@@ -3612,13 +3616,13 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
  * This is to send reinforcements along prefixes
  * if the prefix has a best deliver gradient but no selected (reinforced) delivery interface
  */
-void consider_reinforce_interest(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
     {
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
-        start_reinforce_interest((char*)_buf, 0);
+        start_reinforce_interest(_buf, 0);
     }
 
 }
@@ -3629,13 +3633,13 @@ void consider_reinforce_interest(State* s, char* _buf, NEIGHBOUR_ADDR _if)
  * This is to send reinforcements along prefixes
  * if the prefix has a best deliver gradient but no selected (reinforced) delivery interface
  */
-void consider_reinforce_collaberation(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+void consider_reinforce_collaberation(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
     {
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
-        start_reinforce_collaboration((char*)_buf, 0);
+        start_reinforce_collaboration(_buf, 0);
     }
 
 }
@@ -3643,7 +3647,7 @@ void consider_reinforce_collaberation(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 
 
 int numSinks;
-void count_sink(State* s, char* _buf, NEIGHBOUR_ADDR _if)
+void count_sink(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->action == SINK_ACTION )
     {
@@ -3698,7 +3702,7 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
             {
                 // second parameter no longer used, pos pass s in future to save
                 // unnecessary work in the function
-                start_reinforce((char*)_data, 0);
+                start_reinforce(_data, 0);
             }
         }
 
@@ -4046,7 +4050,7 @@ in the key string
 // t must already be a new starting trie
 trie* trie_add(trie *t, unsigned char *str, int object)
 {
-   const int n = strlen(str);
+   const int n = strlen((const char*)str);
    int i;
    //trie* found;
    //cout << "Adding: ";
@@ -4113,7 +4117,7 @@ trie* trie_add(trie *t, unsigned char *str, int object)
 // Not used we think...
 trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
 {
-   const int n = strlen(str);
+   const int n = strlen((const char*)str);
    int i;
    trie *current = t;
    //cout << "Matching: " << str << endl;
@@ -4150,7 +4154,7 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
 
 trie* trie_lookup2(trie *t, unsigned char *str)
 {
-   const int n = strlen(str);
+   const int n = strlen((const char*)str);
    int i;
 
    for(i=0; i<n; i++)
@@ -4224,10 +4228,10 @@ trie* f(trie *t, int i, int n, unsigned char *str, trie *rec)
 
 
 
-
+// NOT USED WE think...
 void new_one(trie *t, unsigned char *str, NEIGHBOUR_ADDR _if)
 {
-   const int n = strlen(str);
+   const int n = strlen((const char*)str);
    //f(t, 0, n, str, t);
    action_all_prefixes(t, 0, n, str, current_prefix_name, _if, consider_reinforce_interest);
 }

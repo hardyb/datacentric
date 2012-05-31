@@ -725,10 +725,10 @@ void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg));
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
 void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg));
-void weAreSourceFor(char* _data);
-void weAreSinkFor(char* _data);
-void weAreCollaboratorFor(char* _data);
-void weAreCollaboratorInitiatorFor(char* _data);
+void weAreSourceFor(unsigned char* _data);
+void weAreSinkFor(unsigned char* _data);
+void weAreCollaboratorFor(unsigned char* _data);
+void weAreCollaboratorInitiatorFor(unsigned char* _data);
 void send_data(int len, unsigned char* _data);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf);
 void read_packet(unsigned char* pkt);
@@ -747,8 +747,8 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);
-void getLongestContextTrie(trie *t, char* str, char* i, char* longestContext);
-void getShortestContextTrie(trie *t, char* str, char* i, char* shortestContext);
+void getLongestContextTrie(trie *t, unsigned char* str, unsigned char* i, unsigned char* longestContext);
+void getShortestContextTrie(trie *t, unsigned char* str, unsigned char* i, unsigned char* shortestContext);
 
 
 void UpdateBestGradient(Interface* i, State* s);
@@ -762,8 +762,8 @@ state* state_new(void);
 context* context_new(void);
 trie* trie_new(void);
 void trie_free(trie* t);
-trie* trie_at_level(trie *t, char c);
-trie* trie_add(trie *t, const char *str, int object);
+trie* trie_at_level(trie *t, unsigned char c);
+trie* trie_add(trie *t, unsigned char *str, int object);
 void write_connections(void process(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if));
 bool write_gradients(void process(KDGradientNode* g, unsigned char* _name));
 void UpdateGradientFile();
@@ -782,7 +782,7 @@ every name in the incoming message
 trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str);
 
 
-void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIGHBOUR_ADDR _if, void process(State* s, char* _buf, NEIGHBOUR_ADDR _if));
+void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, void process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if));
 
 
 
@@ -796,7 +796,7 @@ A match is made if the context name in the message is a prefix of a hierarchical
 context name in the given context record at the node
 
 */
-trie* trie_lookup2(trie *t, const char *str);
+trie* trie_lookup2(trie *t, unsigned char *str);
 
 
 
