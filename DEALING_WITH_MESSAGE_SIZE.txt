@@ -1,0 +1,22 @@
+outgoing_packet.message_type		1
+outgoing_packet.length			1
+pkt[1]					5
+outgoing_packet.path_value		2
+outgoing_packet.excepted_interface	8
+outgoing_packet.down_interface		8
+
+
+
+
+Total					25
+
+
+Sending app packet RREQAodvMsg 
+
+Probably need a better way to deal with excepted interface
+
+
+
+
+
+

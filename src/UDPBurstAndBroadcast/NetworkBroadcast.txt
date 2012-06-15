@@ -1,0 +1,162 @@
+
+
+
+
+A broadcast transmission is initiated by the local APS sub-layer entity
+using NLDE-DATA.request primitive 
+set DstAddr to a broadcast address from Table 3.54
+
+Table 3.54
+
+0xffff			All devices in PAN
+0xfffe			Reserved
+0xfffd			macRxOnWhenIdle = TRUE
+0xfffc 			All routers and coordinator
+0xfffb 			Low power routers only
+0xfff8 - 0xfffa 	Reserved
+
+
+by the NWK layer 
+construct a NWK header with same broadcast addresses
+
+
+
+NWK layer of a router or coordinator 
+issues an MCPS-DATA.request primitive to the MAC 
+with 
+DstAddrMode parameter set to 0x02 (16-bit network address) 
+and DstAddr parameter set to 0xffff.
+
+For end device, the MAC destination
+address of the broadcast frame shall be set 
+to the 16-bit network address of parent of the end device.
+
+PANId is set to the PANId of the network
+
+
+
+
+
+
+
+
+MAC sub-layer acknowledgement is disabled 
+passive acknowledgement mechanism is used.
+this means every router and coordinator 
+keeps track of which of its neighboring devices have successfully
+relayed the broadcast
+
+
+
+
+coordinator, router and end devices with macRxOnWhenIdle set
+shall keep a record of any new broadcast
+transaction that is either initiated locally or received from a neighboring device.
+
+This is called the broadcast transaction record (BTR) 
+it contains at least the sequence number and the source address of the broadcast frame. 
+these are stored thus:
+
+Source Address		2 bytes		The 16-bit network address of the broadcast initiator.
+Sequence Number		1 byte		The NWK layer sequence number of the initiator?s broadcast.
+Expiration Time		1 byte		A countdown timer indicating the number of seconds until this entry
+					expires; the initial value is nwkNetworkBroadcastDeliveryTime
+
+
+
+
+
+If broadcast address does NOT correspond to the receiver device type (tab3.54)
+frame shall be discarded. 
+If broadcast address DOES correspond to the receiver device type
+device will check sequence number and the source address of the broadcast 
+with the BTT
+
+
+
+If the device has a BTR of this particular broadcast frame in its BTT, it may
+update the BTR to mark the neighboring device as having relayed the broadcast
+frame. It shall then drop the frame. 
+
+If no record is found, it shall create a new BTR in BTT 
+and may mark the neighboring device as having relayed the broadcast.
+
+The NWK layer shall then indicate to the higher layer that a new broadcast frame
+has been received using the NLDE-DATA.indication.
+
+
+If the radius field value is greater than 0 
+or if the device is not an End Device then it retransmits frame
+else it drops the frame. 
+
+
+
+Before retransmission will wait random broadcast jitter time
+< nwkcMaxBroadcastJitter 
+
+
+
+
+LOOK AT LATER
+===============
+end devices with macRxOnWhenIdle not set shall not 
+do relay of broadcast frames or keep data in any way
+If BTT is full and no expired entries to delete
+then just drop frame
+
+
+
+
+
+
+
+coordinator or router operating in non-beacon-enabled 
+will retransmit a broadcast upto nwkMaxBroadcastRetries times
+
+If device NOT support passive acknowledgement
+will retransmit exactly nwkMaxBroadcastRetries times
+
+If device DOES support passive acknowledgement
+and any of ite neighbor has NOT relayed the broadcast in nwkPassiveAckTimeout 
+will continue to retransmit upto nwkMaxBroadcastRetries times
+
+A device should make a BTT entry expired state
+after nwkNetworkBroadcastDeliveryTime seconds 
+expired entries can be overwritten
+
+
+
+When a router that has macRxOnWhenIdle MAC PIB not set
+receives a broadcast
+it shall use different from above procedure to retransmit
+========================
+It shall retransmit the frame without
+delay to each of its neighbors individually, using a MAC layer unicast, 
+...
+that is, with the DstAddr parameter of the MCPS-DATA.request primitive set to the
+address of each neighbor device and not to the broadcast address. 
+
+
+
+Similarly, a router or coordinator with the macRxOnWhenIdle MAC PIB attribute set
+but with one or more neighbors with the macRxOnWhenIdle MAC PIB not set
+====================================================================
+in the case where the destination address is 0xffff
+denoting broadcast to all devices, 
+...
+will also retransmit the broadcast frame to each of these
+neighbors in turn as a MAC layer unicast 
+...
+but also perform the general broadcast procedure in the previous paragraphs.
+...
+Indirect transmission, as described in IEEE 802.15.4-2003 [B1], may be employed to
+ensure that these unicasts reach their destination.
+
+
+#######
+Every ZigBee router shall have the ability to buffer at least 1 frame at the NWK
+layer in order to facilitate retransmission of broadcasts.
+
+
+
+

@@ -1,0 +1,146 @@
+origin
+
+91EC0002
+2448162818
+
+91
+145
+ec
+236
+00
+0
+02
+2
+
+
+
+
+local addresses:
+
+2130706433
+2448162824
+
+2130706433
+2448162817
+
+2130706433
+2448162827
+
+2130706433
+2448162820
+
+2130706433
+2448162824
+
+
+
+
+2130706433
+2448162825
+
+2130706433
+2448162822
+
+2130706433
+2448162819
+
+
+
+
+
+
+7F000001
+?
+
+
+
+
+7F000001
+91EC0003
+
+
+2130706433
+2448162823
+2130706433
+2448162822
+2130706433
+2448162824
+
+
+
+
+
+2130706433
+2448162822
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+app packet?
+
+app payload	64
+udp header	8
+ip header	20
+
+
+aodv packet
+
+udp header	8
+ip header	20
+
+udp header	8
+
+
+several of these mixed
+
+
+
+
+
+
+aodv message 	24 * 8 bits
+udp header	8 bytes
+ip header	20 bytes
+mac		72 bits
+
+
+
+
+
+rreq message 	24 bytes
+udp header	8 bytes
+ip header	20 bytes
+mac		9 bytes
+
+61 bytes
+0.0268 transmission time ??
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

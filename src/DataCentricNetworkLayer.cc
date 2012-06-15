@@ -622,6 +622,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
+    appPkt->setByteLength(5);
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
     appPkt->setCreationTime(simTime());
@@ -686,6 +687,7 @@ static void cb_bcast_message(unsigned char* _msg)
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
+    appPkt->setByteLength(5);
 
     appPkt->setCreationTime(simTime());
 
