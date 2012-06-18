@@ -46,7 +46,13 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     //cModule* macModule;
     //cModule* mPhyModule;
     Ieee802154Phy* mPhyModule;
+    DropTailQueue* mQueueModule;
     DataCentricNetworkMan* mNetMan;
+
+    double mMeanDownTime;
+    int mMeanDownTimeInterval;
+    double mMeanDownTimeSeconds;
+    double mMeanUpTimeSeconds;
 
     // accessed from C function call back
     int             mLowerLayerOut;
@@ -85,8 +91,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     double          numForward;
 
     cMessage *mpStartMessage;
-    cMessage *mpDownMessage;
-    cMessage *mpUpMessage;
+    cMessage *mpUpDownMessage;
 
 
 };

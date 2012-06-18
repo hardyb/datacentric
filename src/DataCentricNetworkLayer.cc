@@ -69,8 +69,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
     if (0 == aStage)
     {
         mpStartMessage = new cMessage("StartMessage");
-        mpDownMessage = new cMessage("DownMessage");
-        mpUpMessage = new cMessage("UpMessage");
+        mpUpDownMessage = new cMessage("DownMessage");
         // WirelessMacBase stuff...
         mUpperLayerIn  = findGate("upperLayerIn");
         mUpperLayerOut = findGate("upperLayerOut");
@@ -84,6 +83,16 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
         m_debug                     = par("debug");
         isPANCoor                   = par("isPANCoor");
+
+        mMeanDownTime = par("meanDownTime");
+        mMeanDownTimeInterval = par("meanDownTimeInterval");
+
+        mMeanDownTimeSeconds = mMeanDownTimeInterval * mMeanDownTime;
+        mMeanUpTimeSeconds = mMeanDownTimeInterval * (1.0-mMeanDownTime);
+
+
+
+
         numForward      = 0;
 
         // ORIGINAL DATA CENTRIC STUFF
@@ -119,6 +128,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         cModule* nicModule = this->getParentModule()->getSubmodule("nic");
         cModule* macModule = check_and_cast<cModule*>(nicModule->getSubmodule("mac"));
         mPhyModule = check_and_cast<Ieee802154Phy*>(nicModule->getSubmodule("phy"));
+        mQueueModule = check_and_cast<DropTailQueue*>(nicModule->getSubmodule("ifq"));
         mPhyModule->disableModule();
         cSimulation* sim =  cSimulation::getActiveSimulation();
         mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
@@ -134,11 +144,14 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         WriteModuleListFile();
-        if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
-        {
+
+        scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
+
+        //if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
+        //{
             //scheduleAt(simTime() + 8.0, mpDownMessage);
 
-        }
+        //}
         this->getParentModule()->getFullName();
     }
 
@@ -202,7 +215,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     std::string fName = this->getParentModule()->getFullName();
 
 
-    if (msg == mpDownMessage || msg == mpUpMessage )
+    if (msg == mpUpDownMessage )
     {
         //mPhyModule->callFinish();
 
@@ -220,22 +233,27 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             moduleRD.top_context = trie_new();
             moduleRD.top_state = trie_new();
 
+            mQueueModule->dropAll();
+
             std::string s;
             std::ostringstream ss;
             ss.clear();
             ss.str(s);
             ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
             std::remove(ss.str().c_str());
+
+            scheduleAt(simTime() + poisson(mMeanDownTimeSeconds), mpUpDownMessage);
         }
         else
         {
             mPhyModule->enableModule();
             StartUp();
+
+            scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
         }
 
 
 
-        scheduleAt(simTime() + 4.0, mpUpMessage);
         return;
 
     }
