@@ -16,6 +16,7 @@
 
 #include "Ieee802154Phy.h"
 #include "DataCentricNetworkMan.h"
+#include "DropTailQueue.h"
 
 
 #define IMAGEPATH "C:/omnetpp-4.2.1/images/"
@@ -33,6 +34,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     virtual void initialize(int);
     virtual void finish();
     void WriteModuleListFile();
+    bool FindNode(const string& addressToFind, string& matchingNodeName);
 
     double StartTime();
 

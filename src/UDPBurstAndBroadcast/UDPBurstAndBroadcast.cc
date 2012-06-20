@@ -205,7 +205,9 @@ cPacket *UDPBurstAndBroadcast::createPacket()
     //long msgByteLength = messageLengthPar->longValue();
     AppControlMessage *payload = new AppControlMessage(msgName);
     payload->setCntrlType(FIND_CONTROL_UNIT);
-    payload->setInterests("\x83"+"\x2"+"\x0");
+    //std::string interests = "\x83\x2\x0";
+    //payload->setInterests(interests.c_str());
+    payload->setInterests("\x83\x2\x0");
     payload->setSourceData("");
     payload->setByteLength(3);
     payload->addPar("sourceId") = getId();

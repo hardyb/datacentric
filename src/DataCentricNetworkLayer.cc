@@ -9,6 +9,7 @@
 #include "DataCentricNetworkLayer.h"
 #include "Ieee802Ctrl_m.h"
 #include "Ieee802154Frame_m.h"
+#include "Ieee802154NetworkCtrlInfo_m.h"
 
 //#include "InterfaceTableAccess.h"
 //#include "MACAddress.h"
@@ -315,8 +316,31 @@ void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
 
 void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
 {
-    Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
-    uint64 previousAddress = incomingControlInfo->getSrc().getInt();
+    //Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
+    Ieee802154NetworkCtrlInfo *incomingControlInfo = check_and_cast<Ieee802154NetworkCtrlInfo*>(appPkt->getControlInfo());
+
+    //incomingControlInfo->get
+    uint64 previousAddress = incomingControlInfo->getNetwAddr();
+    MACAddress prevAddr(previousAddress);
+    double powerRec = incomingControlInfo->getPowerRec();
+    double snr = incomingControlInfo->getSnr();
+
+    string fn(this->getParentModule()->getFullName());
+    EV << "=====================================================" << endl;
+    EV << "To: " << fn << endl;
+    string foundNode;
+    if ( this->FindNode(prevAddr.str(), foundNode))
+    {
+        EV << "From: " << foundNode << "  -  RSSI: " << powerRec << endl;
+        EV << "=====================================================" << endl;
+    }
+    else
+    {
+        EV << "From: " << prevAddr.str() << "  -  RSSI: " << powerRec << endl;
+        EV << "=====================================================" << endl;
+    }
+
+    //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
     unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
     handle_message(pkt, previousAddress);
@@ -513,6 +537,32 @@ void DataCentricNetworkLayer::WriteModuleListFile()
 
 }
 
+
+bool DataCentricNetworkLayer::FindNode(const string& addressToFind, string& matchingNodeName)
+{
+    //ev << "Searching for node with:    " << addressToFind << endl;
+    cModule* network = this->getParentModule()->getParentModule();
+    for (cSubModIterator iter(*network); !iter.end(); iter++)
+    {
+        string nodeBeingChecked(iter()->getFullName());
+        //ev << "Checking:    " << nodeBeingChecked << endl;
+        cModule* mac = iter()->getSubmodule("nic") ? iter()->getSubmodule("nic")->getSubmodule("mac") : 0;
+        if ( mac )
+        {
+            string addressFound = mac->par("address");
+            if ( addressFound == addressToFind )
+            {
+                //ev << nodeBeingChecked << " has IP Address: " << addressFound << endl;
+                matchingNodeName = nodeBeingChecked;
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+
 /*
 static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
 {
@@ -644,10 +694,12 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
     appPkt->setCreationTime(simTime());
-    Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
-    MACAddress destAddr(_interface);
-    controlInfo->setDest(destAddr);
-    controlInfo->setEtherType(ETHERTYPE_IPv4);
+    //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
+    Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
+    //MACAddress destAddr(_interface);
+    //controlInfo->setDest(destAddr);
+    controlInfo->setNetwAddr(_interface);
+    //controlInfo->setEtherType(ETHERTYPE_IPv4);
     appPkt->setControlInfo(controlInfo);
 
     //appPkt->setKind(8+_msg[0]);
@@ -709,10 +761,12 @@ static void cb_bcast_message(unsigned char* _msg)
 
     appPkt->setCreationTime(simTime());
 
-    Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
+    //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
+    Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
     static MACAddress broadcastAddr("FF:FF:FF:FF:FF:FF");
-    controlInfo->setDest(broadcastAddr);
-    controlInfo->setEtherType(ETHERTYPE_IPv4);
+    //controlInfo->setDest(broadcastAddr);
+    controlInfo->setNetwAddr(broadcastAddr.getInt());
+    //controlInfo->setEtherType(ETHERTYPE_IPv4);
     appPkt->setControlInfo(controlInfo);
 
     //appPkt->setKind(8+_msg[0]);
