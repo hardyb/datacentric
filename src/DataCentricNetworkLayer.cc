@@ -324,6 +324,8 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     MACAddress prevAddr(previousAddress);
     double powerRec = incomingControlInfo->getPowerRec();
     double snr = incomingControlInfo->getSnr();
+    unsigned int rssi = incomingControlInfo->getRssi();
+    unsigned char lqi = incomingControlInfo->getLqi();
 
     string fn(this->getParentModule()->getFullName());
     EV << "=====================================================" << endl;
@@ -331,14 +333,17 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     string foundNode;
     if ( this->FindNode(prevAddr.str(), foundNode))
     {
-        EV << "From: " << foundNode << "  -  RSSI: " << powerRec << endl;
-        EV << "=====================================================" << endl;
+        EV << "From: " << foundNode << endl;
     }
     else
     {
-        EV << "From: " << prevAddr.str() << "  -  RSSI: " << powerRec << endl;
-        EV << "=====================================================" << endl;
+        EV << "From: " << prevAddr.str() << endl;
     }
+    EV << "      -  Power: " << powerRec << endl;
+    EV << "      -  Snr:   " << snr << endl;
+    EV << "      -  RSSI:  " << rssi << endl;
+    EV << "      -  LQI:   " << (unsigned int)lqi << endl;
+    EV << "=====================================================" << endl;
 
     //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
     unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
