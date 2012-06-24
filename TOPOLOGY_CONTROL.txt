@@ -1,0 +1,29 @@
+
+
+
+
+
+
+SCENARIO 1
+==========
+mw					0.2
+sensitivity				-85dbm
+deployment				random
+max neighbours				95
+min neighbours				90
+time for lqi reqsts and responses	0.32
+
+
+
+
+
+
+SCENARIO 1
+==========
+mw					0.1
+sensitivity				-85dbm
+deployment				random
+max neighbours				95
+min neighbours				90
+time for lqi reqsts and responses	0.32
+

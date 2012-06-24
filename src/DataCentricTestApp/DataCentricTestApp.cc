@@ -213,7 +213,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     *ifs >> watts;
     *ifs >> period;
 
-    DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
     ss.clear();
     ss << "\x2\x2";
@@ -257,7 +257,7 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
     *ifs >> reading;
     *ifs >> period;
 
-    DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Sensor_Data");
     std::ostringstream ss;
     ss.clear();
     ss << "\x83\x2";

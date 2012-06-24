@@ -207,7 +207,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define COLLABORATE_ACTION 5
 #define COLLABORATE_INITIATOR__ACTION 6
 
-
+#define MAX_COST 65535
 
 extern int nodeConstraint;
 extern char nodeScope;
@@ -730,10 +730,11 @@ void weAreSinkFor(unsigned char* _data);
 void weAreCollaboratorFor(unsigned char* _data);
 void weAreCollaboratorInitiatorFor(unsigned char* _data);
 void send_data(int len, unsigned char* _data);
-void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf);
+void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi);
 void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
+unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
 void handle_advert(NEIGHBOUR_ADDR _interface);
 void handle_interest(NEIGHBOUR_ADDR _interface);
 void handle_reinforce(NEIGHBOUR_ADDR _interface);

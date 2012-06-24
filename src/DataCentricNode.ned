@@ -33,8 +33,8 @@ module DataCentricNode
 {
     parameters:
         @node();
-        int x @unit("m");
-        int y @unit("m");
+        //int x @unit("m");
+        //int y @unit("m");
         //int ss;
         string mobilityType;
         volatile double numHosts;
@@ -48,8 +48,8 @@ module DataCentricNode
         }
         mobility: StationaryMobility {//<mobilityType> like IMobility {
             parameters:
-                initialX = x;
-                initialY = y;
+                //initialX = x;
+                //initialY = y;
                 @display("p=65,150;i=block/cogwheel");
 
         }

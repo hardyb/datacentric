@@ -31,8 +31,10 @@ network DataCentricNet
                 submodules:
         host[numHosts]: DataCentricNode {
             parameters:
-                  y =  (floor(index/sqrt(numHosts))*nodeSeparation)+(nodeSeparation);
-                  x = ((index%floor(sqrt(numHosts)))*nodeSeparation)+(nodeSeparation);
+                  //y =  (floor(index/sqrt(numHosts))*nodeSeparation)+(nodeSeparation);
+                  //x = ((index%floor(sqrt(numHosts)))*nodeSeparation)+(nodeSeparation);
+                  
+                  
                   //ss = 15 + (floor(fmod(index,4)/3)*20);//(fmod(index,4)*10)+10;
                   //@display("b=$ss;i=device/pocketpc_s;r=0,,,0");//;r=,,#707070");
                   @display("i=device/pocketpc_s;r=,,#707070");

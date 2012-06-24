@@ -348,7 +348,7 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
     unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
-    handle_message(pkt, previousAddress);
+    handle_message(pkt, previousAddress, lqi);
     free(pkt);
 }
 
@@ -428,10 +428,12 @@ void DataCentricNetworkLayer::SetContext(DataCentricAppPkt* appPkt)
     string contextData;
     contextData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), contextData.begin());
-    int size = appPkt->getPktData().size();
-    size = contextData.size();
+    //int size = appPkt->getPktData().size();
+    //size = contextData.size();
     unsigned char x[30];
-    memcpy(x, contextData.c_str(), strlen(contextData.c_str()));
+    unsigned int contextLen = strlen(contextData.c_str());
+    memcpy(x, contextData.c_str(), contextLen);
+    x[contextLen] = 0;
     trie_add(rd->top_context, x, CONTEXT);
 }
 
@@ -695,7 +697,21 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
-    appPkt->setByteLength(5);
+    unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
+    appPkt->setByteLength(pktSize);
+
+    unsigned char* data = &(_msg[2]);
+    unsigned int len = _msg[1];
+    char dataText[40];
+    char* dataTextPtr = dataText;
+    for ( int i = 0; i < len; i++ )
+    {
+        int numChar = std::sprintf(dataTextPtr, "%d-", (unsigned int)*data);
+        dataTextPtr += numChar;
+        data++;
+    }
+    appPkt->setName((const char*)dataText);
+
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
     appPkt->setCreationTime(simTime());
@@ -762,7 +778,8 @@ static void cb_bcast_message(unsigned char* _msg)
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
-    appPkt->setByteLength(5);
+    unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
+    appPkt->setByteLength(pktSize);
 
     appPkt->setCreationTime(simTime());
 

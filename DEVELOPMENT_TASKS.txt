@@ -3,6 +3,18 @@ DEVELOPMENT TASKS
 =====================
 
 
+NBNB:
+
+What if a reinforcement failed 
+what do we do
+
+so either it troes a different route 
+or if it fails altogether
+then when data arrives it tries again to reinforce from that node
+and maybe sends a message back to the the originator
+
+
+
 the down interface will probably not have been marked down
 in the surrounding nodes if there has been
 no traffic
