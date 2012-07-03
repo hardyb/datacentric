@@ -16,10 +16,26 @@ void DataCentricNetworkMan::initialize(int aStage)
         std::string fName = this->getFullPath();
         std::string fName2 = this->getFullPath();
         numControlPackets = 0;
+
+        numHelloPackets = 0;
+        numHelloBackPackets = 0;
+        bcastNumInterestPackets = 0;
+        ucastNumInterestPackets = 0;
+        numAdvertPackets = 0;
+        numReinforcementPackets = 0;
+
+
         controlPackets.setName("ControlPackets");
         controlPacketFrequency.setName("controlPacketFrequency");
         mpControlPacketFrequencyMessage = new cMessage("ControlPacketFrequencyMessage");
 
+
+        helloPacketFrequency.setName("helloPacketFrequency");
+        helloBackPacketFrequency.setName("helloBackPacketFrequency");
+        bcastInterestPacketFrequency.setName("bcastInterestPacketFrequency");
+        ucastInterestPacketFrequency.setName("ucastInterestPacketFrequency");
+        advertPacketFrequency.setName("advertPacketFrequency");
+        reinforcementPacketFrequency.setName("reinforcementPacketFrequency");
 
 
         //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
@@ -58,11 +74,28 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
     if ( msg == mpControlPacketFrequencyMessage )
     {
         controlPacketFrequency.record(numControlPackets);
+
+        helloPacketFrequency.record(numHelloPackets);
+        helloBackPacketFrequency.record(numHelloBackPackets);
+        bcastInterestPacketFrequency.record(bcastNumInterestPackets);
+        ucastInterestPacketFrequency.record(ucastNumInterestPackets);
+        advertPacketFrequency.record(numAdvertPackets);
+        reinforcementPacketFrequency.record(numReinforcementPackets);
+
+
+
+
         if ( numControlPackets != 0 )
         {
             scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
         }
         numControlPackets = 0;
+        numHelloPackets = 0;
+        numHelloBackPackets = 0;
+        bcastNumInterestPackets = 0;
+        ucastNumInterestPackets = 0;
+        numAdvertPackets = 0;
+        numReinforcementPackets = 0;
 
 
     }
@@ -79,15 +112,51 @@ void DataCentricNetworkMan::finish()
 
 
 
-void DataCentricNetworkMan::updateControlPacketData()
+void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)
 {
-    Enter_Method("updateControlPacketData()");
+    Enter_Method("updateControlPacketData(unsigned char type, bool ucast)");
     if ( !mpControlPacketFrequencyMessage->isScheduled() )
     {
         scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
     }
-    numControlPackets++;
-    controlPackets.record(numControlPackets);
+
+    switch ( type )
+    {
+    case ADVERT:
+        numAdvertPackets++;
+        break;
+    case INTEREST:
+        if ( ucast )
+        {
+            ucastNumInterestPackets++;
+        }
+        else
+        {
+            bcastNumInterestPackets++;
+        }
+        break;
+    case REINFORCE:
+    case REINFORCE_INTEREST:
+        numReinforcementPackets++;
+        break;
+    case NEIGHBOR_UCAST:
+        numHelloBackPackets++;
+        break;
+    case NEIGHBOR_BCAST:
+        numHelloPackets++;
+        break;
+    }
+
+    switch ( type )
+    {
+        case DATA:
+            break;
+        default:
+            numControlPackets++;
+            controlPackets.record(numControlPackets);
+            break;
+    }
+
 }
 
 

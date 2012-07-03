@@ -15,14 +15,34 @@ class DataCentricNetworkMan : public cSimpleModule
   public:
     virtual void initialize(int);
     virtual void finish();
-    void updateControlPacketData();
+    void updateControlPacketData(unsigned char type, bool ucast);
 
   protected:
     void handleMessage(cMessage*);
 
     double numControlPackets;
+
+    double numHelloPackets;
+    double numHelloBackPackets;
+    double bcastNumInterestPackets;
+    double ucastNumInterestPackets;
+    double numAdvertPackets;
+    double numReinforcementPackets;
+
+
+
+
+
     cOutVector controlPackets;
     cOutVector controlPacketFrequency;
+    cOutVector helloPacketFrequency;
+    cOutVector helloBackPacketFrequency;
+    cOutVector bcastInterestPacketFrequency;
+    cOutVector ucastInterestPacketFrequency;
+    cOutVector advertPacketFrequency;
+    cOutVector reinforcementPacketFrequency;
+
+
     cMessage *mpControlPacketFrequencyMessage;
     // OPERATIONS
     //virtual void handleSelfMsg(cMessage*);

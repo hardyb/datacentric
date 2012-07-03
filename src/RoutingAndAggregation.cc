@@ -14,6 +14,40 @@ unsigned char current_prefix_name[100];
 #include <string.h>
 
 
+
+#define RETAFTERUCAST 0 // return after handle ucast
+#define TYPETHROUGH 0 //
+#define TYPERECV 0 //
+#define TEST3 0 //
+#define TEST4 0 //
+#define TEST5 0 //
+#define TEST6 0 //
+#define TEST7 0 //
+#define TEST8 0 //
+#define TEST9 0 //
+
+
+
+#define DBRETAFTERUCAST(thecode) if ( RETAFTERUCAST ) { thecode }
+#define DBTYPETHROUGH(thecode) if ( TYPETHROUGH ) { thecode }
+#define DBTYPERECV(thecode) if ( TYPERECV ) { thecode }
+#define DB3(thecode) if ( TEST3 ) { thecode }
+#define DB4(thecode) if ( TEST4 ) { thecode }
+#define DB5(thecode) if ( TEST5 ) { thecode }
+#define DB6(thecode) if ( TEST6 ) { thecode }
+#define DB7(thecode) if ( TEST7 ) { thecode }
+#define DB8(thecode) if ( TEST8 ) { thecode }
+#define DB9(thecode) if ( TEST9 ) { thecode }
+
+
+
+
+
+
+
+
+
+
 /*
 TODO
 
@@ -532,8 +566,8 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		}
  		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
 
-        sendAMessage(_if, write_packet());
-        //bcastAMessage(write_packet());
+        //sendAMessage(_if, write_packet());
+        bcastAMessage(write_packet());
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
@@ -549,8 +583,9 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
             outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
         }
  		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-        sendAMessage(_if, write_packet());
-        //bcastAMessage(write_packet());
+ 		std::cout << "Sending interest packet to: " << _if << std::endl;
+        //sendAMessage(_if, write_packet());
+        bcastAMessage(write_packet());
  	}
 
 
@@ -571,7 +606,8 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
             outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
         }
         // ??? something here ???
-        sendAMessage(_if, write_packet());
+        //sendAMessage(_if, write_packet());
+        bcastAMessage(write_packet());
     }
 
 
@@ -927,8 +963,10 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 
 // PROBABLY DOING AWAY WITH THIS
-void handle_interest_correction(NEIGHBOUR_ADDR _interface)
+void handle_interest_correction(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
+
     if ( incoming_packet.excepted_interface == thisAddress )
     {
         return;
@@ -1046,6 +1084,32 @@ void handle_interest_correction(NEIGHBOUR_ADDR _interface)
      count += CountInterfaceNodes(tree->right);
      return count;
  }
+
+
+ unsigned int AverageNeighborLqi(InterfaceNode* tree)
+ {
+     //return (TotalNeighborLqi(tree) / CountInterfaceNodes(tree));
+
+ }
+
+
+ unsigned int TotalNeighborLqi(InterfaceNode* tree)
+ {
+     unsigned int lqi = 0;
+     if ( tree )
+     {
+         lqi+=(unsigned int)tree->i->lqi;
+     }
+     else
+     {
+         return lqi;
+     }
+     lqi += CountInterfaceNodes(tree->left);
+     lqi += CountInterfaceNodes(tree->right);
+     return lqi;
+ }
+
+
 
 
 
@@ -1322,6 +1386,7 @@ struct KDGradientNode* traverseKDGradientNode(State* s, Interface* i, int costTy
 
 struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
 {
+    std::cout << "insert grad type: " << costType << " Cost: " << pCost << " State: " << s << std::endl;
 	if ( treeNode == NULL )
 	{
 		switch ( costType )
@@ -1377,6 +1442,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
                 case DELIVER:
 					if ( pCost < treeNode->costToDeliver )
 					{
+		                std::cout << "better deliver cost on this if, now: " << pCost << std::endl;
 						treeNode->costToDeliver = pCost;
 						if ( treeNode == treeNode->key1->bestGradientToDeliver )
 						{
@@ -1452,6 +1518,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 			if ( !treeNode->key1->bestGradientToDeliver
 				|| treeNode->costToDeliver < treeNode->key1->bestGradientToDeliver->costToDeliver )
 			{
+			    std::cout << "first or better best deliver cost, now: " << treeNode->costToDeliver << std::endl;
 				treeNode->key1->bestGradientToDeliver = treeNode;
 				treeNode->key1->bestGradientToDeliverUpdated = TRUE;
 			}
@@ -1734,6 +1801,7 @@ struct KDGradientNode* SearchForKDGradientNode2( State* s, Interface* i, struct 
 
 
 
+// seems as if not used at the moment
 struct KDGradientNode* SearchForKDGradientNode1( unsigned char* _data, NEIGHBOUR_ADDR iName, struct KDGradientNode* treeNode)
 {
 // TODO
@@ -2590,7 +2658,7 @@ void kickFSM()
 
 
 
-void (*h[10]) (NEIGHBOUR_ADDR _interface) =
+void (*h[10]) (control_data cd) =
 {
 handle_advert,
 handle_interest,
@@ -2820,34 +2888,60 @@ void send_data(int len, unsigned char* _data)
     incoming_packet.path_value = 0;
     incoming_packet.down_interface = UNKNOWN_INTERFACE;
     incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
-    handle_data(SELF_INTERFACE);
+    control_data cd;
+    cd.incoming_if = SELF_INTERFACE;
+    cd.incoming_lqi = 0;
+    handle_data(cd);
 }
 
 
 
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
 {
+
+
+    read_packet(_msg);
+
+    DBTYPERECV(std::cout << "received msg type: " << (unsigned int)incoming_packet.message_type << std::endl;)
     switch ( incoming_packet.message_type )
     {
-    case ADVERT:
-    case INTEREST:
-    case NEIGHBOR_BCAST:
-    case NEIGHBOR_UCAST:
-        if ( lqi < 130 )
-            return;
-        break;
+        case NEIGHBOR_UCAST:
+        case NEIGHBOR_BCAST:
+        case ADVERT:
+        case INTEREST:
+        case COLLABORATION:
+        case INTEREST_CORRECTION:
+            //if ( !FindInterfaceNode(rd->interfaceTree, inf) &&
+            //        CountInterfaceNodes(rd->interfaceTree) > 9 )
+            //{
+            //    return;
+
+            //}
+            if ( lqi < 130 )
+                return;
+            break;
     }
+    DBTYPETHROUGH(std::cout << "type: " << (unsigned int)incoming_packet.message_type << " is through" << std::endl;)
 
-	read_packet(_msg);
-	unsigned int mylqi = 7 * (lqi/255);
-    std::cout << "LQI: " << std::dec << (unsigned int)lqi << std::endl;
-    std::cout << "MYLQI: " << mylqi << std::endl;
-	incoming_packet.path_value += mylqi;
+	//unsigned int mylqi = 7 * (lqi/255);
+    //std::cout << "LQI: " << std::dec << (unsigned int)lqi << std::endl;
+    //std::cout << "MYLQI: " << mylqi << std::endl;
+	//incoming_packet.path_value += mylqi;
+
+	control_data cd;
+	cd.incoming_if = inf;
+	cd.incoming_lqi = 0xFF - lqi;
+
+
+	//InterfaceNode* in = FindInterfaceNode(rd->interfaceTree, inf);
+	//InsertInterfaceNode();
 
 
 
 
-	(*h[incoming_packet.message_type]) (inf);
+
+
+	(*h[incoming_packet.message_type]) (cd);
 
 #ifdef GRAD_FILES
 	switch ( incoming_packet.message_type )
@@ -2872,8 +2966,9 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
 
 
 
-void handle_advert(NEIGHBOUR_ADDR _interface)
+void handle_advert(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
     {
         return;
@@ -2929,7 +3024,12 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
 	int inserted;
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-	setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    i->lqi = cd.incoming_lqi;
+
+
+
+    //setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
 
 
 	//void setObtainGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
@@ -2978,7 +3078,8 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
             //outgoing_packet.length = strlen((char*)incoming_packet.data);
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
-			outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
 			outgoing_packet.excepted_interface = _interface;
 		    bcastAMessage(write_packet());
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
@@ -3016,8 +3117,9 @@ void handle_advert(NEIGHBOUR_ADDR _interface)
 
 
 
-void handle_collaboration(NEIGHBOUR_ADDR _interface)
+void handle_collaboration(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
     static rpacket p;
     trie* t;
@@ -3026,7 +3128,8 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
     t = trie_add(rd->top_state, incoming_packet.data, STATE);
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
 
     if ( t )
     {
@@ -3036,7 +3139,8 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
             outgoing_packet.message_type = COLLABORATION;
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
-            outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
             outgoing_packet.excepted_interface = _interface;
             bcastAMessage(write_packet());
             //SendToAllInterfacesExcept(rd->interfaceTree, _interface);
@@ -3049,8 +3153,11 @@ void handle_collaboration(NEIGHBOUR_ADDR _interface)
 
 
 
-void handle_interest(NEIGHBOUR_ADDR _interface)
+void handle_interest(control_data cd)
 {
+    std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
     {
         return;
@@ -3086,11 +3193,14 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 	int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
     //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+    i->lqi = cd.incoming_lqi;
+
 
 
 
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
-	setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
 
     if ( incoming_packet.down_interface == thisAddress )
         return;
@@ -3104,7 +3214,8 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 			outgoing_packet.message_type = INTEREST;
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
-			outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             bcastAMessage(write_packet());
@@ -3116,8 +3227,9 @@ void handle_interest(NEIGHBOUR_ADDR _interface)
 
 
 // probably not thread safe
-void handle_reinforce(NEIGHBOUR_ADDR _interface)
+void handle_reinforce(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     std::cout << "ADV Reinforce received from " << std::hex << _interface << std::endl;
 
     // reinforce the the preceding interface in the direction of sink
@@ -3181,8 +3293,9 @@ void handle_reinforce(NEIGHBOUR_ADDR _interface)
 
 
 
-void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
+void handle_reinforce_interest(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
 	reinforceObtainGradient(incoming_packet.data, _interface);
 
@@ -3241,8 +3354,10 @@ void handle_reinforce_interest(NEIGHBOUR_ADDR _interface)
 
 
 
-void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface)
+void handle_reinforce_collaboration(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
+
     reinforceObtainGradient(incoming_packet.data, _interface);
 
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
@@ -3453,8 +3568,9 @@ void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_
 
 
 // probably not thread safe
-void handle_data(NEIGHBOUR_ADDR _interface)
+void handle_data(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     excludedInterface = _interface;
 
 	//DATANAME = incoming_packet.the_data_message.data_value;
@@ -3488,16 +3604,18 @@ void handle_data(NEIGHBOUR_ADDR _interface)
 
 
 
-void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
+void handle_neighbor_bcast(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     int inserted;
-    InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
-
+    //InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
+    InterfaceNode* in = FindInterfaceNode(rd->interfaceTree, _interface);
 
     outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-    if ( !inserted )
+    //if ( !inserted )
+    if ( in )
     {
-        // we have seen this node before
+        // we have seen this node before (already in list )
         // it has just come back up
         outgoing_packet.down_interface = _interface;
         in->i->up = 1;
@@ -3505,34 +3623,35 @@ void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface)
     }
     else
     {
-        printf("Inserted interface\n");
+        //printf("Inserted interface\n");
     }
 
 
-	outgoing_packet.message_type = NEIGHBOR_UCAST;
-	outgoing_packet.length = 0;
-	outgoing_packet.data = 0;
-	outgoing_packet.path_value = 0;
-	outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
-	outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-	bcastAMessage(write_packet());
-	printf("using NEIGHBOR_UCAST\n");
+	//outgoing_packet.message_type = NEIGHBOR_UCAST;
+	//outgoing_packet.length = 0;
+	//outgoing_packet.data = 0;
+	//outgoing_packet.path_value = 0;
+	//outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+	//outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+	//bcastAMessage(write_packet());
+	//printf("using NEIGHBOR_UCAST\n");
 
-	//int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
+	int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
 	//printf("Forwarded our adverts\n");
 
 }
 
 
-void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface)
+void handle_neighbor_ucast(control_data cd)
 {
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
     int inserted;
 	InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
-	printf("Inserted interface\n");
-    return;
+	//printf("Inserted interface\n");
+	DBRETAFTERUCAST(return;)
 
+    printf("About to forward our adverts\n");
 	int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
-	printf("Forwarded our adverts\n");
 }
 
 
@@ -3544,6 +3663,7 @@ void StartUp()
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
 	memset(&outgoing_packet, 0, sizeof(outgoing_packet));
 
+    int advertsFound = UcastAllBestGradients(rd->top_state, 0);
 
 	outgoing_packet.message_type = NEIGHBOR_BCAST;
 	outgoing_packet.data = 0;
@@ -3858,7 +3978,10 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
         incoming_packet.data[incoming_packet.length] = 0;
 
         incoming_packet.path_value = 0;
-        handle_data(SELF_INTERFACE);
+        control_data cd;
+        cd.incoming_if = SELF_INTERFACE;
+        cd.incoming_lqi = 0;
+        handle_data(cd);
 
     }
 

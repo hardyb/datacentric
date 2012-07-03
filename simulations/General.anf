@@ -8,13 +8,52 @@
     <datasets name="My Dataset">
       <items xsi:type="scave:Add" filterPattern="controlPacketFrequency" type="VECTOR"/>
       <items xsi:type="scave:LineChart" name="Control Packet Frequency" lineNameFormat=""/>
+      <items xsi:type="scave:Discard" filterPattern="controlPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="helloPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Hello Frequency" lineNameFormat=""/>
+      <items xsi:type="scave:Add" filterPattern="helloBackPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Hello Back Frequency" lineNameFormat="">
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="bcastInterestPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Bcast Interest" lineNameFormat="">
+        <properties name="Line.Display/helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="ucastInterestPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Ucast Interest" lineNameFormat="">
+        <properties name="Line.Display/helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/bcastInterestPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="advertPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Advert Frequency" lineNameFormat="">
+        <properties name="Line.Display/interestPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/bcastInterestPacketFrequency" value="false"/>
+        <properties name="Line.Display/ucastInterestPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="reinforcementPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Reinforcement Frequency" lineNameFormat="">
+        <properties name="Line.Display/advertPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/interestPacketFrequency" value="false"/>
+        <properties name="Line.Display/ucastInterestPacketFrequency" value="false"/>
+        <properties name="Line.Display/bcastInterestPacketFrequency" value="false"/>
+      </items>
       <items xsi:type="scave:Add" filterPattern="NumberOfNeighbours"/>
       <items xsi:type="scave:BarChart" name="Neighbours"/>
-      <items xsi:type="scave:Add" filterPattern="num of collisions"/>
-      <items xsi:type="scave:BarChart" name="Collisions"/>
+      <items xsi:type="scave:Discard" filterPattern="NumberOfNeighbours"/>
+      <items xsi:type="scave:Add" filterPattern="TotalNeighborLqi"/>
+      <items xsi:type="scave:BarChart" name="Total Lqi Cost"/>
+      <items xsi:type="scave:Add" filterPattern="AverageNeighborLqi"/>
+      <items xsi:type="scave:Discard" filterPattern="TotalNeighborLqi"/>
+      <items xsi:type="scave:BarChart" name="Average Cost Lqi"/>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22"/>
   </chartSheets>
 </scave:Analysis>

@@ -183,7 +183,7 @@ IPvXAddress UDPBurstAndBroadcast::chooseDestAddr()
 }
 
 
-cPacket *UDPBurstAndBroadcast::createPacket2()
+cPacket *UDPBurstAndBroadcast::createPacket()
 {
     char msgName[32];
     sprintf(msgName, "UDPBasicAppData-%d", counter++);
@@ -198,7 +198,7 @@ cPacket *UDPBurstAndBroadcast::createPacket2()
 
 
 
-cPacket *UDPBurstAndBroadcast::createPacket()
+cPacket *UDPBurstAndBroadcast::createPacket2()
 {
     char msgName[32];
     sprintf(msgName, "UDPBroadcast-%d", counter++);
@@ -447,7 +447,7 @@ void UDPBurstAndBroadcast::finish()
 
 //void UDPBurstAndBroadcast::forwardBroadcast(int moduleId, int msgId)
 //void UDPBurstAndBroadcast::forwardBroadcast(int moduleId, int msgId, const char* name, long bytelen)
-void UDPBurstAndBroadcast::forwardBroadcast(cPacket* payload)
+void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
 {
     //char msgName[32];
     //sprintf(msgName, "UDPBasicAppData-%d", counter++);
@@ -458,6 +458,15 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* payload)
     //payload->addPar("sourceId") = moduleId;
     //payload->addPar("msgId") = msgId;
     //payload->setTimestamp(); // this was wrong any way
+
+    cPacket* payload = _payload->dup();
+    //AppControlMessage* payload = dynamic_cast<AppControlMessage*>(_payload->dup());
+    //int moduleId = (int)payload->par("sourceId");
+    //int msgId = (int)payload->par("msgId");
+    //int ct = payload->getCntrlType();
+    //std::string interests = payload->getInterests();
+    //std::string sources = payload->getSourceData();
+    //int len = payload->getByteLength();
 
     destAddr = 0xFFFFFFFF;
 

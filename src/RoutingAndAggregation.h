@@ -328,7 +328,7 @@ struct message
 {
 	char message_type;			// assume size 1
 	int data_value;			// assume size 4
-	signed short path_value;	// assume size 2
+	unsigned short path_value;	// assume size 2
 	char spacer[117];				// assume size 20
 };
 
@@ -396,6 +396,14 @@ struct new_packet
 };
 
 
+
+struct control_data
+{
+    NEIGHBOUR_ADDR incoming_if;
+    unsigned char incoming_lqi;
+};
+
+
 /*
 struct new_packet
 {
@@ -437,6 +445,7 @@ typedef struct Interface
 	NEIGHBOUR_ADDR iName;
 	int up; /* this is used as a bool */
 	int type;
+	unsigned char lqi;
 };
 
 
@@ -667,6 +676,8 @@ InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR inte
 bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
 unsigned int CountInterfaceNodes(InterfaceNode* tree);
+unsigned int TotalNeighborLqi(InterfaceNode* tree);
+unsigned int AverageNeighborLqi(InterfaceNode* tree);
 bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
 bool deliverReinforced(KDGradientNode* g);
 bool obtainReinforced(KDGradientNode* g);
@@ -735,16 +746,16 @@ void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
 unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
-void handle_advert(NEIGHBOUR_ADDR _interface);
-void handle_interest(NEIGHBOUR_ADDR _interface);
-void handle_reinforce(NEIGHBOUR_ADDR _interface);
-void handle_reinforce_interest(NEIGHBOUR_ADDR _interface);
-void handle_data(NEIGHBOUR_ADDR _interface);
-void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface);
-void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
-void handle_collaboration(NEIGHBOUR_ADDR _interface);
-void handle_reinforce_collaboration(NEIGHBOUR_ADDR _interface);
-void handle_interest_correction(NEIGHBOUR_ADDR _interface);
+void handle_advert(control_data cd);
+void handle_interest(control_data cd);
+void handle_reinforce(control_data cd);
+void handle_reinforce_interest(control_data cd);
+void handle_data(control_data cd);
+void handle_neighbor_bcast(control_data cd);
+void handle_neighbor_ucast(control_data cd);
+void handle_collaboration(control_data cd);
+void handle_reinforce_collaboration(control_data cd);
+void handle_interest_correction(control_data cd);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);

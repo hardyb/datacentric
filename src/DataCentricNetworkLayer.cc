@@ -162,9 +162,19 @@ void DataCentricNetworkLayer::initialize(int aStage)
 void DataCentricNetworkLayer::finish()
 {
     SetCurrentModuleInCLanguageFramework();
+    unsigned int totNeighbors = CountInterfaceNodes(rd->interfaceTree);
 
-    recordScalar("NumberOfNeighbours", CountInterfaceNodes(rd->interfaceTree));
+    recordScalar("NumberOfNeighbours", totNeighbors);
     recordScalar("num of pkts forwarded", numForward);
+
+
+    double totalLqi =  TotalNeighborLqi(rd->interfaceTree);
+    double averageLqi = (totalLqi / totNeighbors);
+    recordScalar("TotalNeighborLqi", totalLqi);
+    recordScalar("AverageNeighborLqi", averageLqi);
+
+
+
 }
 
 
@@ -264,7 +274,6 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     //    mPhyModule->enableModule();
     //    StartUp();
     //    return;
-
     //}
 
 
@@ -670,14 +679,17 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
             break;
     }
 
+    currentModule->mNetMan->updateControlPacketData(*_msg, true);
+    /*
     switch ( *_msg )
     {
         case DATA:
             break;
         default:
-            currentModule->mNetMan->updateControlPacketData();
             break;
     }
+    */
+
 
 
 
@@ -699,6 +711,31 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
     unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
     appPkt->setByteLength(pktSize);
+
+    switch ( *_msg )
+    {
+        case NEIGHBOR_BCAST:
+            //std::cout << "Bcast size: " << pktSize;
+            break;
+        case NEIGHBOR_UCAST:
+            std::cout << "HelloReply size: " << pktSize << std::endl;
+            break;
+        case INTEREST:
+            std::cout << "Interest size: " << pktSize << std::endl;
+            break;
+        case ADVERT:
+            //std::cout << "Advert size: " << pktSize;
+            break;
+        case REINFORCE:
+        case REINFORCE_INTEREST:
+            //std::cout << "Reinforcement size: " << pktSize;
+            break;
+        default:
+            break;
+    }
+
+
+
 
     unsigned char* data = &(_msg[2]);
     unsigned int len = _msg[1];
@@ -766,20 +803,47 @@ static void cb_bcast_message(unsigned char* _msg)
     //controlPackets
 
 
+    currentModule->mNetMan->updateControlPacketData(*_msg, false);
+    /*
     switch ( *_msg )
     {
         case DATA:
             break;
         default:
-            currentModule->mNetMan->updateControlPacketData();
+            currentModule->mNetMan->updateControlPacketData(*_msg);
             break;
     }
+    */
+
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
     unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
     appPkt->setByteLength(pktSize);
+
+    switch ( *_msg )
+    {
+        case NEIGHBOR_BCAST:
+            //std::cout << "Bcast size: " << pktSize;
+            break;
+        case NEIGHBOR_UCAST:
+            std::cout << "HelloReply size: " << pktSize << std::endl;
+            break;
+        case INTEREST:
+            std::cout << "Interest size: " << pktSize << std::endl;
+            break;
+        case ADVERT:
+            //std::cout << "Advert size: " << pktSize;
+            break;
+        case REINFORCE:
+        case REINFORCE_INTEREST:
+            //std::cout << "Reinforcement size: " << pktSize;
+            break;
+        default:
+            break;
+    }
+
 
     appPkt->setCreationTime(simTime());
 
