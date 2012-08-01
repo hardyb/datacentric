@@ -190,7 +190,11 @@ void DataCentricTestApp::FileEnd(ActionThreadsIterator& i)
     i->second->pop_back();
     ifs->close();
     delete ifs;
-    scheduleAt(simTime(), i->first);
+
+    if ( i->second->size() )
+    {
+        scheduleAt(simTime(), i->first);
+    }
 }
 
 

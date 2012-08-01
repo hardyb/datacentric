@@ -28,8 +28,11 @@ Define_Module( DataCentricNetworkLayer );
 
 // Framework values mostly extern
 static unsigned char forwardingRole[14] = {14, 4, 4, 8, 2, 3, 0, 0, 0, 0, 9, 4, 6, 0};
-int nodeConstraint;
+unsigned char nodeConstraint;
 NEIGHBOUR_ADDR thisAddress;
+
+double countIFLqiValuesRecorded;
+unsigned int routingDelayCount;
 
 static std::ofstream myfile;
 
@@ -57,6 +60,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
+static void cb_recordNeighbourLqi(Interface* i, State* s);
 //static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
 
 
@@ -69,7 +73,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
     if (0 == aStage)
     {
-        mpStartMessage = new cMessage("StartMessage");
+        //mpStartMessage = new cMessage("StartMessage");
         mpUpDownMessage = new cMessage("DownMessage");
         // WirelessMacBase stuff...
         mUpperLayerIn  = findGate("upperLayerIn");
@@ -77,6 +81,13 @@ void DataCentricNetworkLayer::initialize(int aStage)
         mLowerLayerIn  = findGate("lowerLayerIn");
         mLowerLayerOut = findGate("lowerLayerOut");
         controlPackets.setName("ControlPackets");
+        neighbourLqis.setName("neighbourLqis");
+        RangeLqis.setName("RangeLqis");
+
+        for ( unsigned int i = 10; i < 270; i += 10 )
+        {
+            mNeighboursInLqiRange[i] = 0;
+        }
 
         m_moduleName    = getParentModule()->getFullName();
         mpNb = NotificationBoardAccess().get();
@@ -86,6 +97,11 @@ void DataCentricNetworkLayer::initialize(int aStage)
         isPANCoor                   = par("isPANCoor");
 
         mMeanDownTime = par("meanDownTime");
+        if ( mMeanDownTime == 0.2 )
+        {
+            mMeanDownTime = 0.2;
+
+        }
         mMeanDownTimeInterval = par("meanDownTimeInterval");
 
         mMeanDownTimeSeconds = mMeanDownTimeInterval * mMeanDownTime;
@@ -95,6 +111,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         numForward      = 0;
+        routingDelayCount = 0;
+
 
         // ORIGINAL DATA CENTRIC STUFF
         moduleRD.grTree = NULL;
@@ -107,6 +125,9 @@ void DataCentricNetworkLayer::initialize(int aStage)
         moduleRD.role[3] = NULL;
         moduleRD.top_context = trie_new();
         moduleRD.top_state = trie_new();
+        moduleRD.pkts_received = 0;
+        moduleRD.pkts_ignored = 0;
+
         rd = &(moduleRD);
         rd->role[0] = (unsigned char*)malloc(forwardingRole[0]);
         memcpy(rd->role[0], forwardingRole, forwardingRole[0]);
@@ -145,8 +166,14 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         WriteModuleListFile();
+        //int thePoisson = poisson(mMeanUpTimeSeconds);
+        // SPECIAL TEMPORARY CODE
+        // ======================
+        int thePoisson = mMeanUpTimeSeconds;
 
-        scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
+        cout << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
+        scheduleAt(simTime() + thePoisson, mpUpDownMessage);
+        //scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
 
         //if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
         //{
@@ -162,17 +189,64 @@ void DataCentricNetworkLayer::initialize(int aStage)
 void DataCentricNetworkLayer::finish()
 {
     SetCurrentModuleInCLanguageFramework();
-    unsigned int totNeighbors = CountInterfaceNodes(rd->interfaceTree);
 
-    recordScalar("NumberOfNeighbours", totNeighbors);
     recordScalar("num of pkts forwarded", numForward);
 
-
+    unsigned int totNeighbors = CountInterfaceNodes(rd->interfaceTree);
+    recordScalar("NumberOfNeighbours", totNeighbors);
     double totalLqi =  TotalNeighborLqi(rd->interfaceTree);
+
+    unsigned int maxlqi = (unsigned int)rd->interfaceTree->i->lqi;
+    unsigned int minlqi = (unsigned int)rd->interfaceTree->i->lqi;
+    MinMaxNeighborLqi(rd->interfaceTree, &maxlqi, &minlqi);
+
     double averageLqi = (totalLqi / totNeighbors);
     recordScalar("TotalNeighborLqi", totalLqi);
     recordScalar("AverageNeighborLqi", averageLqi);
+    recordScalar("MaxNeighborLqi", maxlqi);
+    recordScalar("MinNeighborLqi", minlqi);
 
+    double pkts_ignored = (double)rd->pkts_ignored;
+    double pkts_received = (double)rd->pkts_received;
+    double ignoreRatio = pkts_ignored / pkts_received;
+    recordScalar("ignoreRatio", ignoreRatio);
+
+    countIFLqiValuesRecorded = 0;
+    TraversInterfaceNodes(rd->interfaceTree, 0, cb_recordNeighbourLqi);
+
+    for ( unsigned int i = 10; i < 270; i += 10 )
+    {
+        double lqi = (double)i;
+        double numInRange = (double)mNeighboursInLqiRange[i];
+        RangeLqis.recordWithTimestamp(numInRange, lqi);
+    }
+
+
+
+
+}
+
+
+static void cb_recordNeighbourLqi(Interface* i, State* s)
+{
+    DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
+    unsigned int lqi = (unsigned int)i->lqi;
+
+    //currentModule->neighbourLqis.record(lqi);
+    currentModule->neighbourLqis.recordWithTimestamp(countIFLqiValuesRecorded, lqi);
+    countIFLqiValuesRecorded += 1;
+
+    //unsigned int numOfTens = lqi / 10;
+    //unsigned int range = (numOfTens * 10) + 10;
+    //currentModule->mNeighboursInLqiRange[range]++;
+
+    for ( unsigned int i = 10; i < 270; i += 10 )
+    {
+        if ( lqi <= i )
+        {
+            currentModule->mNeighboursInLqiRange[i]++;
+        }
+    }
 
 
 }
@@ -232,6 +306,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
         if ( mPhyModule->isEnabled() )
         {
+            cout << "MODULE GOING DOWN: " << fName << endl;
             mPhyModule->disableModule();
 
             // reset routing data
@@ -257,6 +332,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         }
         else
         {
+            cout << "MODULE COMING UP: " << fName << endl;
             mPhyModule->enableModule();
             StartUp();
 
@@ -327,6 +403,7 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
 {
     //Ieee802Ctrl *incomingControlInfo = check_and_cast<Ieee802Ctrl*>(appPkt->getControlInfo());
     Ieee802154NetworkCtrlInfo *incomingControlInfo = check_and_cast<Ieee802154NetworkCtrlInfo*>(appPkt->getControlInfo());
+    currentPktCreationTime = appPkt->getCreationTime();
 
     //incomingControlInfo->get
     uint64 previousAddress = incomingControlInfo->getNetwAddr();
@@ -367,6 +444,8 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     switch ( appPkt->getKind() )
     {
         case DATA_PACKET:
+            currentPktCreationTime = simTime();
+            cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
             SendDataWithLongestContext(appPkt);
             break;
         case STARTUP_MESSAGE:
@@ -751,7 +830,10 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
-    appPkt->setCreationTime(simTime());
+    appPkt->setCreationTime(currentModule->currentPktCreationTime);
+
+    cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
     //MACAddress destAddr(_interface);
@@ -845,7 +927,9 @@ static void cb_bcast_message(unsigned char* _msg)
     }
 
 
-    appPkt->setCreationTime(simTime());
+    //appPkt->setCreationTime(simTime());
+    appPkt->setCreationTime(currentModule->currentPktCreationTime);
+    cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
 
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
@@ -862,6 +946,11 @@ static void cb_bcast_message(unsigned char* _msg)
     //        currentModule->getd
 
     currentModule->mRoutingDelay = currentModule->par("routingDelay");
+    cout << "ROUTING DELAY " << routingDelayCount++ << ": " << currentModule->mRoutingDelay << endl;
+    if ( routingDelayCount == 25 )
+    {
+        routingDelayCount = 25;
+    }
 
     //currentModule->send(appPkt, currentModule->mLowerLayerOut);
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
@@ -874,7 +963,8 @@ static void cb_handle_application_data(unsigned char* _msg)
 {
     // work still to do here
     // packetbuf_copyto(_msg, MESSAGE_SIZE);
-    cSimpleModule* currentModule = check_and_cast<cSimpleModule *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
+    //cSimpleModule* currentModule = check_and_cast<cSimpleModule *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
+    DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
 
     char bubbleText[40];
     char* bubbleTextPtr = bubbleText;
@@ -884,6 +974,11 @@ static void cb_handle_application_data(unsigned char* _msg)
         bubbleTextPtr += numChar;
         _msg++;
     }
+
+    cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
+    simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
+    cout <<         "END TO END DELAY:               " << endToEndDelay << endl;
+
     currentModule->getParentModule()->bubble(bubbleText);
     //currentModule->bubble(bubbleText);
     //currentModule->bubble("Data received");

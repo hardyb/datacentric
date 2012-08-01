@@ -51,9 +51,39 @@
       <items xsi:type="scave:Add" filterPattern="AverageNeighborLqi"/>
       <items xsi:type="scave:Discard" filterPattern="TotalNeighborLqi"/>
       <items xsi:type="scave:BarChart" name="Average Cost Lqi"/>
+      <items xsi:type="scave:Discard" filterPattern="AverageNeighborLqi"/>
+      <items xsi:type="scave:Add" filterPattern="MaxNeighborLqi"/>
+      <items xsi:type="scave:BarChart" name="Max Neighbor Lqi"/>
+      <items xsi:type="scave:Discard" filterPattern="MaxNeighborLqi"/>
+      <items xsi:type="scave:Add" filterPattern="MinNeighborLqi"/>
+      <items xsi:type="scave:BarChart" name="Min Neighbor Lqi"/>
+      <items xsi:type="scave:Discard" filterPattern="MinNeighborLqi"/>
+      <items xsi:type="scave:Add" filterPattern="neighbourLqis" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="line lqis" lineNameFormat="">
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan advertPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan bcastInterestPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan reinforcementPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan ucastInterestPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="neighbourLqis" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="RangeLqis" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="range lqis" lineNameFormat="">
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan advertPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan bcastInterestPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan reinforcementPacketFrequency" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan ucastInterestPacketFrequency" value="false"/>
+      </items>
+    </datasets>
+    <datasets name="Another">
+      <items xsi:type="scave:Add" filterPattern="ignoreRatio"/>
+      <items xsi:type="scave:BarChart" name="Ignore Ratio"/>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22 //@datasets/@datasets.0/@items.25 //@datasets/@datasets.0/@items.28 //@datasets/@datasets.0/@items.31 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.34"/>
   </chartSheets>
 </scave:Analysis>

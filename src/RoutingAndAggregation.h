@@ -209,7 +209,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 
 #define MAX_COST 65535
 
-extern int nodeConstraint;
+extern unsigned char nodeConstraint;
 extern char nodeScope;
 extern NEIGHBOUR_ADDR thisAddress;
 
@@ -390,9 +390,10 @@ struct new_packet
 	unsigned char message_type;
 	unsigned char length;
 	unsigned char* data;
-	signed short path_value;
+	unsigned short path_value;
     NEIGHBOUR_ADDR excepted_interface;
     NEIGHBOUR_ADDR down_interface;
+    char seqno;
 };
 
 
@@ -570,6 +571,7 @@ typedef struct State
 	struct KDGradientNode* bestGradientToDeliver;
 	int bestGradientToDeliverUpdated; /* used as a bool */
 	struct InterfaceList* deliveryInterfaces;
+	char seqno;
 	int action;
 };
 
@@ -605,10 +607,11 @@ typedef struct KDGradientNode
 	// OK NOW WE USING POINTERS AND NEWKDNODE() creates or gets accordingly
 	struct State* key1;
 	struct Interface* key2;
-	int costToObtain;
-	int costToDeliver;
-	int deliveryReinforcement; /* used as a bool*/
-	int obtainReinforcement; /* used as a bool*/
+	unsigned short costToObtain;
+	unsigned short costToDeliver;
+	char seqno;
+	int deliveryReinforcement; /* used as a bool*/ // OLD - NOT USED?
+	int obtainReinforcement; /* used as a bool*/ // OLD - NOT USED?
 	struct KDGradientNode* left;
 	struct KDGradientNode* right;
 
@@ -644,6 +647,8 @@ typedef struct RoutingData
 
 	struct trie* top_state;
 	struct trie* top_context;
+    unsigned int pkts_received;
+    unsigned int pkts_ignored;
 
 
 
@@ -677,6 +682,7 @@ bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
 unsigned int CountInterfaceNodes(InterfaceNode* tree);
 unsigned int TotalNeighborLqi(InterfaceNode* tree);
+void MinMaxNeighborLqi(InterfaceNode* tree, unsigned int* maxlqi, unsigned int* minlqi);
 unsigned int AverageNeighborLqi(InterfaceNode* tree);
 bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
 bool deliverReinforced(KDGradientNode* g);

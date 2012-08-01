@@ -14,6 +14,10 @@ unsigned char current_prefix_name[100];
 #include <string.h>
 
 
+//#define USE_NODE_STABILITY_COST 1
+
+
+
 
 #define RETAFTERUCAST 0 // return after handle ucast
 #define TYPETHROUGH 0 //
@@ -143,6 +147,9 @@ void read_packet(unsigned char* pkt)
             sizeof(signed short) + sizeof(NEIGHBOUR_ADDR));
     incoming_packet.down_interface = *down_interface_ptr;
 
+    char* seqn = (pkt+2+incoming_packet.length+
+            sizeof(signed short) + sizeof(NEIGHBOUR_ADDR) + sizeof(char));
+    incoming_packet.seqno = seqn;
 
 }
 
@@ -182,7 +189,8 @@ unsigned int size_needed_for_outgoing_packet()
     unsigned int _size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
             + outgoing_packet.length +   sizeof(outgoing_packet.path_value)
             +  sizeof(outgoing_packet.excepted_interface)
-            +  sizeof(outgoing_packet.down_interface);
+            +  sizeof(outgoing_packet.down_interface)
+            +  sizeof(outgoing_packet.seqno);
     return _size;
 }
 
@@ -193,7 +201,8 @@ unsigned int sizeof_existing_packet(unsigned char* pkt)
     unsigned int _size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
             + pkt[1] +   sizeof(outgoing_packet.path_value)
             +  sizeof(outgoing_packet.excepted_interface)
-            +  sizeof(outgoing_packet.down_interface);
+            +  sizeof(outgoing_packet.down_interface)
+            +  sizeof(outgoing_packet.seqno);
     return _size;
 }
 
@@ -261,6 +270,9 @@ unsigned char* write_packet()
     pkt_index += sizeof(outgoing_packet.excepted_interface);
 
     neighbour_addr_into_buf(outgoing_packet.down_interface, &(pkt[pkt_index]));
+    pkt_index += sizeof(outgoing_packet.down_interface);
+
+    pkt[pkt_index] = outgoing_packet.seqno;
 
 	//pkt[pkt_index] = (char)(outgoing_packet.path_value & 0xFF); // lsb goes first in buff;
 	//pkt[pkt_index+1] = (char)(outgoing_packet.path_value >> 8); // msb goes second in buff;
@@ -562,7 +574,11 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		}
  		else
  		{
+#ifdef USE_NODE_STABILITY_COST
  	        outgoing_packet.path_value = s->bestGradientToObtain->costToObtain + nodeConstraint;
+#else
+            outgoing_packet.path_value = s->bestGradientToObtain->costToObtain;
+#endif
  		}
  		outgoing_packet.excepted_interface = s->bestGradientToObtain->key2->iName;
 
@@ -580,7 +596,11 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         }
         else
         {
+#ifdef USE_NODE_STABILITY_COST
             outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+#else
+            outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver;
+#endif
         }
  		outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
  		std::cout << "Sending interest packet to: " << _if << std::endl;
@@ -603,7 +623,11 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         }
         else
         {
+#ifdef USE_NODE_STABILITY_COST
             outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
+#else
+            outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver;
+#endif
         }
         // ??? something here ???
         //sendAMessage(_if, write_packet());
@@ -1034,7 +1058,11 @@ void handle_interest_correction(control_data cd)
         outgoing_packet.message_type = INTEREST_CORRECTION;
         outgoing_packet.data = incoming_packet.data;
         outgoing_packet.length = strlen((const char*)incoming_packet.data);  // strlen ok here
+#ifdef USE_NODE_STABILITY_COST
         outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver+nodeConstraint;
+#else
+        outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver;
+#endif
         outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;//_interface;
         outgoing_packet.down_interface = incoming_packet.down_interface;
         bcastAMessage(write_packet());
@@ -1104,10 +1132,51 @@ void handle_interest_correction(control_data cd)
      {
          return lqi;
      }
-     lqi += CountInterfaceNodes(tree->left);
-     lqi += CountInterfaceNodes(tree->right);
+     lqi += TotalNeighborLqi(tree->left);
+     lqi += TotalNeighborLqi(tree->right);
      return lqi;
  }
+
+
+
+
+
+
+
+
+
+ void MinMaxNeighborLqi(InterfaceNode* tree, unsigned int* maxlqi, unsigned int* minlqi)
+ //unsigned int TotalNeighborLqi(InterfaceNode* tree, unsigned int* maxlqi, unsigned int* minlqi)
+ {
+     if ( tree )
+     {
+         unsigned int lqi = (unsigned int)tree->i->lqi;
+         *maxlqi = lqi > *maxlqi ? lqi : *maxlqi;
+         *minlqi = lqi < *minlqi ? lqi : *minlqi;
+         //lqi+=(unsigned int)tree->i->lqi;
+     }
+     else
+     {
+         return;
+         //return lqi;
+     }
+     MinMaxNeighborLqi(tree->left, maxlqi, minlqi);
+     MinMaxNeighborLqi(tree->right, maxlqi, minlqi);
+     //lqi += CountInterfaceNodes(tree->left);
+     //lqi += CountInterfaceNodes(tree->right);
+     return;
+     //return lqi;
+ }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1250,7 +1319,7 @@ void freeKDGradientNode(KDGradientNode* g)
 
 
 
-struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, int deliver)
+struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, int deliver, char seqno)
 {
 	struct KDGradientNode* n = (struct KDGradientNode *)malloc(sizeof(struct KDGradientNode));
 	// we need to make it so that the same st cannot get created twice
@@ -1266,6 +1335,7 @@ struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, in
 	n->key2 = i;
 	n->costToObtain = obtain;
 	n->costToDeliver = deliver;
+	n->seqno = seqno;
 	n->deliveryReinforcement = FALSE;
 	n->obtainReinforcement = FALSE;
 	n->left = NULL;
@@ -1384,28 +1454,32 @@ struct KDGradientNode* traverseKDGradientNode(State* s, Interface* i, int costTy
 
 
 
-struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno)
 {
+    if ( seqno > s->seqno )
+    {
+
+    }
     std::cout << "insert grad type: " << costType << " Cost: " << pCost << " State: " << s << std::endl;
 	if ( treeNode == NULL )
 	{
 		switch ( costType )
 		{
 			case OBTAIN:
-				treeNode = newKDGradientNode2(s, i, pCost, MAX_COST);
+				treeNode = newKDGradientNode2(s, i, pCost, MAX_COST, seqno);
 				break;
             case DELIVER_CORRECTION:
 			case DELIVER:
-				treeNode = newKDGradientNode2(s, i, MAX_COST, pCost);
+				treeNode = newKDGradientNode2(s, i, MAX_COST, pCost, seqno);
 				break;
 			case REINFORCE_DELIVER:
-				treeNode = newKDGradientNode2(s, i, MAX_COST, MAX_COST);
+				treeNode = newKDGradientNode2(s, i, MAX_COST, MAX_COST, seqno);
 				//treeNode->deliveryReinforcement = true;
 				//treeNode->key1->deliveryInterface = treeNode->key2;
 				add(&(treeNode->key1->deliveryInterfaces), treeNode->key2);
 				break;
 			case REINFORCE_OBTAIN:
-				treeNode = newKDGradientNode2(s, i, MAX_COST, MAX_COST);
+				treeNode = newKDGradientNode2(s, i, MAX_COST, MAX_COST, seqno);
 				//treeNode->obtainReinforcement = true;
 				//treeNode->key1->obtainInterface = treeNode->key2;
 				add(&(treeNode->key1->obtainInterfaces), treeNode->key2);
@@ -1440,16 +1514,24 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
                     treeNode->costToDeliver = pCost;
                     break;
                 case DELIVER:
-					if ( pCost < treeNode->costToDeliver )
-					{
-		                std::cout << "better deliver cost on this if, now: " << pCost << std::endl;
-						treeNode->costToDeliver = pCost;
-						if ( treeNode == treeNode->key1->bestGradientToDeliver )
-						{
-							// still same best interface but better cost
-							treeNode->key1->bestGradientToDeliverUpdated = TRUE;
-						}
-					}
+                    if ( seqno > treeNode->seqno )
+                    {
+                        treeNode->costToDeliver = pCost;
+                        treeNode->seqno = seqno;
+                    }
+                    if ( seqno == treeNode->seqno )
+                    {
+                        if ( pCost < treeNode->costToDeliver )
+                        {
+                            std::cout << "better deliver cost on this if, now: " << pCost << std::endl;
+                            treeNode->costToDeliver = pCost;
+                            if ( treeNode == treeNode->key1->bestGradientToDeliver )
+                            {
+                                // still same best interface but better cost
+                                treeNode->key1->bestGradientToDeliverUpdated = TRUE;
+                            }
+                        }
+                    }
 					break;
 				case REINFORCE_DELIVER:
 					//treeNode->deliveryReinforcement = true;
@@ -1531,7 +1613,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 
 
 
-struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev )
+struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno)
 {
 	// possibly remove these at some point
 	// have t and i passed in
@@ -1540,7 +1622,7 @@ struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, 
 	int inserted;
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted)->i;
 
-	return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev);
+	return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev, seqno);
 }
 
 
@@ -1688,9 +1770,9 @@ void setObtainGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, 
 }
 
 
-void setDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
+void setDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost, char seqno)
 {
-	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, DELIVER, pCost, rd->grTree, 0);
+	rd->grTree = insertKDGradientNode1(fullyqualifiedname, iName, DELIVER, pCost, rd->grTree, 0, seqno);
 }
 
 
@@ -2901,6 +2983,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
 
 
     read_packet(_msg);
+    rd->pkts_received++;
 
     DBTYPERECV(std::cout << "received msg type: " << (unsigned int)incoming_packet.message_type << std::endl;)
     switch ( incoming_packet.message_type )
@@ -2911,14 +2994,28 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
         case INTEREST:
         case COLLABORATION:
         case INTEREST_CORRECTION:
+            // NBNBNB:
+            // THIS 'MAY' BE WRONG  -  THINK ABOUT MULTIPLE DATA NAME ADVS AND INTRSTS
             //if ( !FindInterfaceNode(rd->interfaceTree, inf) &&
             //        CountInterfaceNodes(rd->interfaceTree) > 9 )
             //{
             //    return;
 
             //}
-            if ( lqi < 130 )
+            if ( lqi < 85 )
+            {
+                rd->pkts_ignored++;
                 return;
+            }
+
+            // THOUGHT THIS WAS NOT OK (Due to seqno idea)  -    BUT NOW THINK ITS OK
+            // Because it checks whether we have already accepted the if (OFCOURSE)
+            if ( !FindInterfaceNode(rd->interfaceTree, inf) &&
+                    CountInterfaceNodes(rd->interfaceTree) > 9 )
+            {
+                rd->pkts_ignored++;
+                return;
+            }
             break;
     }
     DBTYPETHROUGH(std::cout << "type: " << (unsigned int)incoming_packet.message_type << " is through" << std::endl;)
@@ -2931,6 +3028,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
 	control_data cd;
 	cd.incoming_if = inf;
 	cd.incoming_lqi = 0xFF - lqi;
+	cd.incoming_lqi = cd.incoming_lqi == 0 ? 1 : cd.incoming_lqi;
 
 
 	//InterfaceNode* in = FindInterfaceNode(rd->interfaceTree, inf);
@@ -2960,6 +3058,36 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi)
 }
 
 
+
+/*
+ * In theory link cost can be informed by the context, eg type of routing, type of data etc...
+ */
+unsigned short outgoingLinkCost(control_data cd)
+{
+#ifdef USE_NODE_STABILITY_COST
+    unsigned short outgoingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi+(unsigned short)nodeConstraint;
+#else
+    unsigned short outgoingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+#endif
+
+
+
+
+    return outgoingLink_cost;
+}
+
+
+
+
+unsigned short incomingLinkCost(control_data cd)
+{
+#ifdef USE_NODE_STABILITY_COST
+    unsigned short incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+#else
+    unsigned short incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+#endif
+    return incomingLink_cost;
+}
 
 
 
@@ -3029,7 +3157,8 @@ void handle_advert(control_data cd)
 
 
     //setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value);
-    setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
+    //setObtainGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
+    setObtainGradient(incoming_packet.data, _interface, incomingLinkCost(cd));
 
 
 	//void setObtainGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int pCost)
@@ -3079,10 +3208,13 @@ void handle_advert(control_data cd)
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
-            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            //outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            outgoing_packet.path_value = outgoingLinkCost(cd);
 			outgoing_packet.excepted_interface = _interface;
 		    bcastAMessage(write_packet());
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
+
+
 
 // here send to self if the state is marked for action as source
 // self would then create a gradient to self, deliver cost zero and reinforce it, then send 
@@ -3153,6 +3285,11 @@ void handle_collaboration(control_data cd)
 
 
 
+
+
+
+
+
 void handle_interest(control_data cd)
 {
     std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
@@ -3200,7 +3337,7 @@ void handle_interest(control_data cd)
 
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
     //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
-    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi);
+    setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd));
 
     if ( incoming_packet.down_interface == thisAddress )
         return;
@@ -3215,7 +3352,7 @@ void handle_interest(control_data cd)
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
-            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            outgoing_packet.path_value = outgoingLinkCost(cd);
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             bcastAMessage(write_packet());

@@ -40,8 +40,12 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     // DataCentric 'C' associations
     RoutingData moduleRD;
+    simtime_t currentPktCreationTime;
     static bool justStartedInitialising;
     cOutVector controlPackets;
+    cOutVector neighbourLqis;
+    cOutVector RangeLqis;
+    map<unsigned int, unsigned int> mNeighboursInLqiRange;
 
     // sibling module IDs
     //cModule* nicModule;
@@ -78,7 +82,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     // debugging enabled for this node? Used in the definition of EV
     bool                m_debug;
     bool                isPANCoor;
-    int                 nodeConstraintValue;
+    unsigned int        nodeConstraintValue;
     std::string         mTheAddressString;
     uint64              mAddress;
     const char*     m_moduleName;
