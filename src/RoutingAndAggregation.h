@@ -705,7 +705,7 @@ KDNode* SearchForKDNode( int stateDataname[], KDNode* treeNode );
 int getNewState(int input);
 int SearchForKDNodeTransition(int input);
 
-struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev );
+struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno);
 
 
 
@@ -743,7 +743,8 @@ void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsign
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
 void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg));
 void weAreSourceFor(unsigned char* _data);
-void weAreSinkFor(unsigned char* _data);
+void weAreSinkFor(unsigned char* _data, char seqno);
+int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
 void weAreCollaboratorFor(unsigned char* _data);
 void weAreCollaboratorInitiatorFor(unsigned char* _data);
 void send_data(int len, unsigned char* _data);

@@ -33,6 +33,7 @@ NEIGHBOUR_ADDR thisAddress;
 
 double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
+char testSeqNo;
 
 static std::ofstream myfile;
 
@@ -74,7 +75,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
     if (0 == aStage)
     {
         //mpStartMessage = new cMessage("StartMessage");
-        mpUpDownMessage = new cMessage("DownMessage");
+        mpUpDownMessage = new cMessage("UpDownMessage");
+        mMessageForTesting_1 = new cMessage("mMessageForTesting_1");
         // WirelessMacBase stuff...
         mUpperLayerIn  = findGate("upperLayerIn");
         mUpperLayerOut = findGate("upperLayerOut");
@@ -112,6 +114,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
         numForward      = 0;
         routingDelayCount = 0;
+        testSeqNo = 0;
 
 
         // ORIGINAL DATA CENTRIC STUFF
@@ -137,8 +140,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
         setBroadcastCallBack(cb_bcast_message);
         setApplicationCallBack(cb_handle_application_data);
 
-        cMessage* rcMessage = new cMessage("RegularCheck");
-        scheduleAt(simTime()+2.0, rcMessage);
+        mRegularCheckMessage = new cMessage("mRegularCheckMessage");
+        scheduleAt(simTime()+2.0, mRegularCheckMessage);
         //scheduleAt(simTime() + StartTime(), mpStartMessage);
 
 
@@ -170,17 +173,23 @@ void DataCentricNetworkLayer::initialize(int aStage)
         // SPECIAL TEMPORARY CODE
         // ======================
         int thePoisson = mMeanUpTimeSeconds;
-
         cout << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
-        scheduleAt(simTime() + thePoisson, mpUpDownMessage);
-        //scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
 
-        //if ( !strcmp(this->getParentModule()->getFullName(), "host[41]") )
-        //{
-            //scheduleAt(simTime() + 8.0, mpDownMessage);
+        if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
+        {
+            scheduleAt(simTime() + 4.0, mpUpDownMessage);
+        }
+        else
+        {
+            scheduleAt(simTime() + thePoisson, mpUpDownMessage);
+            //scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
+        }
 
-        //}
-        this->getParentModule()->getFullName();
+        if ( !strcmp(this->getParentModule()->getFullName(), "host[5]") )
+        {
+            scheduleAt(simTime() + 5.0, mMessageForTesting_1);
+        }
+
     }
 
 
@@ -192,34 +201,53 @@ void DataCentricNetworkLayer::finish()
 
     recordScalar("num of pkts forwarded", numForward);
 
-    unsigned int totNeighbors = CountInterfaceNodes(rd->interfaceTree);
-    recordScalar("NumberOfNeighbours", totNeighbors);
-    double totalLqi =  TotalNeighborLqi(rd->interfaceTree);
+    if ( rd->interfaceTree )
+    {
+        unsigned int totNeighbors = CountInterfaceNodes(rd->interfaceTree);
+        recordScalar("NumberOfNeighbours", totNeighbors);
+        double totalLqi =  TotalNeighborLqi(rd->interfaceTree);
 
-    unsigned int maxlqi = (unsigned int)rd->interfaceTree->i->lqi;
-    unsigned int minlqi = (unsigned int)rd->interfaceTree->i->lqi;
-    MinMaxNeighborLqi(rd->interfaceTree, &maxlqi, &minlqi);
+        unsigned int maxlqi = (unsigned int)rd->interfaceTree->i->lqi;
+        unsigned int minlqi = (unsigned int)rd->interfaceTree->i->lqi;
+        MinMaxNeighborLqi(rd->interfaceTree, &maxlqi, &minlqi);
 
-    double averageLqi = (totalLqi / totNeighbors);
-    recordScalar("TotalNeighborLqi", totalLqi);
-    recordScalar("AverageNeighborLqi", averageLqi);
-    recordScalar("MaxNeighborLqi", maxlqi);
-    recordScalar("MinNeighborLqi", minlqi);
+        double averageLqi = (totalLqi / totNeighbors);
+        recordScalar("TotalNeighborLqi", totalLqi);
+        recordScalar("AverageNeighborLqi", averageLqi);
+        recordScalar("MaxNeighborLqi", maxlqi);
+        recordScalar("MinNeighborLqi", minlqi);
+
+        countIFLqiValuesRecorded = 0;
+        TraversInterfaceNodes(rd->interfaceTree, 0, cb_recordNeighbourLqi);
+
+        for ( unsigned int i = 10; i < 270; i += 10 )
+        {
+            double lqi = (double)i;
+            double numInRange = (double)mNeighboursInLqiRange[i];
+            RangeLqis.recordWithTimestamp(numInRange, lqi);
+        }
+    }
+    else
+    {
+        recordScalar("NumberOfNeighbours", 0);
+        recordScalar("TotalNeighborLqi", 0);
+        recordScalar("AverageNeighborLqi", 0);
+        recordScalar("MaxNeighborLqi", 0);
+        recordScalar("MinNeighborLqi", 0);
+        for ( unsigned int i = 10; i < 270; i += 10 )
+        {
+            double lqi = (double)i;
+            RangeLqis.recordWithTimestamp(0, lqi);
+        }
+
+    }
+
 
     double pkts_ignored = (double)rd->pkts_ignored;
     double pkts_received = (double)rd->pkts_received;
     double ignoreRatio = pkts_ignored / pkts_received;
     recordScalar("ignoreRatio", ignoreRatio);
 
-    countIFLqiValuesRecorded = 0;
-    TraversInterfaceNodes(rd->interfaceTree, 0, cb_recordNeighbourLqi);
-
-    for ( unsigned int i = 10; i < 270; i += 10 )
-    {
-        double lqi = (double)i;
-        double numInRange = (double)mNeighboursInLqiRange[i];
-        RangeLqis.recordWithTimestamp(numInRange, lqi);
-    }
 
 
 
@@ -277,7 +305,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                 case DATA:
                 //case REINFORCE:
                 //case REINFORCE_INTEREST:
-                    InterfaceDown(pkt, destIF);
+                    //InterfaceDown(pkt, destIF);
                     break;
             }
         }
@@ -298,6 +326,26 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     SetCurrentModuleInCLanguageFramework();
 
     std::string fName = this->getParentModule()->getFullName();
+
+
+    if ( msg == mMessageForTesting_1 )
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char temp[30];
+        unsigned char x[20];
+        string i = "\x2\x2\x0";
+        int datalen = strlen(i.c_str());
+        memcpy(x, i.c_str(), datalen);
+        x[datalen] = DOT;
+        getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+        weAreSinkFor(x, ++testSeqNo);
+
+        UcastAllBestGradients(rd->top_state, 0);
+
+        scheduleAt(simTime() + 10.0, mMessageForTesting_1);
+
+        return;
+    }
 
 
     if (msg == mpUpDownMessage )
@@ -328,15 +376,39 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
             std::remove(ss.str().c_str());
 
-            scheduleAt(simTime() + poisson(mMeanDownTimeSeconds), mpUpDownMessage);
+            if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
+            {
+                scheduleAt(simTime() + 4.0, mpUpDownMessage);
+            }
+            else
+            {
+                scheduleAt(simTime() + poisson(mMeanDownTimeSeconds), mpUpDownMessage);
+            }
+
+
         }
         else
         {
             cout << "MODULE COMING UP: " << fName << endl;
             mPhyModule->enableModule();
+            mQueueModule->requestPacket(); // reprime the previously cleared nic queue
+
             StartUp();
 
-            scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
+            if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
+            {
+                scheduleAt(simTime() + 4.0, mpUpDownMessage);
+            }
+            else
+            {
+                scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
+            }
+
+
+
+
+
+
         }
 
 
@@ -354,7 +426,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
 
 
-    if ( msg->isSelfMessage() )
+    if ( msg == mRegularCheckMessage )
     {
         regular_checks();
 
@@ -365,7 +437,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         ss << ".\\" << hex << uppercase << thisAddress << "Connections.txt";
 
 
-        scheduleAt(simTime()+2.0, msg);
+        scheduleAt(simTime()+2.0, mRegularCheckMessage);
         return;
     }
 
@@ -569,7 +641,7 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
         memcpy(x, i->c_str(), datalen);
         x[datalen] = DOT;
         getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
-        weAreSinkFor(x);
+        weAreSinkFor(x, 0);
     }
 
 }

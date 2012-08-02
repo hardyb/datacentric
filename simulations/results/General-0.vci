@@ -1,15 +1,15 @@
                                                                 
 version 2
-run General-0-20120801-13:00:59-3724
+run General-0-20120802-21:37:10-3632
 attr configname General
-attr datetime 20120801-13:00:59
+attr datetime 20120802-21:37:10
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 3724
+attr processid 3632
 attr repetition 0
 attr replication #0
 attr resultdir results

@@ -98,6 +98,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     cMessage *mpStartMessage;
     cMessage *mpUpDownMessage;
+    cMessage *mMessageForTesting_1;
+    cMessage *mRegularCheckMessage;
 
 
 };
