@@ -35,18 +35,31 @@ true
 65535
 false
 false
+true
+true
+CONNECTION
+AAA00000006
+0202FF06
+1
+AAA0000000B
+seqno: 1
+true
+401
+65535
+false
+false
 false
 false
 CONNECTION
 AAA00000006
 0202FF06
 1
-AAA00000049
+AAA0000002B
 seqno: 1
 true
 65535
 65535
 false
 false
-true
+false
 true

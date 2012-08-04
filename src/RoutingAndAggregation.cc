@@ -92,6 +92,7 @@ struct RoutingData* rd;
 
 struct new_packet incoming_packet;
 struct new_packet outgoing_packet;
+struct new_packet broken_packet;
 
 
 
@@ -154,6 +155,45 @@ void read_packet(unsigned char* pkt)
 
 }
 
+
+
+void read_broken_packet(unsigned char* pkt)
+{
+    broken_packet.message_type = pkt[0];
+    broken_packet.length = pkt[1];
+    free(broken_packet.data);
+    broken_packet.data = (unsigned char*)malloc(broken_packet.length+1);
+    if (!broken_packet.data)
+    {
+        memcpy(broken_packet.data, &(pkt[2]), broken_packet.length);
+    }
+    //memset(broken_packet.data, 0, sizeof(broken_packet.length+1));
+    memcpy(broken_packet.data, &(pkt[2]), broken_packet.length);
+    broken_packet.data[broken_packet.length] = 0;
+
+    //char lsb = pkt[2+broken_packet.length];
+    //char msb = pkt[2+broken_packet.length+1];
+    //broken_packet.path_value = (signed short)pkt[2+broken_packet.length];
+
+    // need to take care that this is the right byte to use to ref the 2 bytes
+    // ie msb? lsb? etc...
+    signed short* x = (signed short*)(pkt+2+broken_packet.length); // cast from 1st byte in buffer ie lsb
+    broken_packet.path_value = *x;
+
+    NEIGHBOUR_ADDR* excepted_interface_ptr = (NEIGHBOUR_ADDR*)(pkt+2+broken_packet.length+
+            sizeof(signed short));
+    broken_packet.excepted_interface = *excepted_interface_ptr;
+
+
+    NEIGHBOUR_ADDR* down_interface_ptr = (NEIGHBOUR_ADDR*)(pkt+2+broken_packet.length+
+            sizeof(signed short) + sizeof(NEIGHBOUR_ADDR));
+    broken_packet.down_interface = *down_interface_ptr;
+
+    char* seqn = (char*)(pkt+2+broken_packet.length+
+            sizeof(signed short) + sizeof(NEIGHBOUR_ADDR) + sizeof(NEIGHBOUR_ADDR));
+    broken_packet.seqno = *seqn;
+
+}
 
 
 
@@ -942,6 +982,7 @@ void MarkIFDown(Interface* i, State* s)
 }
 
 
+// PROBABLY DISCONTINUING THIS FUNCTION
 void InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( !s->bestGradientToDeliver->key2->up )
@@ -969,7 +1010,7 @@ void InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 }
 
 
-
+// PROBABLY DISCONTINUING THIS FUNCTION
 void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 //void InterfaceDown(Interface* i, State* s)
 {
@@ -988,59 +1029,6 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
             incoming_packet.data,
             current_prefix_name, inf, InterfaceDownCallBack);
 
-#ifdef GRAD_FILES
-    UpdateGradientFile();
-#endif
-
-
-    return;
-
-    // POS DELETE WHATS BELOW WHEN WE KNOW ITS WORKING
-
-    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
-
-
-
-    State* s = t->s;
-
-    //void removeIF(struct InterfaceList** l, struct Interface* _i);
-    //removeIF(&(s->deliveryInterfaces), i);
-    //removeIF(&(s->obtainInterfaces), i);
-
-
-    /*
-     * So now, call this repeatedly for same state for each interface
-     * except the one that is down
-     *
-     * providing a very high cost so that the existing cost on each grad will remain, but the
-     * null best grad will be set with a new best
-     */
-    KDGradientNode* saveBestGradientToDeliver = s->bestGradientToDeliver;
-    s->bestGradientToDeliver = 0;
-    TraversInterfaceNodes(rd->interfaceTree, s, UpdateBestGradient);
-    KDGradientNode* alternativeBestGradientToDeliver = s->bestGradientToDeliver;
-    s->bestGradientToDeliver = saveBestGradientToDeliver;
-
-    if ( alternativeBestGradientToDeliver && ((    *(incoming_packet.data) & MSB2) == RECORD) )
-    {
-        //outgoing_packet.message_type = INTEREST_CORRECTION; //???
-        //outgoing_packet.length = incoming_packet.length;
-        //outgoing_packet.data = incoming_packet.data; // safe?
-        //outgoing_packet.path_value = s->bestGradientToDeliver->costToDeliver + nodeConstraint;
-        //outgoing_packet.down_interface = inf;
-        //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-        //bcastAMessage(write_packet());
-
-
-        add(&(s->deliveryInterfaces), alternativeBestGradientToDeliver->key2);
-        outgoing_packet.message_type = REINFORCE_INTEREST;
-        outgoing_packet.data = incoming_packet.data;
-        outgoing_packet.length = strlen((const char*)incoming_packet.data); // strl ok here
-        outgoing_packet.path_value = 0;
-        //outgoing_packet.excepted_interface = 0;
-        outgoing_packet.down_interface = inf;
-        sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
-    }
 #ifdef GRAD_FILES
     UpdateGradientFile();
 #endif
@@ -1533,7 +1521,8 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 
     if ( seqno < s->seqno )
     {
-        return NULL; // I think this is right, i.e. ignore any old ints/advs
+        return treeNode; // I think this is right, i.e. ignore any old ints/advs
+        // CHECK THIS
         //Let's do it for now
     }
 
@@ -2735,6 +2724,7 @@ bool forward(void* p1, void* p2)
 	outgoing_packet.path_value = incoming_packet.path_value;
 	outgoing_packet.down_interface = incoming_packet.down_interface;
 	outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
+	outgoing_packet.seqno = incoming_packet.seqno;
 
 	deliver(p1, p2);
 	return false;
@@ -2879,11 +2869,113 @@ void kickFSM()
 
 
 
+
+
+
+
+
+
+
+
+void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+{
+
+    /*
+     * was the broken interface in the delivery list for this prefix state?
+     * i.e. in all likelihood
+     * was it this prefix state that we mached on incoming data and then
+     * used to find the now broken interface in its delivery interface list?
+     */
+    InterfaceList* temp = s->deliveryInterfaces;
+    while( temp !=NULL )
+    {
+        if ( temp->i->iName == _if )
+        {
+            // If so, broadcast a BREAKAGE message for that prefix state
+            s->broken = 1;
+            outgoing_packet.message_type = BREAKAGE;
+            outgoing_packet.data = _buf;
+            outgoing_packet.length = strlen((const char*)_buf); // strl ok here
+            outgoing_packet.path_value = 0;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.down_interface = _if; // probably discontinuing this feature
+            outgoing_packet.seqno = s->seqno;
+            bcastAMessage(write_packet());
+            break;
+        }
+        temp = temp->link;
+    }
+
+}
+
+
+void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf)
+{
+    /*
+     * A data record (interest/query based) was just sent on the matching
+     * prefix state's delivery list interface
+     * BUT the send failed and the parameters here have been provided
+     * by a mac call back.
+     *
+     * He have actual data sent but not the matched prefix state
+     * so check all matching ones for the broken interface
+     *
+     */
+
+    read_broken_packet(pkt);
+    action_all_prefixes(rd->top_state, 0, broken_packet.length,
+            broken_packet.data,
+            current_prefix_name, inf, interest_breakage_process_prefix);
+
+}
+
+
+
+
+
+void handle_breakage(control_data cd)
+{
+    // we can use this if it is pefix state coming and not actual data
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    bool broken = t->s->broken;
+    bool this_seqno = ( incoming_packet.seqno == t->s->seqno );
+
+    if ( this_seqno && !broken )
+    {
+        if ( t->s->action == SINK_ACTION )
+        {
+            // think we should just use what we get in
+            t->s->seqno++;
+            weAreSinkFor(incoming_packet.data, t->s->seqno);
+            UcastAllBestGradients(rd->top_state, 0);
+        }
+        else
+        {
+            t->s->broken = 1;
+            outgoing_packet.message_type = BREAKAGE;
+            outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.path_value = 0;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // discontinuing?
+            outgoing_packet.seqno = incoming_packet.seqno;
+            bcastAMessage(write_packet());
+        }
+    }
+    // else
+    // !this_seqno && !broken ||
+    // this_seqno && broken ||
+    // !this_seqno && broken
+
+}
+
+
 /*================================ MESSAGE HANDLERS ==============================*/
 
 
 
-void (*h[10]) (control_data cd) =
+void (*h[11]) (control_data cd) =
 {
 handle_advert,
 handle_interest,
@@ -2894,7 +2986,8 @@ handle_neighbor_ucast,
 handle_reinforce_interest,
 handle_collaboration,
 handle_reinforce_collaboration,
-handle_interest_correction
+handle_interest_correction,
+handle_breakage
 };
 
 
@@ -3500,6 +3593,17 @@ void handle_interest(control_data cd)
 
 
 	t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
+	State* s = t->s;
+    if ( incoming_packet.seqno < s->seqno )
+    {
+        return; // I think this is right, i.e. ignore any old seq ints/advs
+        // CHECK THIS
+
+    }
+
+
     //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
     setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
 
@@ -3519,6 +3623,7 @@ void handle_interest(control_data cd)
             outgoing_packet.path_value = outgoingLinkCost(cd);
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.seqno = incoming_packet.seqno;
             bcastAMessage(write_packet());
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
 		}
@@ -4427,6 +4532,8 @@ struct State* newStateObject()
 	s->bestGradientToDeliverUpdated = FALSE;
 	s->action = FORWARD_ACTION;
 	s->seqno = 0;
+	s->broken = 0;
+
 	//n->left = NULL;
 	//n->right = NULL;
 	//return n;

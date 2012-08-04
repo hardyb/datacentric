@@ -22,6 +22,7 @@
 class DataCentricTestApp : public TrafGenPar
 {
   public:
+    virtual int    numInitStages    () const { return 2; }
     /*
     typedef struct Program
     {
@@ -84,6 +85,7 @@ class DataCentricTestApp : public TrafGenPar
 
     // sibling module IDs
     DataCentricNetworkLayer* netModule;
+    DataCentricNetworkMan* mNetMan;
 
   private:
     bool    m_debug;        // debug switch

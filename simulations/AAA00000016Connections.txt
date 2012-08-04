@@ -28,23 +28,10 @@ CONNECTION
 AAA00000016
 0202FF06
 3
-AAA00000019
-seqno: 0
-true
-760
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000016
-0202FF06
-3
 AAA0000004A
 seqno: 1
 true
-648
+662
 65535
 false
 false
@@ -57,7 +44,20 @@ AAA00000016
 AAA00000045
 seqno: 1
 true
-1191
+744
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000016
+0202FF06
+3
+AAA00000019
+seqno: 1
+true
+948
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA00000016
 AAA00000044
 seqno: 1
 true
-837
+695
 65535
 false
 false
@@ -83,7 +83,7 @@ AAA00000016
 AAA00000048
 seqno: 1
 true
-848
+799
 65535
 false
 false
@@ -96,7 +96,7 @@ AAA00000016
 AAA0000001E
 seqno: 1
 true
-852
+801
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA00000016
 AAA00000050
 seqno: 1
 true
-840
+786
 65535
 false
 false
@@ -122,7 +122,7 @@ AAA00000016
 AAA00000026
 seqno: 1
 true
-1344
+817
 65535
 false
 false

@@ -3,9 +3,9 @@ AAA00000062
 0202FF06
 3
 AAA0000004F
-seqno: 0
+seqno: 1
 true
-654
+636
 65535
 false
 false
@@ -18,7 +18,7 @@ AAA00000062
 AAA00000040
 seqno: 1
 true
-725
+623
 65535
 true
 false
@@ -31,7 +31,7 @@ AAA00000062
 AAA00000059
 seqno: 1
 true
-752
+651
 65535
 false
 false
@@ -42,9 +42,9 @@ AAA00000062
 0202FF06
 3
 AAA00000019
-seqno: 0
+seqno: 1
 true
-744
+886
 65535
 false
 false
@@ -57,7 +57,7 @@ AAA00000062
 AAA0000003D
 seqno: 1
 true
-846
+744
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA00000062
 AAA0000001D
 seqno: 1
 true
-891
+789
 65535
 false
 false
@@ -83,7 +83,7 @@ AAA00000062
 AAA00000044
 seqno: 1
 true
-827
+685
 65535
 false
 false
@@ -96,7 +96,7 @@ AAA00000062
 AAA00000012
 seqno: 1
 true
-868
+863
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA00000062
 AAA00000009
 seqno: 1
 true
-735
+641
 65535
 false
 false
@@ -120,9 +120,9 @@ AAA00000062
 0202FF06
 3
 AAA00000017
-seqno: 0
+seqno: 1
 true
-750
+732
 65535
 false
 false

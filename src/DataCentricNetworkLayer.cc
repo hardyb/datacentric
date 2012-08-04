@@ -135,6 +135,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         rd->role[0] = (unsigned char*)malloc(forwardingRole[0]);
         memcpy(rd->role[0], forwardingRole, forwardingRole[0]);
         nodeConstraintValue         = par("nodeConstraint");
+        mStability         = par("Stability");
         mRoutingDelay         = par("routingDelay");
         setMessageCallBack(cb_send_message);
         setBroadcastCallBack(cb_bcast_message);
@@ -172,23 +173,35 @@ void DataCentricNetworkLayer::initialize(int aStage)
         //int thePoisson = poisson(mMeanUpTimeSeconds);
         // SPECIAL TEMPORARY CODE
         // ======================
-        int thePoisson = mMeanUpTimeSeconds;
-        cout << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
+        //int thePoisson = mMeanUpTimeSeconds;
+        //cout << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
 
-        if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
-        {
-            scheduleAt(simTime() + 4.0, mpUpDownMessage);
-        }
-        else
-        {
-            scheduleAt(simTime() + thePoisson, mpUpDownMessage);
+
+
+        scheduleAt(simTime() + 1.0, mpUpDownMessage);
+
+        //if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
+        //{
+        //    scheduleAt(simTime() + 4.0, mpUpDownMessage);
+        //}
+        //else
+        //{
+        //    scheduleAt(simTime() + thePoisson, mpUpDownMessage);
             //scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
-        }
+        //}
 
-        if ( !strcmp(this->getParentModule()->getFullName(), "host[5]") )
-        {
-            scheduleAt(simTime() + 5.0, mMessageForTesting_1);
-        }
+        //if ( !strcmp(this->getParentModule()->getFullName(), "host[5]") )
+        //{
+            //scheduleAt(simTime() + 5.0, mMessageForTesting_1);
+        //}
+
+
+
+
+
+
+
+
 
     }
 
@@ -306,6 +319,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                 //case REINFORCE:
                 //case REINFORCE_INTEREST:
                     //InterfaceDown(pkt, destIF);
+                    interest_breakage_just_ocurred(pkt, destIF);
                     break;
             }
         }
@@ -350,81 +364,42 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpUpDownMessage )
     {
-        //mPhyModule->callFinish();
-
-        if ( mPhyModule->isEnabled() )
+        if ( mStability <= uniform(0,1) )
         {
-            cout << "MODULE GOING DOWN: " << fName << endl;
-            mPhyModule->disableModule();
-
-            // reset routing data
-            freeKDGradientNode(moduleRD.grTree);
-            freeInterfaceNode(moduleRD.interfaceTree);
-            trie_free(moduleRD.top_context);
-            trie_free(moduleRD.top_state);
-            moduleRD.grTree = NULL;
-            moduleRD.interfaceTree = NULL;
-            moduleRD.top_context = trie_new();
-            moduleRD.top_state = trie_new();
-
-            mQueueModule->dropAll();
-
-            std::string s;
-            std::ostringstream ss;
-            ss.clear();
-            ss.str(s);
-            ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
-            std::remove(ss.str().c_str());
-
-            if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
+            if ( mPhyModule->isEnabled() )
             {
-                scheduleAt(simTime() + 4.0, mpUpDownMessage);
+                cout << "MODULE GOING DOWN: " << fName << endl;
+                mPhyModule->disableModule();
+
+                freeKDGradientNode(moduleRD.grTree);
+                freeInterfaceNode(moduleRD.interfaceTree);
+                trie_free(moduleRD.top_context);
+                trie_free(moduleRD.top_state);
+                moduleRD.grTree = NULL;
+                moduleRD.interfaceTree = NULL;
+                moduleRD.top_context = trie_new();
+                moduleRD.top_state = trie_new();
+                mQueueModule->dropAll();
+
+                std::string s;
+                std::ostringstream ss;
+                ss.clear();
+                ss.str(s);
+                ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+                std::remove(ss.str().c_str());
             }
             else
             {
-                scheduleAt(simTime() + poisson(mMeanDownTimeSeconds), mpUpDownMessage);
+                cout << "MODULE COMING UP: " << fName << endl;
+                mPhyModule->enableModule();
+                mQueueModule->requestPacket(); // reprime the previously cleared nic queue
+                StartUp();
             }
-
-
-        }
-        else
-        {
-            cout << "MODULE COMING UP: " << fName << endl;
-            mPhyModule->enableModule();
-            mQueueModule->requestPacket(); // reprime the previously cleared nic queue
-
-            StartUp();
-
-            if ( !strcmp(this->getParentModule()->getFullName(), "host[38]") )
-            {
-                scheduleAt(simTime() + 4.0, mpUpDownMessage);
-            }
-            else
-            {
-                scheduleAt(simTime() + poisson(mMeanUpTimeSeconds), mpUpDownMessage);
-            }
-
-
-
-
-
-
         }
 
-
-
+        scheduleAt(simTime() + 1.0, mpUpDownMessage);
         return;
-
     }
-
-    //if (msg == mpStartMessage)
-    //{
-    //    mPhyModule->enableModule();
-    //    StartUp();
-    //    return;
-    //}
-
-
 
     if ( msg == mRegularCheckMessage )
     {
@@ -464,7 +439,8 @@ void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
     // currently being simulated.
     // In the real world a copy of the C Code will be deployed in each device
 
-    nodeConstraint = nodeConstraintValue;
+    //nodeConstraint = nodeConstraintValue;
+    nodeConstraint = (unsigned int)(255.0 * mStability);
     currentModuleId = this->getId();
     thisAddress = mAddress;
     rd = &(moduleRD);

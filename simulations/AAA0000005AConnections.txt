@@ -3,11 +3,11 @@ AAA0000005A
 0202FF06
 3
 AAA0000005C
-seqno: 0
+seqno: 1
 true
 271
 65535
-false
+true
 false
 false
 false
@@ -18,7 +18,7 @@ AAA0000005A
 AAA00000035
 seqno: 1
 true
-566
+462
 65535
 false
 false
@@ -31,7 +31,7 @@ AAA0000005A
 AAA00000055
 seqno: 1
 true
-427
+419
 65535
 false
 false
@@ -42,7 +42,7 @@ AAA0000005A
 0202FF06
 3
 AAA0000002B
-seqno: 0
+seqno: 1
 true
 289
 65535
@@ -57,7 +57,7 @@ AAA0000005A
 AAA00000014
 seqno: 1
 true
-689
+447
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA0000005A
 AAA0000004C
 seqno: 1
 true
-604
+720
 65535
 false
 false
@@ -83,7 +83,7 @@ AAA0000005A
 AAA00000018
 seqno: 1
 true
-451
+447
 65535
 false
 false
@@ -94,7 +94,7 @@ AAA0000005A
 0202FF06
 3
 AAA00000021
-seqno: 0
+seqno: 1
 true
 444
 65535
@@ -111,7 +111,7 @@ seqno: 1
 true
 281
 65535
-true
+false
 false
 false
 false

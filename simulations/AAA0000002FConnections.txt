@@ -29,7 +29,7 @@ AAA0000002F
 0202FF06
 3
 AAA0000005C
-seqno: 0
+seqno: 1
 true
 335
 65535
@@ -42,7 +42,7 @@ AAA0000002F
 0202FF06
 3
 AAA0000003C
-seqno: 1
+seqno: 0
 true
 116
 65535
@@ -55,7 +55,7 @@ AAA0000002F
 0202FF06
 3
 AAA0000002B
-seqno: 0
+seqno: 1
 true
 284
 65535
@@ -68,9 +68,9 @@ AAA0000002F
 0202FF06
 3
 AAA0000000C
-seqno: 1
+seqno: 0
 true
-430
+433
 65535
 false
 false
@@ -94,7 +94,7 @@ AAA0000002F
 0202FF06
 3
 AAA00000049
-seqno: 1
+seqno: 0
 true
 261
 65535
@@ -122,7 +122,7 @@ AAA0000002F
 AAA00000037
 seqno: 1
 true
-446
+387
 65535
 false
 false

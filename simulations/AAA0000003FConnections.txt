@@ -5,7 +5,7 @@ AAA0000003F
 AAA00000039
 seqno: 1
 true
-530
+474
 65535
 false
 false
@@ -18,7 +18,7 @@ AAA0000003F
 AAA00000048
 seqno: 1
 true
-876
+827
 65535
 false
 false
@@ -31,7 +31,7 @@ AAA0000003F
 AAA0000000F
 seqno: 1
 true
-656
+600
 65535
 false
 false
@@ -44,7 +44,7 @@ AAA0000003F
 AAA0000001E
 seqno: 1
 true
-855
+801
 65535
 false
 false
@@ -57,7 +57,7 @@ AAA0000003F
 AAA00000050
 seqno: 1
 true
-832
+778
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA0000003F
 AAA0000002E
 seqno: 1
 true
-520
+466
 65535
 true
 false
@@ -83,7 +83,7 @@ AAA0000003F
 AAA00000013
 seqno: 1
 true
-742
+688
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA0000003F
 AAA00000051
 seqno: 1
 true
-707
+641
 65535
 false
 false
@@ -122,7 +122,7 @@ AAA0000003F
 AAA00000056
 seqno: 1
 true
-707
+641
 65535
 false
 false

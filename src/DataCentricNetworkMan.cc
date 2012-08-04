@@ -37,6 +37,70 @@ void DataCentricNetworkMan::initialize(int aStage)
         advertPacketFrequency.setName("advertPacketFrequency");
         reinforcementPacketFrequency.setName("reinforcementPacketFrequency");
 
+        /*
+         * A region has top left coord (x,y) and width and height w, h
+         * A region may also have a context / location name e.g. \6\4
+         *
+         * Example
+         *
+         * region 1 - 0,0 w=18 h=18
+         * region 2 - 18,0 w=17 h=18
+         * region 3 - 0,18 w=18 h=17
+         * region 4 - 18,18 w=17 h=17
+         *
+         * where shall we store this data?
+         * we need to set context from ini file
+         *
+         * FOR NOW...
+         * Lets do a hard-coded example
+         *
+         * For the main ongoing code we need to think a little deeper
+         * about the hierarchy, overlap etc etc
+         *
+         */
+
+        Region r6;
+        r6.x =0;
+        r6.y =0;
+        r6.w =35;
+        r6.h =35;
+        memcpy(r6.context, "\x06\x00", 3);
+        mRegions.push_back(r6);
+
+        Region r61;
+        r61.x =0;
+        r61.y =0;
+        r61.w =18;
+        r61.h =18;
+        memcpy(r61.context, "\x06\x01\x00", 3);
+        mRegions.push_back(r61);
+
+        Region r62;
+        r62.x =18;
+        r62.y =0;
+        r62.w =17;
+        r62.h =18;
+        memcpy(r62.context, "\x06\x02\x00", 3);
+        mRegions.push_back(r62);
+
+        Region r63;
+        r63.x =0;
+        r63.y =18;
+        r63.w =18;
+        r63.h =17;
+        memcpy(r63.context, "\x06\x03\x00", 3);
+        mRegions.push_back(r63);
+
+        Region r64;
+        r64.x =18;
+        r64.y =18;
+        r64.w =17;
+        r64.h =17;
+        memcpy(r64.context, "\x06\x04\x00", 3);
+        mRegions.push_back(r64);
+
+
+
 
         //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         //mpStartMessage = new cMessage("StartMessage");

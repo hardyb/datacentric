@@ -17,6 +17,20 @@ class DataCentricNetworkMan : public cSimpleModule
     virtual void finish();
     void updateControlPacketData(unsigned char type, bool ucast);
 
+    typedef struct
+    {
+        double x;
+        double y;
+        double w;
+        double h;
+        char context[20];
+    }Region;
+
+    typedef std::vector<Region> Regions;
+    typedef std::vector<Region>::iterator RegionsIterator;
+    Regions mRegions;
+
+
   protected:
     void handleMessage(cMessage*);
 

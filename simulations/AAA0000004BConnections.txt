@@ -5,9 +5,9 @@ AAA0000004B
 AAA00000039
 seqno: 1
 true
-569
+513
 65535
-true
+false
 false
 false
 false
@@ -18,7 +18,7 @@ AAA0000004B
 AAA0000000F
 seqno: 1
 true
-837
+638
 65535
 false
 false
@@ -31,7 +31,7 @@ AAA0000004B
 AAA00000050
 seqno: 1
 true
-837
+783
 65535
 false
 false
@@ -44,7 +44,7 @@ AAA0000004B
 AAA0000002E
 seqno: 1
 true
-576
+522
 65535
 false
 false
@@ -57,7 +57,7 @@ AAA0000004B
 AAA00000013
 seqno: 1
 true
-740
+686
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA0000004B
 AAA0000003F
 seqno: 1
 true
-658
+617
 65535
 false
 false
@@ -83,20 +83,7 @@ AAA0000004B
 AAA00000060
 seqno: 1
 true
-730
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000004B
-0202FF06
-3
-AAA00000003
-seqno: 0
-true
-474
+676
 65535
 false
 false
@@ -109,9 +96,22 @@ AAA0000004B
 AAA0000000E
 seqno: 1
 true
-597
+541
 65535
 false
+false
+false
+false
+CONNECTION
+AAA0000004B
+0202FF06
+3
+AAA00000003
+seqno: 1
+true
+512
+65535
+true
 false
 false
 false
@@ -122,7 +122,7 @@ AAA0000004B
 AAA0000004E
 seqno: 1
 true
-571
+515
 65535
 false
 false

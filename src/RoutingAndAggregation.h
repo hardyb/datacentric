@@ -196,7 +196,8 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define COLLABORATION 7
 #define REINFORCE_COLLABORATION 8
 #define INTEREST_CORRECTION 9
-#define REINFORCE_INTEREST_CANCEL 10
+#define BREAKAGE 10
+#define REINFORCE_INTEREST_CANCEL 11
 
 
 
@@ -572,6 +573,7 @@ typedef struct State
 	int bestGradientToDeliverUpdated; /* used as a bool */
 	struct InterfaceList* deliveryInterfaces;
 	char seqno;
+	char broken;
 	int action;
 };
 
@@ -763,6 +765,8 @@ void handle_neighbor_ucast(control_data cd);
 void handle_collaboration(control_data cd);
 void handle_reinforce_collaboration(control_data cd);
 void handle_interest_correction(control_data cd);
+void handle_breakage(control_data cd);
+void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);

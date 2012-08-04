@@ -3,9 +3,9 @@ AAA00000001
 0202FF06
 3
 AAA00000021
-seqno: 1
+seqno: 0
 true
-451
+447
 65535
 false
 false
@@ -18,7 +18,7 @@ AAA00000001
 AAA0000000C
 seqno: 1
 true
-428
+384
 65535
 true
 false
@@ -31,7 +31,7 @@ AAA00000001
 AAA00000039
 seqno: 1
 true
-564
+508
 65535
 false
 false
@@ -57,20 +57,7 @@ AAA00000001
 AAA0000004A
 seqno: 1
 true
-717
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000001
-0202FF06
-3
-AAA00000023
-seqno: 1
-true
-523
+731
 65535
 false
 false
@@ -83,7 +70,20 @@ AAA00000001
 AAA00000044
 seqno: 1
 true
-853
+711
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000001
+0202FF06
+3
+AAA00000023
+seqno: 0
+true
+425
 65535
 false
 false
@@ -96,7 +96,7 @@ AAA00000001
 AAA0000001C
 seqno: 1
 true
-1014
+685
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA00000001
 AAA00000035
 seqno: 1
 true
-577
+473
 65535
 false
 false
@@ -122,7 +122,7 @@ AAA00000001
 AAA00000009
 seqno: 1
 true
-710
+616
 65535
 false
 false

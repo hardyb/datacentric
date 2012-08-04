@@ -6,6 +6,7 @@ simple DataCentricNetworkLayer
         bool debug; 				// debug switch
         bool isPANCoor;
         int nodeConstraint;
+        double Stability;
         //double startTime;
 		volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
         int meanDownTimeInterval; // Frequency with which down time occurs in seonds

@@ -2,7 +2,7 @@
 #include "DataCentricTestApp.h"
 #include <stdio.h>
 #include <string.h>
-
+#include "StationaryMobility.h"
 
 #define UNKNOWN_ACTIVITY 0
 #define SENSOR_READING 1
@@ -19,13 +19,15 @@ Define_Module(DataCentricTestApp);
 
 void DataCentricTestApp::initialize(int aStage)
 {
-    TrafGenPar::initialize(aStage);
+    TrafGenPar::initialize(aStage); //DO NOT DELETE!!
 
 
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
         netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
+        cSimulation* sim =  cSimulation::getActiveSimulation();
+        mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
 
         //mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");
@@ -44,10 +46,12 @@ void DataCentricTestApp::initialize(int aStage)
         e2eDelayVec.setName("End-to-end delay");
         meanE2EDelayVec.setName("Mean end-to-end delay");
 
-        //ifstream scheduleFile;
-        //string activities = par("activities").stringValue();
-        //mActivityFile.open(activities.c_str());
+    }
 
+    if (1 == aStage)
+    {
+        // RECENTLY MOVED THIS TO STAGE 1
+        // SO WATCH CAREFULLY
 
 
         string actionThreadsString = par("actionThreads").stringValue();
@@ -64,11 +68,70 @@ void DataCentricTestApp::initialize(int aStage)
             scheduleAt(simTime() + ScheduleStartTime(), m);
         }
 
-        contextData = par("nodeContext").stringValue();
-        DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
-        appPkt->getPktData().insert(appPkt->getPktData().end(), contextData.begin(), contextData.end());
-        appPkt->setKind(CONTEXT_MESSAGE);
-        send(appPkt, mLowerLayerOut);
+
+        /*
+         * A region has top left coord (x,y) and width and height w, h
+         * A region may also have a context / location name e.g. \6\4
+         *
+         * Example
+         *
+         * region 1 - 0,0 w=18 h=18
+         * region 2 - 18,0 w=17 h=18
+         * region 3 - 0,18 w=18 h=17
+         * region 4 - 18,18 w=17 h=17
+         *
+         * where shall we store this data?
+         * we need to set context from ini file
+         *
+         * WE HAVE DONE HARDCODED EXAMPLE IN NetMan'
+         *
+         * BELOW QUICK AND DIRTY START FOR SETTING CONTEXT IN THIS NODE
+         *
+         */
+
+        // Probably no longer take from ini file
+        //contextData = par("nodeContext").stringValue();
+
+        StationaryMobility* mob = check_and_cast<StationaryMobility*>(this->getParentModule()->getSubmodule("mobility"));
+        double x = mob->par("initialX");
+        double y = mob->par("initialY");
+        for (DataCentricNetworkMan::RegionsIterator i = mNetMan->mRegions.begin();
+                i != mNetMan->mRegions.end(); ++i)
+        {
+            if (       x >= i->x
+                    && y >= i->y
+                    && x < (i->x + i->w)
+                    && y < (i->y + i->h)      )
+            {
+                //string temp((const char*)i->context);
+                //contextData = temp;
+                // check out below
+                contextData = i->context;
+
+                // what do we put in here - there may be multiple ones
+                //par("nodeContext").setStringValue(contextData.c_str());
+
+                DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+                appPkt->getPktData().insert(appPkt->getPktData().end(), contextData.begin(), contextData.end());
+                appPkt->setKind(CONTEXT_MESSAGE);
+                send(appPkt, mLowerLayerOut);
+
+                //break;
+                //
+                // need to think it through but we think NOT break
+                // cause need context object at every hierarchy layer
+                // e.g.
+                // property 6
+                // room1 6-1
+                // room2 6-2
+                //
+                // but need to take care regarding hierarchy and overlap
+                // when proper code is done in DataCentricNetworkMan
+                //
+            }
+        }
+
+
 
         std::string temp1 = par("sourceFor").stringValue();
         if ( temp1.size() )
@@ -93,6 +156,9 @@ void DataCentricTestApp::initialize(int aStage)
         sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
 
     }
+
+
+
 
 
 }

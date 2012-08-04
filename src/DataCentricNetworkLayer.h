@@ -83,6 +83,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     bool                m_debug;
     bool                isPANCoor;
     unsigned int        nodeConstraintValue;
+    double              mStability;
     std::string         mTheAddressString;
     uint64              mAddress;
     const char*     m_moduleName;
