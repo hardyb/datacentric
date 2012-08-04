@@ -1,0 +1,37 @@
+
+
+
+
+
+just noticed not setting outgoing seqno in handle_interest and 
+handle_advert etc etc
+
+
+ALSO what if the arriving interest's seqno is old then
+I assume the handle_interest function won't want to forward
+
+
+
+
+
+
+
+
+
+doing the breakage flooding
+consider marking state as broken and using that (maybe) as the
+way to have 'managed' flooding
+
+
+NBNBNBNBNBNB
+
+Read all bits where it says "CHECK THIS"
+
+
+
+
+
+
+
+
+

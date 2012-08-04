@@ -1,0 +1,39 @@
+so
+
+
+check that handle int and adv are setup correctly for 
+in and out link cost
+
+think these are ok
+
+
+
+
+
+
+initially have NO nodes set to go down - set all nodes to VERY stable
+set to just use lqi - OK
+set some pubs and record sinks and sources - 
+
+we have set context by selecting specific nodes
+but now we need to set by region
+
+
+
+compile
+
+run to completion of reinforcement
+and watch that data arrives ok
+
+
+
+crashes at end of action file
+
+how do we represent zero in the data string?
+is it there any way and just not in bubble?
+
+
+
+
+
+try to graph this some how

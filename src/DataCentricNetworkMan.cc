@@ -36,6 +36,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         ucastInterestPacketFrequency.setName("ucastInterestPacketFrequency");
         advertPacketFrequency.setName("advertPacketFrequency");
         reinforcementPacketFrequency.setName("reinforcementPacketFrequency");
+        dataPacketE2EDelay.setName("dataPacketE2EDelay");
 
         /*
          * A region has top left coord (x,y) and width and height w, h
@@ -174,6 +175,13 @@ void DataCentricNetworkMan::finish()
     //recordScalar("goodput (Bytes/s)", totalByteRecv / (simTime() - FirstPacketTime()));
 }
 
+void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
+{
+    Enter_Method("addADataPacketE2EDelay(simtime_t delay)");
+
+    dataPacketE2EDelay.record(delay);
+
+}
 
 
 void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)

@@ -85,6 +85,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
         controlPackets.setName("ControlPackets");
         neighbourLqis.setName("neighbourLqis");
         RangeLqis.setName("RangeLqis");
+        TotalInterestArrivalsVector.setName("TotalInterestArrivals");
+        mTotalInterestArrivals = 0.0;
 
         for ( unsigned int i = 10; i < 270; i += 10 )
         {
@@ -113,6 +115,9 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         numForward      = 0;
+        mInterestFirstArrivalTime_TESTINGONLY = SIMTIME_ZERO;
+        mLengthLatestInterestArrivalPeriod_TESTINGONLY = SIMTIME_ZERO;
+
         routingDelayCount = 0;
         testSeqNo = 0;
 
@@ -178,8 +183,18 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
 
-        scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        // For the moment comment out to disable stability feature
+        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
 
+
+
+
+
+
+
+
+
+        // OLD STUFF
         //if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
         //{
         //    scheduleAt(simTime() + 4.0, mpUpDownMessage);
@@ -229,6 +244,7 @@ void DataCentricNetworkLayer::finish()
         recordScalar("AverageNeighborLqi", averageLqi);
         recordScalar("MaxNeighborLqi", maxlqi);
         recordScalar("MinNeighborLqi", minlqi);
+        recordScalar("TEST_LengthLatestInterestArrivalPeriod", mLengthLatestInterestArrivalPeriod_TESTINGONLY);
 
         countIFLqiValuesRecorded = 0;
         TraversInterfaceNodes(rd->interfaceTree, 0, cb_recordNeighbourLqi);
@@ -247,6 +263,7 @@ void DataCentricNetworkLayer::finish()
         recordScalar("AverageNeighborLqi", 0);
         recordScalar("MaxNeighborLqi", 0);
         recordScalar("MinNeighborLqi", 0);
+        recordScalar("TEST_LengthLatestInterestArrivalPeriod", mLengthLatestInterestArrivalPeriod_TESTINGONLY);
         for ( unsigned int i = 10; i < 270; i += 10 )
         {
             double lqi = (double)i;
@@ -482,6 +499,34 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     //uint64 previousAddress = incomingControlInfo->getSrc().getInt();
     unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+
+    switch ( pkt[0] )
+    {
+        case INTEREST:
+            mTotalInterestArrivals++;
+            TotalInterestArrivalsVector.record(mTotalInterestArrivals);
+            if ( SIMTIME_ZERO == mInterestFirstArrivalTime_TESTINGONLY )
+            {
+                mInterestFirstArrivalTime_TESTINGONLY = simTime();
+            }
+            else
+            {
+                if ( (simTime()-mInterestFirstArrivalTime_TESTINGONLY) > 1.0 )//Check this
+                {
+                    mInterestFirstArrivalTime_TESTINGONLY = simTime();
+                    mLengthLatestInterestArrivalPeriod_TESTINGONLY = SIMTIME_ZERO;
+                    mTotalInterestArrivals = 0.0;
+                }
+                else
+                {
+                    mLengthLatestInterestArrivalPeriod_TESTINGONLY =
+                            (simTime() - mInterestFirstArrivalTime_TESTINGONLY);
+                }
+            }
+            break;
+        default:
+            break;
+    }
     handle_message(pkt, previousAddress, lqi);
     free(pkt);
 }
@@ -806,6 +851,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
             break;
     }
 
+    // is this right?
     currentModule->mNetMan->updateControlPacketData(*_msg, true);
     /*
     switch ( *_msg )
@@ -1026,6 +1072,8 @@ static void cb_handle_application_data(unsigned char* _msg)
     cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
     simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
     cout <<         "END TO END DELAY:               " << endToEndDelay << endl;
+    currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
+
 
     currentModule->getParentModule()->bubble(bubbleText);
     //currentModule->bubble(bubbleText);

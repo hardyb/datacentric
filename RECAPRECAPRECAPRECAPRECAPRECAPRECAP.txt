@@ -1,0 +1,107 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+startup at 1s
+first regular check at 2s so then reinforces
+start schedule at 3s so then sends data
+
+
+
+ready to receive
+
+regular checksmessage
+just self message that isn't of other types
+every 2 seconds
+reinforce any received adverts
+
+
+
+now all done in app module
+
+nodestarttime currently 1s
+enables phy module for send/recv
+calls startup ie sends neighbour bcast
+
+schedulestarttime  currently 3s
+starts the sending of data according to complete
+and established
+reinforced advs and ints
+
+
+
+net module runs a self message
+for regular check - every 2s
+starting first AFTER 2s
+
+this picks up on the need to reinforce
+adverts
+collaberations ( needs some corrections - remove data send code? )
+interests
+
+
+
+
+
+
+
+
+
+
+Managing interfaces and table size - recap
+========================================
+
+
+no ucast any more
+startup bcats all best grads and
+sends a bcast (hello thing)
+
+on receipt of bcast hello
+bcast back all best grads
+
+ONLY ADD INTERFCACE on receipt of a best grad
+ie
+insert into interfaces only done in following functions:
+	handle_advert
+	handle_collaboration
+	handle_interest
+and
+	insertKDGradientNode1
+called by
+	reinforceDeliverGradient
+	reinforceObtainGradient
+	setObtainGradient
+	setDeliverGradient
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

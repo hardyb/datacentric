@@ -16,6 +16,7 @@ class DataCentricNetworkMan : public cSimpleModule
     virtual void initialize(int);
     virtual void finish();
     void updateControlPacketData(unsigned char type, bool ucast);
+    void addADataPacketE2EDelay(simtime_t delay);
 
     typedef struct
     {
@@ -55,6 +56,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector ucastInterestPacketFrequency;
     cOutVector advertPacketFrequency;
     cOutVector reinforcementPacketFrequency;
+    cOutVector dataPacketE2EDelay;
 
 
     cMessage *mpControlPacketFrequencyMessage;

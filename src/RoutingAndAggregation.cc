@@ -117,6 +117,56 @@ struct new_packet broken_packet;
 //}
 
 
+
+
+
+/*
+struct new_packet
+{
+    unsigned char message_type;
+    unsigned char length;
+    unsigned char* data;
+    unsigned short path_value;
+    NEIGHBOUR_ADDR excepted_interface;
+    NEIGHBOUR_ADDR down_interface;
+    char seqno;
+};
+*/
+
+// CODE FOR SIMULATION ONLY AND BASED ON COMMON 32BIT TYPE SIZES
+// =============================================================
+unsigned int getPacketSize(char messageType, unsigned int _dataSize)
+{
+    unsigned int messageTypeSize       = 1;
+    unsigned int dataLenValSize        = 1;
+    unsigned int dataSize              = _dataSize;
+    unsigned int pathValueSize         = 2;
+    unsigned int exceptedInterfaceSize = 8;
+    unsigned int downInterfaceSize     = 8;
+    unsigned int seqnoSize             = 1;
+
+    unsigned int pktSize;
+
+
+    switch ( messageType )
+    {
+        case INTEREST:
+            pktSize = messageTypeSize +
+                        dataLenValSize +
+                        dataSize +
+                        pathValueSize +
+                        seqnoSize;
+            return pktSize;
+            break;
+        default:
+            break;
+    }
+
+}
+
+
+
+
 void read_packet(unsigned char* pkt)
 {
 	incoming_packet.message_type = pkt[0];
@@ -281,8 +331,8 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt)
     case ADVERT:
     case INTEREST:
     case INTEREST_CORRECTION:
-        _size = _size +   sizeof(outgoing_packet.path_value)
-                +  sizeof(outgoing_packet.excepted_interface);
+        _size = _size +   sizeof(outgoing_packet.path_value)+1; // seqno
+                //+  sizeof(outgoing_packet.excepted_interface);  TEMP HACK
         break;
     case REINFORCE:
     case REINFORCE_INTEREST:

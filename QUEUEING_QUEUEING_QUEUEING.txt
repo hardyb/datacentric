@@ -1,0 +1,82 @@
+
+
+
+
+
+
+
+Need to think about reinforcement timing
+(something for now to get us started?)
+
+
+
+Q: Need to think about how we know if scheduled data had 
+somewhere to send to and whether or not to queue it
+
+A: Now normal host-to-host sending is analagous to advertising
+in data centric, ie we have data of the kind "deliver it to address A",
+does any one out there need that kind of data, yes "I like data named
+as deliver to address A" (cos I AM address A), and you get a path and deliver
+it.
+BUT...    with host centric you normally have some reason to know
+there is that address out there (eg you already found it from some
+broadcast/mapping search etc etc), BUT...  with data-centric the
+advert is doing both finding the route but also discovering whether
+any one actually wants it and that MAY come later
+
+SO... with data-centric you DON'T send that advert (analagous to host-to-host
+route request) just when you are about to send data, but you send once at 
+start because you are a node whose raison d'etre is to send that data
+
+SO... you DON'T queue data when there is no reinforcement, but only
+when you have a reinforcement already and have lost the route (breakage)
+and may soon regain it.
+
+
+NBNBNB:
+So regarding above we queue when there is a breakage, but what about
+distinguishing between no reinforcement yet and a lost reinforcement
+soon to be recovered????  E.G. 
+
+i.e. we are talking about maybe
+when a node comes (back) up?  NO! cost the original
+reinforcement still remains
+THINK ABOUT THIS - are there any othercases where we
+need to queue????
+
+
+
+
+
+
+
+need a way to get items in a queue to send when they have a reinforcement
+
+
+need to add e2e delay to networkmanager?  module?    ???
+
+
+write a more versatile, but simple function for size of packet
+
+later we can have a read and write packet function which takes
+packet type and provides the buffer/structure plus required size
+the read pkt function could also take a parameter which references (ptr in C)
+the particular structure into which we want to place the data
+
+
+
+
+
+
+experiment with different packet sizes
+
+consider removing the exception interface item in the packet and the 
+related functionality - think this through
+
+
+need to up it to 250 nodes and look again at what impact on
+num packets and length of time, I think it was a lot less than
+doubling it!!  (I hope!!!!)
+
+
+

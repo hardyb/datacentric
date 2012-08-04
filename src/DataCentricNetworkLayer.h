@@ -45,6 +45,9 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cOutVector controlPackets;
     cOutVector neighbourLqis;
     cOutVector RangeLqis;
+    cOutVector TotalInterestArrivalsVector;
+    double mTotalInterestArrivals;
+
     map<unsigned int, unsigned int> mNeighboursInLqiRange;
 
     // sibling module IDs
@@ -96,6 +99,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     // for statistical data
     double          numForward;
+    simtime_t          mInterestFirstArrivalTime_TESTINGONLY;
+    simtime_t          mLengthLatestInterestArrivalPeriod_TESTINGONLY;
 
     cMessage *mpStartMessage;
     cMessage *mpUpDownMessage;

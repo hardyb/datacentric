@@ -2,62 +2,23 @@ CONNECTION
 AAA00000051
 0202FF06
 3
-AAA00000054
-seqno: 1
-true
-577
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA00000039
-seqno: 1
-true
-505
-65535
-true
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA0000004A
-seqno: 1
-true
-736
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA00000061
-seqno: 1
-true
-730
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA00000023
+AAA0000002E
 seqno: 0
 true
-473
+468
+65535
+true
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA0000004E
+seqno: 0
+true
+481
 65535
 false
 false
@@ -67,10 +28,10 @@ CONNECTION
 AAA00000051
 0202FF06
 3
-AAA00000048
-seqno: 1
+AAA00000041
+seqno: 0
 true
-796
+576
 65535
 false
 false
@@ -80,10 +41,75 @@ CONNECTION
 AAA00000051
 0202FF06
 3
-AAA00000026
-seqno: 1
+AAA0000001C
+seqno: 0
 true
-807
+709
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA00000030
+seqno: 0
+true
+758
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA00000053
+seqno: 0
+true
+735
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA0000002A
+seqno: 0
+true
+513
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA0000001B
+seqno: 0
+true
+712
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000051
+0202FF06
+3
+AAA00000013
+seqno: 0
+true
+645
 65535
 false
 false
@@ -94,35 +120,9 @@ AAA00000051
 0202FF06
 3
 AAA0000000F
-seqno: 1
+seqno: 0
 true
-628
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA0000001E
-seqno: 1
-true
-788
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000051
-0202FF06
-3
-AAA00000050
-seqno: 1
-true
-770
+586
 65535
 false
 false

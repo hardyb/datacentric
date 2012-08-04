@@ -1,0 +1,134 @@
+
+
+
+
+added seqno to
+incoming and outgoing structure
+
+update size functions
+update read and write packet
+
+Added seqno to gradient structure
+
+
+
+
+
+need to update code that sets it to start with
+
+
+
+
+
+
+TESTING IDEAS FOR SEQNO CHANGE
+=================================
+
+
+
+set we are sink for a record (interest grad)
+
+startup
+
+so hellos are sent
+
+and grads are sent / forwarded (all being well it's seqno 0)
+
+reinforce back
+send data 
+
+
+FIRST TEST
+See that basic working with one seqno works as before
+
+Seems OK So far...
+
+now next...
+put a node out of action preferably permanently for this test
+or may be for a time, to test reverting with a third seqno
+
+then send THAT grad again
+do this hard coded to begin with
+
+so...
+
+TIMINGS FOR TEST 1
+=====================
+1s up, send hellos and grads
+2s reinforcements first grads
+3s scheduled data starts, 1st delivers in 0.003? (next in 4s)
+4s host[38] goes down (for a 4s period)
+4s reinforcements - probably nothing to reinforce
+5s host[5] do nextseqno here... (do again in 4s)
+5.1s ish maybe stop and try to run to 5.9
+6s reinforcements for new grads
+7s data again (next in 4s)
+8s reinforcements - probably nothing to reinforce
+8s host[38] back up - no effect on data delivery
+BUT - might this have an effect on gradients??
+9s host[5] do nextseqno here... (do again in 4s)
+10s reinforcements - do orig grads again
+11s data again along old path
+
+
+now, how do we do this properly?
+one way may be to just increment that one seqno
+then send all grads and the others will have
+a begnine action???
+
+
+
+
+
+
+
+TIMINGS FOR TEST 2
+=====================
+See what happens when old node back up
+=====================
+
+
+1s up, send hellos and grads
+2s reinforcements first grads
+3s scheduled data starts, 1st delivers in 0.003? (next in 4s)
+4s host[38] goes down (for a 4s period)
+4s reinforcements - probably nothing to reinforce
+5s FIRST host[5] do nextseqno here... (do again in 10s)
+5.1s ish maybe stop and try to run to 5.9
+6s reinforcements for new grads
+7s data again - new path (next in 4s)
+8s reinforcements - probably nothing to reinforce
+8s host[38] back up - no effect on data delivery
+BUT - might this have an effect on gradients??
+10s reinforcements - probably nothing to reinforce
+11s data again same new path
+now add code to say whether the 
+reinforced i/f we are sending on is also
+the best i/f - if not then its been updated
+(for ints check best deliver)
+(for advs check best obtain)
+
+
+
+
+
+15s host[5] do nextseqno here... (do again in 4s)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
