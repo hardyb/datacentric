@@ -86,6 +86,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
         neighbourLqis.setName("neighbourLqis");
         RangeLqis.setName("RangeLqis");
         TotalInterestArrivalsVector.setName("TotalInterestArrivals");
+        InterestInterArrivalTimesVector.setName("InterestInterArrivalTimesVector");
+        InterestInterDepartureTimesVector.setName("InterestInterDepartureTimesVector");
+
+
         mTotalInterestArrivals = 0.0;
 
         for ( unsigned int i = 10; i < 270; i += 10 )
@@ -117,6 +121,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
         numForward      = 0;
         mInterestFirstArrivalTime_TESTINGONLY = SIMTIME_ZERO;
         mLengthLatestInterestArrivalPeriod_TESTINGONLY = SIMTIME_ZERO;
+        mLastInterestArrivalTime = SIMTIME_ZERO;
+        mLastInterestDepartureTime = SIMTIME_ZERO;
 
         routingDelayCount = 0;
         testSeqNo = 0;
@@ -503,6 +509,16 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     switch ( pkt[0] )
     {
         case INTEREST:
+            if ( SIMTIME_ZERO == mLastInterestArrivalTime )
+            {
+                mLastInterestArrivalTime = simTime();
+            }
+            else
+            {
+                InterestInterArrivalTimesVector.record(simTime() - mLastInterestArrivalTime);
+                mLastInterestArrivalTime = simTime();
+            }
+
             mTotalInterestArrivals++;
             TotalInterestArrivalsVector.record(mTotalInterestArrivals);
             if ( SIMTIME_ZERO == mInterestFirstArrivalTime_TESTINGONLY )
@@ -990,6 +1006,21 @@ static void cb_bcast_message(unsigned char* _msg)
             break;
     }
     */
+
+
+
+
+    if ( SIMTIME_ZERO == currentModule->mLastInterestDepartureTime )
+    {
+        currentModule->mLastInterestDepartureTime = simTime();
+    }
+    else
+    {
+        currentModule->InterestInterDepartureTimesVector.record(simTime() -
+                                                currentModule->mLastInterestDepartureTime);
+        currentModule->mLastInterestDepartureTime = simTime();
+    }
+
 
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");

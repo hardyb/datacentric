@@ -1,0 +1,100 @@
+
+
+
+
+
+
+
+
+So...
+
+
+what is convergence
+what should we be measuring to get ideas about convergence time?
+
+
+
+
+current graph is for sending bcast interests!!
+so it just gives a basic idea
+also it effectively shows receipt of a 'best' updating
+interest since the interest is forwarded.
+Now...
+After completion of sending of around 100 updates
+at around 1.35s only 6 more nodes make updates (ie forward on the interest)
+from 1.35s till nearly 1.60s
+
+
+
+
+
+
+
+we could do the same for arrivals 
+and we could do the same for arrivals that result in
+a change
+
+
+
+
+
+our graph for number of interest arrivals for each module is recording
+before the filtering out for lqi/table size
+
+
+
+
+
+
+
+===========================
+
+
+
+some things we could record:
+
+current inter-arrival time at each point in time
+maybe will see if they getting closer together
+or further apart and what the shortest/longest inter-arrival time is
+
+Also inter-arrival time of impacting interests (ie ones that are forwarded).
+
+
+
+
+
+it MAY be that the the 'best' path value is delivered accross the network
+in a wave and that although the overall convergence takes a while we can
+say something about convergence from its start to its finish at any one
+given node    ????
+
+
+
+NEED TO SET A TIME TO SEND REINFORCEMENT
+then need to record convergence time
+
+then e2e delay without failing nodes
+then with failing nodes - be careful previously up/down too frequent
+then with failing nodes and stability link cost
+then do processor link cost
+
+(need to remove the sending of interests by the recently back up node - to much activity
+just ammend network after a breakage)
+
+
+we can check that we are in fact setting the pkt size correctly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

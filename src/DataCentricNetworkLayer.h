@@ -46,7 +46,10 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cOutVector neighbourLqis;
     cOutVector RangeLqis;
     cOutVector TotalInterestArrivalsVector;
+    cOutVector InterestInterArrivalTimesVector;
+    cOutVector InterestInterDepartureTimesVector;
     double mTotalInterestArrivals;
+    simtime_t          mLastInterestDepartureTime;
 
     map<unsigned int, unsigned int> mNeighboursInLqiRange;
 
@@ -101,6 +104,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     double          numForward;
     simtime_t          mInterestFirstArrivalTime_TESTINGONLY;
     simtime_t          mLengthLatestInterestArrivalPeriod_TESTINGONLY;
+    simtime_t          mLastInterestArrivalTime;
 
     cMessage *mpStartMessage;
     cMessage *mpUpDownMessage;

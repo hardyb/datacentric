@@ -1,634 +1,1284 @@
-file 779408 1344093813                                          
+file 1939716 1344559105                                         
 version 2
-run General-0-20120804-16:22:25-236
+run General-0-20120810-01:36:13-3268
 attr configname General
-attr datetime 20120804-16:22:25
+attr datetime 20120810-01:36:13
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 236
+attr processid 3268
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 
-vector 700  DataCentricNet.dataCentricNetworkMan  ControlPackets  ETV
-vector 701  DataCentricNet.dataCentricNetworkMan  controlPacketFrequency  ETV
-vector 702  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
-vector 703  DataCentricNet.dataCentricNetworkMan  helloBackPacketFrequency  ETV
-vector 704  DataCentricNet.dataCentricNetworkMan  bcastInterestPacketFrequency  ETV
-vector 705  DataCentricNet.dataCentricNetworkMan  ucastInterestPacketFrequency  ETV
-vector 706  DataCentricNet.dataCentricNetworkMan  advertPacketFrequency  ETV
-vector 707  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
-vector 328  DataCentricNet.host[46].net  TotalInterestArrivals  ETV
-vector 419  DataCentricNet.host[59].net  TotalInterestArrivals  ETV
-vector 412  DataCentricNet.host[58].net  TotalInterestArrivals  ETV
-vector 461  DataCentricNet.host[65].net  TotalInterestArrivals  ETV
-vector 657  DataCentricNet.host[93].net  TotalInterestArrivals  ETV
-vector 510  DataCentricNet.host[72].net  TotalInterestArrivals  ETV
-vector 300  DataCentricNet.host[42].net  TotalInterestArrivals  ETV
-vector 118  DataCentricNet.host[16].net  TotalInterestArrivals  ETV
-vector 643  DataCentricNet.host[91].net  TotalInterestArrivals  ETV
-vector 391  DataCentricNet.host[55].net  TotalInterestArrivals  ETV
-vector 76  DataCentricNet.host[10].net  TotalInterestArrivals  ETV
-vector 181  DataCentricNet.host[25].net  TotalInterestArrivals  ETV
-vector 83  DataCentricNet.host[11].net  TotalInterestArrivals  ETV
-vector 384  DataCentricNet.host[54].net  TotalInterestArrivals  ETV
-vector 258  DataCentricNet.host[36].net  TotalInterestArrivals  ETV
-vector 629  DataCentricNet.host[89].net  TotalInterestArrivals  ETV
-vector 699  DataCentricNet.host[99].net  TotalInterestArrivals  ETV
-vector 167  DataCentricNet.host[23].net  TotalInterestArrivals  ETV
-vector 230  DataCentricNet.host[32].net  TotalInterestArrivals  ETV
-vector 349  DataCentricNet.host[49].net  TotalInterestArrivals  ETV
-vector 237  DataCentricNet.host[33].net  TotalInterestArrivals  ETV
-vector 573  DataCentricNet.host[81].net  TotalInterestArrivals  ETV
-vector 594  DataCentricNet.host[84].net  TotalInterestArrivals  ETV
-vector 111  DataCentricNet.host[15].net  TotalInterestArrivals  ETV
-vector 20  DataCentricNet.host[2].net  TotalInterestArrivals  ETV
-vector 244  DataCentricNet.host[34].net  TotalInterestArrivals  ETV
-vector 398  DataCentricNet.host[56].net  TotalInterestArrivals  ETV
-vector 356  DataCentricNet.host[50].net  TotalInterestArrivals  ETV
-vector 370  DataCentricNet.host[52].net  TotalInterestArrivals  ETV
-vector 139  DataCentricNet.host[19].net  TotalInterestArrivals  ETV
-vector 321  DataCentricNet.host[45].net  TotalInterestArrivals  ETV
-vector 272  DataCentricNet.host[38].net  TotalInterestArrivals  ETV
-vector 48  DataCentricNet.host[6].net  TotalInterestArrivals  ETV
+vector 1125  DataCentricNet.dataCentricNetworkMan  ControlPackets  ETV
+vector 53  DataCentricNet.host[5].net  InterestInterDepartureTimesVector  ETV
+vector 1126  DataCentricNet.dataCentricNetworkMan  controlPacketFrequency  ETV
+vector 1127  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
+vector 1128  DataCentricNet.dataCentricNetworkMan  helloBackPacketFrequency  ETV
+vector 1129  DataCentricNet.dataCentricNetworkMan  bcastInterestPacketFrequency  ETV
+vector 1130  DataCentricNet.dataCentricNetworkMan  ucastInterestPacketFrequency  ETV
+vector 1131  DataCentricNet.dataCentricNetworkMan  advertPacketFrequency  ETV
+vector 1132  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
+vector 537  DataCentricNet.host[59].net  TotalInterestArrivals  ETV
+vector 539  DataCentricNet.host[59].net  InterestInterDepartureTimesVector  ETV
+vector 528  DataCentricNet.host[58].net  TotalInterestArrivals  ETV
+vector 530  DataCentricNet.host[58].net  InterestInterDepartureTimesVector  ETV
+vector 843  DataCentricNet.host[93].net  TotalInterestArrivals  ETV
+vector 845  DataCentricNet.host[93].net  InterestInterDepartureTimesVector  ETV
+vector 960  DataCentricNet.host[106].net  TotalInterestArrivals  ETV
+vector 962  DataCentricNet.host[106].net  InterestInterDepartureTimesVector  ETV
+vector 591  DataCentricNet.host[65].net  TotalInterestArrivals  ETV
+vector 593  DataCentricNet.host[65].net  InterestInterDepartureTimesVector  ETV
+vector 384  DataCentricNet.host[42].net  TotalInterestArrivals  ETV
+vector 386  DataCentricNet.host[42].net  InterestInterDepartureTimesVector  ETV
+vector 906  DataCentricNet.host[100].net  TotalInterestArrivals  ETV
+vector 908  DataCentricNet.host[100].net  InterestInterDepartureTimesVector  ETV
+vector 987  DataCentricNet.host[109].net  TotalInterestArrivals  ETV
+vector 989  DataCentricNet.host[109].net  InterestInterDepartureTimesVector  ETV
+vector 420  DataCentricNet.host[46].net  TotalInterestArrivals  ETV
+vector 422  DataCentricNet.host[46].net  InterestInterDepartureTimesVector  ETV
+vector 492  DataCentricNet.host[54].net  TotalInterestArrivals  ETV
+vector 494  DataCentricNet.host[54].net  InterestInterDepartureTimesVector  ETV
+vector 1104  DataCentricNet.host[122].net  TotalInterestArrivals  ETV
+vector 1106  DataCentricNet.host[122].net  InterestInterDepartureTimesVector  ETV
+vector 654  DataCentricNet.host[72].net  TotalInterestArrivals  ETV
+vector 656  DataCentricNet.host[72].net  InterestInterDepartureTimesVector  ETV
+vector 150  DataCentricNet.host[16].net  TotalInterestArrivals  ETV
+vector 152  DataCentricNet.host[16].net  InterestInterDepartureTimesVector  ETV
+vector 231  DataCentricNet.host[25].net  TotalInterestArrivals  ETV
+vector 233  DataCentricNet.host[25].net  InterestInterDepartureTimesVector  ETV
+vector 501  DataCentricNet.host[55].net  TotalInterestArrivals  ETV
+vector 503  DataCentricNet.host[55].net  InterestInterDepartureTimesVector  ETV
+vector 735  DataCentricNet.host[81].net  TotalInterestArrivals  ETV
+vector 737  DataCentricNet.host[81].net  InterestInterDepartureTimesVector  ETV
+vector 96  DataCentricNet.host[10].net  TotalInterestArrivals  ETV
+vector 98  DataCentricNet.host[10].net  InterestInterDepartureTimesVector  ETV
+vector 105  DataCentricNet.host[11].net  TotalInterestArrivals  ETV
+vector 107  DataCentricNet.host[11].net  InterestInterDepartureTimesVector  ETV
+vector 897  DataCentricNet.host[99].net  TotalInterestArrivals  ETV
+vector 899  DataCentricNet.host[99].net  InterestInterDepartureTimesVector  ETV
+vector 330  DataCentricNet.host[36].net  TotalInterestArrivals  ETV
+vector 332  DataCentricNet.host[36].net  InterestInterDepartureTimesVector  ETV
+vector 24  DataCentricNet.host[2].net  TotalInterestArrivals  ETV
+vector 26  DataCentricNet.host[2].net  InterestInterDepartureTimesVector  ETV
+vector 1122  DataCentricNet.host[124].net  TotalInterestArrivals  ETV
+vector 1124  DataCentricNet.host[124].net  InterestInterDepartureTimesVector  ETV
+vector 510  DataCentricNet.host[56].net  TotalInterestArrivals  ETV
+vector 512  DataCentricNet.host[56].net  InterestInterDepartureTimesVector  ETV
+vector 447  DataCentricNet.host[49].net  TotalInterestArrivals  ETV
+vector 449  DataCentricNet.host[49].net  InterestInterDepartureTimesVector  ETV
+vector 141  DataCentricNet.host[15].net  TotalInterestArrivals  ETV
+vector 143  DataCentricNet.host[15].net  InterestInterDepartureTimesVector  ETV
+vector 825  DataCentricNet.host[91].net  TotalInterestArrivals  ETV
+vector 827  DataCentricNet.host[91].net  InterestInterDepartureTimesVector  ETV
+vector 213  DataCentricNet.host[23].net  TotalInterestArrivals  ETV
+vector 807  DataCentricNet.host[89].net  TotalInterestArrivals  ETV
+vector 294  DataCentricNet.host[32].net  TotalInterestArrivals  ETV
+vector 1113  DataCentricNet.host[123].net  TotalInterestArrivals  ETV
+vector 1095  DataCentricNet.host[121].net  TotalInterestArrivals  ETV
+vector 411  DataCentricNet.host[45].net  TotalInterestArrivals  ETV
+vector 699  DataCentricNet.host[77].net  TotalInterestArrivals  ETV
+vector 303  DataCentricNet.host[33].net  TotalInterestArrivals  ETV
+vector 564  DataCentricNet.host[62].net  TotalInterestArrivals  ETV
+vector 312  DataCentricNet.host[34].net  TotalInterestArrivals  ETV
+vector 1086  DataCentricNet.host[120].net  TotalInterestArrivals  ETV
+vector 1023  DataCentricNet.host[113].net  TotalInterestArrivals  ETV
+vector 762  DataCentricNet.host[84].net  TotalInterestArrivals  ETV
+vector 33  DataCentricNet.host[3].net  TotalInterestArrivals  ETV
+vector 1014  DataCentricNet.host[112].net  TotalInterestArrivals  ETV
+vector 474  DataCentricNet.host[52].net  TotalInterestArrivals  ETV
+vector 375  DataCentricNet.host[41].net  TotalInterestArrivals  ETV
 vector 6  DataCentricNet.host[0].net  TotalInterestArrivals  ETV
-vector 545  DataCentricNet.host[77].net  TotalInterestArrivals  ETV
-vector 608  DataCentricNet.host[86].net  TotalInterestArrivals  ETV
-vector 405  DataCentricNet.host[57].net  TotalInterestArrivals  ETV
-vector 286  DataCentricNet.host[40].net  TotalInterestArrivals  ETV
-vector 27  DataCentricNet.host[3].net  TotalInterestArrivals  ETV
-vector 587  DataCentricNet.host[83].net  TotalInterestArrivals  ETV
-vector 531  DataCentricNet.host[75].net  TotalInterestArrivals  ETV
-vector 454  DataCentricNet.host[64].net  TotalInterestArrivals  ETV
-vector 440  DataCentricNet.host[62].net  TotalInterestArrivals  ETV
-vector 636  DataCentricNet.host[90].net  TotalInterestArrivals  ETV
-vector 293  DataCentricNet.host[41].net  TotalInterestArrivals  ETV
-vector 601  DataCentricNet.host[85].net  TotalInterestArrivals  ETV
-vector 566  DataCentricNet.host[80].net  TotalInterestArrivals  ETV
-vector 104  DataCentricNet.host[14].net  TotalInterestArrivals  ETV
-vector 195  DataCentricNet.host[27].net  TotalInterestArrivals  ETV
-vector 62  DataCentricNet.host[8].net  TotalInterestArrivals  ETV
-vector 34  DataCentricNet.host[4].net  TotalInterestArrivals  ETV
-vector 496  DataCentricNet.host[70].net  TotalInterestArrivals  ETV
-vector 524  DataCentricNet.host[74].net  TotalInterestArrivals  ETV
-vector 146  DataCentricNet.host[20].net  TotalInterestArrivals  ETV
-vector 447  DataCentricNet.host[63].net  TotalInterestArrivals  ETV
-vector 489  DataCentricNet.host[69].net  TotalInterestArrivals  ETV
-vector 188  DataCentricNet.host[26].net  TotalInterestArrivals  ETV
-vector 517  DataCentricNet.host[73].net  TotalInterestArrivals  ETV
-vector 97  DataCentricNet.host[13].net  TotalInterestArrivals  ETV
-vector 580  DataCentricNet.host[82].net  TotalInterestArrivals  ETV
-vector 468  DataCentricNet.host[66].net  TotalInterestArrivals  ETV
-vector 279  DataCentricNet.host[39].net  TotalInterestArrivals  ETV
-vector 552  DataCentricNet.host[78].net  TotalInterestArrivals  ETV
-vector 153  DataCentricNet.host[21].net  TotalInterestArrivals  ETV
-vector 678  DataCentricNet.host[96].net  TotalInterestArrivals  ETV
-vector 475  DataCentricNet.host[67].net  TotalInterestArrivals  ETV
-vector 622  DataCentricNet.host[88].net  TotalInterestArrivals  ETV
-vector 13  DataCentricNet.host[1].net  TotalInterestArrivals  ETV
-vector 55  DataCentricNet.host[7].net  TotalInterestArrivals  ETV
-vector 615  DataCentricNet.host[87].net  TotalInterestArrivals  ETV
-vector 650  DataCentricNet.host[92].net  TotalInterestArrivals  ETV
-vector 223  DataCentricNet.host[31].net  TotalInterestArrivals  ETV
-vector 377  DataCentricNet.host[53].net  TotalInterestArrivals  ETV
-vector 132  DataCentricNet.host[18].net  TotalInterestArrivals  ETV
-vector 664  DataCentricNet.host[94].net  TotalInterestArrivals  ETV
-vector 503  DataCentricNet.host[71].net  TotalInterestArrivals  ETV
-vector 174  DataCentricNet.host[24].net  TotalInterestArrivals  ETV
-vector 671  DataCentricNet.host[95].net  TotalInterestArrivals  ETV
-vector 538  DataCentricNet.host[76].net  TotalInterestArrivals  ETV
-vector 685  DataCentricNet.host[97].net  TotalInterestArrivals  ETV
-vector 559  DataCentricNet.host[79].net  TotalInterestArrivals  ETV
-vector 482  DataCentricNet.host[68].net  TotalInterestArrivals  ETV
-vector 335  DataCentricNet.host[47].net  TotalInterestArrivals  ETV
-vector 209  DataCentricNet.host[29].net  TotalInterestArrivals  ETV
-vector 160  DataCentricNet.host[22].net  TotalInterestArrivals  ETV
-vector 125  DataCentricNet.host[17].net  TotalInterestArrivals  ETV
-vector 265  DataCentricNet.host[37].net  TotalInterestArrivals  ETV
-vector 426  DataCentricNet.host[60].net  TotalInterestArrivals  ETV
-vector 216  DataCentricNet.host[30].net  TotalInterestArrivals  ETV
-vector 692  DataCentricNet.host[98].net  TotalInterestArrivals  ETV
-vector 307  DataCentricNet.host[43].net  TotalInterestArrivals  ETV
-vector 202  DataCentricNet.host[28].net  TotalInterestArrivals  ETV
-vector 90  DataCentricNet.host[12].net  TotalInterestArrivals  ETV
-vector 433  DataCentricNet.host[61].net  TotalInterestArrivals  ETV
-vector 69  DataCentricNet.host[9].net  TotalInterestArrivals  ETV
-vector 314  DataCentricNet.host[44].net  TotalInterestArrivals  ETV
-vector 251  DataCentricNet.host[35].net  TotalInterestArrivals  ETV
-vector 363  DataCentricNet.host[51].net  TotalInterestArrivals  ETV
-vector 342  DataCentricNet.host[48].net  TotalInterestArrivals  ETV
-vector 41  DataCentricNet.host[5].net  TotalInterestArrivals  ETV
+vector 456  DataCentricNet.host[50].net  TotalInterestArrivals  ETV
+vector 753  DataCentricNet.host[83].net  TotalInterestArrivals  ETV
+vector 132  DataCentricNet.host[14].net  TotalInterestArrivals  ETV
+vector 933  DataCentricNet.host[103].net  TotalInterestArrivals  ETV
+vector 771  DataCentricNet.host[85].net  TotalInterestArrivals  ETV
+vector 726  DataCentricNet.host[80].net  TotalInterestArrivals  ETV
+vector 672  DataCentricNet.host[74].net  TotalInterestArrivals  ETV
+vector 123  DataCentricNet.host[13].net  TotalInterestArrivals  ETV
+vector 582  DataCentricNet.host[64].net  TotalInterestArrivals  ETV
+vector 816  DataCentricNet.host[90].net  TotalInterestArrivals  ETV
+vector 177  DataCentricNet.host[19].net  TotalInterestArrivals  ETV
+vector 969  DataCentricNet.host[107].net  TotalInterestArrivals  ETV
+vector 60  DataCentricNet.host[6].net  TotalInterestArrivals  ETV
+vector 951  DataCentricNet.host[105].net  TotalInterestArrivals  ETV
+vector 348  DataCentricNet.host[38].net  TotalInterestArrivals  ETV
+vector 519  DataCentricNet.host[57].net  TotalInterestArrivals  ETV
+vector 780  DataCentricNet.host[86].net  TotalInterestArrivals  ETV
+vector 861  DataCentricNet.host[95].net  TotalInterestArrivals  ETV
+vector 1032  DataCentricNet.host[114].net  TotalInterestArrivals  ETV
+vector 366  DataCentricNet.host[40].net  TotalInterestArrivals  ETV
+vector 168  DataCentricNet.host[18].net  TotalInterestArrivals  ETV
+vector 240  DataCentricNet.host[26].net  TotalInterestArrivals  ETV
+vector 663  DataCentricNet.host[73].net  TotalInterestArrivals  ETV
+vector 15  DataCentricNet.host[1].net  TotalInterestArrivals  ETV
+vector 69  DataCentricNet.host[7].net  TotalInterestArrivals  ETV
+vector 717  DataCentricNet.host[79].net  TotalInterestArrivals  ETV
+vector 870  DataCentricNet.host[96].net  TotalInterestArrivals  ETV
+vector 636  DataCentricNet.host[70].net  TotalInterestArrivals  ETV
+vector 249  DataCentricNet.host[27].net  TotalInterestArrivals  ETV
+vector 195  DataCentricNet.host[21].net  TotalInterestArrivals  ETV
+vector 681  DataCentricNet.host[75].net  TotalInterestArrivals  ETV
+vector 267  DataCentricNet.host[29].net  TotalInterestArrivals  ETV
+vector 744  DataCentricNet.host[82].net  TotalInterestArrivals  ETV
+vector 645  DataCentricNet.host[71].net  TotalInterestArrivals  ETV
+vector 1068  DataCentricNet.host[118].net  TotalInterestArrivals  ETV
+vector 78  DataCentricNet.host[8].net  TotalInterestArrivals  ETV
+vector 1050  DataCentricNet.host[116].net  TotalInterestArrivals  ETV
+vector 339  DataCentricNet.host[37].net  TotalInterestArrivals  ETV
+vector 789  DataCentricNet.host[87].net  TotalInterestArrivals  ETV
+vector 42  DataCentricNet.host[4].net  TotalInterestArrivals  ETV
+vector 429  DataCentricNet.host[47].net  TotalInterestArrivals  ETV
+vector 690  DataCentricNet.host[76].net  TotalInterestArrivals  ETV
+vector 942  DataCentricNet.host[104].net  TotalInterestArrivals  ETV
+vector 834  DataCentricNet.host[92].net  TotalInterestArrivals  ETV
+vector 708  DataCentricNet.host[78].net  TotalInterestArrivals  ETV
+vector 627  DataCentricNet.host[69].net  TotalInterestArrivals  ETV
+vector 357  DataCentricNet.host[39].net  TotalInterestArrivals  ETV
+vector 609  DataCentricNet.host[67].net  TotalInterestArrivals  ETV
+vector 573  DataCentricNet.host[63].net  TotalInterestArrivals  ETV
+vector 483  DataCentricNet.host[53].net  TotalInterestArrivals  ETV
+vector 1005  DataCentricNet.host[111].net  TotalInterestArrivals  ETV
+vector 915  DataCentricNet.host[101].net  TotalInterestArrivals  ETV
+vector 186  DataCentricNet.host[20].net  TotalInterestArrivals  ETV
+vector 600  DataCentricNet.host[66].net  TotalInterestArrivals  ETV
+vector 222  DataCentricNet.host[24].net  TotalInterestArrivals  ETV
+vector 618  DataCentricNet.host[68].net  TotalInterestArrivals  ETV
+vector 393  DataCentricNet.host[43].net  TotalInterestArrivals  ETV
+vector 888  DataCentricNet.host[98].net  TotalInterestArrivals  ETV
+vector 1059  DataCentricNet.host[117].net  TotalInterestArrivals  ETV
+vector 798  DataCentricNet.host[88].net  TotalInterestArrivals  ETV
+vector 285  DataCentricNet.host[31].net  TotalInterestArrivals  ETV
+vector 924  DataCentricNet.host[102].net  TotalInterestArrivals  ETV
+vector 276  DataCentricNet.host[30].net  TotalInterestArrivals  ETV
+vector 852  DataCentricNet.host[94].net  TotalInterestArrivals  ETV
+vector 159  DataCentricNet.host[17].net  TotalInterestArrivals  ETV
+vector 204  DataCentricNet.host[22].net  TotalInterestArrivals  ETV
+vector 879  DataCentricNet.host[97].net  TotalInterestArrivals  ETV
+vector 996  DataCentricNet.host[110].net  TotalInterestArrivals  ETV
+vector 1041  DataCentricNet.host[115].net  TotalInterestArrivals  ETV
+vector 258  DataCentricNet.host[28].net  TotalInterestArrivals  ETV
+vector 114  DataCentricNet.host[12].net  TotalInterestArrivals  ETV
+vector 546  DataCentricNet.host[60].net  TotalInterestArrivals  ETV
+vector 555  DataCentricNet.host[61].net  TotalInterestArrivals  ETV
+vector 1077  DataCentricNet.host[119].net  TotalInterestArrivals  ETV
+vector 87  DataCentricNet.host[9].net  TotalInterestArrivals  ETV
+vector 978  DataCentricNet.host[108].net  TotalInterestArrivals  ETV
+vector 465  DataCentricNet.host[51].net  TotalInterestArrivals  ETV
+vector 321  DataCentricNet.host[35].net  TotalInterestArrivals  ETV
+vector 402  DataCentricNet.host[44].net  TotalInterestArrivals  ETV
+vector 438  DataCentricNet.host[48].net  TotalInterestArrivals  ETV
+vector 25  DataCentricNet.host[2].net  InterestInterArrivalTimesVector  ETV
+vector 412  DataCentricNet.host[45].net  InterestInterArrivalTimesVector  ETV
+vector 413  DataCentricNet.host[45].net  InterestInterDepartureTimesVector  ETV
+vector 142  DataCentricNet.host[15].net  InterestInterArrivalTimesVector  ETV
+vector 511  DataCentricNet.host[56].net  InterestInterArrivalTimesVector  ETV
+vector 700  DataCentricNet.host[77].net  InterestInterArrivalTimesVector  ETV
+vector 701  DataCentricNet.host[77].net  InterestInterDepartureTimesVector  ETV
+vector 565  DataCentricNet.host[62].net  InterestInterArrivalTimesVector  ETV
+vector 566  DataCentricNet.host[62].net  InterestInterDepartureTimesVector  ETV
+vector 133  DataCentricNet.host[14].net  InterestInterArrivalTimesVector  ETV
+vector 134  DataCentricNet.host[14].net  InterestInterDepartureTimesVector  ETV
+vector 1015  DataCentricNet.host[112].net  InterestInterArrivalTimesVector  ETV
+vector 1016  DataCentricNet.host[112].net  InterestInterDepartureTimesVector  ETV
+vector 448  DataCentricNet.host[49].net  InterestInterArrivalTimesVector  ETV
+vector 34  DataCentricNet.host[3].net  InterestInterArrivalTimesVector  ETV
+vector 35  DataCentricNet.host[3].net  InterestInterDepartureTimesVector  ETV
+vector 727  DataCentricNet.host[80].net  InterestInterArrivalTimesVector  ETV
+vector 728  DataCentricNet.host[80].net  InterestInterDepartureTimesVector  ETV
+vector 376  DataCentricNet.host[41].net  InterestInterArrivalTimesVector  ETV
+vector 377  DataCentricNet.host[41].net  InterestInterDepartureTimesVector  ETV
+vector 772  DataCentricNet.host[85].net  InterestInterArrivalTimesVector  ETV
+vector 773  DataCentricNet.host[85].net  InterestInterDepartureTimesVector  ETV
+vector 754  DataCentricNet.host[83].net  InterestInterArrivalTimesVector  ETV
+vector 755  DataCentricNet.host[83].net  InterestInterDepartureTimesVector  ETV
+vector 1123  DataCentricNet.host[124].net  InterestInterArrivalTimesVector  ETV
+vector 934  DataCentricNet.host[103].net  InterestInterArrivalTimesVector  ETV
+vector 935  DataCentricNet.host[103].net  InterestInterDepartureTimesVector  ETV
+vector 736  DataCentricNet.host[81].net  InterestInterArrivalTimesVector  ETV
+vector 898  DataCentricNet.host[99].net  InterestInterArrivalTimesVector  ETV
+vector 232  DataCentricNet.host[25].net  InterestInterArrivalTimesVector  ETV
+vector 673  DataCentricNet.host[74].net  InterestInterArrivalTimesVector  ETV
+vector 674  DataCentricNet.host[74].net  InterestInterDepartureTimesVector  ETV
+vector 124  DataCentricNet.host[13].net  InterestInterArrivalTimesVector  ETV
+vector 125  DataCentricNet.host[13].net  InterestInterDepartureTimesVector  ETV
+vector 817  DataCentricNet.host[90].net  InterestInterArrivalTimesVector  ETV
+vector 818  DataCentricNet.host[90].net  InterestInterDepartureTimesVector  ETV
+vector 70  DataCentricNet.host[7].net  InterestInterArrivalTimesVector  ETV
+vector 71  DataCentricNet.host[7].net  InterestInterDepartureTimesVector  ETV
+vector 871  DataCentricNet.host[96].net  InterestInterArrivalTimesVector  ETV
+vector 872  DataCentricNet.host[96].net  InterestInterDepartureTimesVector  ETV
+vector 646  DataCentricNet.host[71].net  InterestInterArrivalTimesVector  ETV
+vector 647  DataCentricNet.host[71].net  InterestInterDepartureTimesVector  ETV
+vector 7  DataCentricNet.host[0].net  InterestInterArrivalTimesVector  ETV
+vector 8  DataCentricNet.host[0].net  InterestInterDepartureTimesVector  ETV
+vector 16  DataCentricNet.host[1].net  InterestInterArrivalTimesVector  ETV
+vector 17  DataCentricNet.host[1].net  InterestInterDepartureTimesVector  ETV
+vector 1069  DataCentricNet.host[118].net  InterestInterArrivalTimesVector  ETV
+vector 1070  DataCentricNet.host[118].net  InterestInterDepartureTimesVector  ETV
+vector 718  DataCentricNet.host[79].net  InterestInterArrivalTimesVector  ETV
+vector 719  DataCentricNet.host[79].net  InterestInterDepartureTimesVector  ETV
+vector 268  DataCentricNet.host[29].net  InterestInterArrivalTimesVector  ETV
+vector 269  DataCentricNet.host[29].net  InterestInterDepartureTimesVector  ETV
+vector 169  DataCentricNet.host[18].net  InterestInterArrivalTimesVector  ETV
+vector 170  DataCentricNet.host[18].net  InterestInterDepartureTimesVector  ETV
+vector 340  DataCentricNet.host[37].net  InterestInterArrivalTimesVector  ETV
+vector 341  DataCentricNet.host[37].net  InterestInterDepartureTimesVector  ETV
+vector 583  DataCentricNet.host[64].net  InterestInterArrivalTimesVector  ETV
+vector 584  DataCentricNet.host[64].net  InterestInterDepartureTimesVector  ETV
+vector 664  DataCentricNet.host[73].net  InterestInterArrivalTimesVector  ETV
+vector 665  DataCentricNet.host[73].net  InterestInterDepartureTimesVector  ETV
+vector 430  DataCentricNet.host[47].net  InterestInterArrivalTimesVector  ETV
+vector 431  DataCentricNet.host[47].net  InterestInterDepartureTimesVector  ETV
+vector 241  DataCentricNet.host[26].net  InterestInterArrivalTimesVector  ETV
+vector 242  DataCentricNet.host[26].net  InterestInterDepartureTimesVector  ETV
+vector 1051  DataCentricNet.host[116].net  InterestInterArrivalTimesVector  ETV
+vector 1052  DataCentricNet.host[116].net  InterestInterDepartureTimesVector  ETV
+vector 196  DataCentricNet.host[21].net  InterestInterArrivalTimesVector  ETV
+vector 197  DataCentricNet.host[21].net  InterestInterDepartureTimesVector  ETV
+vector 520  DataCentricNet.host[57].net  InterestInterArrivalTimesVector  ETV
+vector 521  DataCentricNet.host[57].net  InterestInterDepartureTimesVector  ETV
+vector 943  DataCentricNet.host[104].net  InterestInterArrivalTimesVector  ETV
+vector 944  DataCentricNet.host[104].net  InterestInterDepartureTimesVector  ETV
+vector 691  DataCentricNet.host[76].net  InterestInterArrivalTimesVector  ETV
+vector 692  DataCentricNet.host[76].net  InterestInterDepartureTimesVector  ETV
+vector 790  DataCentricNet.host[87].net  InterestInterArrivalTimesVector  ETV
+vector 791  DataCentricNet.host[87].net  InterestInterDepartureTimesVector  ETV
+vector 250  DataCentricNet.host[27].net  InterestInterArrivalTimesVector  ETV
+vector 251  DataCentricNet.host[27].net  InterestInterDepartureTimesVector  ETV
+vector 745  DataCentricNet.host[82].net  InterestInterArrivalTimesVector  ETV
+vector 746  DataCentricNet.host[82].net  InterestInterDepartureTimesVector  ETV
+vector 637  DataCentricNet.host[70].net  InterestInterArrivalTimesVector  ETV
+vector 638  DataCentricNet.host[70].net  InterestInterDepartureTimesVector  ETV
+vector 1024  DataCentricNet.host[113].net  InterestInterArrivalTimesVector  ETV
+vector 1025  DataCentricNet.host[113].net  InterestInterDepartureTimesVector  ETV
+vector 862  DataCentricNet.host[95].net  InterestInterArrivalTimesVector  ETV
+vector 863  DataCentricNet.host[95].net  InterestInterDepartureTimesVector  ETV
+vector 61  DataCentricNet.host[6].net  InterestInterArrivalTimesVector  ETV
+vector 62  DataCentricNet.host[6].net  InterestInterDepartureTimesVector  ETV
+vector 970  DataCentricNet.host[107].net  InterestInterArrivalTimesVector  ETV
+vector 971  DataCentricNet.host[107].net  InterestInterDepartureTimesVector  ETV
+vector 79  DataCentricNet.host[8].net  InterestInterArrivalTimesVector  ETV
+vector 80  DataCentricNet.host[8].net  InterestInterDepartureTimesVector  ETV
+vector 304  DataCentricNet.host[33].net  InterestInterArrivalTimesVector  ETV
+vector 305  DataCentricNet.host[33].net  InterestInterDepartureTimesVector  ETV
+vector 394  DataCentricNet.host[43].net  InterestInterArrivalTimesVector  ETV
+vector 395  DataCentricNet.host[43].net  InterestInterDepartureTimesVector  ETV
+vector 1006  DataCentricNet.host[111].net  InterestInterArrivalTimesVector  ETV
+vector 1007  DataCentricNet.host[111].net  InterestInterDepartureTimesVector  ETV
+vector 889  DataCentricNet.host[98].net  InterestInterArrivalTimesVector  ETV
+vector 890  DataCentricNet.host[98].net  InterestInterDepartureTimesVector  ETV
+vector 835  DataCentricNet.host[92].net  InterestInterArrivalTimesVector  ETV
+vector 836  DataCentricNet.host[92].net  InterestInterDepartureTimesVector  ETV
+vector 475  DataCentricNet.host[52].net  InterestInterArrivalTimesVector  ETV
+vector 476  DataCentricNet.host[52].net  InterestInterDepartureTimesVector  ETV
+vector 1060  DataCentricNet.host[117].net  InterestInterArrivalTimesVector  ETV
+vector 1061  DataCentricNet.host[117].net  InterestInterDepartureTimesVector  ETV
+vector 484  DataCentricNet.host[53].net  InterestInterArrivalTimesVector  ETV
+vector 485  DataCentricNet.host[53].net  InterestInterDepartureTimesVector  ETV
+vector 709  DataCentricNet.host[78].net  InterestInterArrivalTimesVector  ETV
+vector 710  DataCentricNet.host[78].net  InterestInterDepartureTimesVector  ETV
+vector 619  DataCentricNet.host[68].net  InterestInterArrivalTimesVector  ETV
+vector 610  DataCentricNet.host[67].net  InterestInterArrivalTimesVector  ETV
+vector 43  DataCentricNet.host[4].net  InterestInterArrivalTimesVector  ETV
+vector 223  DataCentricNet.host[24].net  InterestInterArrivalTimesVector  ETV
+vector 358  DataCentricNet.host[39].net  InterestInterArrivalTimesVector  ETV
+vector 628  DataCentricNet.host[69].net  InterestInterArrivalTimesVector  ETV
+vector 997  DataCentricNet.host[110].net  InterestInterArrivalTimesVector  ETV
+vector 277  DataCentricNet.host[30].net  InterestInterArrivalTimesVector  ETV
+vector 925  DataCentricNet.host[102].net  InterestInterArrivalTimesVector  ETV
+vector 160  DataCentricNet.host[17].net  InterestInterArrivalTimesVector  ETV
+vector 115  DataCentricNet.host[12].net  InterestInterArrivalTimesVector  ETV
+vector 556  DataCentricNet.host[61].net  InterestInterArrivalTimesVector  ETV
+vector 205  DataCentricNet.host[22].net  InterestInterArrivalTimesVector  ETV
+vector 466  DataCentricNet.host[51].net  InterestInterArrivalTimesVector  ETV
+vector 259  DataCentricNet.host[28].net  InterestInterArrivalTimesVector  ETV
+vector 322  DataCentricNet.host[35].net  InterestInterArrivalTimesVector  ETV
+vector 88  DataCentricNet.host[9].net  InterestInterArrivalTimesVector  ETV
+vector 979  DataCentricNet.host[108].net  InterestInterArrivalTimesVector  ETV
+vector 439  DataCentricNet.host[48].net  InterestInterArrivalTimesVector  ETV
+vector 403  DataCentricNet.host[44].net  InterestInterArrivalTimesVector  ETV
+vector 106  DataCentricNet.host[11].net  InterestInterArrivalTimesVector  ETV
+vector 313  DataCentricNet.host[34].net  InterestInterArrivalTimesVector  ETV
+vector 314  DataCentricNet.host[34].net  InterestInterDepartureTimesVector  ETV
+vector 502  DataCentricNet.host[55].net  InterestInterArrivalTimesVector  ETV
+vector 1114  DataCentricNet.host[123].net  InterestInterArrivalTimesVector  ETV
+vector 1115  DataCentricNet.host[123].net  InterestInterDepartureTimesVector  ETV
+vector 295  DataCentricNet.host[32].net  InterestInterArrivalTimesVector  ETV
+vector 296  DataCentricNet.host[32].net  InterestInterDepartureTimesVector  ETV
+vector 655  DataCentricNet.host[72].net  InterestInterArrivalTimesVector  ETV
+vector 493  DataCentricNet.host[54].net  InterestInterArrivalTimesVector  ETV
+vector 592  DataCentricNet.host[65].net  InterestInterArrivalTimesVector  ETV
+vector 214  DataCentricNet.host[23].net  InterestInterArrivalTimesVector  ETV
+vector 215  DataCentricNet.host[23].net  InterestInterDepartureTimesVector  ETV
+vector 151  DataCentricNet.host[16].net  InterestInterArrivalTimesVector  ETV
+vector 907  DataCentricNet.host[100].net  InterestInterArrivalTimesVector  ETV
+vector 844  DataCentricNet.host[93].net  InterestInterArrivalTimesVector  ETV
+vector 1105  DataCentricNet.host[122].net  InterestInterArrivalTimesVector  ETV
+vector 385  DataCentricNet.host[42].net  InterestInterArrivalTimesVector  ETV
+vector 331  DataCentricNet.host[36].net  InterestInterArrivalTimesVector  ETV
+vector 988  DataCentricNet.host[109].net  InterestInterArrivalTimesVector  ETV
+vector 529  DataCentricNet.host[58].net  InterestInterArrivalTimesVector  ETV
+vector 538  DataCentricNet.host[59].net  InterestInterArrivalTimesVector  ETV
+vector 421  DataCentricNet.host[46].net  InterestInterArrivalTimesVector  ETV
+vector 826  DataCentricNet.host[91].net  InterestInterArrivalTimesVector  ETV
+vector 961  DataCentricNet.host[106].net  InterestInterArrivalTimesVector  ETV
+vector 1087  DataCentricNet.host[120].net  InterestInterArrivalTimesVector  ETV
+vector 1088  DataCentricNet.host[120].net  InterestInterDepartureTimesVector  ETV
+vector 808  DataCentricNet.host[89].net  InterestInterArrivalTimesVector  ETV
+vector 809  DataCentricNet.host[89].net  InterestInterDepartureTimesVector  ETV
+vector 1096  DataCentricNet.host[121].net  InterestInterArrivalTimesVector  ETV
+vector 1097  DataCentricNet.host[121].net  InterestInterDepartureTimesVector  ETV
+vector 51  DataCentricNet.host[5].net  TotalInterestArrivals  ETV
+vector 97  DataCentricNet.host[10].net  InterestInterArrivalTimesVector  ETV
+vector 349  DataCentricNet.host[38].net  InterestInterArrivalTimesVector  ETV
+vector 781  DataCentricNet.host[86].net  InterestInterArrivalTimesVector  ETV
+vector 178  DataCentricNet.host[19].net  InterestInterArrivalTimesVector  ETV
+vector 763  DataCentricNet.host[84].net  InterestInterArrivalTimesVector  ETV
+vector 457  DataCentricNet.host[50].net  InterestInterArrivalTimesVector  ETV
+vector 952  DataCentricNet.host[105].net  InterestInterArrivalTimesVector  ETV
+vector 367  DataCentricNet.host[40].net  InterestInterArrivalTimesVector  ETV
+vector 682  DataCentricNet.host[75].net  InterestInterArrivalTimesVector  ETV
+vector 1033  DataCentricNet.host[114].net  InterestInterArrivalTimesVector  ETV
+vector 187  DataCentricNet.host[20].net  InterestInterArrivalTimesVector  ETV
+vector 574  DataCentricNet.host[63].net  InterestInterArrivalTimesVector  ETV
+vector 286  DataCentricNet.host[31].net  InterestInterArrivalTimesVector  ETV
+vector 853  DataCentricNet.host[94].net  InterestInterArrivalTimesVector  ETV
+vector 916  DataCentricNet.host[101].net  InterestInterArrivalTimesVector  ETV
+vector 880  DataCentricNet.host[97].net  InterestInterArrivalTimesVector  ETV
+vector 601  DataCentricNet.host[66].net  InterestInterArrivalTimesVector  ETV
+vector 799  DataCentricNet.host[88].net  InterestInterArrivalTimesVector  ETV
+vector 1078  DataCentricNet.host[119].net  InterestInterArrivalTimesVector  ETV
+vector 547  DataCentricNet.host[60].net  InterestInterArrivalTimesVector  ETV
+vector 1042  DataCentricNet.host[115].net  InterestInterArrivalTimesVector  ETV
+vector 620  DataCentricNet.host[68].net  InterestInterDepartureTimesVector  ETV
+vector 557  DataCentricNet.host[61].net  InterestInterDepartureTimesVector  ETV
+vector 116  DataCentricNet.host[12].net  InterestInterDepartureTimesVector  ETV
+vector 224  DataCentricNet.host[24].net  InterestInterDepartureTimesVector  ETV
+vector 611  DataCentricNet.host[67].net  InterestInterDepartureTimesVector  ETV
+vector 323  DataCentricNet.host[35].net  InterestInterDepartureTimesVector  ETV
+vector 467  DataCentricNet.host[51].net  InterestInterDepartureTimesVector  ETV
+vector 998  DataCentricNet.host[110].net  InterestInterDepartureTimesVector  ETV
+vector 278  DataCentricNet.host[30].net  InterestInterDepartureTimesVector  ETV
+vector 440  DataCentricNet.host[48].net  InterestInterDepartureTimesVector  ETV
+vector 161  DataCentricNet.host[17].net  InterestInterDepartureTimesVector  ETV
+vector 89  DataCentricNet.host[9].net  InterestInterDepartureTimesVector  ETV
+vector 359  DataCentricNet.host[39].net  InterestInterDepartureTimesVector  ETV
+vector 44  DataCentricNet.host[4].net  InterestInterDepartureTimesVector  ETV
+vector 980  DataCentricNet.host[108].net  InterestInterDepartureTimesVector  ETV
+vector 926  DataCentricNet.host[102].net  InterestInterDepartureTimesVector  ETV
+vector 629  DataCentricNet.host[69].net  InterestInterDepartureTimesVector  ETV
+vector 260  DataCentricNet.host[28].net  InterestInterDepartureTimesVector  ETV
+vector 1079  DataCentricNet.host[119].net  InterestInterDepartureTimesVector  ETV
+vector 52  DataCentricNet.host[5].net  InterestInterArrivalTimesVector  ETV
+vector 764  DataCentricNet.host[84].net  InterestInterDepartureTimesVector  ETV
+vector 458  DataCentricNet.host[50].net  InterestInterDepartureTimesVector  ETV
+vector 179  DataCentricNet.host[19].net  InterestInterDepartureTimesVector  ETV
+vector 188  DataCentricNet.host[20].net  InterestInterDepartureTimesVector  ETV
+vector 287  DataCentricNet.host[31].net  InterestInterDepartureTimesVector  ETV
+vector 782  DataCentricNet.host[86].net  InterestInterDepartureTimesVector  ETV
+vector 575  DataCentricNet.host[63].net  InterestInterDepartureTimesVector  ETV
+vector 854  DataCentricNet.host[94].net  InterestInterDepartureTimesVector  ETV
+vector 683  DataCentricNet.host[75].net  InterestInterDepartureTimesVector  ETV
+vector 350  DataCentricNet.host[38].net  InterestInterDepartureTimesVector  ETV
+vector 548  DataCentricNet.host[60].net  InterestInterDepartureTimesVector  ETV
+vector 881  DataCentricNet.host[97].net  InterestInterDepartureTimesVector  ETV
+vector 206  DataCentricNet.host[22].net  InterestInterDepartureTimesVector  ETV
+vector 917  DataCentricNet.host[101].net  InterestInterDepartureTimesVector  ETV
+vector 800  DataCentricNet.host[88].net  InterestInterDepartureTimesVector  ETV
+vector 368  DataCentricNet.host[40].net  InterestInterDepartureTimesVector  ETV
+vector 602  DataCentricNet.host[66].net  InterestInterDepartureTimesVector  ETV
+vector 1034  DataCentricNet.host[114].net  InterestInterDepartureTimesVector  ETV
+vector 1043  DataCentricNet.host[115].net  InterestInterDepartureTimesVector  ETV
+vector 953  DataCentricNet.host[105].net  InterestInterDepartureTimesVector  ETV
+vector 404  DataCentricNet.host[44].net  InterestInterDepartureTimesVector  ETV
 vector 4  DataCentricNet.host[0].net  neighbourLqis  ETV
 vector 5  DataCentricNet.host[0].net  RangeLqis  ETV
-vector 11  DataCentricNet.host[1].net  neighbourLqis  ETV
-vector 12  DataCentricNet.host[1].net  RangeLqis  ETV
-vector 18  DataCentricNet.host[2].net  neighbourLqis  ETV
-vector 19  DataCentricNet.host[2].net  RangeLqis  ETV
-vector 25  DataCentricNet.host[3].net  neighbourLqis  ETV
-vector 26  DataCentricNet.host[3].net  RangeLqis  ETV
-vector 32  DataCentricNet.host[4].net  neighbourLqis  ETV
-vector 33  DataCentricNet.host[4].net  RangeLqis  ETV
-vector 39  DataCentricNet.host[5].net  neighbourLqis  ETV
-vector 40  DataCentricNet.host[5].net  RangeLqis  ETV
-vector 46  DataCentricNet.host[6].net  neighbourLqis  ETV
-vector 47  DataCentricNet.host[6].net  RangeLqis  ETV
-vector 53  DataCentricNet.host[7].net  neighbourLqis  ETV
-vector 54  DataCentricNet.host[7].net  RangeLqis  ETV
-vector 60  DataCentricNet.host[8].net  neighbourLqis  ETV
-vector 61  DataCentricNet.host[8].net  RangeLqis  ETV
-vector 67  DataCentricNet.host[9].net  neighbourLqis  ETV
-vector 68  DataCentricNet.host[9].net  RangeLqis  ETV
-vector 74  DataCentricNet.host[10].net  neighbourLqis  ETV
-vector 75  DataCentricNet.host[10].net  RangeLqis  ETV
-vector 81  DataCentricNet.host[11].net  neighbourLqis  ETV
-vector 82  DataCentricNet.host[11].net  RangeLqis  ETV
-vector 88  DataCentricNet.host[12].net  neighbourLqis  ETV
-vector 89  DataCentricNet.host[12].net  RangeLqis  ETV
-vector 95  DataCentricNet.host[13].net  neighbourLqis  ETV
-vector 96  DataCentricNet.host[13].net  RangeLqis  ETV
-vector 102  DataCentricNet.host[14].net  neighbourLqis  ETV
-vector 103  DataCentricNet.host[14].net  RangeLqis  ETV
-vector 109  DataCentricNet.host[15].net  neighbourLqis  ETV
-vector 110  DataCentricNet.host[15].net  RangeLqis  ETV
-vector 116  DataCentricNet.host[16].net  neighbourLqis  ETV
-vector 117  DataCentricNet.host[16].net  RangeLqis  ETV
-vector 123  DataCentricNet.host[17].net  neighbourLqis  ETV
-vector 124  DataCentricNet.host[17].net  RangeLqis  ETV
-vector 130  DataCentricNet.host[18].net  neighbourLqis  ETV
-vector 131  DataCentricNet.host[18].net  RangeLqis  ETV
-vector 137  DataCentricNet.host[19].net  neighbourLqis  ETV
-vector 138  DataCentricNet.host[19].net  RangeLqis  ETV
-vector 144  DataCentricNet.host[20].net  neighbourLqis  ETV
-vector 145  DataCentricNet.host[20].net  RangeLqis  ETV
-vector 151  DataCentricNet.host[21].net  neighbourLqis  ETV
-vector 152  DataCentricNet.host[21].net  RangeLqis  ETV
-vector 158  DataCentricNet.host[22].net  neighbourLqis  ETV
-vector 159  DataCentricNet.host[22].net  RangeLqis  ETV
-vector 165  DataCentricNet.host[23].net  neighbourLqis  ETV
-vector 166  DataCentricNet.host[23].net  RangeLqis  ETV
-vector 172  DataCentricNet.host[24].net  neighbourLqis  ETV
-vector 173  DataCentricNet.host[24].net  RangeLqis  ETV
-vector 179  DataCentricNet.host[25].net  neighbourLqis  ETV
-vector 180  DataCentricNet.host[25].net  RangeLqis  ETV
-vector 186  DataCentricNet.host[26].net  neighbourLqis  ETV
-vector 187  DataCentricNet.host[26].net  RangeLqis  ETV
-vector 193  DataCentricNet.host[27].net  neighbourLqis  ETV
-vector 194  DataCentricNet.host[27].net  RangeLqis  ETV
-vector 200  DataCentricNet.host[28].net  neighbourLqis  ETV
-vector 201  DataCentricNet.host[28].net  RangeLqis  ETV
-vector 207  DataCentricNet.host[29].net  neighbourLqis  ETV
-vector 208  DataCentricNet.host[29].net  RangeLqis  ETV
-vector 214  DataCentricNet.host[30].net  neighbourLqis  ETV
-vector 215  DataCentricNet.host[30].net  RangeLqis  ETV
-vector 221  DataCentricNet.host[31].net  neighbourLqis  ETV
-vector 222  DataCentricNet.host[31].net  RangeLqis  ETV
-vector 228  DataCentricNet.host[32].net  neighbourLqis  ETV
-vector 229  DataCentricNet.host[32].net  RangeLqis  ETV
-vector 235  DataCentricNet.host[33].net  neighbourLqis  ETV
-vector 236  DataCentricNet.host[33].net  RangeLqis  ETV
-vector 242  DataCentricNet.host[34].net  neighbourLqis  ETV
-vector 243  DataCentricNet.host[34].net  RangeLqis  ETV
-vector 249  DataCentricNet.host[35].net  neighbourLqis  ETV
-vector 250  DataCentricNet.host[35].net  RangeLqis  ETV
-vector 256  DataCentricNet.host[36].net  neighbourLqis  ETV
-vector 257  DataCentricNet.host[36].net  RangeLqis  ETV
-vector 263  DataCentricNet.host[37].net  neighbourLqis  ETV
-vector 264  DataCentricNet.host[37].net  RangeLqis  ETV
-vector 270  DataCentricNet.host[38].net  neighbourLqis  ETV
-vector 271  DataCentricNet.host[38].net  RangeLqis  ETV
-vector 277  DataCentricNet.host[39].net  neighbourLqis  ETV
-vector 278  DataCentricNet.host[39].net  RangeLqis  ETV
-vector 284  DataCentricNet.host[40].net  neighbourLqis  ETV
-vector 285  DataCentricNet.host[40].net  RangeLqis  ETV
-vector 291  DataCentricNet.host[41].net  neighbourLqis  ETV
-vector 292  DataCentricNet.host[41].net  RangeLqis  ETV
-vector 298  DataCentricNet.host[42].net  neighbourLqis  ETV
-vector 299  DataCentricNet.host[42].net  RangeLqis  ETV
-vector 305  DataCentricNet.host[43].net  neighbourLqis  ETV
-vector 306  DataCentricNet.host[43].net  RangeLqis  ETV
-vector 312  DataCentricNet.host[44].net  neighbourLqis  ETV
-vector 313  DataCentricNet.host[44].net  RangeLqis  ETV
-vector 319  DataCentricNet.host[45].net  neighbourLqis  ETV
-vector 320  DataCentricNet.host[45].net  RangeLqis  ETV
-vector 326  DataCentricNet.host[46].net  neighbourLqis  ETV
-vector 327  DataCentricNet.host[46].net  RangeLqis  ETV
-vector 333  DataCentricNet.host[47].net  neighbourLqis  ETV
-vector 334  DataCentricNet.host[47].net  RangeLqis  ETV
-vector 340  DataCentricNet.host[48].net  neighbourLqis  ETV
-vector 341  DataCentricNet.host[48].net  RangeLqis  ETV
-vector 347  DataCentricNet.host[49].net  neighbourLqis  ETV
-vector 348  DataCentricNet.host[49].net  RangeLqis  ETV
-vector 354  DataCentricNet.host[50].net  neighbourLqis  ETV
-vector 355  DataCentricNet.host[50].net  RangeLqis  ETV
-vector 361  DataCentricNet.host[51].net  neighbourLqis  ETV
-vector 362  DataCentricNet.host[51].net  RangeLqis  ETV
-vector 368  DataCentricNet.host[52].net  neighbourLqis  ETV
-vector 369  DataCentricNet.host[52].net  RangeLqis  ETV
-vector 375  DataCentricNet.host[53].net  neighbourLqis  ETV
-vector 376  DataCentricNet.host[53].net  RangeLqis  ETV
-vector 382  DataCentricNet.host[54].net  neighbourLqis  ETV
-vector 383  DataCentricNet.host[54].net  RangeLqis  ETV
-vector 389  DataCentricNet.host[55].net  neighbourLqis  ETV
-vector 390  DataCentricNet.host[55].net  RangeLqis  ETV
-vector 396  DataCentricNet.host[56].net  neighbourLqis  ETV
-vector 397  DataCentricNet.host[56].net  RangeLqis  ETV
-vector 403  DataCentricNet.host[57].net  neighbourLqis  ETV
-vector 404  DataCentricNet.host[57].net  RangeLqis  ETV
-vector 410  DataCentricNet.host[58].net  neighbourLqis  ETV
-vector 411  DataCentricNet.host[58].net  RangeLqis  ETV
-vector 417  DataCentricNet.host[59].net  neighbourLqis  ETV
-vector 418  DataCentricNet.host[59].net  RangeLqis  ETV
-vector 424  DataCentricNet.host[60].net  neighbourLqis  ETV
-vector 425  DataCentricNet.host[60].net  RangeLqis  ETV
-vector 431  DataCentricNet.host[61].net  neighbourLqis  ETV
-vector 432  DataCentricNet.host[61].net  RangeLqis  ETV
-vector 438  DataCentricNet.host[62].net  neighbourLqis  ETV
-vector 439  DataCentricNet.host[62].net  RangeLqis  ETV
-vector 445  DataCentricNet.host[63].net  neighbourLqis  ETV
-vector 446  DataCentricNet.host[63].net  RangeLqis  ETV
-vector 452  DataCentricNet.host[64].net  neighbourLqis  ETV
-vector 453  DataCentricNet.host[64].net  RangeLqis  ETV
-vector 459  DataCentricNet.host[65].net  neighbourLqis  ETV
-vector 460  DataCentricNet.host[65].net  RangeLqis  ETV
-vector 466  DataCentricNet.host[66].net  neighbourLqis  ETV
-vector 467  DataCentricNet.host[66].net  RangeLqis  ETV
-vector 473  DataCentricNet.host[67].net  neighbourLqis  ETV
-vector 474  DataCentricNet.host[67].net  RangeLqis  ETV
-vector 480  DataCentricNet.host[68].net  neighbourLqis  ETV
-vector 481  DataCentricNet.host[68].net  RangeLqis  ETV
-vector 487  DataCentricNet.host[69].net  neighbourLqis  ETV
-vector 488  DataCentricNet.host[69].net  RangeLqis  ETV
-vector 494  DataCentricNet.host[70].net  neighbourLqis  ETV
-vector 495  DataCentricNet.host[70].net  RangeLqis  ETV
-vector 501  DataCentricNet.host[71].net  neighbourLqis  ETV
-vector 502  DataCentricNet.host[71].net  RangeLqis  ETV
-vector 508  DataCentricNet.host[72].net  neighbourLqis  ETV
-vector 509  DataCentricNet.host[72].net  RangeLqis  ETV
-vector 515  DataCentricNet.host[73].net  neighbourLqis  ETV
-vector 516  DataCentricNet.host[73].net  RangeLqis  ETV
-vector 522  DataCentricNet.host[74].net  neighbourLqis  ETV
-vector 523  DataCentricNet.host[74].net  RangeLqis  ETV
-vector 529  DataCentricNet.host[75].net  neighbourLqis  ETV
-vector 530  DataCentricNet.host[75].net  RangeLqis  ETV
-vector 536  DataCentricNet.host[76].net  neighbourLqis  ETV
-vector 537  DataCentricNet.host[76].net  RangeLqis  ETV
-vector 543  DataCentricNet.host[77].net  neighbourLqis  ETV
-vector 544  DataCentricNet.host[77].net  RangeLqis  ETV
-vector 550  DataCentricNet.host[78].net  neighbourLqis  ETV
-vector 551  DataCentricNet.host[78].net  RangeLqis  ETV
-vector 557  DataCentricNet.host[79].net  neighbourLqis  ETV
-vector 558  DataCentricNet.host[79].net  RangeLqis  ETV
-vector 564  DataCentricNet.host[80].net  neighbourLqis  ETV
-vector 565  DataCentricNet.host[80].net  RangeLqis  ETV
-vector 571  DataCentricNet.host[81].net  neighbourLqis  ETV
-vector 572  DataCentricNet.host[81].net  RangeLqis  ETV
-vector 578  DataCentricNet.host[82].net  neighbourLqis  ETV
-vector 579  DataCentricNet.host[82].net  RangeLqis  ETV
-vector 585  DataCentricNet.host[83].net  neighbourLqis  ETV
-vector 586  DataCentricNet.host[83].net  RangeLqis  ETV
-vector 592  DataCentricNet.host[84].net  neighbourLqis  ETV
-vector 593  DataCentricNet.host[84].net  RangeLqis  ETV
-vector 599  DataCentricNet.host[85].net  neighbourLqis  ETV
-vector 600  DataCentricNet.host[85].net  RangeLqis  ETV
-vector 606  DataCentricNet.host[86].net  neighbourLqis  ETV
-vector 607  DataCentricNet.host[86].net  RangeLqis  ETV
-vector 613  DataCentricNet.host[87].net  neighbourLqis  ETV
-vector 614  DataCentricNet.host[87].net  RangeLqis  ETV
-vector 620  DataCentricNet.host[88].net  neighbourLqis  ETV
-vector 621  DataCentricNet.host[88].net  RangeLqis  ETV
-vector 627  DataCentricNet.host[89].net  neighbourLqis  ETV
-vector 628  DataCentricNet.host[89].net  RangeLqis  ETV
-vector 634  DataCentricNet.host[90].net  neighbourLqis  ETV
-vector 635  DataCentricNet.host[90].net  RangeLqis  ETV
-vector 641  DataCentricNet.host[91].net  neighbourLqis  ETV
-vector 642  DataCentricNet.host[91].net  RangeLqis  ETV
-vector 648  DataCentricNet.host[92].net  neighbourLqis  ETV
-vector 649  DataCentricNet.host[92].net  RangeLqis  ETV
-vector 655  DataCentricNet.host[93].net  neighbourLqis  ETV
-vector 656  DataCentricNet.host[93].net  RangeLqis  ETV
-vector 662  DataCentricNet.host[94].net  neighbourLqis  ETV
-vector 663  DataCentricNet.host[94].net  RangeLqis  ETV
-vector 669  DataCentricNet.host[95].net  neighbourLqis  ETV
-vector 670  DataCentricNet.host[95].net  RangeLqis  ETV
-vector 676  DataCentricNet.host[96].net  neighbourLqis  ETV
-vector 677  DataCentricNet.host[96].net  RangeLqis  ETV
-vector 683  DataCentricNet.host[97].net  neighbourLqis  ETV
-vector 684  DataCentricNet.host[97].net  RangeLqis  ETV
-vector 690  DataCentricNet.host[98].net  neighbourLqis  ETV
-vector 691  DataCentricNet.host[98].net  RangeLqis  ETV
-vector 697  DataCentricNet.host[99].net  neighbourLqis  ETV
-vector 698  DataCentricNet.host[99].net  RangeLqis  ETV
-4	19651 158 223338 223338 0 9 10 69 166 1290 174702
-5	19809 417 223338 223338 0 10 26 10 260 3510 620100
-6	20226 6297 24647 219938 1.039674090273 1.607250462127 224 1 224 25200 3771600
-11	26523 170 223338 223338 0 9 10 120 169 1545 240997
-12	26693 443 223338 223338 0 10 26 10 260 3510 620100
-13	27136 6566 24749 220007 1.039674119456 1.607250481436 225 1 225 25425 3822225
-18	33702 168 223338 223338 0 9 10 85 169 1378 198420
-19	33870 443 223338 223338 0 10 26 10 260 3510 620100
-20	34313 6358 24620 220022 1.039674076937 1.607250490203 219 1 219 24090 3525170
-25	40671 169 223338 223338 0 9 10 67 166 1373 196875
-26	40840 443 223338 223338 0 10 26 10 260 3510 620100
-27	41283 6453 24662 219974 1.039674094202 1.607250471293 222 1 222 24753 3671695
-32	47736 169 223338 223338 0 9 10 80 169 1500 231470
-33	47905 443 223338 223338 0 10 26 10 260 3510 620100
-34	48348 6415 24698 219824 1.039674107908 1.607250425321 220 1 220 24310 3573570
-39	54763 48 223338 223338 0 2 3 13 72 98 5522
-40	54811 433 223338 223338 0 3 26 10 260 3510 620100
-41	55244 5910 26857 220076 1.047002723143 1.607250504397 203 1 203 20706 2809114
-46	61154 170 223338 223338 0 9 10 108 169 1433 208869
-47	61324 443 223338 223338 0 10 26 10 260 3510 620100
-48	61767 6313 24644 219872 1.039674086708 1.607250444103 217 1 217 23653 3429685
-53	68080 169 223338 223338 0 9 10 97 159 1371 191389
-54	68249 444 223338 223338 0 10 26 10 260 3510 620100
-55	68693 6847 24752 219977 1.039674120077 1.607250472553 235 1 235 27730 4353610
-60	75540 168 223338 223338 0 9 10 77 169 1296 175980
-61	75708 443 223338 223338 0 10 26 10 260 3510 620100
-62	76151 6901 24695 219860 1.039674107799 1.607250442314 237 1 237 28203 4465475
-67	83052 168 223338 223338 0 9 10 74 166 1336 189054
-68	83220 443 223338 223338 0 10 26 10 260 3510 620100
-69	83663 6549 24830 219896 1.039674156635 1.607250449749 225 1 225 25425 3822225
-74	90212 170 223338 223338 0 9 10 138 169 1562 244886
-75	90382 443 223338 223338 0 10 26 10 260 3510 620100
-76	90825 6229 24578 219962 1.039674055364 1.607250468214 214 1 214 23005 3289715
-81	97054 170 223338 223338 0 9 10 110 166 1434 208832
-82	97224 443 223338 223338 0 10 26 10 260 3510 620100
-83	97667 6231 24584 220016 1.039674057816 1.607250485168 214 1 214 23005 3289715
-88	103898 169 223338 223338 0 9 10 97 161 1376 194154
-89	104067 443 223338 223338 0 10 26 10 260 3510 620100
-90	104510 6712 24824 219875 1.039674146099 1.6072504447 231 1 231 26796 4135516
-95	111222 169 223338 223338 0 9 10 23 169 1387 209207
-96	111391 443 223338 223338 0 10 26 10 260 3510 620100
-97	111834 6167 24722 220088 1.039674113296 1.607250519051 212 1 212 22578 3198550
-102	118001 180 223338 223338 0 9 10 100 169 1407 202013
-103	118181 469 223338 223338 0 10 26 10 260 3510 620100
-104	118650 6652 24689 220046 1.039674107062 1.607250496982 221 1 221 24531 3622411
-109	125302 179 223338 223338 0 9 10 92 166 1398 200194
-110	125481 469 223338 223338 0 10 26 10 260 3510 620100
-111	125950 6651 24617 220010 1.039674076558 1.607250481948 221 1 221 24531 3622411
-116	132601 180 223338 223338 0 9 10 141 166 1513 229575
-117	132781 469 223338 223338 0 10 26 10 260 3510 620100
-118	133250 6506 24569 219992 1.039674047636 1.607250475155 216 1 216 23436 3382596
-123	139756 179 223338 223338 0 9 10 95 169 1333 183535
-124	139935 469 223338 223338 0 10 26 10 260 3510 620100
-125	140404 7051 24803 219821 1.039674132031 1.607250423429 234 1 234 27495 4298385
-130	147455 179 223338 223338 0 9 10 82 169 1440 214034
-131	147634 469 223338 223338 0 10 26 10 260 3510 620100
-132	148103 6618 24767 220070 1.039674124708 1.607250502861 220 1 220 24310 3573570
-137	154721 179 223338 223338 0 9 10 85 161 1290 173560
-138	154900 469 223338 223338 0 10 26 10 260 3510 620100
-139	155369 6418 24635 219863 1.039674082693 1.607250442345 213 1 213 22791 3243919
-144	161787 180 223338 223338 0 9 10 108 169 1460 215908
-145	161967 469 223338 223338 0 10 26 10 260 3510 620100
-146	162436 6729 24707 219806 1.039674112261 1.607250410533 223 1 223 24976 3721424
-151	169165 178 223338 223338 0 9 10 36 148 1141 141097
-152	169343 471 223338 223338 0 10 26 10 260 3510 620100
-153	169814 7139 24737 219935 1.039674117398 1.607250460355 237 1 237 28203 4465475
-158	176953 178 223338 223338 0 9 10 1 166 1185 160065
-159	177131 469 223338 223338 1 10 26 10 260 3510 620100
-160	177600 6924 24800 219815 1.03967413199 1.607250421586 230 1 230 26565 4082155
-165	184524 178 223338 223338 0 9 10 1 169 1410 223068
-166	184702 469 223338 223338 1 10 26 10 260 3510 620100
-167	185171 6411 24599 219932 1.039674069408 1.607250459914 213 1 213 22791 3243919
-172	191582 179 223338 223338 0 9 10 95 169 1379 195871
-173	191761 469 223338 223338 0 10 26 10 260 3510 620100
-174	192230 7030 24776 219836 1.039674126455 1.607250431254 233 1 233 27261 4243629
-179	199260 180 223338 223338 0 9 10 110 169 1446 212712
-180	199440 469 223338 223338 0 10 26 10 260 3510 620100
-181	199909 6501 24581 220052 1.03967405693 1.607250498245 216 1 216 23436 3382596
-186	206410 177 223338 223338 0 9 10 82 169 1240 162728
-187	206587 469 223338 223338 0 10 26 10 260 3510 620100
-188	207056 7141 24716 219914 1.039674112783 1.607250455566 237 1 237 28203 4465475
-193	214197 178 223338 223338 0 9 10 67 164 1240 162374
-194	214375 469 223338 223338 0 10 26 10 260 3510 620100
-195	214844 6899 24692 219893 1.039674107762 1.607250449526 229 1 229 26335 4029255
-200	221743 197 223338 223338 0 10 11 13 169 1382 193584
-201	221940 469 223338 223338 0 11 26 10 260 3510 620100
-202	222409 6774 24821 219848 1.039674143928 1.607250434397 225 1 225 25425 3822225
-207	229183 179 223338 223338 0 9 10 29 169 1398 212842
-208	229362 469 223338 223338 0 10 26 10 260 3510 620100
-209	229831 6654 24797 220043 1.039674130404 1.607250496905 221 1 221 24531 3622411
-214	236485 178 223338 223338 0 9 10 90 166 1321 183215
-215	236663 469 223338 223338 0 10 26 10 260 3510 620100
-216	237132 6988 24812 219845 1.039674135365 1.607250434138 232 1 232 27028 4189340
-221	244120 180 223338 223338 0 9 10 100 164 1434 210688
-222	244300 469 223338 223338 0 10 26 10 260 3510 620100
-223	244769 6802 24761 219797 1.039674121928 1.60725040364 226 1 226 25651 3873301
-228	251571 197 223338 223338 0 10 11 13 169 1403 205319
-229	251768 469 223338 223338 0 11 26 10 260 3510 620100
-230	252237 6445 24602 219917 1.039674069713 1.607250458768 214 1 214 23005 3289715
-235	258682 179 223338 223338 0 9 10 51 169 1479 229653
-236	258861 469 223338 223338 0 10 26 10 260 3510 620100
-237	259330 6252 24608 219908 1.03967407395 1.607250454381 208 1 208 21736 3021304
-242	265582 180 223338 223338 0 9 10 108 166 1385 196421
-243	265762 469 223338 223338 0 10 26 10 260 3510 620100
-244	266231 6432 24623 219944 1.039674077223 1.607250463185 214 1 214 23005 3289715
-249	272663 178 223338 223338 0 9 10 31 164 1276 181776
-250	272841 469 223338 223338 0 10 26 10 260 3510 620100
-251	273310 6657 24836 219950 1.039674163936 1.607250464435 221 1 221 24531 3622411
-256	279967 179 223338 223338 0 9 10 72 164 1374 196466
-257	280146 469 223338 223338 0 10 26 10 260 3510 620100
-258	280615 6452 24590 219941 1.039674060634 1.607250463057 214 1 214 23005 3289715
-263	287067 178 223338 223338 0 9 10 34 169 1321 194481
-264	287245 469 223338 223338 0 10 26 10 260 3510 620100
-265	287714 6719 24806 220049 1.039674133727 1.607250497914 223 1 223 24976 3721424
-270	294433 180 223338 223338 0 9 10 115 169 1443 210979
-271	294613 469 223338 223338 0 10 26 10 260 3510 620100
-272	295082 6510 24641 219854 1.039674086451 1.607250436807 216 1 216 23436 3382596
-277	301592 180 223338 223338 0 9 10 123 169 1479 222329
-278	301772 469 223338 223338 0 10 26 10 260 3510 620100
-279	302241 6726 24731 219818 1.039674115438 1.607250421868 223 1 223 24976 3721424
-284	308967 179 223338 223338 0 9 10 74 169 1353 191969
-285	309146 469 223338 223338 0 10 26 10 260 3510 620100
-286	309615 6444 24659 219839 1.039674092348 1.60725043157 214 1 214 23005 3289715
-291	316059 180 223338 223338 0 9 10 120 161 1470 217436
-292	316239 469 223338 223338 0 10 26 10 260 3510 620100
-293	316708 6890 24680 219989 1.039674098914 1.607250475108 229 1 229 26335 4029255
-298	323598 180 223338 223338 0 9 10 123 169 1433 208161
-299	323778 469 223338 223338 0 10 26 10 260 3510 620100
-300	324247 6462 24566 220004 1.039674042004 1.607250481096 215 1 215 23220 3335940
-305	330709 179 223338 223338 0 9 10 44 169 1399 208873
-306	330888 469 223338 223338 0 10 26 10 260 3510 620100
-307	331357 6868 24818 219986 1.03967414356 1.607250473664 228 1 228 26106 3976814
-312	338225 180 223338 223338 0 9 10 113 169 1467 218495
-313	338405 469 223338 223338 0 10 26 10 260 3510 620100
-314	338874 6842 24833 219884 1.039674160643 1.607250447564 227 1 227 25878 3924830
-319	345716 178 223338 223338 0 9 10 82 161 1278 171588
-320	345894 469 223338 223338 0 10 26 10 260 3510 620100
-321	346363 6526 24638 220025 1.039674086044 1.607250491926 217 1 217 23653 3429685
-326	352889 177 223338 223338 0 9 10 54 169 1226 169444
-327	353066 469 223338 223338 0 10 26 10 260 3510 620100
-328	353535 6544 24548 220073 1.039674023082 1.607250504208 217 1 217 23653 3429685
-333	360079 180 223338 223338 0 9 10 115 164 1464 217054
-334	360259 469 223338 223338 0 10 26 10 260 3510 620100
-335	360728 6935 24794 219983 1.039674130281 1.607250473409 230 1 230 26565 4082155
-340	367663 196 223338 223338 0 10 11 13 169 1345 189589
-341	367859 469 223338 223338 0 11 26 10 260 3510 620100
-342	368328 6568 24842 219953 1.039674169192 1.607250465925 218 1 218 23871 3477209
-347	374896 180 223338 223338 0 9 10 108 159 1388 195526
-348	375076 470 223338 223338 0 10 26 10 260 3510 620100
-349	375546 6655 24605 219995 1.039674071331 1.607250475495 221 1 221 24531 3622411
-354	382201 178 223338 223338 0 9 10 44 169 1317 187107
-355	382379 469 223338 223338 0 10 26 10 260 3510 620100
-356	382848 6290 24629 219890 1.039674079315 1.607250449002 209 1 209 21945 3064985
-361	389138 179 223338 223338 0 9 10 80 166 1401 202501
-362	389317 469 223338 223338 0 10 26 10 260 3510 620100
-363	389786 6748 24839 219959 1.039674164249 1.607250467141 224 1 224 25200 3771600
-368	396534 179 223338 223338 0 9 10 90 164 1373 194519
-369	396713 469 223338 223338 0 10 26 10 260 3510 620100
-370	397182 6464 24632 219869 1.039674081256 1.60725044402 215 1 215 23220 3335940
-375	403646 177 223338 223338 0 9 10 49 159 1154 145100
-376	403823 470 223338 223338 0 10 26 10 260 3510 620100
-377	404293 7101 24764 219878 1.039674123792 1.607250445166 236 1 236 27966 4409306
-382	411394 179 223338 223338 0 9 10 49 169 1333 189243
-383	411573 469 223338 223338 0 10 26 10 260 3510 620100
-384	412042 6594 24587 220037 1.039674060436 1.607250495567 219 1 219 24090 3525170
-389	418636 180 223338 223338 0 9 10 118 166 1523 234771
-390	418816 469 223338 223338 0 10 26 10 260 3510 620100
-391	419285 6493 24575 219965 1.039674055128 1.607250469521 216 1 216 23436 3382596
-396	425778 178 223338 223338 0 9 10 34 166 1214 163098
-397	425956 469 223338 223338 0 10 26 10 260 3510 620100
-398	426425 6656 24626 220031 1.039674078975 1.607250492892 221 1 221 24531 3622411
-403	433081 179 223338 223338 0 9 10 92 169 1373 192785
-404	433260 469 223338 223338 0 10 26 10 260 3510 620100
-405	433729 6621 24656 219902 1.039674092035 1.607250452882 220 1 220 24310 3573570
-410	440350 176 223338 223338 0 9 10 1 169 1152 159166
-411	440526 469 223338 223338 1 10 26 10 260 3510 620100
-412	440995 6566 24554 220055 1.039674024979 1.607250498503 218 1 218 23871 3477209
-417	447561 178 223338 223338 0 9 10 57 169 1317 190009
-418	447739 469 223338 223338 0 10 26 10 260 3510 620100
-419	448208 6534 24551 220064 1.039674023442 1.607250499731 217 1 217 23653 3429685
-424	454742 180 223338 223338 0 9 10 115 166 1471 219173
-425	454922 469 223338 223338 0 10 26 10 260 3510 620100
-426	455391 6563 24809 218770 1.039674133838 1.572447224342 218 1 218 23871 3477209
-431	461954 180 223338 223338 0 9 10 113 169 1461 216325
-432	462134 469 223338 223338 0 10 26 10 260 3510 620100
-433	462603 6861 24827 219899 1.039674151877 1.6072504517 228 1 228 26106 3976814
-438	469464 179 223338 223338 0 9 10 72 166 1351 192615
-439	469643 469 223338 223338 0 10 26 10 260 3510 620100
-440	470112 6564 24674 220040 1.039674096653 1.607250496538 218 1 218 23871 3477209
-445	476676 178 223338 223338 0 9 10 1 169 1298 189250
-446	476854 469 223338 223338 1 10 26 10 260 3510 620100
-447	477323 6686 24710 219803 1.03967411262 1.607250410177 222 1 222 24753 3671695
-452	484009 178 223338 223338 0 9 10 77 164 1351 191269
-453	484187 469 223338 223338 0 10 26 10 260 3510 620100
-454	484656 6703 24671 219926 1.039674096604 1.607250459637 223 1 223 24976 3721424
-459	491359 178 223338 223338 0 9 10 95 164 1306 176102
-460	491537 469 223338 223338 0 10 26 10 260 3510 620100
-461	492006 6538 24557 220019 1.039674038548 1.607250486229 217 1 217 23653 3429685
-466	498544 144 223338 223338 0 7 8 120 169 1217 186903
-467	498688 459 223338 223338 0 8 26 10 260 3510 620100
-468	499147 6372 24728 219827 1.039674113922 1.607250428904 212 1 212 22578 3198550
-473	505519 179 223338 223338 0 9 10 80 161 1332 182756
-474	505698 469 223338 223338 0 10 26 10 260 3510 620100
-475	506167 6979 24743 219833 1.039674119033 1.607250431166 232 1 232 27028 4189340
-480	513146 179 223338 223338 0 9 10 69 164 1336 184490
-481	513325 469 223338 223338 0 10 26 10 260 3510 620100
-482	513794 7024 24791 219881 1.039674130059 1.607250447452 233 1 233 27261 4243629
-487	520818 179 223338 223338 0 9 10 64 169 1395 203477
-488	520997 469 223338 223338 0 10 26 10 260 3510 620100
-489	521466 6556 24713 219812 1.039674112656 1.607250419916 218 1 218 23871 3477209
-494	528022 178 223338 223338 0 9 10 69 166 1269 170301
-495	528200 469 223338 223338 0 10 26 10 260 3510 620100
-496	528669 7058 24701 219866 1.039674108148 1.607250443157 234 1 234 27495 4298385
-501	535727 180 223338 223338 0 9 10 105 169 1529 237355
-502	535907 469 223338 223338 0 10 26 10 260 3510 620100
-503	536376 6813 24773 220013 1.039674126432 1.607250483028 226 1 226 25651 3873301
-508	543189 178 223338 223338 0 9 10 1 166 1227 169351
-509	543367 469 223338 223338 1 10 26 10 260 3510 620100
-510	543836 6476 24563 220028 1.039674039541 1.60725049247 215 1 215 23220 3335940
-515	550312 176 223338 223338 0 9 10 1 169 1148 154208
-516	550488 469 223338 223338 1 10 26 10 260 3510 620100
-517	550957 7101 24719 219911 1.039674112834 1.60725045518 236 1 236 27966 4409306
-522	558058 179 223338 223338 0 9 10 23 169 1379 206469
-523	558237 469 223338 223338 0 10 26 10 260 3510 620100
-524	558706 6279 24704 220082 1.039674110534 1.607250517702 209 1 209 21945 3064985
-529	564985 179 223338 223338 0 9 10 74 169 1376 196726
-530	565164 469 223338 223338 0 10 26 10 260 3510 620100
-531	565633 6399 24668 219830 1.039674096422 1.607250430019 213 1 213 22791 3243919
-536	572032 178 223338 223338 0 9 10 82 161 1269 166627
-537	572210 469 223338 223338 0 10 26 10 260 3510 620100
-538	572679 7049 24782 219947 1.039674127687 1.607250463396 234 1 234 27495 4298385
-543	579728 179 223338 223338 0 9 10 82 166 1377 196581
-544	579907 469 223338 223338 0 10 26 10 260 3510 620100
-545	580376 6543 24650 220061 1.039674091211 1.607250498841 217 1 217 23653 3429685
-550	586919 179 223338 223338 0 9 10 85 153 1214 151810
-551	587098 470 223338 223338 0 10 26 10 260 3510 620100
-552	587568 6990 24734 219851 1.039674115874 1.607250435808 232 1 232 27028 4189340
-557	594558 178 223338 223338 0 9 10 29 169 1368 205958
-558	594736 469 223338 223338 0 10 26 10 260 3510 620100
-559	595205 6658 24788 220058 1.03967412902 1.607250498708 221 1 221 24531 3622411
-564	601863 179 223338 223338 0 9 10 67 159 1381 197131
-565	602042 470 223338 223338 0 10 26 10 260 3510 620100
-566	602512 6831 24686 220001 1.039674104068 1.60725047843 227 1 227 25878 3924830
-571	609343 180 223338 223338 0 9 10 108 169 1387 196785
-572	609523 469 223338 223338 0 10 26 10 260 3510 620100
-573	609992 6535 24611 220067 1.039674073984 1.6072505022 217 1 217 23653 3429685
-578	616527 176 223338 223338 0 9 10 67 166 1203 155733
-579	616703 469 223338 223338 0 10 26 10 260 3510 620100
-580	617172 7058 24725 219887 1.03967411377 1.607250447804 234 1 234 27495 4298385
-585	624230 177 223338 223338 0 9 10 51 164 1267 175307
-586	624407 469 223338 223338 0 10 26 10 260 3510 620100
-587	624876 6924 24665 219956 1.03967409609 1.607250466911 230 1 230 26565 4082155
-592	631800 179 223338 223338 0 9 10 44 169 1365 199295
-593	631979 469 223338 223338 0 10 26 10 260 3510 620100
-594	632448 6198 24614 219905 1.039674076131 1.607250453053 206 1 206 21321 2935191
-599	638646 179 223338 223338 0 9 10 54 159 1371 196375
-600	638825 470 223338 223338 0 10 26 10 260 3510 620100
-601	639295 6936 24683 219998 1.039674103069 1.607250477917 230 1 230 26565 4082155
-606	646231 179 223338 223338 0 9 10 62 161 1371 195511
-607	646410 469 223338 223338 0 10 26 10 260 3510 620100
-608	646879 6505 24653 219842 1.039674091347 1.607250432718 216 1 216 23436 3382596
-613	653384 179 223338 223338 0 9 10 85 169 1279 168739
-614	653563 469 223338 223338 0 10 26 10 260 3510 620100
-615	654032 7195 24755 219920 1.039674120469 1.607250459074 239 1 239 28680 4579240
-620	661227 180 223338 223338 0 9 10 125 169 1532 237390
-621	661407 469 223338 223338 0 10 26 10 260 3510 620100
-622	661876 6435 24746 219809 1.039674119233 1.607250412931 214 1 214 23005 3289715
-627	668311 180 223338 223338 0 9 10 105 166 1389 196693
-628	668491 469 223338 223338 0 10 26 10 260 3510 620100
-629	668960 6379 24593 219923 1.039674064506 1.607250459473 212 1 212 22578 3198550
-634	675339 178 223338 223338 0 9 10 1 164 1276 184246
-635	675517 469 223338 223338 1 10 26 10 260 3510 620100
-636	675986 6780 24677 219929 1.039674097078 1.607250459759 225 1 225 25425 3822225
-641	682766 180 223338 223338 0 9 10 138 169 1590 253736
-642	682946 469 223338 223338 0 10 26 10 260 3510 620100
-643	683415 6408 24572 219971 1.039674054707 1.607250471088 213 1 213 22791 3243919
-648	689823 177 223338 223338 0 9 10 49 164 1175 148837
-649	690000 469 223338 223338 0 10 26 10 260 3510 620100
-650	690469 7064 24758 219857 1.039674120595 1.6072504422 235 1 235 27730 4353610
-655	697533 178 223338 223338 0 9 10 1 169 1304 192438
-656	697711 469 223338 223338 1 10 26 10 260 3510 620100
-657	698180 6451 24560 220034 1.039674039119 1.607250493072 214 1 214 23005 3289715
-662	704631 178 223338 223338 0 9 10 41 169 1344 195632
-663	704809 469 223338 223338 0 10 26 10 260 3510 620100
-664	705278 6873 24770 219794 1.039674125776 1.607250400686 228 1 228 26106 3976814
-669	712151 180 223338 223338 0 9 10 120 169 1451 213123
-670	712331 469 223338 223338 0 10 26 10 260 3510 620100
-671	712800 6380 24779 220085 1.039674126898 1.607250517902 212 1 212 22578 3198550
-676	719180 180 223338 223338 0 9 10 102 156 1376 192274
-677	719360 470 223338 223338 0 10 26 10 260 3510 620100
-678	719830 6964 24740 219980 1.039674119001 1.607250472768 231 1 231 26796 4135516
-683	726794 180 223338 223338 0 9 10 100 169 1414 203808
-684	726974 469 223338 223338 0 10 26 10 260 3510 620100
-685	727443 6840 24785 219800 1.039674128978 1.607250407389 227 1 227 25878 3924830
-690	734283 179 223338 223338 0 9 10 44 166 1382 202782
-691	734462 469 223338 223338 0 10 26 10 260 3510 620100
-692	734931 6929 24815 219968 1.039674141751 1.607250469666 230 1 230 26565 4082155
-697	741860 179 223338 223338 0 9 10 90 164 1328 182544
-698	742039 469 223338 223338 0 10 26 10 260 3510 620100
-699	742508 6416 24596 220079 1.03967406669 1.607250505717 213 1 213 22791 3243919
-700	748924 19056 303 222207 1 2.024989383285 714 1 101 20352 1146994
-701	767980 1644 4295 222711 1.005 2.03 70 0 101 714 39990
-702	769624 1630 4295 222711 1.005 2.03 70 0 100 100 10000
-703	771254 1628 4295 222711 1.005 2.03 70 0 0 0 0
-704	772882 1642 4295 222711 1.005 2.03 70 0 100 609 29785
-705	774524 1628 4295 222711 1.005 2.03 70 0 0 0 0
-706	776152 1628 4295 222711 1.005 2.03 70 0 0 0 0
-707	777780 1628 4295 222711 1.005 2.03 70 0 1 5 5
+vector 13  DataCentricNet.host[1].net  neighbourLqis  ETV
+vector 14  DataCentricNet.host[1].net  RangeLqis  ETV
+vector 22  DataCentricNet.host[2].net  neighbourLqis  ETV
+vector 23  DataCentricNet.host[2].net  RangeLqis  ETV
+vector 31  DataCentricNet.host[3].net  neighbourLqis  ETV
+vector 32  DataCentricNet.host[3].net  RangeLqis  ETV
+vector 40  DataCentricNet.host[4].net  neighbourLqis  ETV
+vector 41  DataCentricNet.host[4].net  RangeLqis  ETV
+vector 49  DataCentricNet.host[5].net  neighbourLqis  ETV
+vector 50  DataCentricNet.host[5].net  RangeLqis  ETV
+vector 58  DataCentricNet.host[6].net  neighbourLqis  ETV
+vector 59  DataCentricNet.host[6].net  RangeLqis  ETV
+vector 67  DataCentricNet.host[7].net  neighbourLqis  ETV
+vector 68  DataCentricNet.host[7].net  RangeLqis  ETV
+vector 76  DataCentricNet.host[8].net  neighbourLqis  ETV
+vector 77  DataCentricNet.host[8].net  RangeLqis  ETV
+vector 85  DataCentricNet.host[9].net  neighbourLqis  ETV
+vector 86  DataCentricNet.host[9].net  RangeLqis  ETV
+vector 94  DataCentricNet.host[10].net  neighbourLqis  ETV
+vector 95  DataCentricNet.host[10].net  RangeLqis  ETV
+vector 103  DataCentricNet.host[11].net  neighbourLqis  ETV
+vector 104  DataCentricNet.host[11].net  RangeLqis  ETV
+vector 112  DataCentricNet.host[12].net  neighbourLqis  ETV
+vector 113  DataCentricNet.host[12].net  RangeLqis  ETV
+vector 121  DataCentricNet.host[13].net  neighbourLqis  ETV
+vector 122  DataCentricNet.host[13].net  RangeLqis  ETV
+vector 130  DataCentricNet.host[14].net  neighbourLqis  ETV
+vector 131  DataCentricNet.host[14].net  RangeLqis  ETV
+vector 139  DataCentricNet.host[15].net  neighbourLqis  ETV
+vector 140  DataCentricNet.host[15].net  RangeLqis  ETV
+vector 148  DataCentricNet.host[16].net  neighbourLqis  ETV
+vector 149  DataCentricNet.host[16].net  RangeLqis  ETV
+vector 157  DataCentricNet.host[17].net  neighbourLqis  ETV
+vector 158  DataCentricNet.host[17].net  RangeLqis  ETV
+vector 166  DataCentricNet.host[18].net  neighbourLqis  ETV
+vector 167  DataCentricNet.host[18].net  RangeLqis  ETV
+vector 175  DataCentricNet.host[19].net  neighbourLqis  ETV
+vector 176  DataCentricNet.host[19].net  RangeLqis  ETV
+vector 184  DataCentricNet.host[20].net  neighbourLqis  ETV
+vector 185  DataCentricNet.host[20].net  RangeLqis  ETV
+vector 193  DataCentricNet.host[21].net  neighbourLqis  ETV
+vector 194  DataCentricNet.host[21].net  RangeLqis  ETV
+vector 202  DataCentricNet.host[22].net  neighbourLqis  ETV
+vector 203  DataCentricNet.host[22].net  RangeLqis  ETV
+vector 211  DataCentricNet.host[23].net  neighbourLqis  ETV
+vector 212  DataCentricNet.host[23].net  RangeLqis  ETV
+vector 220  DataCentricNet.host[24].net  neighbourLqis  ETV
+vector 221  DataCentricNet.host[24].net  RangeLqis  ETV
+vector 229  DataCentricNet.host[25].net  neighbourLqis  ETV
+vector 230  DataCentricNet.host[25].net  RangeLqis  ETV
+vector 238  DataCentricNet.host[26].net  neighbourLqis  ETV
+vector 239  DataCentricNet.host[26].net  RangeLqis  ETV
+vector 247  DataCentricNet.host[27].net  neighbourLqis  ETV
+vector 248  DataCentricNet.host[27].net  RangeLqis  ETV
+vector 256  DataCentricNet.host[28].net  neighbourLqis  ETV
+vector 257  DataCentricNet.host[28].net  RangeLqis  ETV
+vector 265  DataCentricNet.host[29].net  neighbourLqis  ETV
+vector 266  DataCentricNet.host[29].net  RangeLqis  ETV
+vector 274  DataCentricNet.host[30].net  neighbourLqis  ETV
+vector 275  DataCentricNet.host[30].net  RangeLqis  ETV
+vector 283  DataCentricNet.host[31].net  neighbourLqis  ETV
+vector 284  DataCentricNet.host[31].net  RangeLqis  ETV
+vector 292  DataCentricNet.host[32].net  neighbourLqis  ETV
+vector 293  DataCentricNet.host[32].net  RangeLqis  ETV
+vector 301  DataCentricNet.host[33].net  neighbourLqis  ETV
+vector 302  DataCentricNet.host[33].net  RangeLqis  ETV
+vector 310  DataCentricNet.host[34].net  neighbourLqis  ETV
+vector 311  DataCentricNet.host[34].net  RangeLqis  ETV
+vector 319  DataCentricNet.host[35].net  neighbourLqis  ETV
+vector 320  DataCentricNet.host[35].net  RangeLqis  ETV
+vector 328  DataCentricNet.host[36].net  neighbourLqis  ETV
+vector 329  DataCentricNet.host[36].net  RangeLqis  ETV
+vector 337  DataCentricNet.host[37].net  neighbourLqis  ETV
+vector 338  DataCentricNet.host[37].net  RangeLqis  ETV
+vector 346  DataCentricNet.host[38].net  neighbourLqis  ETV
+vector 347  DataCentricNet.host[38].net  RangeLqis  ETV
+vector 355  DataCentricNet.host[39].net  neighbourLqis  ETV
+vector 356  DataCentricNet.host[39].net  RangeLqis  ETV
+vector 364  DataCentricNet.host[40].net  neighbourLqis  ETV
+vector 365  DataCentricNet.host[40].net  RangeLqis  ETV
+vector 373  DataCentricNet.host[41].net  neighbourLqis  ETV
+vector 374  DataCentricNet.host[41].net  RangeLqis  ETV
+vector 382  DataCentricNet.host[42].net  neighbourLqis  ETV
+vector 383  DataCentricNet.host[42].net  RangeLqis  ETV
+vector 391  DataCentricNet.host[43].net  neighbourLqis  ETV
+vector 392  DataCentricNet.host[43].net  RangeLqis  ETV
+vector 400  DataCentricNet.host[44].net  neighbourLqis  ETV
+vector 401  DataCentricNet.host[44].net  RangeLqis  ETV
+vector 409  DataCentricNet.host[45].net  neighbourLqis  ETV
+vector 410  DataCentricNet.host[45].net  RangeLqis  ETV
+vector 418  DataCentricNet.host[46].net  neighbourLqis  ETV
+vector 419  DataCentricNet.host[46].net  RangeLqis  ETV
+vector 427  DataCentricNet.host[47].net  neighbourLqis  ETV
+vector 428  DataCentricNet.host[47].net  RangeLqis  ETV
+vector 436  DataCentricNet.host[48].net  neighbourLqis  ETV
+vector 437  DataCentricNet.host[48].net  RangeLqis  ETV
+vector 445  DataCentricNet.host[49].net  neighbourLqis  ETV
+vector 446  DataCentricNet.host[49].net  RangeLqis  ETV
+vector 454  DataCentricNet.host[50].net  neighbourLqis  ETV
+vector 455  DataCentricNet.host[50].net  RangeLqis  ETV
+vector 463  DataCentricNet.host[51].net  neighbourLqis  ETV
+vector 464  DataCentricNet.host[51].net  RangeLqis  ETV
+vector 472  DataCentricNet.host[52].net  neighbourLqis  ETV
+vector 473  DataCentricNet.host[52].net  RangeLqis  ETV
+vector 481  DataCentricNet.host[53].net  neighbourLqis  ETV
+vector 482  DataCentricNet.host[53].net  RangeLqis  ETV
+vector 490  DataCentricNet.host[54].net  neighbourLqis  ETV
+vector 491  DataCentricNet.host[54].net  RangeLqis  ETV
+vector 499  DataCentricNet.host[55].net  neighbourLqis  ETV
+vector 500  DataCentricNet.host[55].net  RangeLqis  ETV
+vector 508  DataCentricNet.host[56].net  neighbourLqis  ETV
+vector 509  DataCentricNet.host[56].net  RangeLqis  ETV
+vector 517  DataCentricNet.host[57].net  neighbourLqis  ETV
+vector 518  DataCentricNet.host[57].net  RangeLqis  ETV
+vector 526  DataCentricNet.host[58].net  neighbourLqis  ETV
+vector 527  DataCentricNet.host[58].net  RangeLqis  ETV
+vector 535  DataCentricNet.host[59].net  neighbourLqis  ETV
+vector 536  DataCentricNet.host[59].net  RangeLqis  ETV
+vector 544  DataCentricNet.host[60].net  neighbourLqis  ETV
+vector 545  DataCentricNet.host[60].net  RangeLqis  ETV
+vector 553  DataCentricNet.host[61].net  neighbourLqis  ETV
+vector 554  DataCentricNet.host[61].net  RangeLqis  ETV
+vector 562  DataCentricNet.host[62].net  neighbourLqis  ETV
+vector 563  DataCentricNet.host[62].net  RangeLqis  ETV
+vector 571  DataCentricNet.host[63].net  neighbourLqis  ETV
+vector 572  DataCentricNet.host[63].net  RangeLqis  ETV
+vector 580  DataCentricNet.host[64].net  neighbourLqis  ETV
+vector 581  DataCentricNet.host[64].net  RangeLqis  ETV
+vector 589  DataCentricNet.host[65].net  neighbourLqis  ETV
+vector 590  DataCentricNet.host[65].net  RangeLqis  ETV
+vector 598  DataCentricNet.host[66].net  neighbourLqis  ETV
+vector 599  DataCentricNet.host[66].net  RangeLqis  ETV
+vector 607  DataCentricNet.host[67].net  neighbourLqis  ETV
+vector 608  DataCentricNet.host[67].net  RangeLqis  ETV
+vector 616  DataCentricNet.host[68].net  neighbourLqis  ETV
+vector 617  DataCentricNet.host[68].net  RangeLqis  ETV
+vector 625  DataCentricNet.host[69].net  neighbourLqis  ETV
+vector 626  DataCentricNet.host[69].net  RangeLqis  ETV
+vector 634  DataCentricNet.host[70].net  neighbourLqis  ETV
+vector 635  DataCentricNet.host[70].net  RangeLqis  ETV
+vector 643  DataCentricNet.host[71].net  neighbourLqis  ETV
+vector 644  DataCentricNet.host[71].net  RangeLqis  ETV
+vector 652  DataCentricNet.host[72].net  neighbourLqis  ETV
+vector 653  DataCentricNet.host[72].net  RangeLqis  ETV
+vector 661  DataCentricNet.host[73].net  neighbourLqis  ETV
+vector 662  DataCentricNet.host[73].net  RangeLqis  ETV
+vector 670  DataCentricNet.host[74].net  neighbourLqis  ETV
+vector 671  DataCentricNet.host[74].net  RangeLqis  ETV
+vector 679  DataCentricNet.host[75].net  neighbourLqis  ETV
+vector 680  DataCentricNet.host[75].net  RangeLqis  ETV
+vector 688  DataCentricNet.host[76].net  neighbourLqis  ETV
+vector 689  DataCentricNet.host[76].net  RangeLqis  ETV
+vector 697  DataCentricNet.host[77].net  neighbourLqis  ETV
+vector 698  DataCentricNet.host[77].net  RangeLqis  ETV
+vector 706  DataCentricNet.host[78].net  neighbourLqis  ETV
+vector 707  DataCentricNet.host[78].net  RangeLqis  ETV
+vector 715  DataCentricNet.host[79].net  neighbourLqis  ETV
+vector 716  DataCentricNet.host[79].net  RangeLqis  ETV
+vector 724  DataCentricNet.host[80].net  neighbourLqis  ETV
+vector 725  DataCentricNet.host[80].net  RangeLqis  ETV
+vector 733  DataCentricNet.host[81].net  neighbourLqis  ETV
+vector 734  DataCentricNet.host[81].net  RangeLqis  ETV
+vector 742  DataCentricNet.host[82].net  neighbourLqis  ETV
+vector 743  DataCentricNet.host[82].net  RangeLqis  ETV
+vector 751  DataCentricNet.host[83].net  neighbourLqis  ETV
+vector 752  DataCentricNet.host[83].net  RangeLqis  ETV
+vector 760  DataCentricNet.host[84].net  neighbourLqis  ETV
+vector 761  DataCentricNet.host[84].net  RangeLqis  ETV
+vector 769  DataCentricNet.host[85].net  neighbourLqis  ETV
+vector 770  DataCentricNet.host[85].net  RangeLqis  ETV
+vector 778  DataCentricNet.host[86].net  neighbourLqis  ETV
+vector 779  DataCentricNet.host[86].net  RangeLqis  ETV
+vector 787  DataCentricNet.host[87].net  neighbourLqis  ETV
+vector 788  DataCentricNet.host[87].net  RangeLqis  ETV
+vector 796  DataCentricNet.host[88].net  neighbourLqis  ETV
+vector 797  DataCentricNet.host[88].net  RangeLqis  ETV
+vector 805  DataCentricNet.host[89].net  neighbourLqis  ETV
+vector 806  DataCentricNet.host[89].net  RangeLqis  ETV
+vector 814  DataCentricNet.host[90].net  neighbourLqis  ETV
+vector 815  DataCentricNet.host[90].net  RangeLqis  ETV
+vector 823  DataCentricNet.host[91].net  neighbourLqis  ETV
+vector 824  DataCentricNet.host[91].net  RangeLqis  ETV
+vector 832  DataCentricNet.host[92].net  neighbourLqis  ETV
+vector 833  DataCentricNet.host[92].net  RangeLqis  ETV
+vector 841  DataCentricNet.host[93].net  neighbourLqis  ETV
+vector 842  DataCentricNet.host[93].net  RangeLqis  ETV
+vector 850  DataCentricNet.host[94].net  neighbourLqis  ETV
+vector 851  DataCentricNet.host[94].net  RangeLqis  ETV
+vector 859  DataCentricNet.host[95].net  neighbourLqis  ETV
+vector 860  DataCentricNet.host[95].net  RangeLqis  ETV
+vector 868  DataCentricNet.host[96].net  neighbourLqis  ETV
+vector 869  DataCentricNet.host[96].net  RangeLqis  ETV
+vector 877  DataCentricNet.host[97].net  neighbourLqis  ETV
+vector 878  DataCentricNet.host[97].net  RangeLqis  ETV
+vector 886  DataCentricNet.host[98].net  neighbourLqis  ETV
+vector 887  DataCentricNet.host[98].net  RangeLqis  ETV
+vector 895  DataCentricNet.host[99].net  neighbourLqis  ETV
+vector 896  DataCentricNet.host[99].net  RangeLqis  ETV
+vector 904  DataCentricNet.host[100].net  neighbourLqis  ETV
+vector 905  DataCentricNet.host[100].net  RangeLqis  ETV
+vector 913  DataCentricNet.host[101].net  neighbourLqis  ETV
+vector 914  DataCentricNet.host[101].net  RangeLqis  ETV
+vector 922  DataCentricNet.host[102].net  neighbourLqis  ETV
+vector 923  DataCentricNet.host[102].net  RangeLqis  ETV
+vector 931  DataCentricNet.host[103].net  neighbourLqis  ETV
+vector 932  DataCentricNet.host[103].net  RangeLqis  ETV
+vector 940  DataCentricNet.host[104].net  neighbourLqis  ETV
+vector 941  DataCentricNet.host[104].net  RangeLqis  ETV
+vector 949  DataCentricNet.host[105].net  neighbourLqis  ETV
+vector 950  DataCentricNet.host[105].net  RangeLqis  ETV
+vector 958  DataCentricNet.host[106].net  neighbourLqis  ETV
+vector 959  DataCentricNet.host[106].net  RangeLqis  ETV
+vector 967  DataCentricNet.host[107].net  neighbourLqis  ETV
+vector 968  DataCentricNet.host[107].net  RangeLqis  ETV
+vector 976  DataCentricNet.host[108].net  neighbourLqis  ETV
+vector 977  DataCentricNet.host[108].net  RangeLqis  ETV
+vector 985  DataCentricNet.host[109].net  neighbourLqis  ETV
+vector 986  DataCentricNet.host[109].net  RangeLqis  ETV
+vector 994  DataCentricNet.host[110].net  neighbourLqis  ETV
+vector 995  DataCentricNet.host[110].net  RangeLqis  ETV
+vector 1003  DataCentricNet.host[111].net  neighbourLqis  ETV
+vector 1004  DataCentricNet.host[111].net  RangeLqis  ETV
+vector 1012  DataCentricNet.host[112].net  neighbourLqis  ETV
+vector 1013  DataCentricNet.host[112].net  RangeLqis  ETV
+vector 1021  DataCentricNet.host[113].net  neighbourLqis  ETV
+vector 1022  DataCentricNet.host[113].net  RangeLqis  ETV
+vector 1030  DataCentricNet.host[114].net  neighbourLqis  ETV
+vector 1031  DataCentricNet.host[114].net  RangeLqis  ETV
+vector 1039  DataCentricNet.host[115].net  neighbourLqis  ETV
+vector 1040  DataCentricNet.host[115].net  RangeLqis  ETV
+vector 1048  DataCentricNet.host[116].net  neighbourLqis  ETV
+vector 1049  DataCentricNet.host[116].net  RangeLqis  ETV
+vector 1057  DataCentricNet.host[117].net  neighbourLqis  ETV
+vector 1058  DataCentricNet.host[117].net  RangeLqis  ETV
+vector 1066  DataCentricNet.host[118].net  neighbourLqis  ETV
+vector 1067  DataCentricNet.host[118].net  RangeLqis  ETV
+vector 1075  DataCentricNet.host[119].net  neighbourLqis  ETV
+vector 1076  DataCentricNet.host[119].net  RangeLqis  ETV
+vector 1084  DataCentricNet.host[120].net  neighbourLqis  ETV
+vector 1085  DataCentricNet.host[120].net  RangeLqis  ETV
+vector 1093  DataCentricNet.host[121].net  neighbourLqis  ETV
+vector 1094  DataCentricNet.host[121].net  RangeLqis  ETV
+vector 1102  DataCentricNet.host[122].net  neighbourLqis  ETV
+vector 1103  DataCentricNet.host[122].net  RangeLqis  ETV
+vector 1111  DataCentricNet.host[123].net  neighbourLqis  ETV
+vector 1112  DataCentricNet.host[123].net  RangeLqis  ETV
+vector 1120  DataCentricNet.host[124].net  neighbourLqis  ETV
+vector 1121  DataCentricNet.host[124].net  RangeLqis  ETV
+4	44496 158 286558 286558 0 9 10 74 164 1255 164895
+5	44654 417 286558 286558 0 10 26 10 260 3510 620100
+6	45071 5613 28471 283126 1.022007022849 1.559852877091 199 1 199 19900 2646700
+7	50684 7797 39507 283126 1.036405903515 1.559852877091 198 0.000964082239 0.018832598036 0.537845854242 0.0030440550186382
+8	58481 158 39507 128628 1.036405903515 1.156198534265 4 0.001102345704 0.088351919439 0.156198534265 0.010053083073054
+13	58639 170 286558 286558 0 9 10 115 169 1437 210097
+14	58809 443 286558 286558 0 10 26 10 260 3510 620100
+15	59252 5727 28543 283093 1.022007037819 1.559852872357 196 1 196 19306 2529086
+16	64979 7864 39510 283093 1.036405903607 1.559852872357 195 0.000964094866 0.018832632497 0.537845834538 0.0029058481377137
+17	72843 161 39510 128574 1.036405903607 1.156198526006 4 0.001102355303 0.088351893595 0.156198526006 0.010053079013165
+22	73004 168 286558 286558 0 9 10 64 164 1289 175511
+23	73172 443 286558 286558 0 10 26 10 260 3510 620100
+24	73615 6239 28402 283237 1.022007006116 1.559852898826 213 1 213 22791 3243919
+25	79854 8536 32928 283237 1.028438525284 1.559852898826 212 0.000964094974 0.018832607157 0.53784589271 0.0026738830170937
+26	88390 242 28402 128751 1.022007006116 1.156198552116 6 0.000775203778 0.094220281555 0.156198552116 0.010348476110757
+31	88632 167 286558 286558 0 9 10 46 164 1216 164868
+32	88799 443 286558 286558 0 10 26 10 260 3510 620100
+33	89242 5845 28459 283141 1.022007020702 1.559852878214 200 1 200 20100 2686700
+34	95087 8026 32965 283141 1.02843854308 1.559852878214 199 0.00096408759 0.018832607812 0.537845857512 0.0028924140210986
+35	103113 239 32965 128619 1.02843854308 1.156198533018 6 0.001156102491 0.088351915276 0.156198533018 0.0095751856893543
+40	103352 169 286558 286558 0 9 10 72 166 1364 193748
+41	103521 443 286558 286558 0 10 26 10 260 3510 620100
+42	103964 5848 28591 283069 1.022007045403 1.559852864517 200 1 200 20100 2686700
+43	109812 8012 39679 283069 1.036405931219 1.559852864517 199 0.000964046479 0.018832572395 0.537845819114 0.003018547290683
+44	117824 202 44473 128679 1.042015362858 1.156198544426 5 0.019416703146 0.043306016707 0.156198544426 0.0053842693177084
+49	118026 32 286558 286558 0 1 2 13 13 26 338
+50	118058 433 286558 286558 0 2 26 10 260 3510 620100
+51	118491 5914 40314 283306 1.037508268717 1.55985292497 202 1 202 20503 2767905
+52	124405 8127 47771 283306 1.045393042724 1.55985292497 201 0.000964087588 0.018832570229 0.522344656253 0.002634109815186
+53	132532 332 383 128898 1 1.156198582366 9 0 0.09422029049 0.156198582366 0.010109689957404
+58	132864 170 286558 286558 0 9 10 118 159 1451 212417
+59	133034 444 286558 286558 0 10 26 10 260 3510 620100
+60	133478 5462 28510 283117 1.022007027185 1.559852875891 187 1 187 17578 2197250
+61	138940 7501 39601 283117 1.036405918952 1.559852875891 186 0.000964066549 0.022687183833 0.537845848706 0.003344296818337
+62	146441 201 39601 128664 1.036405918952 1.156198542433 5 0.001102343222 0.045281586422 0.156198542433 0.0061524979208311
+67	146642 170 286558 286558 0 9 10 108 169 1408 203842
+68	146812 443 286558 286558 0 10 26 10 260 3510 620100
+69	147255 5757 28546 283057 1.022007038079 1.559852863085 197 1 197 19503 2567895
+70	153012 7916 39495 283057 1.036405902545 1.559852863085 196 0.000964082155 0.018832621899 0.537845825006 0.0029415823699044
+71	160928 161 39495 128532 1.036405902545 1.15619851565 4 0.001102360257 0.088351892907 0.15619851565 0.010053078002412
+76	161089 169 286558 286558 0 9 10 62 166 1336 188310
+77	161258 443 286558 286558 0 10 26 10 260 3510 620100
+78	161701 5692 28579 283060 1.02200704115 1.559852863563 195 1 195 19110 2490670
+79	167393 7806 39609 283060 1.036405920194 1.559852863563 194 0.000964058355 0.018832589247 0.537845822413 0.0030315369714069
+80	175199 162 39609 128625 1.036405920194 1.156198534149 4 0.011231430042 0.078222827981 0.156198534149 0.0084907627039621
+85	175361 170 286558 286558 0 9 10 110 164 1457 214943
+86	175531 443 286558 286558 0 10 26 10 260 3510 620100
+87	175974 5726 28696 282949 1.022007074493 1.55985283131 196 1 196 19306 2529086
+88	181700 7857 39764 282949 1.0364059478 1.55985283131 195 0.000964009598 0.018832592231 0.537845756817 0.0031681991856108
+89	189557 199 44463 128706 1.042015361038 1.156198548395 5 0.012686384372 0.050418051762 0.156198548395 0.005897156718567
+94	189756 169 286558 286558 0 9 10 92 169 1436 212402
+95	189925 443 286558 286558 0 10 26 10 260 3510 620100
+96	190368 5341 28390 283246 1.022007003902 1.559852900874 183 1 183 16836 2059604
+97	195709 7340 40317 283246 1.037508268941 1.559852900874 182 0.000964073189 0.018832546931 0.537845896972 0.0031904355117194
+98	203049 242 28390 128841 1.022007003902 1.156198566172 6 0.000775179682 0.094220303213 0.156198566172 0.010348479534381
+103	203291 180 286558 286558 0 9 10 115 164 1468 218126
+104	203471 469 286558 286558 0 10 26 10 260 3510 620100
+105	203940 6264 28393 283255 1.022007004708 1.559852904989 207 1 207 21528 2978040
+106	210204 8520 40125 283255 1.03750824502 1.559852904989 206 0.000964090611 0.018832592348 0.537845900281 0.0028730926472093
+107	218724 288 28393 128808 1.022007004708 1.156198560114 7 0.000775186767 0.094220286661 0.156198560114 0.009889825416564
+112	219012 179 286558 286558 0 9 10 92 169 1385 196571
+113	219191 469 286558 286558 0 10 26 10 260 3510 620100
+114	219660 5896 28684 282964 1.022007068595 1.559852842301 195 1 195 19110 2490670
+115	225556 8018 39730 282964 1.036405941706 1.559852842301 194 0.000964017762 0.018832593918 0.537845773706 0.0030725905355508
+116	233574 206 44425 128673 1.042015353505 1.156198543713 5 0.01268638752 0.050418049761 0.156198543713 0.0058971561483484
+121	233780 180 286558 286558 0 9 10 128 166 1479 220237
+122	233960 469 286558 286558 0 10 26 10 260 3510 620100
+123	234429 6057 28495 283261 1.022007025845 1.559852906765 200 1 200 20100 2686700
+124	240486 8221 37703 283261 1.033958834122 1.559852906765 199 0.000964101388 0.018832634844 0.53784588092 0.0029638711253238
+125	248707 290 37703 157798 1.033958834122 1.199052633383 7 0.003549427538 0.047184487688 0.199052633383 0.0071648730589396
+130	248997 180 286558 286558 0 9 10 115 169 1380 193652
+131	249177 469 286558 286558 0 10 26 10 260 3510 620100
+132	249646 6297 28480 283195 1.02200702367 1.559852889738 208 1 208 21736 3021304
+133	255943 8558 32954 283195 1.028438538614 1.559852889738 207 0.000964099736 0.018832633792 0.537845866068 0.0026891107479484
+134	264501 208 32954 128655 1.028438538614 1.156198541803 5 0.003201349177 0.082813400643 0.156198541803 0.0087275926423229
+139	264709 178 286558 286558 0 9 10 90 169 1370 196120
+140	264887 469 286558 286558 0 10 26 10 260 3510 620100
+141	265356 6247 28414 283213 1.022007009588 1.559852894085 206 1 206 21321 2935191
+142	271603 8492 32934 283213 1.028438528396 1.559852894085 205 0.000964093049 0.020198119567 0.537845884497 0.0028527524586122
+143	280095 247 28414 128703 1.022007009588 1.156198547787 6 0.000775204162 0.094220284886 0.156198547787 0.010348476717306
+148	280342 180 286558 286558 0 9 10 113 166 1458 215302
+149	280522 469 286558 286558 0 10 26 10 260 3510 620100
+150	280991 6053 28378 283252 1.022006998707 1.559852904133 200 1 200 20100 2686700
+151	287044 8242 40206 283252 1.037508257822 1.559852904133 199 0.000964079638 0.018832559687 0.537845905426 0.0028517185831019
+152	295286 206 28378 128832 1.022006998707 1.156198564872 5 0.000791625662 0.094220298513 0.156198564872 0.010360984014644
+157	295492 180 286558 286558 0 9 10 108 164 1342 184188
+158	295672 469 286558 286558 0 10 26 10 260 3510 620100
+159	296141 5867 28666 282982 1.022007060817 1.559852847787 194 1 194 18915 2452645
+160	302008 7974 39727 282982 1.036405940744 1.559852847787 193 0.000964024909 0.018832577779 0.53784578697 0.0031410234828776
+161	309982 205 44460 128697 1.042015361001 1.156198546188 5 0.013454786981 0.04926794639 0.156198546188 0.0057402110648768
+166	310187 180 286558 286558 0 9 10 125 169 1444 209982
+167	310367 469 286558 286558 0 10 26 10 260 3510 620100
+168	310836 6091 28534 283168 1.022007034383 1.559852884642 201 1 201 20301 2727101
+169	316927 8280 39522 283168 1.036405905897 1.559852884642 200 0.000964100902 0.018832649401 0.537845850259 0.0027974862161111
+170	325207 207 39522 128646 1.036405905897 1.156198537459 5 0.001102353263 0.088351890061 0.156198537459 0.0098085755289167
+175	325414 179 286558 286558 0 9 10 95 166 1411 203025
+176	325593 469 286558 286558 0 10 26 10 260 3510 620100
+177	326062 5592 28504 283171 1.022007026592 1.559852885905 185 1 185 17205 2127685
+178	331654 7603 40356 283171 1.037508276677 1.559852885905 184 0.000964057885 0.018832534059 0.537845859313 0.0031104246987321
+179	339257 164 48888 128805 1.046502815762 1.156198559905 4 0.019643777338 0.059713608874 0.156198559905 0.007034520908606
+184	339421 180 286558 286558 0 9 10 108 161 1321 177827
+185	339601 469 286558 286558 0 10 26 10 260 3510 620100
+186	340070 5900 28630 283084 1.022007051897 1.559852870601 195 1 195 19110 2490670
+187	345970 8026 40413 283084 1.037508292219 1.559852870601 194 0.000964037405 0.022687143505 0.537845818704 0.0031759510445409
+188	353996 248 61353 128793 1.060195435724 1.156198558605 6 0.001196990727 0.060195435724 0.156198558605 0.0061330414855464
+193	354244 180 286558 286558 0 9 10 131 169 1535 237305
+194	354424 469 286558 286558 0 10 26 10 260 3510 620100
+195	354893 5868 28561 283036 1.022007039272 1.559852858119 194 1 194 18915 2452645
+196	360761 7986 39552 283036 1.036405910694 1.559852858119 193 0.000964066739 0.021554094323 0.537845818847 0.0031070680377788
+197	368747 166 39552 128556 1.036405910694 1.156198521751 4 0.001102358325 0.088351897806 0.156198521751 0.010053079152874
+202	368913 178 286558 286558 0 9 10 90 166 1347 187521
+203	369091 469 286558 286558 0 10 26 10 260 3510 620100
+204	369560 5760 28669 282988 1.02200706118 1.559852850236 191 1 191 18336 2340896
+205	375320 7845 39744 282988 1.036405944067 1.559852850236 190 0.0009640273 0.018832573962 0.537845789056 0.0031492530119724
+206	383165 204 61440 128739 1.060195451378 1.15619855062 5 0.012304687071 0.060195451378 0.15619855062 0.0061807424172531
+211	383369 179 286558 286558 0 9 10 82 164 1362 190468
+212	383548 469 286558 286558 0 10 26 10 260 3510 620100
+213	384017 5592 28420 283189 1.022007010328 1.559852887107 185 1 185 17205 2127685
+214	389609 7605 40203 283189 1.037508257663 1.559852887107 184 0.000964075816 0.018832567826 0.537845876779 0.0032407962286959
+215	397214 165 40203 128727 1.037508257663 1.15619854972 4 0.028638318003 0.059713609438 0.15619854972 0.0067131541706423
+220	397379 178 286558 286558 0 9 10 69 169 1269 168697
+221	397557 469 286558 286558 0 10 26 10 260 3510 620100
+222	398026 5956 28636 282985 1.022007054844 1.559852848424 197 1 197 19503 2567895
+223	403982 8106 39686 282985 1.036405932771 1.559852848424 196 0.00096403338 0.018832583227 0.53784579358 0.0030696056046245
+224	412088 205 44428 128649 1.042015354219 1.15619853869 5 0.00330409647 0.043306028088 0.15619853869 0.0059584582067557
+229	412293 179 286558 286558 0 9 10 82 169 1362 191624
+230	412472 469 286558 286558 0 10 26 10 260 3510 620100
+231	412941 6192 28381 283282 1.022007001654 1.55985291366 205 1 205 21115 2892755
+232	419133 8431 37693 283282 1.033958831906 1.55985291366 204 0.000964094417 0.018832597734 0.537845912006 0.0028136795225284
+233	427564 248 28381 128847 1.022007001654 1.156198567312 6 0.000775186606 0.094220282009 0.156198567312 0.010348476288051
+238	427812 179 286558 286558 0 9 10 67 166 1345 189157
+239	427991 469 286558 286558 0 10 26 10 260 3510 620100
+240	428460 5993 28537 283042 1.0220070374 1.559852859018 198 1 198 19701 2607099
+241	434453 8149 39544 283042 1.036405909916 1.559852859018 197 0.000964066398 0.018832600579 0.537845821618 0.0029031664574161
+242	442602 207 39544 128562 1.036405909916 1.156198522263 5 0.001102356758 0.045281563109 0.156198522263 0.0061524951993099
+247	442809 179 286558 286558 0 9 10 90 166 1364 191188
+248	442988 469 286558 286558 0 10 26 10 260 3510 620100
+249	443457 5956 28558 283066 1.022007038934 1.559852864442 197 1 197 19503 2567895
+250	449413 8105 39582 283066 1.036405915248 1.559852864442 196 0.000964064974 0.018832596246 0.537845825508 0.0029543450624173
+251	457518 166 39582 128604 1.036405915248 1.156198530345 4 0.001102350754 0.088351907039 0.156198530345 0.010053081243563
+256	457684 179 286558 286558 0 9 10 92 166 1389 198361
+257	457863 469 286558 286558 0 10 26 10 260 3510 620100
+258	458332 5852 28681 282961 1.022007067869 1.55985284191 194 1 194 18915 2452645
+259	464184 7959 39756 282961 1.036405946188 1.55985284191 193 0.000964020352 0.018832582637 0.537845774041 0.0030521586334694
+260	472143 289 44495 157023 1.042015366263 1.196239015856 7 0.001017991953 0.050418045914 0.196239015856 0.0073598143173602
+265	472432 180 286558 286558 0 9 10 125 164 1479 220443
+266	472612 469 286558 286558 0 10 26 10 260 3510 620100
+267	473081 6023 28567 283120 1.022007040092 1.559852876059 199 1 199 19900 2646700
+268	479104 8195 39519 283120 1.036405905309 1.559852876059 198 0.000964101128 0.018832652013 0.537845835967 0.0028967460189477
+269	487299 164 39519 128592 1.036405905309 1.1561985294 4 0.001102357062 0.088351878818 0.1561985294 0.010053077422372
+274	487463 180 286558 286558 0 9 10 108 164 1386 194952
+275	487643 469 286558 286558 0 10 26 10 260 3510 620100
+276	488112 5960 28660 282967 1.022007060429 1.559852842314 197 1 197 19503 2567895
+277	494072 8084 39713 282967 1.036405938185 1.559852842314 196 0.000964026754 0.018832583683 0.537845781885 0.0030245902036504
+278	502156 206 44450 128667 1.042015359507 1.156198542438 5 0.012304691561 0.050418044305 0.156198542438 0.0058252335290658
+283	502362 180 286558 286558 0 9 10 100 164 1331 180521
+284	502542 469 286558 286558 0 10 26 10 260 3510 620100
+285	503011 6010 28654 283063 1.022007058512 1.55985286397 199 1 199 19900 2646700
+286	509021 8170 40431 283063 1.037508296413 1.55985286397 198 0.000964030443 0.018832561977 0.537845805458 0.0029796948361257
+287	517191 205 61356 128781 1.060195435834 1.156198557324 5 0.012304690977 0.060195435834 0.156198557324 0.0061807416362383
+292	517396 178 286558 286558 0 9 10 77 151 1249 160851
+293	517574 470 286558 286558 0 10 26 10 260 3510 620100
+294	518044 5774 28426 283180 1.022007010847 1.559852886395 191 1 191 18336 2340896
+295	523818 7865 40188 283180 1.037508254719 1.559852886395 190 0.000964075978 0.018832567385 0.537845875548 0.0031357339374121
+296	531683 166 40188 128715 1.037508254719 1.156198548434 4 0.028638323227 0.059713606146 0.156198548434 0.0067131538392271
+301	531849 179 286558 286558 0 9 10 67 169 1338 187766
+302	532028 469 286558 286558 0 10 26 10 260 3510 620100
+303	532497 5619 28441 283162 1.022007015109 1.559852884118 186 1 186 17391 2162281
+304	538116 7642 39612 283162 1.036405920317 1.559852884118 185 0.00096407158 0.022687200564 0.537845869009 0.0033163899786716
+305	545758 206 39612 128724 1.036405920317 1.156198549472 5 0.001102342678 0.05971360821 0.156198549472 0.0066328905684023
+310	545964 180 286558 286558 0 9 10 131 166 1484 221434
+311	546144 469 286558 286558 0 10 26 10 260 3510 620100
+312	546613 5656 28447 283186 1.02200701917 1.559852886733 187 1 187 17578 2197250
+313	552269 7704 40134 283186 1.037508249028 1.559852886733 186 0.000964081783 0.022687213141 0.537845867563 0.0034572621676375
+314	559973 166 40134 128688 1.037508249028 1.156198545377 4 0.012615508335 0.075736420156 0.156198545377 0.0082224416980304
+319	560139 179 286558 286558 0 9 10 57 169 1393 204185
+320	560318 469 286558 286558 0 10 26 10 260 3510 620100
+321	560787 5804 28705 282943 1.022007077029 1.559852830568 192 1 192 18528 2377760
+322	566591 7895 39759 282943 1.036405946341 1.559852830568 191 0.000968308671 0.018832602515 0.537845753539 0.0030316705207159
+323	574486 167 44437 128691 1.042015354983 1.156198545483 4 0.014973985079 0.083844838192 0.156198545483 0.0092555309552838
+328	574653 197 286558 286558 0 10 11 13 164 1374 192084
+329	574850 470 286558 286558 0 11 26 10 260 3510 620100
+330	575320 5586 28399 283210 1.022007005778 1.559852893566 185 1 185 17205 2127685
+331	580906 7630 40233 283210 1.037508260989 1.559852893566 184 0.000964074931 0.018832556585 0.537845887788 0.0032795373118885
+332	588536 329 28399 128778 1.022007005778 1.156198557141 8 0.000775186152 0.094220302892 0.156198557141 0.01030630653245
+337	588865 180 286558 286558 0 9 10 125 169 1485 222439
+338	589045 469 286558 286558 0 10 26 10 260 3510 620100
+339	589514 6059 28585 283105 1.022007041799 1.559852874343 200 1 200 20100 2686700
+340	595573 8239 39525 283105 1.036405906437 1.559852874343 199 0.00096409902 0.018832651821 0.537845832544 0.0028888560859393
+341	603812 124 39525 128583 1.036405906437 1.156198528298 3 0.001102358156 0.118690263705 0.156198528298 0.015413983915366
+346	603936 179 286558 286558 0 9 10 90 169 1434 210260
+347	604115 469 286558 286558 0 10 26 10 260 3510 620100
+348	604584 5741 28516 283132 1.022007028026 1.559852877296 190 1 190 18145 2304415
+349	610325 7811 40341 283132 1.037508271647 1.559852877296 189 0.000964058535 0.022687173817 0.53784584927 0.0032703805732535
+350	618136 166 61392 128736 1.060195445464 1.156198550161 4 0.005951146791 0.060195445464 0.156198550161 0.0081450378334266
+355	618302 178 286558 286558 0 9 10 59 169 1290 177484
+356	618480 469 286558 286558 0 10 26 10 260 3510 620100
+357	618949 5959 28612 283030 1.022007049202 1.559852857471 197 1 197 19503 2567895
+358	624908 8095 39689 283030 1.036405933166 1.559852857471 196 0.000964039273 0.018832571838 0.537845808269 0.0031232580390976
+359	633003 206 44468 128670 1.042015361434 1.156198543348 5 0.019416701767 0.043306019949 0.156198543348 0.0053842693199388
+364	633209 179 286558 286558 0 9 10 80 156 1423 207555
+365	633388 470 286558 286558 0 10 26 10 260 3510 620100
+366	633858 5818 28531 283153 1.022007034355 1.559852879995 192 1 192 18528 2377760
+367	639676 7905 40401 283153 1.037508284151 1.559852879995 191 0.00096405116 0.022687168316 0.53784584564 0.0032111025088679
+368	647581 165 61458 128802 1.060195452467 1.156198559571 4 0.00595114525 0.060195452467 0.156198559571 0.008145039216162
+373	647746 178 286558 286558 0 9 10 74 169 1387 202331
+374	647924 469 286558 286558 0 10 26 10 260 3510 620100
+375	648393 6119 28468 283138 1.022007022611 1.559852877881 202 1 202 20503 2767905
+376	654512 8325 32975 283138 1.028438543971 1.559852877881 201 0.000964089195 0.018832613824 0.53784585527 0.0027784264342015
+377	662837 247 32975 128616 1.028438543971 1.156198532151 6 0.001156101589 0.088351910635 0.156198532151 0.0095751850356689
+382	663084 179 286558 286558 0 9 10 82 169 1341 186715
+383	663263 469 286558 286558 0 10 26 10 260 3510 620100
+384	663732 6103 28357 283264 1.022006990665 1.559852907175 202 1 202 20503 2767905
+385	669835 8296 40230 283264 1.03750826045 1.559852907175 201 0.000964081795 0.018832562701 0.53784591651 0.0028655639685505
+386	678131 242 28357 128844 1.022006990665 1.1561985673 6 0.000775174859 0.094220296595 0.1561985673 0.010348478144481
+391	678373 179 286558 286558 0 9 10 31 169 1376 206570
+392	678552 469 286558 286558 0 10 26 10 260 3510 620100
+393	679021 5903 28642 282979 1.022007056343 1.559852847431 195 1 195 19110 2490670
+394	684924 8029 39617 282979 1.036405921375 1.559852847431 194 0.000964053993 0.018832619503 0.537845791088 0.0028802278599749
+395	692953 165 39617 128550 1.036405921375 1.156198520308 4 0.01312542488 0.076328820437 0.156198520308 0.0082441724188765
+400	693118 179 286558 286558 0 9 10 95 169 1440 213264
+401	693297 469 286558 286558 0 10 26 10 260 3510 620100
+402	693766 5769 28708 282955 1.022007079155 1.559852837905 191 1 191 18336 2340896
+403	699535 7841 39779 282955 1.036405954531 1.559852837905 190 0.000964010622 0.018832588127 0.53784575875 0.0031269750480289
+404	707376 331 62066 128766 1.061554498016 1.156198555816 8 0.002287592293 0.061554498016 0.156198555816 0.0052398337726036
+409	707707 178 286558 286558 0 9 10 74 169 1305 178505
+410	707885 469 286558 286558 0 10 26 10 260 3510 620100
+411	708354 6490 28435 283225 1.022007013154 1.559852896863 214 1 214 23005 3289715
+412	714844 8806 32931 283225 1.02843852642 1.559852896863 213 0.000964097577 0.018832616694 0.537845883709 0.0026099593224306
+413	723650 163 32931 128721 1.02843852642 1.156198549154 4 0.003201365085 0.094220277565 0.156198549154 0.010616876533895
+418	723813 178 286558 286558 0 9 10 92 169 1374 195998
+419	723991 469 286558 286558 0 10 26 10 260 3510 620100
+420	724460 6112 28366 283309 1.022006994809 1.559852926107 202 1 202 20503 2767905
+421	730572 8304 40281 283309 1.037508265887 1.559852926107 201 0.000964089254 0.01883257761 0.537845931298 0.0029465176050095
+422	738876 287 28366 128895 1.022006994809 1.156198582243 7 0.000775170828 0.094220287927 0.156198582243 0.0098898254553188
+427	739163 179 286558 286558 0 9 10 80 169 1344 187918
+428	739342 469 286558 286558 0 10 26 10 260 3510 620100
+429	739811 6015 28594 283021 1.02200704543 1.559852856375 199 1 199 19900 2646700
+430	745826 8185 39541 283021 1.036405909878 1.559852856375 198 0.00096407296 0.01883262241 0.537845810945 0.0027641463387197
+431	754011 124 39541 106135 1.036405909878 1.125860158139 3 0.036405909878 0.048915455867 0.125860158139 0.0053615057854853
+436	754135 198 286558 286558 0 10 11 13 169 1536 235306
+437	754333 469 286558 286558 0 11 26 10 260 3510 620100
+438	754802 5805 28711 282946 1.022007081317 1.559852830946 192 1 192 18528 2377760
+439	760607 7889 39774 282946 1.036405950998 1.559852830946 191 0.000964000946 0.018832601094 0.537845749629 0.0031205854520304
+440	768496 292 44455 173555 1.042015359862 1.227332046702 7 0.002287591081 0.08384483786 0.227332046702 0.012551866549786
+445	768788 180 286558 286558 0 9 10 118 169 1457 214939
+446	768968 469 286558 286558 0 10 26 10 260 3510 620100
+447	769437 5896 28411 283204 1.022007006768 1.55985289265 195 1 195 19110 2490670
+448	775333 8009 32962 283204 1.028438542882 1.55985289265 194 0.00096408526 0.018832589073 0.537845885882 0.0030152600216904
+449	783342 288 28411 128742 1.022007006768 1.156198550658 7 0.000775203796 0.094220292228 0.156198550658 0.010323849597166
+454	783630 178 286558 286558 0 9 10 31 166 1292 182418
+455	783808 469 286558 286558 0 10 26 10 260 3510 620100
+456	784277 5702 28474 283201 1.022007023397 1.559852891032 189 1 189 17955 2268315
+457	789979 7767 40371 283201 1.037508278812 1.559852891032 188 0.000964059386 0.018832523782 0.537845867635 0.0031397493175041
+458	797746 163 48879 128823 1.04650281322 1.15619856463 4 0.019643777322 0.059713615313 0.15619856463 0.0070345214917601
+463	797909 179 286558 286558 0 9 10 97 166 1420 207020
+464	798088 469 286558 286558 0 10 26 10 260 3510 620100
+465	798557 5884 28702 282685 1.022007075629 1.542354980755 195 1 195 19110 2490670
+466	804441 8005 39749 282685 1.03640594497 1.542354980755 194 0.000964011132 0.018832603246 0.520347905126 0.0026148409059514
+467	812446 207 44444 141304 1.042015356093 1.171462699404 5 0.01497398812 0.083844835686 0.171462699404 0.0094885250634714
+472	812653 180 286558 286558 0 9 10 113 169 1483 224629
+473	812833 469 286558 286558 0 10 26 10 260 3510 620100
+474	813302 5552 28465 283147 1.022007022293 1.559852879192 184 1 184 17020 2093460
+475	818854 7567 39637 283147 1.036405924288 1.559852879192 183 0.00096406407 0.022687186957 0.537845856899 0.003358980536849
+476	826421 207 39637 128718 1.036405924288 1.156198549075 5 0.001102344371 0.059713605682 0.156198549075 0.0066328903450762
+481	826628 198 286558 286558 0 10 11 13 169 1457 214283
+482	826826 469 286558 286558 0 11 26 10 260 3510 620100
+483	827295 5795 28621 283009 1.022007050902 1.559852853224 192 1 192 18528 2377760
+484	833090 7880 39647 283009 1.036405924736 1.559852853224 191 0.000964046841 0.01883259608 0.537845802322 0.0031360031246366
+485	840970 206 39647 128610 1.036405924736 1.15619853135 5 0.003304099899 0.048915451062 0.15619853135 0.0060358685305795
+490	841176 180 286558 286558 0 9 10 110 166 1513 231189
+491	841356 469 286558 286558 0 10 26 10 260 3510 620100
+492	841825 6239 28369 283270 1.022006996429 1.559852909331 206 1 206 21321 2935191
+493	848064 8463 40194 283270 1.037508256 1.559852909331 205 0.000964091924 0.018832594051 0.537845912902 0.0028565513423918
+494	856527 248 28369 128826 1.022006996429 1.156198564677 6 0.000775193667 0.094220284502 0.156198564677 0.010348476324237
+499	856775 178 286558 286558 0 9 10 80 166 1333 185645
+500	856953 469 286558 286558 0 10 26 10 260 3510 620100
+501	857422 6009 28384 283228 1.02200700192 1.559852897391 199 1 199 19900 2646700
+502	863431 8173 40170 283228 1.037508252715 1.559852897391 198 0.000964080056 0.018832565389 0.537845895471 0.0029019335855778
+503	871604 286 28384 128784 1.02200700192 1.156198557605 7 0.000775175728 0.094220298854 0.156198557605 0.010320823582742
+508	871890 180 286558 286558 0 9 10 100 164 1399 199705
+509	872070 469 286558 286558 0 10 26 10 260 3510 620100
+510	872539 6421 28408 283243 1.022007006581 1.559852900006 212 1 212 22578 3198550
+511	878960 8741 32937 283243 1.028438530466 1.559852900006 211 0.000964094904 0.018832608317 0.537845893425 0.0028092316932918
+512	887701 248 28408 128760 1.022007006581 1.156198553616 6 0.000775204912 0.094220280632 0.156198553616 0.010348475968135
+517	887949 180 286558 286558 0 9 10 105 164 1433 208241
+518	888129 469 286558 286558 0 10 26 10 260 3510 620100
+519	888598 5755 28519 283108 1.022007028717 1.559852874879 190 1 190 18145 2304415
+520	894353 7830 39561 283108 1.036405912426 1.559852874879 189 0.000964073756 0.018832590424 0.537845846162 0.003110653536829
+521	902183 166 39561 128637 1.036405912426 1.156198536756 4 0.001102344823 0.088351917382 0.156198536756 0.010053083145182
+526	902349 179 286558 286558 0 9 10 80 166 1339 187181
+527	902528 469 286558 286558 0 10 26 10 260 3510 620100
+528	902997 6136 28345 283297 1.022006982432 1.559852920296 203 1 203 20706 2809114
+529	909133 8368 40251 283297 1.037508262225 1.559852920296 202 0.000964087608 0.018832571857 0.537845937864 0.0028770983793025
+530	917501 289 28345 128889 1.022006982432 1.156198577305 7 0.000775169512 0.094220290656 0.156198577305 0.0098898254293118
+535	917790 178 286558 286558 0 9 10 41 166 1249 170813
+536	917968 469 286558 286558 0 10 26 10 260 3510 620100
+537	918437 6235 28342 283300 1.022006975052 1.559852921155 206 1 206 21321 2935191
+538	924672 8509 40278 283300 1.037508265676 1.559852921155 205 0.000964086997 0.018832569877 0.537845946103 0.0028543567725424
+539	933181 245 28342 128892 1.022006975052 1.156198578772 6 0.000775172096 0.09422029121 0.156198578772 0.0103484767881
+544	933426 180 286558 286558 0 9 10 105 166 1439 209835
+545	933606 469 286558 286558 0 10 26 10 260 3510 620100
+546	934075 5958 28687 283078 1.02200706909 1.559852867114 197 1 197 19503 2567895
+547	940033 8107 40476 283078 1.037508308601 1.559852867114 196 0.000964022658 0.018832558846 0.537845798024 0.0030235161450083
+548	948140 204 61410 128850 1.06019544815 1.15619856753 5 0.013501683619 0.06019544815 0.15619856753 0.0061624997951164
+553	948344 180 286558 286558 0 9 10 105 161 1390 196564
+554	948524 469 286558 286558 0 10 26 10 260 3510 620100
+555	948993 5889 28690 282952 1.022007070278 1.559852833834 195 1 195 19110 2490670
+556	954882 8019 39733 282952 1.036405941806 1.559852833834 194 0.000964011652 0.018832596789 0.537845763556 0.0029430738494941
+557	962901 208 44411 128661 1.042015352489 1.156198542203 5 0.012686389123 0.050418053892 0.156198542203 0.0058971561712888
+562	963109 179 286558 286558 0 9 10 97 164 1347 185419
+563	963288 469 286558 286558 0 10 26 10 260 3510 620100
+564	963757 6299 28444 283216 1.022007016834 1.559852894789 208 1 208 21736 3021304
+565	970056 8552 32945 283216 1.028438535287 1.559852894789 207 0.000964097433 0.018832623061 0.537845877955 0.0026677551861949
+566	978608 208 32945 128700 1.028438535287 1.156198547616 5 0.003201356101 0.082813389328 0.156198547616 0.0087275908467835
+571	978816 180 286558 286558 0 9 10 100 151 1297 170627
+572	978996 470 286558 286558 0 10 26 10 260 3510 620100
+573	979466 5775 28618 283081 1.022007050567 1.559852868617 191 1 191 18336 2340896
+574	985241 7861 40416 283081 1.037508293138 1.559852868617 190 0.000964036917 0.022687147368 0.53784581805 0.0032815710295776
+575	993102 204 61368 128787 1.060195440506 1.156198558137 5 0.012304680341 0.060195440506 0.156198558137 0.0061807422261007
+580	993306 180 286558 286558 0 9 10 118 164 1429 206723
+581	993486 469 286558 286558 0 10 26 10 260 3510 620100
+582	993955 5937 28498 283096 1.022007026017 1.559852872358 196 1 196 19306 2529086
+583	999892 8068 39535 283096 1.036405909601 1.559852872358 195 0.000964074264 0.021554103401 0.537845846341 0.0032240669774211
+584	1007960 205 39535 128631 1.036405909601 1.156198534867 5 0.001102352654 0.045281577842 0.156198534867 0.0061524964919603
+589	1008165 180 286558 286558 0 9 10 100 169 1333 182179
+590	1008345 469 286558 286558 0 10 26 10 260 3510 620100
+591	1008814 6287 28354 283276 1.02200698681 1.559852909819 208 1 208 21736 3021304
+592	1015101 8559 40197 283276 1.037508256611 1.559852909819 207 0.0009640852 0.018832569686 0.537845923009 0.002822137515478
+593	1023660 246 28354 128853 1.02200698681 1.156198567963 6 0.000775173167 0.094220293524 0.156198567963 0.010348477575242
+598	1023906 179 286558 286558 0 9 10 69 169 1393 202069
+599	1024085 469 286558 286558 0 10 26 10 260 3510 620100
+600	1024554 5725 28633 283183 1.022007054091 1.559852886434 190 1 190 18145 2304415
+601	1030279 7799 40452 283183 1.037508302449 1.559852886434 189 0.000964038168 0.022687150858 0.537845832343 0.0032164013477056
+602	1038078 206 61467 128883 1.060195453307 1.156198574912 5 0.008590414955 0.060195453307 0.156198574912 0.0063947788270609
+607	1038284 179 286558 286558 0 9 10 92 164 1356 188544
+608	1038463 469 286558 286558 0 10 26 10 260 3510 620100
+609	1038932 6017 28615 283012 1.022007049847 1.559852853742 199 1 199 19900 2646700
+610	1044949 8176 39666 283012 1.036405929108 1.559852853742 198 0.0009640409 0.018832581936 0.537845803895 0.0030563723815126
+611	1053125 205 44431 128643 1.042015354472 1.156198537443 5 0.003304096115 0.043306023783 0.156198537443 0.0059584580743077
+616	1053330 180 286558 286558 0 9 10 113 169 1451 214273
+617	1053510 469 286558 286558 0 10 26 10 260 3510 620100
+618	1053979 5866 28639 283000 1.022007055645 1.559852851388 194 1 194 18915 2452645
+619	1059845 7974 39659 283000 1.036405928401 1.559852851388 193 0.000964041839 0.018832598641 0.537845795743 0.0031440220692413
+620	1067819 204 44385 128622 1.04201534586 1.156198533483 5 0.00330410058 0.043306034281 0.156198533483 0.0059584574999133
+625	1068023 179 286558 286558 0 9 10 92 169 1417 205601
+626	1068202 469 286558 286558 0 10 26 10 260 3510 620100
+627	1068671 6032 28609 283051 1.022007048653 1.559852861351 200 1 200 20100 2686700
+628	1074703 8206 39696 283051 1.036405934478 1.559852861351 199 0.000964040678 0.019539135362 0.537845812698 0.0030917183284186
+629	1082909 247 44484 128694 1.042015363791 1.156198545949 6 0.001040382274 0.050418029169 0.156198545949 0.0057642708474092
+634	1083156 198 286558 286558 0 10 11 13 169 1472 216046
+635	1083354 469 286558 286558 0 11 26 10 260 3510 620100
+636	1083823 5833 28555 283048 1.022007038521 1.559852859831 193 1 193 18721 2415009
+637	1089656 7930 39590 283048 1.036405916554 1.559852859831 192 0.000964058487 0.018832587687 0.53784582131 0.0031272129935945
+638	1097586 207 39590 128595 1.036405916554 1.156198529702 5 0.001102352493 0.045281571052 0.156198529702 0.0061524961563086
+643	1097793 179 286558 286558 0 9 10 87 169 1382 196470
+644	1097972 469 286558 286558 0 10 26 10 260 3510 620100
+645	1098441 5964 28573 283075 1.022007040556 1.559852867019 198 1 198 19701 2607099
+646	1104405 8117 39504 283075 1.036405903293 1.559852867019 197 0.00096409384 0.018832635406 0.537845826463 0.0028398183367722
+647	1112522 166 39504 128547 1.036405903293 1.156198519407 4 0.001102359619 0.088351885673 0.156198519407 0.010053077437417
+652	1112688 180 286558 286558 0 9 10 102 169 1388 196660
+653	1112868 469 286558 286558 0 10 26 10 260 3510 620100
+654	1113337 6337 28375 283285 1.022006997435 1.559852914787 209 1 209 21945 3064985
+655	1119674 8602 40191 283285 1.037508254805 1.559852914787 208 0.000964089341 0.018832582612 0.537845917352 0.0028376223226527
+656	1128276 288 28375 128868 1.022006997435 1.156198570686 7 0.000775175686 0.094220288065 0.156198570686 0.0098898255032063
+661	1128564 179 286558 286558 0 9 10 87 169 1377 194985
+662	1128743 469 286558 286558 0 10 26 10 260 3510 620100
+663	1129212 6015 28540 283039 1.022007037743 1.559852858954 199 1 199 19900 2646700
+664	1135227 8189 39538 283039 1.036405909761 1.559852858954 198 0.000964066529 0.018832601 0.537845821211 0.0027660712408405
+665	1143416 206 39538 128553 1.036405909761 1.156198521658 5 0.00110235638 0.045281562105 0.156198521658 0.0061524951839075
+670	1143622 179 286558 286558 0 9 10 80 166 1430 209918
+671	1143801 469 286558 286558 0 10 26 10 260 3510 620100
+672	1144270 6261 28492 283267 1.022007025743 1.559852907565 207 1 207 21528 2978040
+673	1150531 8517 37696 283267 1.033958831959 1.559852907565 206 0.000964101908 0.018832634263 0.537845881822 0.0028573272077175
+674	1159048 205 37696 128799 1.033958831959 1.15619855955 5 0.003549427765 0.058591369066 0.15619855955 0.0064048569255454
+679	1159253 180 286558 286558 0 9 10 123 166 1465 216981
+680	1159433 469 286558 286558 0 10 26 10 260 3510 620100
+681	1159902 5809 28564 283156 1.022007039932 1.559852882268 192 1 192 18528 2377760
+682	1165711 7889 40404 283156 1.037508285713 1.559852882268 191 0.000964048508 0.022687158828 0.537845842336 0.0032428190446174
+683	1173600 165 61389 128817 1.060195444541 1.156198562413 4 0.030053814509 0.060195444541 0.156198562413 0.0067152787309419
+688	1173765 178 286558 286558 0 9 10 64 161 1303 179301
+689	1173943 469 286558 286558 0 10 26 10 260 3510 620100
+690	1174412 5947 28597 283003 1.022007046086 1.55985285174 197 1 197 19503 2567895
+691	1180359 8094 39576 283003 1.03640591394 1.55985285174 196 0.000964061475 0.018832610878 0.537845805654 0.0028229606664172
+692	1188453 164 39576 128538 1.03640591394 1.156198516182 4 0.027473327847 0.061980923868 0.156198516182 0.0068422247490254
+697	1188617 179 286558 286558 0 9 10 80 164 1354 189058
+698	1188796 469 286558 286558 0 10 26 10 260 3510 620100
+699	1189265 6420 28438 283240 1.022007013261 1.559852899359 212 1 212 22578 3198550
+700	1195685 8718 32940 283240 1.028438534226 1.559852899359 211 0.00096409717 0.018832618783 0.537845886098 0.0026835699386247
+701	1204403 208 32940 128754 1.028438534226 1.156198552383 5 0.003201361209 0.082813382439 0.156198552383 0.0087275898459741
+706	1204611 179 286558 286558 0 9 10 77 169 1383 199457
+707	1204790 469 286558 286558 0 10 26 10 260 3510 620100
+708	1205259 5890 28606 283033 1.022007047777 1.559852857688 195 1 195 19110 2490670
+709	1211149 8021 39650 283033 1.036405926344 1.559852857688 194 0.000964047142 0.018832586197 0.537845809911 0.0031274918334716
+710	1219170 205 39650 128634 1.036405926344 1.156198536182 5 0.00330409794 0.048915449662 0.156198536182 0.006035868982219
+715	1219375 180 286558 286558 0 9 10 123 161 1466 216450
+716	1219555 469 286558 286558 0 10 26 10 260 3510 620100
+717	1220024 5921 28549 283144 1.022007038388 1.559852878277 196 1 196 19306 2529086
+718	1225945 8064 39516 283144 1.036405904824 1.559852878277 195 0.000964100841 0.022521299697 0.537845839889 0.0032258866646694
+719	1234009 207 39516 128613 1.036405904824 1.156198531403 5 0.001102356579 0.088351880984 0.156198531403 0.0098085743146901
+724	1234216 178 286558 286558 0 9 10 74 166 1383 200647
+725	1234394 469 286558 286558 0 10 26 10 260 3510 620100
+726	1234863 6090 28489 283129 1.022007025673 1.559852877275 202 1 202 20503 2767905
+727	1240953 8297 32970 283129 1.028438543686 1.559852877275 201 0.000964093498 0.018832622582 0.537845851602 0.0027312525923888
+728	1249250 246 32970 128598 1.028438543686 1.156198529778 6 0.001156107765 0.088351906692 0.156198529778 0.0095751844541959
+733	1249496 180 286558 286558 0 9 10 133 169 1546 240606
+734	1249676 469 286558 286558 0 10 26 10 260 3510 620100
+735	1250145 6398 28387 283273 1.022007002994 1.55985290936 211 1 211 22366 3153606
+736	1256543 8683 37683 283273 1.033958831285 1.55985290936 210 0.000964096049 0.018832606682 0.537845906366 0.0027470944443008
+737	1265226 290 28387 128820 1.022007002994 1.156198562817 7 0.000775198916 0.094220278863 0.156198562817 0.0098898239275907
+742	1265516 179 286558 286558 0 9 10 77 169 1370 194868
+743	1265695 469 286558 286558 0 10 26 10 260 3510 620100
+744	1266164 5867 28570 283018 1.022007040423 1.55985285602 194 1 194 18915 2452645
+745	1272031 7984 39585 283018 1.036405915375 1.55985285602 193 0.000964058159 0.018832593442 0.537845815597 0.0030503865054262
+746	1280015 206 39585 128571 1.036405915375 1.156198525628 5 0.016699362582 0.045281566783 0.156198525628 0.0053298790798448
+751	1280221 176 286558 286558 0 9 10 72 159 1211 156487
+752	1280397 470 286558 286558 0 10 26 10 260 3510 620100
+753	1280867 6172 28477 283111 1.022007023399 1.559852874908 204 1 204 20910 2850730
+754	1287039 8395 32991 283111 1.028438546109 1.559852874908 203 0.000964084975 0.019043175356 0.537845851509 0.0028599110508242
+755	1295434 248 32991 128601 1.028438546109 1.156198530262 6 0.001156100185 0.088351913616 0.156198530262 0.0095751854357352
+760	1295682 180 286558 286558 0 9 10 102 169 1401 200359
+761	1295862 469 286558 286558 0 10 26 10 260 3510 620100
+762	1296331 5627 28456 283207 1.022007020613 1.559852893519 186 1 186 17391 2162281
+763	1301958 7653 40359 283207 1.037508277629 1.559852893519 185 0.000964061372 0.023855999998 0.537845872906 0.003351095886611
+764	1309611 165 48867 128838 1.046502810952 1.156198565809 4 0.019643778128 0.059713617124 0.156198565809 0.0070345215791335
+769	1309776 177 286558 286558 0 9 10 26 166 1287 185495
+770	1309953 469 286558 286558 0 10 26 10 260 3510 620100
+771	1310422 6179 28486 283135 1.022007024606 1.559852877362 204 1 204 20910 2850730
+772	1316601 8410 32982 283135 1.028438545194 1.559852877362 203 0.000964090245 0.018832618527 0.537845852756 0.0027267006286721
+773	1325011 247 32982 128607 1.028438545194 1.156198531323 6 0.001156101299 0.088351906679 0.156198531323 0.0095751844939301
+778	1325258 179 286558 286558 0 9 10 69 169 1427 211293
+779	1325437 469 286558 286558 0 10 26 10 260 3510 620100
+780	1325906 5595 28522 283102 1.02200703235 1.559852874198 185 1 185 17205 2127685
+781	1331501 7613 40347 283102 1.037508272939 1.559852874198 184 0.000964055899 0.022687167047 0.537845841848 0.0033745348885451
+782	1339114 163 61365 128709 1.060195439986 1.156198548408 4 0.02038315769 0.060195439986 0.156198548408 0.0070098027718457
+787	1339277 180 286558 286558 0 9 10 100 169 1389 197105
+788	1339457 469 286558 286558 0 10 26 10 260 3510 620100
+789	1339926 6090 28588 283045 1.022007044672 1.559852859096 201 1 201 20301 2727101
+790	1346016 8279 39579 283045 1.036405914562 1.559852859096 200 0.000964065362 0.018832608919 0.537845814424 0.0028715874604726
+791	1354295 166 39579 128565 1.036405914562 1.156198523649 4 0.001102354665 0.088351898238 0.156198523649 0.010053079579108
+796	1354461 180 286558 286558 0 9 10 105 169 1432 209328
+797	1354641 469 286558 286558 0 10 26 10 260 3510 620100
+798	1355110 5716 28651 283123 1.022007057432 1.559852876866 189 1 189 17955 2268315
+799	1360826 7773 40461 283123 1.037508303883 1.559852876866 188 0.000964033146 0.022687147944 0.537845819434 0.0032510616254849
+800	1368599 207 61446 128862 1.060195451827 1.156198570086 5 0.012304679333 0.060195451827 0.156198570086 0.0061807436399166
+805	1368806 180 286558 286558 0 9 10 105 166 1379 193697
+806	1368986 469 286558 286558 0 10 26 10 260 3510 620100
+807	1369455 5656 28423 283219 1.022007010722 1.559852894834 187 1 187 17578 2197250
+808	1375111 7706 40305 283219 1.0375082674 1.559852894834 186 0.000964069307 0.022687197014 0.537845884112 0.0034041101275681
+809	1382817 161 40305 128814 1.0375082674 1.156198561734 4 0.028638312376 0.059713619428 0.156198561734 0.006713155645289
+814	1382978 178 286558 286558 0 9 10 72 161 1258 167330
+815	1383156 469 286558 286558 0 10 26 10 260 3510 620100
+816	1383625 5957 28501 283090 1.022007026554 1.559852871379 197 1 197 19503 2567895
+817	1389582 8104 39492 283090 1.036405902454 1.559852871379 196 0.000964079074 0.018832599362 0.537845844825 0.0029663536086506
+818	1397686 165 39492 128586 1.036405902454 1.156198529117 4 0.001102351469 0.088351912844 0.156198529117 0.010053081645525
+823	1397851 180 286558 286558 0 9 10 113 169 1520 234194
+824	1398031 469 286558 286558 0 10 26 10 260 3510 620100
+825	1398500 5694 28417 283258 1.022007009981 1.559852905563 189 1 189 17955 2268315
+826	1404194 7760 40293 283258 1.037508266498 1.559852905563 188 0.000964074298 0.018832553308 0.537845895582 0.0030016249627965
+827	1411954 287 28417 185907 1.022007009981 1.250598745032 7 0.00077516792 0.09440017571 0.250598745032 0.019259872804987
+832	1412241 179 286558 286558 0 9 10 97 169 1421 207417
+833	1412420 469 286558 286558 0 10 26 10 260 3510 620100
+834	1412889 5837 28603 282991 1.022007046909 1.559852850288 193 1 193 18721 2415009
+835	1418726 7932 39634 282991 1.036405922519 1.559852850288 192 0.000964046906 0.018832590022 0.537845803379 0.0030824129965989
+836	1426658 247 39634 265146 1.036405922519 1.434356496185 6 0.003304099468 0.278157966801 0.434356496185 0.083407722910387
+841	1426905 180 286558 286558 0 9 10 100 169 1402 200714
+842	1427085 469 286558 286558 0 10 26 10 260 3510 620100
+843	1427554 6354 28348 283279 1.022006984773 1.559852913458 210 1 210 22155 3109085
+844	1433908 8649 40218 283279 1.037508259534 1.559852913458 209 0.000964087991 0.018832577366 0.537845928685 0.002823715776661
+845	1442557 246 28348 128865 1.022006984773 1.156198570571 6 0.000775180784 0.094220290027 0.156198570571 0.010348476870034
+850	1442803 180 286558 286558 0 9 10 100 166 1379 194625
+851	1442983 469 286558 286558 0 10 26 10 260 3510 620100
+852	1443452 5898 28663 283054 1.022007060438 1.559852861474 195 1 195 19110 2490670
+853	1449350 8020 40443 283054 1.037508299873 1.559852861474 194 0.000964027504 0.018832560342 0.537845801036 0.0030616449934304
+854	1457370 206 61380 128790 1.060195441889 1.156198558564 5 0.012304688665 0.060195441889 0.156198558564 0.0061807421342655
+859	1457576 180 286558 286558 0 9 10 113 169 1498 226976
+860	1457756 469 286558 286558 0 10 26 10 260 3510 620100
+861	1458225 5992 28525 283231 1.022007033426 1.559852897772 198 1 198 19701 2607099
+862	1464217 8144 39598 283231 1.03640591825 1.559852897772 197 0.00096409922 0.01883264216 0.537845864346 0.0030382032669906
+863	1472361 247 39598 158827 1.03640591825 1.201052532117 6 0.001102347757 0.088351898144 0.201052532117 0.011820456875894
+868	1472608 180 286558 286558 0 9 10 108 169 1432 210078
+869	1472788 469 286558 286558 0 10 26 10 260 3510 620100
+870	1473257 6151 28552 283072 1.022007038444 1.559852865282 203 1 203 20706 2809114
+871	1479408 8360 39498 283072 1.036405903228 1.559852865282 202 0.000964085253 0.018832623352 0.537845826838 0.0027849811183318
+872	1487768 166 39498 128541 1.036405903228 1.156198518693 4 0.001102358015 0.088351894335 0.156198518693 0.01005307849212
+877	1487934 180 286558 286558 0 9 10 108 169 1443 211621
+878	1488114 469 286558 286558 0 10 26 10 260 3510 620100
+879	1488583 5867 28672 283024 1.022007061568 1.55985285707 194 1 194 18915 2452645
+880	1494450 7972 40449 283024 1.037508301199 1.55985285707 193 0.000964026751 0.018832564778 0.537845795502 0.0031269227753926
+881	1502422 206 61425 128775 1.060195449312 1.156198556775 5 0.01230468637 0.060195449312 0.156198556775 0.006180742597204
+886	1502628 179 286558 286558 0 9 10 97 166 1451 215537
+887	1502807 469 286558 286558 0 10 26 10 260 3510 620100
+888	1503276 5963 28645 282976 1.022007056408 1.559852846886 197 1 197 19503 2567895
+889	1509239 8106 39629 282976 1.036405922322 1.559852846886 196 0.000964050997 0.018832616281 0.537845790478 0.0028745206485792
+890	1517345 166 39629 128559 1.036405922322 1.156198521887 4 0.013125422355 0.076328824106 0.156198521887 0.0082441729505803
+895	1517511 180 286558 286558 0 9 10 120 166 1447 211291
+896	1517691 469 286558 286558 0 10 26 10 260 3510 620100
+897	1518160 6377 28396 283291 1.022007004771 1.559852916109 211 1 211 22366 3153606
+898	1524537 8683 37686 283291 1.033958831322 1.559852916109 210 0.000964097175 0.018832605538 0.537845911338 0.0028057773648318
+899	1533220 288 28396 128856 1.022007004771 1.156198568757 7 0.000775191141 0.09422027802 0.156198568757 0.0098898239129759
+904	1533508 179 286558 286558 0 9 10 97 166 1345 185337
+905	1533687 469 286558 286558 0 10 26 10 260 3510 620100
+906	1534156 6326 28360 283294 1.022006992798 1.559852918017 209 1 209 21945 3064985
+907	1540482 8609 40209 283294 1.037508258701 1.559852918017 208 0.000964088311 0.018832577045 0.537845925219 0.0029155477578906
+908	1549091 290 28360 128880 1.022006992798 1.156198574486 7 0.000775171315 0.094220289418 0.156198574486 0.0098898256096771
+913	1549381 179 286558 286558 0 9 10 69 166 1355 192713
+914	1549560 469 286558 286558 0 10 26 10 260 3510 620100
+915	1550029 5764 28627 283159 1.022007051699 1.559852883668 191 1 191 18336 2340896
+916	1555793 7836 40446 283159 1.037508300234 1.559852883668 190 0.000964038735 0.022687151571 0.537845831969 0.0032658732283308
+917	1563629 247 61443 128874 1.060195451805 1.156198571983 6 0.001196985966 0.060195451805 0.156198571983 0.0063770787023981
+922	1563876 180 286558 286558 0 9 10 110 164 1400 198884
+923	1564056 469 286558 286558 0 10 26 10 260 3510 620100
+924	1564525 5795 28657 282973 1.022007059289 1.559852846459 192 1 192 18528 2377760
+925	1570320 7886 39724 282973 1.03640593961 1.559852846459 191 0.000964028458 0.018832578799 0.53784578717 0.0031084844433689
+926	1578206 206 44481 128685 1.042015363526 1.15619854531 5 0.012304688917 0.050418042063 0.15619854531 0.0058252337382028
+931	1578412 180 286558 286558 0 9 10 105 169 1423 205093
+932	1578592 469 286558 286558 0 10 26 10 260 3510 620100
+933	1579061 6212 28483 283222 1.022007024503 1.559852896421 205 1 205 21115 2892755
+934	1585273 8442 37666 283222 1.033958823701 1.559852896421 204 0.000964100738 0.018832632001 0.537845871918 0.002900266639397
+935	1593715 165 37666 128712 1.033958823701 1.156198548411 4 0.003549426139 0.088351914139 0.156198548411 0.0098922784350409
+940	1593880 179 286558 286558 0 9 10 97 156 1315 177623
+941	1594059 470 286558 286558 0 10 26 10 260 3510 620100
+942	1594529 6077 28600 283006 1.022007046365 1.559852852602 201 1 201 20301 2727101
+943	1600606 8268 39570 283006 1.036405913747 1.559852852602 200 0.000964062275 0.018832611588 0.537845806237 0.0028511753406629
+944	1608874 165 39570 128535 1.036405913747 1.156198515807 4 0.01312542734 0.076328824108 0.156198515807 0.0082441723061783
+949	1609039 179 286558 286558 0 9 10 97 166 1414 203508
+950	1609218 469 286558 286558 0 10 26 10 260 3510 620100
+951	1609687 5581 28513 283165 1.022007027678 1.559852884364 185 1 185 17205 2127685
+952	1615268 7606 40377 283165 1.037508280322 1.559852884364 184 0.000964056678 0.022687177366 0.537845856686 0.0032405451713794
+953	1622874 204 61500 128811 1.060195457688 1.156198560201 5 0.00124136866 0.060195457688 0.156198560201 0.0079998692088249
+958	1623078 179 286558 286558 0 9 10 80 166 1374 195240
+959	1623257 469 286558 286558 0 10 26 10 260 3510 620100
+960	1623726 6203 28351 283312 1.022006985496 1.559852926584 205 1 205 21115 2892755
+961	1629929 8431 40296 283312 1.037508266564 1.559852926584 204 0.000964089122 0.018832574508 0.537845941088 0.0029023857386988
+962	1638360 289 28351 128901 1.022006985496 1.156198582886 7 0.000775169898 0.094220288743 0.156198582886 0.0098898252303153
+967	1638649 179 286558 286558 0 9 10 90 166 1441 212749
+968	1638828 469 286558 286558 0 10 26 10 260 3510 620100
+969	1639297 5713 28507 283099 1.022007026611 1.55985287296 189 1 189 17955 2268315
+970	1645010 7771 39604 283099 1.036405919573 1.55985287296 188 0.00096406326 0.022687180999 0.537845846349 0.0032470243477494
+971	1652781 204 39604 128658 1.036405919573 1.15619854195 5 0.001102345956 0.05971359363 0.15619854195 0.0066328890225556
+976	1652985 179 286558 286558 0 9 10 90 166 1439 211843
+977	1653164 469 286558 286558 0 10 26 10 260 3510 620100
+978	1653633 5898 28699 282970 1.02200707461 1.559852845604 195 1 195 19110 2490670
+979	1659531 8020 39771 282970 1.036405950336 1.559852845604 194 0.000964011737 0.018832586799 0.537845770994 0.0030586043381918
+980	1667551 208 44476 128757 1.042015363042 1.156198552817 5 0.012686377987 0.050418045204 0.156198552817 0.0058971568736789
+985	1667759 180 286558 286558 0 9 10 110 166 1491 225243
+986	1667939 469 286558 286558 0 10 26 10 260 3510 620100
+987	1668408 6269 28363 283288 1.022006993504 1.55985291604 207 1 207 21528 2978040
+988	1674677 8524 40242 283288 1.03750826153 1.55985291604 206 0.000964092277 0.018832591801 0.537845922536 0.0030603165396962
+989	1683201 289 28363 128871 1.022006993504 1.156198571428 7 0.000775189878 0.094220283976 0.156198571428 0.0098898245178288
+994	1683490 180 286558 286558 0 9 10 123 169 1494 225422
+995	1683670 469 286558 286558 0 10 26 10 260 3510 620100
+996	1684139 5759 28675 282958 1.022007062211 1.559852838547 191 1 191 18336 2340896
+997	1689898 7834 39699 282958 1.036405934934 1.559852838547 190 0.000964032713 0.018832598911 0.537845776336 0.0030370335094851
+998	1697732 163 44447 128640 1.04201535646 1.15619853717 4 0.021863901127 0.061980927617 0.15619853717 0.0070053713392288
+1003	1697895 189 286558 286558 0 9 10 77 166 1338 186662
+1004	1698084 495 286558 286558 0 10 26 10 260 3510 620100
+1005	1698579 6254 28624 283015 1.022007051027 1.559852854582 200 1 200 20100 2686700
+1006	1704833 8418 39622 283015 1.036405921735 1.559852854582 199 0.000964053538 0.018832605494 0.537845803555 0.002832729849548
+1007	1713251 169 39622 128580 1.036405921735 1.156198527742 4 0.013125415494 0.076328835963 0.156198527742 0.0082441746255331
+1012	1713420 190 286558 286558 0 9 10 100 169 1448 215044
+1013	1713610 495 286558 286558 0 10 26 10 260 3510 620100
+1014	1714105 6372 28462 283174 1.022007021013 1.55985288597 204 1 204 20910 2850730
+1015	1720477 8578 32959 283174 1.028438541655 1.55985288597 203 0.000964093544 0.018832621473 0.537845864957 0.002733135686896
+1016	1729055 206 32959 128652 1.028438541655 1.15619854 5 0.001156110908 0.094220278956 0.15619854 0.010612148339159
+1021	1729261 190 286558 286558 0 9 10 105 164 1411 202265
+1022	1729451 495 286558 286558 0 10 26 10 260 3510 620100
+1023	1729946 5898 28453 283150 1.022007019835 1.55985287924 189 1 189 17955 2268315
+1024	1735844 7965 39593 283150 1.036405917447 1.55985287924 188 0.000964069602 0.022687192539 0.537845859405 0.0033708850343654
+1025	1743809 212 39593 128682 1.036405917447 1.156198544429 5 0.001102342177 0.059713597927 0.156198544429 0.0066328896170068
+1030	1744021 190 286558 286558 0 9 10 133 161 1500 226186
+1031	1744211 495 286558 286558 0 10 26 10 260 3510 620100
+1032	1744706 5831 28528 283177 1.022007033702 1.559852886192 187 1 187 17578 2197250
+1033	1750537 7858 40410 283177 1.03750828662 1.559852886192 186 0.000964051543 0.022687168833 0.53784585249 0.0032981215103193
+1034	1758395 211 61479 128835 1.060195455453 1.156198565493 5 0.001241368015 0.060195455453 0.156198565493 0.0079998689176043
+1039	1758606 189 286558 286558 0 9 10 95 166 1433 209987
+1040	1758795 495 286558 286558 0 10 26 10 260 3510 620100
+1041	1759290 5850 28678 283114 1.022007066116 1.559852875191 188 1 188 17766 2232594
+1042	1765140 7898 40482 283114 1.037508311618 1.559852875191 187 0.000964027103 0.022687145822 0.537845809075 0.0033089351207573
+1043	1773038 209 61497 128877 1.06019545744 1.156198573875 5 0.008590438452 0.06019545744 0.156198573875 0.0063947781834034
+1048	1773247 189 286558 286558 0 9 10 41 169 1432 218444
+1049	1773436 495 286558 286558 0 10 26 10 260 3510 620100
+1050	1773931 5937 28582 283027 1.022007041321 1.559852857301 190 1 190 18145 2304415
+1051	1779868 8010 39547 283027 1.03640591039 1.559852857301 189 0.000964068372 0.021554095766 0.53784581598 0.0031884176616724
+1052	1787878 166 39547 128544 1.03640591039 1.1561985192 4 0.027473326209 0.061980927494 0.1561985192 0.0068422251279258
+1057	1788044 189 286558 286558 0 9 10 85 166 1373 195207
+1058	1788233 495 286558 286558 0 10 26 10 260 3510 620100
+1059	1788728 6030 28648 282997 1.022007056609 1.559852851119 193 1 193 18721 2415009
+1060	1794758 8125 39640 282997 1.036405924347 1.559852851119 192 0.000964050438 0.018832613001 0.53784579451 0.0029382839567678
+1061	1802883 169 39640 128577 1.036405924347 1.156198527146 4 0.013125417599 0.076328830044 0.156198527146 0.0082441740041651
+1066	1803052 190 286558 286558 0 9 10 110 169 1430 207590
+1067	1803242 495 286558 286558 0 10 26 10 260 3510 620100
+1068	1803737 6024 28576 283087 1.022007040793 1.559852870788 193 1 193 18721 2415009
+1069	1809761 8123 39513 283087 1.036405904195 1.559852870788 192 0.000968268857 0.018832641984 0.537845829995 0.0029231710618296
+1070	1817884 170 39513 128568 1.036405904195 1.156198523875 4 0.001102358307 0.088351883005 0.156198523875 0.010053077486622
+1075	1818054 189 286558 286558 0 9 10 90 169 1384 196102
+1076	1818243 495 286558 286558 0 10 26 10 260 3510 620100
+1077	1818738 6034 28693 282994 1.022007072523 1.55985285102 193 1 193 18721 2415009
+1078	1824772 8136 40473 282994 1.037508305439 1.55985285102 192 0.000964015092 0.018832577718 0.537845778497 0.0031494008588311
+1079	1832908 254 44506 128772 1.042015368408 1.156198556536 6 0.012686370487 0.05041803909 0.156198556536 0.0053393275969557
+1084	1833162 190 286558 286558 0 9 10 102 169 1413 204467
+1085	1833352 495 286558 286558 0 10 26 10 260 3510 620100
+1086	1833847 5770 28450 283192 1.022007019526 1.559852887389 185 1 185 17205 2127685
+1087	1839617 7792 40302 283192 1.037508267101 1.559852887389 184 0.000964065496 0.018832545968 0.537845867863 0.0032340118747622
+1088	1847409 211 40302 128769 1.037508267101 1.156198555939 5 0.003323218999 0.056390388007 0.156198555939 0.0063383593115887
+1093	1847620 190 286558 286558 0 9 10 105 169 1394 199238
+1094	1847810 495 286558 286558 0 10 26 10 260 3510 620100
+1095	1848305 5837 28432 283234 1.022007012365 1.559852898339 187 1 187 17578 2197250
+1096	1854142 7880 40308 283234 1.037508267679 1.559852898339 186 0.000964069758 0.018832542975 0.537845885974 0.0031280528198544
+1097	1862022 212 40308 128829 1.037508267679 1.156198564723 5 0.003323210929 0.056390401231 0.156198564723 0.0063383609766419
+1102	1862234 190 286558 286558 0 9 10 113 169 1438 210708
+1103	1862424 495 286558 286558 0 10 26 10 260 3510 620100
+1104	1862919 6440 28372 283303 1.022006996494 1.559852922604 206 1 206 21321 2935191
+1105	1869359 8679 40227 283303 1.037508259918 1.559852922604 205 0.000964092542 0.018832588008 0.53784592611 0.0029290297702832
+1106	1878038 297 28372 128886 1.022006996494 1.156198577156 7 0.000775177764 0.094220284333 0.156198577156 0.0098898248114403
+1111	1878335 190 286558 286558 0 9 10 115 169 1372 190574
+1112	1878525 495 286558 286558 0 10 26 10 260 3510 620100
+1113	1879020 5924 28429 283198 1.022007011231 1.559852889859 190 1 190 18145 2304415
+1114	1884944 8008 40185 283198 1.037508254031 1.559852889859 189 0.000964076189 0.018832565979 0.537845878628 0.0031324069527621
+1115	1892952 212 40185 128745 1.037508254031 1.156198551734 5 0.003323214175 0.056390386995 0.156198551734 0.0063383590421113
+1120	1893164 189 286558 286558 0 9 10 90 164 1362 191688
+1121	1893353 495 286558 286558 0 10 26 10 260 3510 620100
+1122	1893848 6610 28405 283249 1.022007006259 1.559852900975 211 1 211 22366 3153606
+1123	1900458 8901 37657 283249 1.033958818416 1.559852900975 210 0.000964095855 0.018832607808 0.537845894716 0.0026226441003683
+1124	1909359 297 28405 128763 1.022007006259 1.156198553883 7 0.000775201169 0.094220280582 0.156198553883 0.0098898243075965
+1125	1909656 21619 378 285280 1 2.016952878931 780 1 127 33222 2442784
+1126	1931275 1218 5488 286557 1.005 2.025 43 0 127 780 65664
+1127	1932493 1203 5488 286557 1.005 2.025 43 0 125 125 15625
+1128	1933696 1201 5488 286557 1.005 2.025 43 0 0 0 0
+1129	1934897 1216 5488 286557 1.005 2.025 43 0 127 651 49785
+1130	1936113 1201 5488 286557 1.005 2.025 43 0 0 0 0
+1131	1937314 1201 5488 286557 1.005 2.025 43 0 0 0 0
+1132	1938515 1201 5488 286557 1.005 2.025 43 0 1 4 4

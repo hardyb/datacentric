@@ -36,5 +36,5 @@ simple HomeMobility extends MobilityBase
         double initialY @unit(m) = default(uniform(this.constraintAreaMinY, this.constraintAreaMaxY));
         double initialZ @unit(m) = default(uniform(this.constraintAreaMinZ, this.constraintAreaMaxZ));
         bool initFromDisplayString = default(true);
-        //@class(StationaryMobility);
+        @class(HomeMobility);
 }
