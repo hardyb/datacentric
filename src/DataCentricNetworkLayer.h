@@ -52,6 +52,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     simtime_t          mLastInterestDepartureTime;
 
     map<unsigned int, unsigned int> mNeighboursInLqiRange;
+    map<void*, cMessage*> mTimeoutMessages;
+    typedef map<void*, cMessage*>::iterator TimeoutMessagesIterator;
 
     // sibling module IDs
     //cModule* nicModule;
@@ -110,15 +112,6 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cMessage *mpUpDownMessage;
     cMessage *mMessageForTesting_1;
     cMessage *mRegularCheckMessage;
-
-
-    cMessage *mFrameworkTimeout;
-
-
-
-    void (*mTimerCB) (void* relevantObject);
-
-
 
 };
 #endif

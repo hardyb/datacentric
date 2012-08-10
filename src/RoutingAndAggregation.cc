@@ -3670,8 +3670,23 @@ are ready to reinforce?
 */
 
 
-void interest_convergence_timeout()
+void interest_convergence_timeout(void* relevantObject)
 {
+    unsigned char* data = (unsigned char*)relevantObject;
+    trie* t = trie_add(rd->top_state, data, STATE);
+    State* s = t->s;
+
+    //State* s = (State*)relevantObject;
+    if ( s->action == SOURCE_ACTION )
+    {
+        if ( ((*data) & MSB2) == RECORD )
+        {
+                action_all_prefixes(rd->top_state, 0, strlen((const char*)data), data,
+                       current_prefix_name, 0, consider_reinforce_interest); // CHECK IF ZERO OK? YES.
+                UpdateGradientFile();
+        }
+    }
+
 
 }
 
@@ -3751,7 +3766,16 @@ void handle_interest(control_data cd)
 		    // TRY THIS FOR THE MOMENT
 		    if ( t->s->action == SOURCE_ACTION )
 		    {
-	            setTimer(0.1, interest_convergence_timeout);
+		        unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
+		        memcpy(x, incoming_packet.data, incoming_packet.length);
+		        x[incoming_packet.length] = 0;
+                setTimer(0.1, x, interest_convergence_timeout);
+                //setTimer(0.1, t->s, interest_convergence_timeout);
+
+                // Alternative succinct method?
+                //unsigned char* x = (unsigned char*)malloc(strlen(incoming_packet.data)+1);
+                //strcpy(x, incoming_packet.data);
+
 		    }
 
 			t->s->bestGradientToDeliverUpdated = false;
