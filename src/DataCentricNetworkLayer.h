@@ -112,6 +112,14 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cMessage *mRegularCheckMessage;
 
 
+    cMessage *mFrameworkTimeout;
+
+
+
+    void (*mTimerCB) (void* relevantObject);
+
+
+
 };
 #endif
 

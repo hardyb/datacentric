@@ -744,6 +744,7 @@ void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg));
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
 void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg));
+void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void timeout_callback()));
 void weAreSourceFor(unsigned char* _data);
 void weAreSinkFor(unsigned char* _data, char seqno);
 int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);

@@ -57,6 +57,7 @@ static char messageName[9][24] =
 
 
 
+static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg);
@@ -77,6 +78,11 @@ void DataCentricNetworkLayer::initialize(int aStage)
         //mpStartMessage = new cMessage("StartMessage");
         mpUpDownMessage = new cMessage("UpDownMessage");
         mMessageForTesting_1 = new cMessage("mMessageForTesting_1");
+        mFrameworkTimeout = new cMessage("mFrameworkTimeout");
+
+
+
+        //new cMessage()
         // WirelessMacBase stuff...
         mUpperLayerIn  = findGate("upperLayerIn");
         mUpperLayerOut = findGate("upperLayerOut");
@@ -151,6 +157,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         setMessageCallBack(cb_send_message);
         setBroadcastCallBack(cb_bcast_message);
         setApplicationCallBack(cb_handle_application_data);
+        setTimerCallBack(setTimer);
 
         mRegularCheckMessage = new cMessage("mRegularCheckMessage");
         scheduleAt(simTime()+2.0, mRegularCheckMessage);
@@ -363,6 +370,14 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     SetCurrentModuleInCLanguageFramework();
 
     std::string fName = this->getParentModule()->getFullName();
+
+
+    if ( msg == mFrameworkTimeout )
+    {
+        simtime_t currentTime = simtime();
+        mTimerCB();
+        return;
+    }
 
 
     if ( msg == mMessageForTesting_1 )
@@ -831,6 +846,41 @@ static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR 
     }
 
 }
+
+
+
+
+// Just one call back instance at the moment
+// reschedule it on a recall
+static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject))
+{
+    DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
+    currentModule->mTimerCB = timeout_callback;
+
+
+
+    cMessage* m = new cMessage("FrameworkTimeout");
+
+    m->addPar("relevantObject").setPointerValue(relevantObject);
+
+
+
+
+
+    currentModule->cancelEvent(currentModule->mFrameworkTimeout);
+
+
+    currentModule->scheduleAt(simTime() + timeout, currentModule->mFrameworkTimeout);
+
+
+
+}
+
+
+
+
+
+
 
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 {

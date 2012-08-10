@@ -81,6 +81,15 @@ void (*handleApplicationData) (unsigned char* _msg);
 void (*bcastAMessage) (unsigned char* _msg);
 
 
+// For the moment just provide a single time out
+// the application code can just same identifier and cancel
+// and reset timer if there is a repeat call to the  function
+void (*setTimer) (TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
+
+
+
+
+
 //static int currentState = 1;
 static int K = 2;
 
@@ -3066,6 +3075,13 @@ void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg)
 }
 
 
+void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject)))
+{
+    setTimer = _setTimer;
+}
+
+
+
 
 // Name Level 1
 #define DEMANDPUBLICATION 129
@@ -3590,7 +3606,74 @@ void handle_collaboration(control_data cd)
 
 
 
+/*
 
+previously this call on every node at 2s intervals:
+
+void regular_checks(void)
+{
+    traverse(rd->top_state, queue, 0, processState);
+}
+
+calling back to this for every state held for any reason:
+
+void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+{
+}
+
+in there amongst other things, in particular we do this:
+
+if ( s->action == SOURCE_ACTION )
+{
+    if ( ((*_data) & MSB2) == RECORD )
+    {
+            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
+                   current_prefix_name, _if, consider_reinforce_interest);
+            UpdateGradientFile();
+    }
+}
+
+
+
+
+Now!  Can we really do the same with this new mechanism
+Here's a possibility where it may go wrong and essentially
+always might have done.
+
+
+say interest for X is passed out at 1.0s
+and interest for Y is passed out at 1.5s
+
+say this node in question is source for both.
+When (because the node has had no X update for 0.1s) the
+call back comes in, the traversal will find Y as well
+and if it has had at least one new interest it will
+commence reinforcement even though it may be due
+more...
+
+
+So does the call back need to be specific to a state?
+Or can we marked states in some way to see which ones
+are ready to reinforce?
+
+
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+void interest_convergence_timeout()
+{
+
+}
 
 
 
@@ -3665,6 +3748,12 @@ void handle_interest(control_data cd)
 	{
 		if ( t->s->bestGradientToDeliverUpdated )
 		{
+		    // TRY THIS FOR THE MOMENT
+		    if ( t->s->action == SOURCE_ACTION )
+		    {
+	            setTimer(0.1, interest_convergence_timeout);
+		    }
+
 			t->s->bestGradientToDeliverUpdated = false;
 			outgoing_packet.message_type = INTEREST;
             outgoing_packet.data = incoming_packet.data;
@@ -3680,6 +3769,8 @@ void handle_interest(control_data cd)
 	}
 
 }
+
+
 
 
 // probably not thread safe

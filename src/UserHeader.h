@@ -4,6 +4,8 @@
 
 #define NEIGHBOUR_ADDR uint64_t
 
+#define TIME_TYPE double
+
 
 // Special address values
 
