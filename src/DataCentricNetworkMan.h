@@ -57,6 +57,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector advertPacketFrequency;
     cOutVector reinforcementPacketFrequency;
     cOutVector dataPacketE2EDelay;
+    unsigned int numDataArrivals;
 
 
     cMessage *mpControlPacketFrequencyMessage;

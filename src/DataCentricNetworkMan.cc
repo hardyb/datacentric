@@ -13,6 +13,7 @@ void DataCentricNetworkMan::initialize(int aStage)
 
     if (0 == aStage)
     {
+        numDataArrivals = 0;
         std::string fName = this->getFullPath();
         std::string fName2 = this->getFullPath();
         numControlPackets = 0;
@@ -170,6 +171,7 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
 
 void DataCentricNetworkMan::finish()
 {
+    recordScalar("numDataArrivals", numDataArrivals);
     //recordScalar("total bytes received", totalByteRecv);
     //recordScalar("total time", simTime() - FirstPacketTime());
     //recordScalar("goodput (Bytes/s)", totalByteRecv / (simTime() - FirstPacketTime()));
@@ -180,6 +182,7 @@ void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
     Enter_Method("addADataPacketE2EDelay(simtime_t delay)");
 
     dataPacketE2EDelay.record(delay);
+    numDataArrivals++;
 
 }
 

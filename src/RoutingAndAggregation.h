@@ -208,6 +208,45 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define COLLABORATE_ACTION 5
 #define COLLABORATE_INITIATOR__ACTION 6
 
+
+// Carefull here when we iterate we may end up wanting to make
+// a state a source and a source prefix
+// need to check what code is dependant on these
+// also in long term we probably need to use bit flags
+// ideas for this below
+#define FORWARD_AND_SOURCEPREFIX 10
+#define FORWARD_AND_NOTSOURCEPREFIX 11
+
+
+
+// say 8 or 16 bits
+/*
+ * BIT...
+ * 1 - SOURCE        - means
+ * 2 - SINK          - means
+ * 3 - RECORD        - means
+ * 4 - PUBLICATION   - means
+ * 5 - COLLABERATION - means
+ * 6 - PREFIX        - means
+ * 7 - NONPREFIX     - means
+ * 8 - SOURCE - means
+ * 1 - SOURCE - means
+ * 1 - SOURCE - means
+ * 1 - SOURCE - means
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
 #define MAX_COST 65535
 
 extern unsigned char nodeConstraint;
@@ -760,6 +799,7 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
 void handle_advert(control_data cd);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
+void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void handle_reinforce_interest(control_data cd);
 void handle_data(control_data cd);
 void handle_neighbor_bcast(control_data cd);

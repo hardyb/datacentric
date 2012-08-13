@@ -3672,26 +3672,53 @@ are ready to reinforce?
 
 void interest_convergence_timeout(void* relevantObject)
 {
-    unsigned char* data = (unsigned char*)relevantObject;
-    trie* t = trie_add(rd->top_state, data, STATE);
-    State* s = t->s;
+    //unsigned char* data = (unsigned char*)relevantObject;
+    //trie* t = trie_add(rd->top_state, data, STATE);
+    //State* s = t->s;
 
-    //State* s = (State*)relevantObject;
-    if ( s->action == SOURCE_ACTION )
+    static unsigned char data[20];
+    State* s = (State*)relevantObject;
+    GetStateStr(rd->top_state, s, data);
+
+
+    if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
     {
-        if ( ((*data) & MSB2) == RECORD )
-        {
-                action_all_prefixes(rd->top_state, 0, strlen((const char*)data), data,
-                       current_prefix_name, 0, consider_reinforce_interest); // CHECK IF ZERO OK? YES.
-                UpdateGradientFile();
-        }
+        // second parameter no longer used, pos pass s in future to save
+        // unnecessary work in the function
+        start_reinforce_interest(data, 0, s->seqno);
     }
+    UpdateGradientFile();
 
-
+    //free(data);
 }
 
 
 
+
+
+
+void isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+{
+    s->action = FORWARD_AND_SOURCEPREFIX;
+}
+
+
+
+void setAllPrefixStatus(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+{
+    if ( s->action == SOURCE_ACTION )
+    {
+        if ( ((*_data) & MSB2) == RECORD )
+        {
+            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
+                   current_prefix_name, 0, isPrefix); // CHECK IF ZERO OK? YES.
+        }
+    }
+
+
+
+
+}
 
 
 
@@ -3763,20 +3790,31 @@ void handle_interest(control_data cd)
 	{
 		if ( t->s->bestGradientToDeliverUpdated )
 		{
-		    // TRY THIS FOR THE MOMENT
-		    if ( t->s->action == SOURCE_ACTION )
-		    {
-		        unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
-		        memcpy(x, incoming_packet.data, incoming_packet.length);
-		        x[incoming_packet.length] = 0;
-                setTimer(0.1, x, interest_convergence_timeout);
-                //setTimer(0.1, t->s, interest_convergence_timeout);
+		    // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
+            if ( t->s->action != FORWARD_AND_SOURCEPREFIX &&
+                    t->s->action != FORWARD_AND_NOTSOURCEPREFIX )
+            {
+                traverse(rd->top_state, queue, 0, setAllPrefixStatus);
+                if ( t->s->action != FORWARD_AND_SOURCEPREFIX )
+                {
+                    t->s->action = FORWARD_AND_NOTSOURCEPREFIX;
+                }
+            }
 
-                // Alternative succinct method?
-                //unsigned char* x = (unsigned char*)malloc(strlen(incoming_packet.data)+1);
-                //strcpy(x, incoming_packet.data);
+            if ( t->s->action == FORWARD_AND_SOURCEPREFIX )
+            {
+                //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
+                //strcpy(x, (const char*)incoming_packet.data);
+                //setTimer(0.1, x, interest_convergence_timeout);
 
-		    }
+                setTimer(0.1, t->s, interest_convergence_timeout);
+
+                // Alternative longer method?
+                //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
+                //memcpy(x, incoming_packet.data, incoming_packet.length);
+                //x[incoming_packet.length] = 0;
+            }
+
 
 			t->s->bestGradientToDeliverUpdated = false;
 			outgoing_packet.message_type = INTEREST;

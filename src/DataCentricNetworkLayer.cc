@@ -166,6 +166,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
     if (1 == aStage)
     {
+        testValue = 0;
         cModule* nicModule = this->getParentModule()->getSubmodule("nic");
         cModule* macModule = check_and_cast<cModule*>(nicModule->getSubmodule("mac"));
         mPhyModule = check_and_cast<Ieee802154Phy*>(nicModule->getSubmodule("phy"));
@@ -338,15 +339,17 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             NEIGHBOUR_ADDR destIF = destMac.getInt();
             DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
 
+            double currentTime = simTime().dbl();
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
             switch ( *pkt )
             {
-                case DATA:
+                //case DATA:
                 //case REINFORCE:
-                //case REINFORCE_INTEREST:
+                case REINFORCE_INTEREST:
+                    int x = 0;
                     //InterfaceDown(pkt, destIF);
-                    interest_breakage_just_ocurred(pkt, destIF);
+                    //interest_breakage_just_ocurred(pkt, destIF);
                     break;
             }
         }
@@ -370,14 +373,10 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if ( msg->isName("FrameworkTimeout") )
     {
-        simtime_t currentTime = simTime();
+        double currentTime = simTime().dbl();
 
         void* relevantObject = msg->par("relevantObject").pointerValue();
-        //void (*timerCB) (void* relevantObject) = dynamic_cast<void (*) (void* relevantObject)>(msg->par("callBack").pointerValue());
-
         void (*timerCB) (void*) = (void (*) (void*))msg->par("callBack").pointerValue();
-
-
         timerCB(relevantObject);
 
         TimeoutMessagesIterator i = mTimeoutMessages.find(relevantObject);
@@ -861,25 +860,21 @@ static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR 
 
 
 // only one timeout at a time per relevantObject
-// reschedule on a recall
+// relevantObject is owned by the function caller
+// further function calls for the same already scheduled object
+// cause a reschedule
 static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject))
 {
     DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
+
+    double currentTime = simTime().dbl();
 
     DataCentricNetworkLayer::TimeoutMessagesIterator i = currentModule->mTimeoutMessages.find(relevantObject);
     if ( i == currentModule->mTimeoutMessages.end() )
     {
         cMessage* m = new cMessage("FrameworkTimeout");
         m->addPar("relevantObject").setPointerValue(relevantObject);
-
-
-        //void* x = dynamic_cast<void (*)(void*)>(timeout_callback);
-        void* x = (void*)timeout_callback;
-
-
-
-
-        //m->addPar("callBack").setPointerValue(timeout_callback);
+        m->addPar("callBack").setPointerValue((void*)timeout_callback);
         currentModule->mTimeoutMessages[relevantObject] = m;
         currentModule->scheduleAt(simTime() + timeout, m);
     }

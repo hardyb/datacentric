@@ -30,6 +30,7 @@
 class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 {
   public:
+    unsigned int testValue;
     virtual int    numInitStages    () const { return 2; }
     virtual void initialize(int);
     virtual void finish();
