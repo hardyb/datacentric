@@ -2580,6 +2580,9 @@ NEIGHBOUR_ADDR excludedInterface;
 void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     // but it's the query SOURCE data we need to send not the
+    bool query_based = ( (*(outgoing_packet.data)&MSB2) == RECORD );
+    bool event_based = ( (*(outgoing_packet.data)&MSB2) == PUBLICATION );
+    bool collaberation_based = ( (*(outgoing_packet.data)&MSB2) == COLLABORATIONBASED );
 
     if ( s->deliveryInterfaces )
     {
@@ -2594,9 +2597,6 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
         //incoming_packet.path_value = 0;
         //handle_data(SELF_INTERFACE);
 
-        bool query_based = ( (*(outgoing_packet.data)&MSB2) == RECORD );
-        bool event_based = ( (*(outgoing_packet.data)&MSB2) == PUBLICATION );
-        bool collaberation_based = ( (*(outgoing_packet.data)&MSB2) == COLLABORATIONBASED );
 
         if ( event_based )
         {
@@ -2651,6 +2651,84 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             temp = temp->link;
         }
 
+    }
+    else
+    {
+        if ( query_based && s->bestGradientToDeliver )
+        {
+            // there is a best interest gradient, but it has not been
+            // reinforced (yet), possibilities are:
+
+            // 1) reinforcement was failed to be received so reinforce now?
+
+            // 2) It's just been cleared by a new seqno
+            //
+            //    Can we associate a seqno with a data message?
+            //    We think NO!  Because, for example a seqno may be
+            //    associated with a particular interest state and so
+            //    each of these may have different seqnos dependant on
+            //    need to reconverge, but a single data message may be
+            //    associated with more than one interest grad (eg 2 dif' seqnos).
+
+
+            // 3) It's still awaiting reinforcement for the current seqno,
+            //    but is this possible?  Yes but only if we are source and
+            //    data just arrived for forwarding FROM THE APP'
+
+
+
+            /*
+             *
+             * there is a best interest gradient, but it has not been
+             * reinforced (yet), possibilities are:
+             *
+             * 1) reinforcement was failed to be received so reinforce now?
+             *
+             *    SO...
+             *    Suggest a solution
+             *    reinforce now, but how we know not to wait
+             *
+             * 2) It's just been cleared by a new seqno
+             *
+             *    Can we associate a seqno with a data message?
+             *    We think NO!  Because, for example a seqno may be
+             *    associated with a particular interest state and so
+             *    each of these may have different seqnos dependant on
+             *    need to reconverge, but a single data message may be
+             *    associated with more than one interest grad (eg 2 dif' seqnos).
+             *
+             *    NB: Should newseqnos clear the state action back to
+             *    just 'SOURCE', if it is a source
+             *
+             *    SO...
+             *    Suggest a solution
+             *    Just wait, a reinforcement will come along from
+             *    behind shortly after the source gets convergence timeout
+             *
+             *
+             * 3) It's still awaiting reinforcement for the current seqno,
+             *    but is this possible?  Yes but only if we are source and
+             *    data just arrived for forwarding FROM THE APP'
+             *
+             *    SO...
+             *    Suggest a solution
+             *    Just wait, a reinforcement will come along from
+             *    behind shortly after the source gets convergence timeout
+             *
+             *    Can we see if we are source
+             *
+             */
+
+            // 3)
+            if ( s->action == FORWARD_AND_SOURCEPREFIX )
+            {
+                // so wait for timeout and reinforcement
+
+            }
+
+
+
+        }
     }
 
 }
