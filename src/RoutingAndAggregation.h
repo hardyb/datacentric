@@ -503,6 +503,18 @@ typedef struct InterfaceList InterfaceList;
 
 
 
+
+struct PacketQueue
+{
+     struct new_packet* i;
+     struct PacketQueue *link;
+};
+
+
+
+
+
+
 //dataname?
 
 //comms=record
@@ -612,8 +624,12 @@ typedef struct State
 	int bestGradientToDeliverUpdated; /* used as a bool */
 	struct InterfaceList* deliveryInterfaces;
 	char seqno;
+	char converged;
 	char broken;
 	int action;
+	// consider putting some of this stuff into bit flags
+	// pos some how combine updated flags and converged flags
+	// save space variously
 };
 
 
@@ -683,6 +699,9 @@ typedef struct RoutingData
 
 	struct InterfaceNode* interfaceTree;
 	struct KDGradientNode* grTree;
+	struct PacketQueue* pktQ;
+
+
 	struct KDNode* kdRoot;
 	//struct trie* contexts;
 

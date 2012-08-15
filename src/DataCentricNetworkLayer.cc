@@ -133,6 +133,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
         // ORIGINAL DATA CENTRIC STUFF
         moduleRD.grTree = NULL;
+        moduleRD.pktQ = NULL;
         moduleRD.interfaceTree = NULL;
         moduleRD.stateTree = NULL;
         moduleRD.kdRoot = NULL;
@@ -421,9 +422,11 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
                 freeKDGradientNode(moduleRD.grTree);
                 freeInterfaceNode(moduleRD.interfaceTree);
+                // also free packet queue
                 trie_free(moduleRD.top_context);
                 trie_free(moduleRD.top_state);
                 moduleRD.grTree = NULL;
+                moduleRD.pktQ = NULL;
                 moduleRD.interfaceTree = NULL;
                 moduleRD.top_context = trie_new();
                 moduleRD.top_state = trie_new();

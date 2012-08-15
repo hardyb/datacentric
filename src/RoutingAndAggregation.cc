@@ -104,6 +104,7 @@ struct new_packet outgoing_packet;
 struct new_packet broken_packet;
 
 
+struct new_packet* sending_packet;
 
 
 //unsigned char rMessage[MESSAGE_SIZE];
@@ -385,6 +386,23 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt)
      *
      */
 }
+
+
+new_packet* packetCopy(new_packet* currentPkt)
+{
+    new_packet* savePkt = (new_packet*)malloc(sizeof(new_packet));
+    *savePkt = *currentPkt;
+    savePkt->data = (unsigned char*)malloc(currentPkt->length+1);
+    memcpy(savePkt->data, currentPkt->data, currentPkt->length);
+    savePkt->data[currentPkt->length] = 0;
+
+    return savePkt;
+}
+
+
+
+
+
 
 
 /*
@@ -2487,6 +2505,33 @@ void add(struct InterfaceList** l, struct Interface* _i)
 
 
 
+// adds at back
+void addPkt(struct PacketQueue** l, struct new_packet* _i)
+{
+    struct PacketQueue *temp,*r;
+    temp = *l;
+    if( *l == NULL )
+    {
+        temp = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        temp->i = _i;
+        temp->link = NULL;
+        *l = temp;
+    }
+    else
+    {
+        temp = *l;
+        while( temp->link !=NULL )
+        {
+            temp = temp->link;
+        }
+        r = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        r->i = _i;
+        r->link = NULL;
+        temp->link = r;
+    }
+}
+
+
 
 
 
@@ -2580,9 +2625,9 @@ NEIGHBOUR_ADDR excludedInterface;
 void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     // but it's the query SOURCE data we need to send not the
-    bool query_based = ( (*(outgoing_packet.data)&MSB2) == RECORD );
-    bool event_based = ( (*(outgoing_packet.data)&MSB2) == PUBLICATION );
-    bool collaberation_based = ( (*(outgoing_packet.data)&MSB2) == COLLABORATIONBASED );
+    bool query_based = ( (*(sending_packet->data)&MSB2) == RECORD );
+    bool event_based = ( (*(sending_packet->data)&MSB2) == PUBLICATION );
+    bool collaberation_based = ( (*(sending_packet->data)&MSB2) == COLLABORATIONBASED );
 
     if ( s->deliveryInterfaces )
     {
@@ -2620,12 +2665,21 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                 {
                     // is the data item enough for the application
                     // is length, path value etc etc needed?
-                    handleApplicationData(outgoing_packet.data);
+                    handleApplicationData(sending_packet->data);
+                    // think we remove sending_packet from queue here
+                    // but may be different for advert cases which have multiple
+                    // deliver interfaces
                 }
                 else
                 {
+                    // some how we need to know whether this send
+                    // from the queue
                     sendAMessage(temp->i->iName, write_packet());
                     // length taken from incoming/outgoing message not strlen
+
+                    // think we remove sending_packet from queue here
+                    // but may be different for advert cases which have multiple
+                    // deliver interfaces
                 }
                 if ( query_based )
                 {
@@ -2659,21 +2713,6 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             // there is a best interest gradient, but it has not been
             // reinforced (yet), possibilities are:
 
-            // 1) reinforcement was failed to be received so reinforce now?
-
-            // 2) It's just been cleared by a new seqno
-            //
-            //    Can we associate a seqno with a data message?
-            //    We think NO!  Because, for example a seqno may be
-            //    associated with a particular interest state and so
-            //    each of these may have different seqnos dependant on
-            //    need to reconverge, but a single data message may be
-            //    associated with more than one interest grad (eg 2 dif' seqnos).
-
-
-            // 3) It's still awaiting reinforcement for the current seqno,
-            //    but is this possible?  Yes but only if we are source and
-            //    data just arrived for forwarding FROM THE APP'
 
 
 
@@ -2686,7 +2725,14 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
              *
              *    SO...
              *    Suggest a solution
-             *    reinforce now, but how we know not to wait
+             *    reinforce now, but how we know not to wait?
+             *    we can check converged.  If the node HAS converged
+             *    but there is no reinforcement we can assume
+             *    that it is a failed to receive
+             *
+             *
+             *
+             *
              *
              * 2) It's just been cleared by a new seqno
              *
@@ -2697,13 +2743,22 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
              *    need to reconverge, but a single data message may be
              *    associated with more than one interest grad (eg 2 dif' seqnos).
              *
+             *    On the other hand...  you could have a seqno in a specific
+             *    data packet, but you would have to have the prefix that was
+             *    matched for grad selection in the packet too so you knew
+             *    whether at the next node the specific prefix's seqno had
+             *    been updated
+             *
              *    NB: Should newseqnos clear the state action back to
-             *    just 'SOURCE', if it is a source
+             *    just 'SOURCE', if it is a source, no think not necessar
+             *    having a prefix grad for a set source is a different thing
              *
              *    SO...
              *    Suggest a solution
              *    Just wait, a reinforcement will come along from
              *    behind shortly after the source gets convergence timeout
+             *
+             *    wait how long?
              *
              *
              * 3) It's still awaiting reinforcement for the current seqno,
@@ -2715,6 +2770,11 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
              *    Just wait, a reinforcement will come along from
              *    behind shortly after the source gets convergence timeout
              *
+             *    wait how long?
+             *
+             *    perhaps we can know timeouts have been set and reinforcements
+             *    are awaited
+             *
              *    Can we see if we are source
              *
              */
@@ -2723,10 +2783,42 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             if ( s->action == FORWARD_AND_SOURCEPREFIX )
             {
                 // so wait for timeout and reinforcement
+                new_packet* savePkt = packetCopy(sending_packet);
+                addPkt(&(rd->pktQ), savePkt);
+                setTimer(0.1, savePkt, try_resend_timeout);
 
             }
 
 
+            if( s->converged )
+            {
+                start_reinforce_interest(_buf, excludedInterface, s->seqno); // excludedInterface is incoming interface
+                UpdateGradientFile();
+
+                // send data straight away?
+
+
+                /*
+                 * start_reinforce_interest may be no good for a non-source
+                 * node because it sets an obtain to self
+                 *
+                 * also there is a general issue that the obtain grad
+                 * cannot be set because we had no incoming reinforcement
+                 *
+                 * we only have the incoming data...
+                 * may be it would be correct to reinforce obtain
+                 * grad for every prefix of incoming data
+                 */
+
+                // what about:
+                //control_data cd;
+                //cd.incoming_if = excludedInterface;  // i.e. incoming interface
+                //handle_reinforce_interest(cd);
+            }
+            else
+            {
+
+            }
 
         }
     }
@@ -2862,6 +2954,8 @@ bool forward(void* p1, void* p2)
 	outgoing_packet.down_interface = incoming_packet.down_interface;
 	outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
 	outgoing_packet.seqno = incoming_packet.seqno;
+
+	sending_packet = &outgoing_packet;
 
 	deliver(p1, p2);
 	return false;
@@ -3045,7 +3139,7 @@ void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_A
 
 }
 
-
+// not used any more?
 void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 {
     /*
@@ -3754,21 +3848,79 @@ void interest_convergence_timeout(void* relevantObject)
     //trie* t = trie_add(rd->top_state, data, STATE);
     //State* s = t->s;
 
-    static unsigned char data[20];
     State* s = (State*)relevantObject;
-    GetStateStr(rd->top_state, s, data);
+    s->converged = 1;
 
-
-    if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
+    if ( s->action == FORWARD_AND_SOURCEPREFIX
+            && s->bestGradientToDeliver
+            && !s->deliveryInterfaces )
     {
+        static unsigned char data[20];
+        GetStateStr(rd->top_state, s, data);
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
-        start_reinforce_interest(data, 0, s->seqno);
+        start_reinforce_interest(data, SELF_INTERFACE, s->seqno);
+        UpdateGradientFile();
     }
-    UpdateGradientFile();
 
-    //free(data);
 }
+
+
+
+
+// use this when a reinforcement has just occurred
+void try_resend_timeout(void* relevantObject)
+{
+    //new_packet* pkt = (new_packet*)relevantObject;
+
+
+    /*
+     * Queue contains a packet for every matched prefix for which
+     * no reinforcement was available
+     */
+    PacketQueue* temp = rd->pktQ;
+    while( temp !=NULL )
+    {
+
+        //outgoing_packet.message_type = temp->i->message_type;
+        //outgoing_packet.data = temp->i->data;
+        //outgoing_packet.length = temp->i->length;
+        //outgoing_packet.path_value = temp->i->path_value;
+        //outgoing_packet.down_interface = temp->i->down_interface;
+        //outgoing_packet.excepted_interface = temp->i->excepted_interface;
+        //outgoing_packet.seqno = temp->i->seqno;
+
+        sending_packet = temp->i;
+
+        action_all_prefixes(rd->top_state, 0, outgoing_packet.length, outgoing_packet.data,
+                current_prefix_name, 0, consider_sending_data);
+
+
+        //new_packet* savePkt = packetCopy(&outgoing_packet);
+        //addPkt(&(rd->pktQ), savePkt);
+        //setTimer(0.1, savePkt, try_resend_timeout);
+
+
+        temp = temp->link;
+    }
+
+    rd->pktQ;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -3869,6 +4021,10 @@ void handle_interest(control_data cd)
 		if ( t->s->bestGradientToDeliverUpdated )
 		{
 		    // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
+
+		    // this is a once only on first sight for all the (interest) states
+		    // we have ever seen, to say whether or not it is a prefix of one
+		    // that was previously set as SOURCE_ACTION
             if ( t->s->action != FORWARD_AND_SOURCEPREFIX &&
                     t->s->action != FORWARD_AND_NOTSOURCEPREFIX )
             {
@@ -3879,19 +4035,30 @@ void handle_interest(control_data cd)
                 }
             }
 
+            // try doing timeout for ALL nodes
+            t->s->converged = 0;
+            setTimer(0.1, t->s, interest_convergence_timeout);
+
             if ( t->s->action == FORWARD_AND_SOURCEPREFIX )
             {
                 //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
                 //strcpy(x, (const char*)incoming_packet.data);
                 //setTimer(0.1, x, interest_convergence_timeout);
 
-                setTimer(0.1, t->s, interest_convergence_timeout);
+                //setTimer(0.1, t->s, source_interest_convergence_timeout);
 
                 // Alternative longer method?
                 //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
                 //memcpy(x, incoming_packet.data, incoming_packet.length);
                 //x[incoming_packet.length] = 0;
             }
+            else
+            {
+                //setTimer(0.1, t->s, interest_convergence_timeout);
+            }
+
+
+
 
 
 			t->s->bestGradientToDeliverUpdated = false;
@@ -3992,23 +4159,34 @@ void handle_reinforce_interest(control_data cd)
 	if ( t && t->s->bestGradientToDeliver )
 	{
         KDGradientNode* selectedGradientToDeliver = t->s->bestGradientToDeliver;
-        TraversInterfaceNodes(rd->interfaceTree, 0, MarkIFDown);
 
-        InterfaceList* temp = t->s->deliveryInterfaces;
-        while( temp !=NULL )
-        {
-            if ( temp->i->up )
-                return;
-            temp = temp->link;
-        }
+        //TraversInterfaceNodes(rd->interfaceTree, 0, MarkIFDown);
+        // above is re downinterface, no longer used?
+
+        // this section is to do with having multiple
+        // reinforced best interest grads created from
+        // using 2nd best grads when best if is down
+        //
+        // however, think this is no longer used!
+        //InterfaceList* temp = t->s->deliveryInterfaces;
+        //while( temp !=NULL )
+        //{
+        //    if ( temp->i->up )
+        //        return;
+        //    temp = temp->link;
+        //}
+        // in normal practice t->s->deliveryInterfaces will be null
+        // just before reinforcement
 
         if ( !selectedGradientToDeliver->key2->up )
         {
-            KDGradientNode* saveBestGradientToDeliver = t->s->bestGradientToDeliver;
-            t->s->bestGradientToDeliver = 0;
-            TraversInterfaceNodes(rd->interfaceTree, t->s, UpdateBestGradient);
-            selectedGradientToDeliver = t->s->bestGradientToDeliver;
-            t->s->bestGradientToDeliver = saveBestGradientToDeliver;
+            //KDGradientNode* saveBestGradientToDeliver = t->s->bestGradientToDeliver;
+            //t->s->bestGradientToDeliver = 0;
+            //TraversInterfaceNodes(rd->interfaceTree, t->s, UpdateBestGradient);
+            //selectedGradientToDeliver = t->s->bestGradientToDeliver;
+            //t->s->bestGradientToDeliver = saveBestGradientToDeliver;
+            // this I think is also not used any more
+            // it's where we update to the 2nd best grad if one is down
         }
 
 
@@ -4027,6 +4205,7 @@ void handle_reinforce_interest(control_data cd)
             outgoing_packet.path_value = 0;
             outgoing_packet.down_interface = incoming_packet.down_interface;
             outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
+            outgoing_packet.seqno = incoming_packet.seqno;
             sendAMessage(interface, write_packet());
 
         }
@@ -4163,7 +4342,7 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
 // probably not thread safe
 void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
 {
-	reinforceObtainGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+	reinforceObtainGradient(fullyqualifiedname, _if, seqno);
 	//StateNode* sn = FindStateNode(rd->stateTree, specific_data_value._dataname_struct1.the_dataname);
 	trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
 
@@ -4190,6 +4369,7 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         outgoing_packet.down_interface = UNKNOWN_INTERFACE;
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0;
+		outgoing_packet.seqno = seqno;
 		sendAMessage(interface, write_packet());
 
 	}
@@ -4304,7 +4484,7 @@ void handle_neighbor_bcast(control_data cd)
     {
         // we have seen this node before (already in list )
         // it has just come back up
-        outgoing_packet.down_interface = _interface;
+        outgoing_packet.down_interface = _interface; // no longer used?
         in->i->up = 1;
         printf("Existing interface back up\n");
     }
@@ -4508,7 +4688,7 @@ void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _
     {
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
-        start_reinforce_interest(_buf, 0, s->seqno);
+        start_reinforce_interest(_buf, SELF_INTERFACE, s->seqno);
     }
 
 }
@@ -4572,7 +4752,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 
 
 
-
+// not used any more
 void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
 	int temp = dataRate;
@@ -4814,6 +4994,7 @@ struct State* newStateObject()
 	s->action = FORWARD_ACTION;
 	s->seqno = 0;
 	s->broken = 0;
+	s->converged = 0;
 
 	//n->left = NULL;
 	//n->right = NULL;
