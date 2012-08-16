@@ -350,6 +350,17 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                 //case REINFORCE_INTEREST:
                     //int x = 0;
                     //InterfaceDown(pkt, destIF);
+
+                    /*
+                     * It may be important to schedule a new event here
+                     * instead of diving in asynchronously
+                     *
+                     * Or may be move shared data like output_pkt into
+                     * rd an set rd so no conflict occurrs
+                     *
+                     * Also may be important to write this aspect into
+                     * the requirements of the framework
+                     */
                     interest_breakage_just_ocurred(pkt, destIF);
                     break;
             }
@@ -379,6 +390,18 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         void* relevantObject = msg->par("relevantObject").pointerValue();
         void (*timerCB) (void*) = (void (*) (void*))msg->par("callBack").pointerValue();
         timerCB(relevantObject);
+
+
+        TimeoutMessages2Iterator i2 = mTimeoutMessages2.find(msg);
+        if ( i2 != mTimeoutMessages2.end() )
+        {
+            mTimeoutMessages2.erase(msg);
+            delete msg;
+        }
+
+        return;
+
+
 
         TimeoutMessagesIterator i = mTimeoutMessages.find(relevantObject);
         if ( i != mTimeoutMessages.end() )
@@ -866,11 +889,45 @@ static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR 
 // relevantObject is owned by the function caller
 // further function calls for the same already scheduled object
 // cause a reschedule
+
+/*
+ * With TimeoutMessages2Iterator only one timeout at a time per combination
+ * of relevantObject and call back pointer
+ *
+ * further function calls for the same already scheduled combination
+ * cause a reschedule
+ */
 static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject))
 {
     DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
 
     double currentTime = simTime().dbl();
+
+    for (DataCentricNetworkLayer::TimeoutMessages2Iterator i = currentModule->mTimeoutMessages2.begin();
+            i != currentModule->mTimeoutMessages2.end(); ++i)
+    {
+        void* _relevantObject = (*i)->par("relevantObject").pointerValue();
+        void (*timerCB) (void*) = (void (*) (void*))(*i)->par("callBack").pointerValue();
+        if ( _relevantObject == relevantObject
+                && timerCB == timeout_callback )
+        {
+            currentModule->cancelEvent((*i));
+            currentModule->scheduleAt(simTime() + timeout, (*i));
+        }
+        else
+        {
+            cMessage* m = new cMessage("FrameworkTimeout");
+            m->addPar("relevantObject").setPointerValue(relevantObject);
+            m->addPar("callBack").setPointerValue((void*)timeout_callback);
+            currentModule->mTimeoutMessages2.insert(m);
+            currentModule->scheduleAt(simTime() + timeout, m);
+        }
+
+    }
+
+    return;
+
+
 
     DataCentricNetworkLayer::TimeoutMessagesIterator i = currentModule->mTimeoutMessages.find(relevantObject);
     if ( i == currentModule->mTimeoutMessages.end() )
@@ -878,6 +935,11 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
         cMessage* m = new cMessage("FrameworkTimeout");
         m->addPar("relevantObject").setPointerValue(relevantObject);
         m->addPar("callBack").setPointerValue((void*)timeout_callback);
+
+        // We need to be careful - may have to change this
+        // there may be cases in framework where more than one
+        // event is for the same object (but to call back to different
+        // call back functions)...
         currentModule->mTimeoutMessages[relevantObject] = m;
         currentModule->scheduleAt(simTime() + timeout, m);
     }

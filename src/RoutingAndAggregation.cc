@@ -1613,6 +1613,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
             if ( seqno > s->seqno )
             {
                 s->seqno = seqno;
+                s->broken = 0;
                 s->bestGradientToDeliver = NULL;
                 s->bestGradientToObtain = NULL;
                 freeInterfaceList(s->deliveryInterfaces);
@@ -3132,8 +3133,6 @@ void kickFSM()
 
 void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
-    new_packet* savePkt = packetCopy(&broken_packet);
-    addPkt(&(s->pktQ), savePkt);
 
     // if a data packet has just arrived and finds a best grad but
     // no reinforcement then it can wait for convergence and send
@@ -3179,6 +3178,15 @@ void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_A
         temp = temp->link;
     }
 
+    if ( s->broken )
+    {
+        new_packet* savePkt = packetCopy(&broken_packet);
+        addPkt(&(s->pktQ), savePkt);
+        s->converged = 0;
+        freeInterfaceList(s->deliveryInterfaces);
+        s->deliveryInterfaces = NULL;
+    }
+
 }
 
 // not used any more?
@@ -3196,13 +3204,6 @@ void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      */
 
     read_broken_packet(pkt);
-
-    addPkt(&(s->pktQ), savePkt);
-
-
-
-
-
     action_all_prefixes(rd->top_state, 0, broken_packet.length,
             broken_packet.data,
             current_prefix_name, inf, interest_breakage_process_prefix);
@@ -3226,8 +3227,13 @@ void handle_breakage(control_data cd)
         if ( t->s->action == SINK_ACTION )
         {
             // think we should just use what we get in
-            t->s->seqno++;
-            weAreSinkFor(incoming_packet.data, t->s->seqno);
+            //t->s->seqno++;
+            // may be we SHOULD NOT actually increase ABOVE
+            // but just pass in below an increased value
+            // becuase may be it later takes IMPORTANT action BASED ON whether
+            // the seqno has just increased!!!!!!!!!!!!!!!!!!!!!!!!!
+            weAreSinkFor(incoming_packet.data, t->s->seqno+1);
+            // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
             UcastAllBestGradients(rd->top_state, 0);
         }
         else
@@ -3912,6 +3918,28 @@ void interest_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
     }
 
+    if ( s->action != FORWARD_AND_SOURCEPREFIX && s->pktQ
+            && s->bestGradientToDeliver
+            && !s->deliveryInterfaces )
+    {
+        static unsigned char data[20];
+        GetStateStr(rd->top_state, s, data);
+        // second parameter no longer used, pos pass s in future to save
+        // unnecessary work in the function
+        start_reinforce_interest(data, UNKNOWN_INTERFACE, s->seqno);
+        UpdateGradientFile();
+    }
+
+    /*
+     * I think we may also need to reinforce interest when
+     * there are items in the queue for this state because
+     * after a (re)convergence it is not guarenteed that (where
+     * a data packet has previously stopped due to an immediate breakage
+     * or an ongoing new seqno reconvergence due to a breakage else where)
+     * the grad will be reinforced at that node from behind, i.e. the new
+     * convergence may result in a different path
+     */
+
 }
 
 
@@ -4481,7 +4509,10 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
 // probably not thread safe
 void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
 {
-	reinforceObtainGradient(fullyqualifiedname, _if, seqno);
+    if ( _if != UNKNOWN_INTERFACE )
+    {
+        reinforceObtainGradient(fullyqualifiedname, _if, seqno);
+    }
 	//StateNode* sn = FindStateNode(rd->stateTree, specific_data_value._dataname_struct1.the_dataname);
 	trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
 

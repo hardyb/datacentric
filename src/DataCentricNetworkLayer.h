@@ -54,7 +54,15 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     map<unsigned int, unsigned int> mNeighboursInLqiRange;
     map<void*, cMessage*> mTimeoutMessages;
+    set<cMessage*> mTimeoutMessages2;
+
+
+
+
+
+
     typedef map<void*, cMessage*>::iterator TimeoutMessagesIterator;
+    typedef set<cMessage*>::iterator TimeoutMessages2Iterator;
 
     // sibling module IDs
     //cModule* nicModule;
