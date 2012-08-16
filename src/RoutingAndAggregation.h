@@ -601,7 +601,6 @@ struct PacketQueue
 
 
 
-
 typedef struct State
 {
 	// Consider having state as just the int
@@ -623,6 +622,7 @@ typedef struct State
 	struct KDGradientNode* bestGradientToDeliver;
 	int bestGradientToDeliverUpdated; /* used as a bool */
 	struct InterfaceList* deliveryInterfaces;
+    struct PacketQueue* pktQ;
 	char seqno;
 	char converged;
 	char broken;
@@ -631,6 +631,16 @@ typedef struct State
 	// pos some how combine updated flags and converged flags
 	// save space variously
 };
+
+
+
+
+typedef struct QueueDeletion
+{
+    new_packet* pktToDelete;
+    State* associatedState;
+};
+
 
 
 

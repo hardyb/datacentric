@@ -2622,8 +2622,9 @@ bool copyMessageIn(void* p1, void* p2)
 
 
 NEIGHBOUR_ADDR excludedInterface;
-void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
+    int sent = 0;
     // but it's the query SOURCE data we need to send not the
     bool query_based = ( (*(sending_packet->data)&MSB2) == RECORD );
     bool event_based = ( (*(sending_packet->data)&MSB2) == PUBLICATION );
@@ -2666,6 +2667,7 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                     // is the data item enough for the application
                     // is length, path value etc etc needed?
                     handleApplicationData(sending_packet->data);
+                    sent = 1;
                     // think we remove sending_packet from queue here
                     // but may be different for advert cases which have multiple
                     // deliver interfaces
@@ -2675,6 +2677,7 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                     // some how we need to know whether this send
                     // from the queue
                     sendAMessage(temp->i->iName, write_packet());
+                    sent = 1;
                     // length taken from incoming/outgoing message not strlen
 
                     // think we remove sending_packet from queue here
@@ -2710,6 +2713,18 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     {
         if ( query_based && s->bestGradientToDeliver )
         {
+            // place in queue for sending later
+
+            new_packet* savePkt = packetCopy(sending_packet);
+            addPkt(&(s->pktQ), savePkt);
+            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            qd->pktToDelete = savePkt;
+            qd->associatedState = s;
+            setTimer(1.00, qd, delete_queued_data);
+
+
+
+
             // there is a best interest gradient, but it has not been
             // reinforced (yet), possibilities are:
 
@@ -2780,16 +2795,23 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
              */
 
             // 3)
-            if ( s->action == FORWARD_AND_SOURCEPREFIX )
-            {
+            //if ( s->action == FORWARD_AND_SOURCEPREFIX )
+            //{
                 // so wait for timeout and reinforcement
-                new_packet* savePkt = packetCopy(sending_packet);
-                addPkt(&(rd->pktQ), savePkt);
-                setTimer(0.1, savePkt, try_resend_timeout);
-
-            }
+            //    new_packet* savePkt = packetCopy(sending_packet);
+            //    addPkt(&(s->pktQ), savePkt);
 
 
+            //    QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            //    qd->pktToDelete = savePkt;
+            //    qd->associatedState = s;
+            //    setTimer(1.00, qd, delete_queued_data);
+
+            //}
+
+
+            // if converged, but reinforcement failed, then try reinforcement again
+            // otherwise allow reinforcement to send queued data
             if( s->converged )
             {
                 start_reinforce_interest(_buf, excludedInterface, s->seqno); // excludedInterface is incoming interface
@@ -2797,6 +2819,7 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 
                 // send data straight away?
 
+                //setTimer(0.01, savePkt, send_queued_data);
 
                 /*
                  * start_reinforce_interest may be no good for a non-source
@@ -2810,18 +2833,17 @@ void consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                  * grad for every prefix of incoming data
                  */
 
+
                 // what about:
                 //control_data cd;
                 //cd.incoming_if = excludedInterface;  // i.e. incoming interface
                 //handle_reinforce_interest(cd);
             }
-            else
-            {
-
-            }
 
         }
     }
+
+    return sent;
 
 }
 
@@ -3110,11 +3132,31 @@ void kickFSM()
 
 void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
+    new_packet* savePkt = packetCopy(&broken_packet);
+    addPkt(&(s->pktQ), savePkt);
+
+    // if a data packet has just arrived and finds a best grad but
+    // no reinforcement then it can wait for convergence and send
+    // when the node is fully converged
+
+    // HOWEVER - If the data packet has just arrived but cannot be sent
+    // on due to a breakage then it can be queued and we can wait for
+    // complete reconvergence on a new seqno, however there is no saying that
+    // this node will be used for delivery in this subsequent convergence
+
+    // NBNB - This may also be the case when a data packet arrives at a node
+    // that has jusy been noted not converged due to a new seqno, i.e. the finalisation
+    // of convergence with the new seqno may not result in this node being used
+    // in the reinforced path.
+
+    // THEREFORE the data may be left orphaned waiting for reinforcement to trigger
+    // it being forwarded!!!!!!!!!
+
 
     /*
      * was the broken interface in the delivery list for this prefix state?
      * i.e. in all likelihood
-     * was it this prefix state that we mached on incoming data and then
+     * was it this prefix state that we matched on incoming data and then
      * used to find the now broken interface in its delivery interface list?
      */
     InterfaceList* temp = s->deliveryInterfaces;
@@ -3154,6 +3196,13 @@ void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf)
      */
 
     read_broken_packet(pkt);
+
+    addPkt(&(s->pktQ), savePkt);
+
+
+
+
+
     action_all_prefixes(rd->top_state, 0, broken_packet.length,
             broken_packet.data,
             current_prefix_name, inf, interest_breakage_process_prefix);
@@ -3868,10 +3917,99 @@ void interest_convergence_timeout(void* relevantObject)
 
 
 
-// use this when a reinforcement has just occurred
-void try_resend_timeout(void* relevantObject)
+
+void removePktFromQueue(struct PacketQueue** l, struct new_packet* _i)
+{
+    if(*l==NULL)
+    {
+        return;
+    }
+
+    struct PacketQueue *old,*temp;
+    temp=*l;
+    while( temp != NULL )
+    {
+        if(temp->i  == _i)
+        {
+            if( temp == *l )
+            {
+                *l=temp->link;
+            }
+            else
+            {
+                old->link=temp->link;
+            }
+            free(temp->i->data);
+            free(temp->i);
+            free(temp);
+            temp = 0;
+        }
+        else
+        {
+            old=temp;
+            temp=temp->link;
+        }
+    }
+}
+
+
+
+
+
+
+void delete_queued_data(void* relevantObject)
 {
     //new_packet* pkt = (new_packet*)relevantObject;
+
+    QueueDeletion* qd = (QueueDeletion*)relevantObject;
+    //new_packet* pkt = qd->pktToDelete;
+
+
+    removePktFromQueue(&(qd->associatedState->pktQ), qd->pktToDelete);
+
+
+
+
+
+}
+
+
+
+
+
+// use this when a reinforcement has just occurred
+void send_queued_data(void* relevantObject)
+{
+    //new_packet* pkt = (new_packet*)relevantObject;
+
+    State* s = (State*)relevantObject;
+
+    PacketQueue** l = &(s->pktQ);
+    PacketQueue* temp = *l;
+    while( temp !=NULL )
+    {
+        sending_packet = temp->i;
+        static unsigned char data[20];
+        GetStateStr(rd->top_state, s, data);
+        if ( consider_sending_data(s, data, 0) )
+        {
+            *l = temp->link;
+            temp = temp->link;
+            free(temp->i->data);
+            free(temp->i);
+            free(temp);
+        }
+        else
+        {
+            l = temp->link;
+            temp = temp->link;
+        }
+    }
+
+    return;
+
+
+
 
 
     /*
@@ -3898,7 +4036,7 @@ void try_resend_timeout(void* relevantObject)
 
         //new_packet* savePkt = packetCopy(&outgoing_packet);
         //addPkt(&(rd->pktQ), savePkt);
-        //setTimer(0.1, savePkt, try_resend_timeout);
+        //setTimer(0.1, savePkt, send_queued_data);
 
 
         temp = temp->link;
@@ -4196,6 +4334,8 @@ void handle_reinforce_interest(control_data cd)
             //reinforceDeliverGradient((char*)incoming_packet.data, interface); //???
             add(&(t->s->deliveryInterfaces), selectedGradientToDeliver->key2); //maybe
 
+            setTimer(0.01, t->s, send_queued_data);
+
             if ( interface == SELF_INTERFACE )
                 return;
 
@@ -4207,7 +4347,6 @@ void handle_reinforce_interest(control_data cd)
             outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
             outgoing_packet.seqno = incoming_packet.seqno;
             sendAMessage(interface, write_packet());
-
         }
 	}
 
@@ -4358,6 +4497,7 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         // also reinforce the path to the source for breakage messages
 		// even if it is self
 		reinforceDeliverGradient(fullyqualifiedname, interface, seqno);
+        setTimer(0.01, t->s, send_queued_data);
 
 		// If interface is self do not send message on
 		if ( interface == SELF_INTERFACE )

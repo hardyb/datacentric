@@ -345,12 +345,12 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
             switch ( *pkt )
             {
-                //case DATA:
+                case DATA:
                 //case REINFORCE:
-                case REINFORCE_INTEREST:
-                    int x = 0;
+                //case REINFORCE_INTEREST:
+                    //int x = 0;
                     //InterfaceDown(pkt, destIF);
-                    //interest_breakage_just_ocurred(pkt, destIF);
+                    interest_breakage_just_ocurred(pkt, destIF);
                     break;
             }
         }
