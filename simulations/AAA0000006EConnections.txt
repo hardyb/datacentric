@@ -28,19 +28,6 @@ CONNECTION
 AAA0000006E
 0202FF06
 11
-AAA00000039
-seqno: 0
-true
-295
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000006E
-0202FF06
-11
 AAA0000005E
 seqno: 0
 true
@@ -123,6 +110,19 @@ AAA0000000C
 seqno: 0
 true
 325
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000006E
+0202FF06
+11
+AAA00000039
+seqno: 0
+true
+295
 65535
 false
 false

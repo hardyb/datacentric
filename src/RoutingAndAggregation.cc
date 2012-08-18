@@ -1060,7 +1060,7 @@ void MarkIFDown(Interface* i, State* s)
 
 
 // PROBABLY DISCONTINUING THIS FUNCTION
-void InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( !s->bestGradientToDeliver->key2->up )
     {
@@ -1083,6 +1083,8 @@ void InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
         }
     }
+
+    return 0;
 
 }
 
@@ -2851,7 +2853,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 
 
 
-void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, void process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if))
+void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, int process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if))
 {
       trie *current = t;
 
@@ -3131,7 +3133,7 @@ void kickFSM()
 
 
 
-void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
 
     // if a data packet has just arrived and finds a best grad but
@@ -3186,6 +3188,8 @@ void interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_A
         freeInterfaceList(s->deliveryInterfaces);
         s->deliveryInterfaces = NULL;
     }
+
+    return 0;
 
 }
 
@@ -4022,14 +4026,14 @@ void send_queued_data(void* relevantObject)
         if ( consider_sending_data(s, data, 0) )
         {
             *l = temp->link;
-            temp = temp->link;
             free(temp->i->data);
             free(temp->i);
             free(temp);
+            temp = *l;
         }
         else
         {
-            l = temp->link;
+            l = &(temp->link);
             temp = temp->link;
         }
     }
@@ -4037,40 +4041,6 @@ void send_queued_data(void* relevantObject)
     return;
 
 
-
-
-
-    /*
-     * Queue contains a packet for every matched prefix for which
-     * no reinforcement was available
-     */
-    PacketQueue* temp = rd->pktQ;
-    while( temp !=NULL )
-    {
-
-        //outgoing_packet.message_type = temp->i->message_type;
-        //outgoing_packet.data = temp->i->data;
-        //outgoing_packet.length = temp->i->length;
-        //outgoing_packet.path_value = temp->i->path_value;
-        //outgoing_packet.down_interface = temp->i->down_interface;
-        //outgoing_packet.excepted_interface = temp->i->excepted_interface;
-        //outgoing_packet.seqno = temp->i->seqno;
-
-        sending_packet = temp->i;
-
-        action_all_prefixes(rd->top_state, 0, outgoing_packet.length, outgoing_packet.data,
-                current_prefix_name, 0, consider_sending_data);
-
-
-        //new_packet* savePkt = packetCopy(&outgoing_packet);
-        //addPkt(&(rd->pktQ), savePkt);
-        //setTimer(0.1, savePkt, send_queued_data);
-
-
-        temp = temp->link;
-    }
-
-    rd->pktQ;
 
 }
 
@@ -4093,9 +4063,11 @@ void send_queued_data(void* relevantObject)
 
 
 
-void isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     s->action = FORWARD_AND_SOURCEPREFIX;
+
+    return 0;
 }
 
 
@@ -4853,7 +4825,7 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
  * This is to send reinforcements along prefixes
  * if the prefix has a best deliver gradient but no selected (reinforced) delivery interface
  */
-void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
     {
@@ -4861,6 +4833,8 @@ void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _
         // unnecessary work in the function
         start_reinforce_interest(_buf, SELF_INTERFACE, s->seqno);
     }
+
+    return 0;
 
 }
 
@@ -4870,7 +4844,7 @@ void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _
  * This is to send reinforcements along prefixes
  * if the prefix has a best deliver gradient but no selected (reinforced) delivery interface
  */
-void consider_reinforce_collaberation(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int consider_reinforce_collaberation(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->bestGradientToDeliver && !s->deliveryInterfaces )
     {
@@ -4879,17 +4853,21 @@ void consider_reinforce_collaberation(State* s, unsigned char* _buf, NEIGHBOUR_A
         start_reinforce_collaboration(_buf, 0, s->seqno);
     }
 
+    return 0;
+
 }
 
 
 
 int numSinks;
-void count_sink(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+int count_sink(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     if ( s->action == SINK_ACTION )
     {
         numSinks++;
     }
+
+    return 0;
 
 }
 
@@ -5160,6 +5138,7 @@ struct State* newStateObject()
 	s->deliveryInterfaces = NULL;
 	s->obtainInterface = NULL;
 	s->obtainInterfaces = NULL;
+	s->pktQ = NULL;
 	s->bestGradientToObtainUpdated = FALSE;
 	s->bestGradientToDeliverUpdated = FALSE;
 	s->action = FORWARD_ACTION;

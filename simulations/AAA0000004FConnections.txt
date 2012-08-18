@@ -5,7 +5,7 @@ AAA0000004F
 AAA00000051
 seqno: 0
 true
-469
+476
 65535
 false
 false
@@ -31,7 +31,7 @@ AAA0000004F
 AAA00000046
 seqno: 0
 true
-556
+743
 65535
 false
 false
@@ -83,20 +83,7 @@ AAA0000004F
 AAA00000044
 seqno: 0
 true
-517
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000004F
-0202FF06
-11
-AAA0000006C
-seqno: 0
-true
-451
+543
 65535
 false
 false
@@ -110,6 +97,19 @@ AAA00000040
 seqno: 0
 true
 612
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000004F
+0202FF06
+11
+AAA0000006C
+seqno: 0
+true
+451
 65535
 false
 false

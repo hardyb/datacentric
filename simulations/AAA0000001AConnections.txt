@@ -8,7 +8,7 @@ true
 156
 65535
 true
-true
+false
 false
 false
 CONNECTION
@@ -50,19 +50,6 @@ false
 false
 false
 false
-CONNECTION
-AAA0000001A
-0202FF06
-10
-20000000001
-seqno: 0
-true
-65535
-65535
-false
-false
-true
-true
 CONNECTION
 AAA0000001A
 0202FF06

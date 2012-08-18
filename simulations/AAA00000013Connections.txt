@@ -20,7 +20,7 @@ seqno: 0
 true
 322
 65535
-true
+false
 false
 false
 false
@@ -70,7 +70,7 @@ AAA00000013
 AAA0000000E
 seqno: 0
 true
-448
+445
 65535
 false
 false
@@ -80,10 +80,10 @@ CONNECTION
 AAA00000013
 0202FF06
 11
-AAA00000002
+AAA00000008
 seqno: 0
 true
-455
+476
 65535
 false
 false
@@ -93,10 +93,10 @@ CONNECTION
 AAA00000013
 0202FF06
 11
-AAA0000000F
+AAA00000071
 seqno: 0
 true
-392
+430
 65535
 false
 false
@@ -106,12 +106,12 @@ CONNECTION
 AAA00000013
 0202FF06
 11
-AAA00000041
+AAA0000007D
 seqno: 0
 true
-478
+317
 65535
-false
+true
 false
 false
 false
@@ -119,10 +119,10 @@ CONNECTION
 AAA00000013
 0202FF06
 11
-AAA00000026
+AAA0000004E
 seqno: 0
 true
-435
+387
 65535
 false
 false

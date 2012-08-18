@@ -382,10 +382,10 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     SetCurrentModuleInCLanguageFramework();
 
     std::string fName = this->getParentModule()->getFullName();
+    double currentTime = simTime().dbl();
 
     if ( msg->isName("FrameworkTimeout") )
     {
-        double currentTime = simTime().dbl();
 
         void* relevantObject = msg->par("relevantObject").pointerValue();
         void (*timerCB) (void*) = (void (*) (void*))msg->par("callBack").pointerValue();

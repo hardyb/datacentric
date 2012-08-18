@@ -122,7 +122,7 @@ AAA00000064
 AAA0000000E
 seqno: 0
 true
-460
+457
 65535
 false
 false

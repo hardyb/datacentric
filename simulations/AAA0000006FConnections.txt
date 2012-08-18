@@ -34,7 +34,7 @@ true
 484
 65535
 true
-true
+false
 false
 false
 CONNECTION
@@ -83,20 +83,7 @@ AAA0000006F
 AAA00000017
 seqno: 0
 true
-926
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000006F
-0202FF06
-10
-AAA00000031
-seqno: 0
-true
-771
+752
 65535
 false
 false
@@ -119,10 +106,10 @@ CONNECTION
 AAA0000006F
 0202FF06
 10
-AAA00000061
+AAA00000008
 seqno: 0
 true
-497
+491
 65535
 false
 false
@@ -132,12 +119,12 @@ CONNECTION
 AAA0000006F
 0202FF06
 10
-20000000001
+AAA00000028
 seqno: 0
 true
-65535
+607
 65535
 false
 false
-true
-true
+false
+false

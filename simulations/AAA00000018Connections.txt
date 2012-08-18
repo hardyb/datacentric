@@ -18,20 +18,7 @@ AAA00000018
 AAA0000005A
 seqno: 0
 true
-460
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000018
-0202FF06
-11
-AAA00000027
-seqno: 0
-true
-448
+394
 65535
 false
 false
@@ -54,10 +41,23 @@ CONNECTION
 AAA00000018
 0202FF06
 11
-AAA0000000B
+AAA00000025
 seqno: 0
 true
-284
+246
+65535
+true
+false
+false
+false
+CONNECTION
+AAA00000018
+0202FF06
+11
+AAA00000027
+seqno: 0
+true
+917
 65535
 false
 false
@@ -73,19 +73,6 @@ true
 445
 65535
 false
-false
-false
-false
-CONNECTION
-AAA00000018
-0202FF06
-11
-AAA00000025
-seqno: 0
-true
-246
-65535
-true
 false
 false
 false
@@ -123,6 +110,19 @@ AAA0000000C
 seqno: 0
 true
 325
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000018
+0202FF06
+11
+AAA0000000B
+seqno: 0
+true
+284
 65535
 false
 false

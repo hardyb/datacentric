@@ -743,6 +743,7 @@ extern "C" {
 
 void removeIF(struct InterfaceList** l, struct Interface* _i);
 void add(struct InterfaceList** q, struct Interface* _i);
+void delete_queued_data(void* relevantObject);
 StateNode* newStateNode(int stateDataname);
 InterfaceNode* newInterfaceNode(int interfaceName);
 void freeInterfaceNode(InterfaceNode* n);
@@ -777,7 +778,7 @@ int SearchForKDNodeTransition(int input);
 
 struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno);
 
-void consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if);
+int consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if);
 
 
 /*
@@ -876,7 +877,7 @@ every name in the incoming message
 trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str);
 
 
-void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, void process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if));
+void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, int process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if));
 
 
 
