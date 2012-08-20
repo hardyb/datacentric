@@ -20,7 +20,7 @@ seqno: 0
 true
 320
 65535
-true
+false
 false
 false
 false
@@ -29,9 +29,9 @@ AAA00000029
 0202FF06
 11
 AAA00000043
-seqno: 0
+seqno: 1
 true
-613
+621
 65535
 false
 false
@@ -42,11 +42,11 @@ AAA00000029
 0202FF06
 11
 AAA00000073
-seqno: 0
+seqno: 1
 true
-876
+400
 65535
-false
+true
 false
 false
 false
@@ -55,9 +55,9 @@ AAA00000029
 0202FF06
 11
 AAA0000005F
-seqno: 0
+seqno: 1
 true
-627
+929
 65535
 false
 false
@@ -68,9 +68,9 @@ AAA00000029
 0202FF06
 11
 AAA00000018
-seqno: 0
+seqno: 1
 true
-402
+481
 65535
 false
 false
@@ -120,9 +120,9 @@ AAA00000029
 0202FF06
 11
 AAA00000062
-seqno: 0
+seqno: 1
 true
-630
+937
 65535
 false
 false

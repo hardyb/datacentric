@@ -285,7 +285,30 @@ void neighbour_addr_into_buf(NEIGHBOUR_ADDR _var, unsigned char* _buf)
 }
 
 
-unsigned int size_needed_for_outgoing_packet()
+unsigned int size_needed_for_outgoing_packet(new_packet* the_packet)
+{
+    unsigned int _size = sizeof(the_packet->message_type) + sizeof(the_packet->length)
+            + the_packet->length +   sizeof(the_packet->path_value)
+            +  sizeof(the_packet->excepted_interface)
+            +  sizeof(the_packet->down_interface)
+            +  sizeof(the_packet->seqno);
+    return _size;
+    /*
+     * outgoing_packet.message_type 1
+     * outgoing_packet.length 1
+     * outgoing_packet.length (data length) e.g. "\2\2\255\6" (4)
+     * outgoing_packet.path_value 2
+     * outgoing_packet.excepted_interface 8
+     * outgoing_packet.down_interface 8
+     * outgoing_packet.seqno 1
+     *
+     * TOTAL 25
+     */
+}
+
+
+
+unsigned int size_needed_for_outgoing_packet_old()
 {
     unsigned int _size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
             + outgoing_packet.length +   sizeof(outgoing_packet.path_value)
@@ -408,29 +431,74 @@ new_packet* packetCopy(new_packet* currentPkt)
 /*
  * Prepare a buffer for passing to upper layer to send
  */
-unsigned char* write_packet()
+unsigned char* write_packet(new_packet* the_packet)
 {
-    //outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
-    unsigned int size = size_needed_for_outgoing_packet();
-	//unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
-	//		+ outgoing_packet.length +   sizeof(outgoing_packet.path_value)
-    //        +  sizeof(outgoing_packet.excepted_interface)
-    //        +  sizeof(outgoing_packet.down_interface);
+    unsigned int size = size_needed_for_outgoing_packet(the_packet);
 	unsigned char* pkt = (unsigned char*)malloc(size);
 	unsigned int pkt_index = 0;
 
-	pkt[pkt_index] = outgoing_packet.message_type;
-	pkt_index+=sizeof(outgoing_packet.message_type);
+	pkt[pkt_index] = the_packet->message_type;
+	pkt_index+=sizeof(the_packet->message_type);
 
-	if ( (outgoing_packet.message_type == 1) && !outgoing_packet.length )
+	if ( (the_packet->message_type == 1) && !the_packet->length )
 	{
 	    std::cout << "zero packet data length" << std::endl;
 	}
 
-	pkt[pkt_index] = outgoing_packet.length;
-	pkt_index+=sizeof(outgoing_packet.length);
+	pkt[pkt_index] = the_packet->length;
+	pkt_index+=sizeof(the_packet->length);
 
-	memcpy(&(pkt[pkt_index]), outgoing_packet.data, outgoing_packet.length);
+	memcpy(&(pkt[pkt_index]), the_packet->data, the_packet->length);
+    pkt_index+=the_packet->length;
+
+    path_value_into_buf(the_packet->path_value, &(pkt[pkt_index]));
+    pkt_index+=sizeof(the_packet->path_value);
+
+    neighbour_addr_into_buf(the_packet->excepted_interface, &(pkt[pkt_index]));
+    pkt_index += sizeof(the_packet->excepted_interface);
+
+    neighbour_addr_into_buf(the_packet->down_interface, &(pkt[pkt_index]));
+    pkt_index += sizeof(the_packet->down_interface);
+
+    pkt[pkt_index] = the_packet->seqno;
+
+	//pkt[pkt_index] = (char)(outgoing_packet.path_value & 0xFF); // lsb goes first in buff;
+	//pkt[pkt_index+1] = (char)(outgoing_packet.path_value >> 8); // msb goes second in buff;
+
+	return pkt;
+}
+
+
+
+
+
+
+/*
+ * Prepare a buffer for passing to upper layer to send
+ */
+unsigned char* write_packet_old()
+{
+    //outgoing_packet.length = outgoing_packet.data ? strlen((const char*)outgoing_packet.data) : 0;
+    unsigned int size = size_needed_for_outgoing_packet_old();
+    //unsigned int size = sizeof(outgoing_packet.message_type) + sizeof(outgoing_packet.length)
+    //      + outgoing_packet.length +   sizeof(outgoing_packet.path_value)
+    //        +  sizeof(outgoing_packet.excepted_interface)
+    //        +  sizeof(outgoing_packet.down_interface);
+    unsigned char* pkt = (unsigned char*)malloc(size);
+    unsigned int pkt_index = 0;
+
+    pkt[pkt_index] = outgoing_packet.message_type;
+    pkt_index+=sizeof(outgoing_packet.message_type);
+
+    if ( (outgoing_packet.message_type == 1) && !outgoing_packet.length )
+    {
+        std::cout << "zero packet data length" << std::endl;
+    }
+
+    pkt[pkt_index] = outgoing_packet.length;
+    pkt_index+=sizeof(outgoing_packet.length);
+
+    memcpy(&(pkt[pkt_index]), outgoing_packet.data, outgoing_packet.length);
     pkt_index+=outgoing_packet.length;
 
     path_value_into_buf(outgoing_packet.path_value, &(pkt[pkt_index]));
@@ -444,11 +512,12 @@ unsigned char* write_packet()
 
     pkt[pkt_index] = outgoing_packet.seqno;
 
-	//pkt[pkt_index] = (char)(outgoing_packet.path_value & 0xFF); // lsb goes first in buff;
-	//pkt[pkt_index+1] = (char)(outgoing_packet.path_value >> 8); // msb goes second in buff;
+    //pkt[pkt_index] = (char)(outgoing_packet.path_value & 0xFF); // lsb goes first in buff;
+    //pkt[pkt_index+1] = (char)(outgoing_packet.path_value >> 8); // msb goes second in buff;
 
-	return pkt;
+    return pkt;
 }
+
 
 
 
@@ -755,7 +824,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		outgoing_packet.seqno = s->seqno;
 
         //sendAMessage(_if, write_packet());
-        bcastAMessage(write_packet());
+        bcastAMessage(write_packet(&outgoing_packet));
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
@@ -780,7 +849,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 
  		std::cout << "Sending interest packet to: " << _if << std::endl;
         //sendAMessage(_if, write_packet());
-        bcastAMessage(write_packet());
+        bcastAMessage(write_packet(&outgoing_packet));
  	}
 
 
@@ -811,7 +880,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 
         // ??? something here ???
         //sendAMessage(_if, write_packet());
-        bcastAMessage(write_packet());
+        bcastAMessage(write_packet(&outgoing_packet));
     }
 
 
@@ -1080,7 +1149,7 @@ int InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             outgoing_packet.path_value = 0;
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
             outgoing_packet.down_interface = _if;
-            sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet());
+            sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet(&outgoing_packet));
         }
     }
 
@@ -1197,7 +1266,7 @@ void handle_interest_correction(control_data cd)
 #endif
         outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;//_interface;
         outgoing_packet.down_interface = incoming_packet.down_interface;
-        bcastAMessage(write_packet());
+        bcastAMessage(write_packet(&outgoing_packet));
     }
 
 }
@@ -2679,7 +2748,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                 {
                     // some how we need to know whether this send
                     // from the queue
-                    sendAMessage(temp->i->iName, write_packet());
+                    sendAMessage(temp->i->iName, write_packet(sending_packet));
                     sent = 1;
                     // length taken from incoming/outgoing message not strlen
 
@@ -3174,7 +3243,7 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
             outgoing_packet.down_interface = _if; // probably discontinuing this feature
             outgoing_packet.seqno = s->seqno;
-            bcastAMessage(write_packet());
+            bcastAMessage(write_packet(&outgoing_packet));
             break;
         }
         temp = temp->link;
@@ -3217,6 +3286,29 @@ void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 
 
+void initiate_new_interest(void* relevantObject)
+{
+    State* s = (State*)relevantObject;
+
+    // think we should just use what we get in
+    //t->s->seqno++;
+    // may be we SHOULD NOT actually increase ABOVE
+    // but just pass in below an increased value
+    // becuase may be it later takes IMPORTANT action BASED ON whether
+    // the seqno has just increased!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    static unsigned char data[20];
+    GetStateStr(rd->top_state, s, data);
+
+    weAreSinkFor(data, s->seqno+1);
+    // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
+    UcastAllBestGradients(rd->top_state, 0);
+
+}
+
+
+
+
 
 void handle_breakage(control_data cd)
 {
@@ -3236,9 +3328,12 @@ void handle_breakage(control_data cd)
             // but just pass in below an increased value
             // becuase may be it later takes IMPORTANT action BASED ON whether
             // the seqno has just increased!!!!!!!!!!!!!!!!!!!!!!!!!
-            weAreSinkFor(incoming_packet.data, t->s->seqno+1);
+            //weAreSinkFor(incoming_packet.data, t->s->seqno+1);
             // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
-            UcastAllBestGradients(rd->top_state, 0);
+            //UcastAllBestGradients(rd->top_state, 0);
+
+            t->s->broken = 1;
+            setTimer(0.03, t->s, initiate_new_interest);
         }
         else
         {
@@ -3250,7 +3345,7 @@ void handle_breakage(control_data cd)
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // discontinuing?
             outgoing_packet.seqno = incoming_packet.seqno;
-            bcastAMessage(write_packet());
+            bcastAMessage(write_packet(&outgoing_packet));
         }
     }
     // else
@@ -3765,7 +3860,7 @@ void handle_advert(control_data cd)
             //outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
             outgoing_packet.path_value = outgoingLinkCost(cd);
 			outgoing_packet.excepted_interface = _interface;
-		    bcastAMessage(write_packet());
+		    bcastAMessage(write_packet(&outgoing_packet));
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
 
 
@@ -3828,7 +3923,7 @@ void handle_collaboration(control_data cd)
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
             outgoing_packet.excepted_interface = _interface;
-            bcastAMessage(write_packet());
+            bcastAMessage(write_packet(&outgoing_packet));
             //SendToAllInterfacesExcept(rd->interfaceTree, _interface);
         }
     }
@@ -3899,6 +3994,11 @@ are ready to reinforce?
 
 
 */
+
+
+
+
+
 
 
 void interest_convergence_timeout(void* relevantObject)
@@ -4208,7 +4308,7 @@ void handle_interest(control_data cd)
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             outgoing_packet.seqno = incoming_packet.seqno;
-            bcastAMessage(write_packet());
+            bcastAMessage(write_packet(&outgoing_packet));
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
 		}
 	}
@@ -4276,7 +4376,7 @@ void handle_reinforce(control_data cd)
         outgoing_packet.down_interface = incoming_packet.down_interface;
         outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
         std::cout << "Forwarding ADV Reinforce to " << std::hex << interface << std::endl;
-		sendAMessage(interface, write_packet());
+		sendAMessage(interface, write_packet(&outgoing_packet));
 
 	}
 
@@ -4346,7 +4446,7 @@ void handle_reinforce_interest(control_data cd)
             outgoing_packet.down_interface = incoming_packet.down_interface;
             outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
             outgoing_packet.seqno = incoming_packet.seqno;
-            sendAMessage(interface, write_packet());
+            sendAMessage(interface, write_packet(&outgoing_packet));
         }
 	}
 
@@ -4396,7 +4496,7 @@ void handle_reinforce_collaboration(control_data cd)
         outgoing_packet.path_value = 0;
         outgoing_packet.down_interface = incoming_packet.down_interface;
         outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
-        sendAMessage(interface, write_packet());
+        sendAMessage(interface, write_packet(&outgoing_packet));
     }
 
 }
@@ -4462,7 +4562,7 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
 		outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
         std::cout << "FIRST ADV Reinforce to " << std::hex << interface << std::endl;
-		sendAMessage(interface, write_packet());
+		sendAMessage(interface, write_packet(&outgoing_packet));
 
 	}
 
@@ -4513,7 +4613,7 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0;
 		outgoing_packet.seqno = seqno;
-		sendAMessage(interface, write_packet());
+		sendAMessage(interface, write_packet(&outgoing_packet));
 
 	}
 
@@ -4563,7 +4663,7 @@ void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_
         outgoing_packet.down_interface = UNKNOWN_INTERFACE;
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
         outgoing_packet.path_value = 0;
-        sendAMessage(interface, write_packet());
+        sendAMessage(interface, write_packet(&outgoing_packet));
 
     }
 
@@ -4681,7 +4781,7 @@ void StartUp()
     outgoing_packet.down_interface = UNKNOWN_INTERFACE;
     outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 	outgoing_packet.path_value = 0;
-	bcastAMessage(write_packet());
+	bcastAMessage(write_packet(&outgoing_packet));
 
 }
 

@@ -328,6 +328,9 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
     Enter_Method("receiveChangeNotification(int category, const cPolymorphic *details)");
     SetCurrentModuleInCLanguageFramework();
 
+    std::string fName = this->getParentModule()->getFullName();
+    double currentTime = simTime().dbl();
+
     Ieee802154Frame * f;
     switch (category)
     {
@@ -340,7 +343,6 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             NEIGHBOUR_ADDR destIF = destMac.getInt();
             DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
 
-            double currentTime = simTime().dbl();
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
             switch ( *pkt )
@@ -913,17 +915,15 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
         {
             currentModule->cancelEvent((*i));
             currentModule->scheduleAt(simTime() + timeout, (*i));
+            return;
         }
-        else
-        {
-            cMessage* m = new cMessage("FrameworkTimeout");
-            m->addPar("relevantObject").setPointerValue(relevantObject);
-            m->addPar("callBack").setPointerValue((void*)timeout_callback);
-            currentModule->mTimeoutMessages2.insert(m);
-            currentModule->scheduleAt(simTime() + timeout, m);
-        }
-
     }
+
+    cMessage* m = new cMessage("FrameworkTimeout");
+    m->addPar("relevantObject").setPointerValue(relevantObject);
+    m->addPar("callBack").setPointerValue((void*)timeout_callback);
+    currentModule->mTimeoutMessages2.insert(m);
+    currentModule->scheduleAt(simTime() + timeout, m);
 
     return;
 
@@ -1137,16 +1137,6 @@ static void cb_bcast_message(unsigned char* _msg)
 
 
 
-    if ( SIMTIME_ZERO == currentModule->mLastInterestDepartureTime )
-    {
-        currentModule->mLastInterestDepartureTime = simTime();
-    }
-    else
-    {
-        currentModule->InterestInterDepartureTimesVector.record(simTime() -
-                                                currentModule->mLastInterestDepartureTime);
-        currentModule->mLastInterestDepartureTime = simTime();
-    }
 
 
 
@@ -1166,6 +1156,26 @@ static void cb_bcast_message(unsigned char* _msg)
             break;
         case INTEREST:
             std::cout << "Interest size: " << pktSize << std::endl;
+            if ( SIMTIME_ZERO == currentModule->mLastInterestDepartureTime )
+            {
+                currentModule->mLastInterestDepartureTime = simTime();
+            }
+            else
+            {
+                if ( (simTime() - currentModule->mLastInterestDepartureTime) > 1.0 )
+                {
+                    // short term assumption that new seqno out
+                    // in long term try to introduce DEBUG code callbacks
+                    // from framework - not compile in real thing
+                    currentModule->mLastInterestDepartureTime = simTime();
+                }
+                else
+                {
+                    currentModule->InterestInterDepartureTimesVector.record(simTime() -
+                                                            currentModule->mLastInterestDepartureTime);
+                    currentModule->mLastInterestDepartureTime = simTime();
+                }
+            }
             break;
         case ADVERT:
             //std::cout << "Advert size: " << pktSize;

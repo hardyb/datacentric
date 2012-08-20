@@ -20,7 +20,7 @@ seqno: 0
 true
 269
 65535
-true
+false
 false
 false
 false
@@ -42,9 +42,9 @@ AAA0000005A
 0202FF06
 11
 AAA00000027
-seqno: 0
+seqno: 1
 true
-907
+597
 65535
 false
 false
@@ -55,9 +55,9 @@ AAA0000005A
 0202FF06
 11
 AAA00000054
-seqno: 0
+seqno: 1
 true
-468
+632
 65535
 false
 false
@@ -81,11 +81,11 @@ AAA0000005A
 0202FF06
 11
 AAA00000018
-seqno: 0
+seqno: 1
 true
-371
+450
 65535
-false
+true
 false
 false
 false

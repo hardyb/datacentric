@@ -3,12 +3,12 @@ AAA0000001A
 0202FF06
 10
 AAA00000006
-seqno: 0
+seqno: 1
 true
 156
 65535
 true
-false
+true
 false
 false
 CONNECTION
@@ -16,7 +16,7 @@ AAA0000001A
 0202FF06
 10
 AAA0000002E
-seqno: 0
+seqno: 1
 true
 374
 65535
@@ -29,7 +29,7 @@ AAA0000001A
 0202FF06
 10
 AAA00000010
-seqno: 0
+seqno: 1
 true
 302
 65535
@@ -50,6 +50,19 @@ false
 false
 false
 false
+CONNECTION
+AAA0000001A
+0202FF06
+10
+20000000001
+seqno: 0
+true
+65535
+65535
+false
+false
+true
+true
 CONNECTION
 AAA0000001A
 0202FF06
@@ -107,7 +120,7 @@ AAA0000001A
 0202FF06
 10
 AAA0000000C
-seqno: 0
+seqno: 1
 true
 263
 65535

@@ -24,6 +24,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         ucastNumInterestPackets = 0;
         numAdvertPackets = 0;
         numReinforcementPackets = 0;
+        numBreakagePackets = 0;
 
 
         controlPackets.setName("ControlPackets");
@@ -38,6 +39,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         advertPacketFrequency.setName("advertPacketFrequency");
         reinforcementPacketFrequency.setName("reinforcementPacketFrequency");
         dataPacketE2EDelay.setName("dataPacketE2EDelay");
+        breakagePacketFrequency.setName("breakagePacketFrequency");
 
         /*
          * A region has top left coord (x,y) and width and height w, h
@@ -147,6 +149,7 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         ucastInterestPacketFrequency.record(ucastNumInterestPackets);
         advertPacketFrequency.record(numAdvertPackets);
         reinforcementPacketFrequency.record(numReinforcementPackets);
+        breakagePacketFrequency.record(numBreakagePackets);
 
 
 
@@ -162,6 +165,7 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         ucastNumInterestPackets = 0;
         numAdvertPackets = 0;
         numReinforcementPackets = 0;
+        numBreakagePackets = 0;
 
 
     }
@@ -219,6 +223,9 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
         break;
     case NEIGHBOR_BCAST:
         numHelloPackets++;
+        break;
+    case BREAKAGE:
+        numBreakagePackets++;
         break;
     }
 

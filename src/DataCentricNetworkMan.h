@@ -43,6 +43,7 @@ class DataCentricNetworkMan : public cSimpleModule
     double ucastNumInterestPackets;
     double numAdvertPackets;
     double numReinforcementPackets;
+    double numBreakagePackets;
 
 
 
@@ -57,6 +58,9 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector advertPacketFrequency;
     cOutVector reinforcementPacketFrequency;
     cOutVector dataPacketE2EDelay;
+    cOutVector breakagePacketFrequency;
+
+
     unsigned int numDataArrivals;
 
 

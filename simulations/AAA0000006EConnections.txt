@@ -3,7 +3,7 @@ AAA0000006E
 0202FF06
 11
 AAA00000006
-seqno: 0
+seqno: 1
 true
 138
 65535
@@ -16,7 +16,7 @@ AAA0000006E
 0202FF06
 11
 AAA00000010
-seqno: 0
+seqno: 1
 true
 328
 65535
@@ -94,9 +94,9 @@ AAA0000006E
 0202FF06
 11
 AAA00000018
-seqno: 0
+seqno: 1
 true
-412
+491
 65535
 false
 false
@@ -107,7 +107,7 @@ AAA0000006E
 0202FF06
 11
 AAA0000000C
-seqno: 0
+seqno: 1
 true
 325
 65535

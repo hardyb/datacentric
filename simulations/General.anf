@@ -77,6 +77,16 @@
         <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan reinforcementPacketFrequency" value="false"/>
         <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan ucastInterestPacketFrequency" value="false"/>
       </items>
+      <items xsi:type="scave:Discard" filterPattern="RangeLqis" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="breakagePacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="breakagePacketFrequency" lineNameFormat="">
+        <properties name="Line.Display/bcastInterestPacketFrequency" value="false"/>
+        <properties name="Line.Display/advertPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloBackPacketFrequency" value="false"/>
+        <properties name="Line.Display/helloPacketFrequency" value="false"/>
+        <properties name="Line.Display/reinforcementPacketFrequency" value="false"/>
+        <properties name="Line.Display/ucastInterestPacketFrequency" value="false"/>
+      </items>
     </datasets>
     <datasets name="Another">
       <items xsi:type="scave:Add" filterPattern="ignoreRatio"/>
@@ -102,6 +112,6 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22 //@datasets/@datasets.0/@items.25 //@datasets/@datasets.0/@items.28 //@datasets/@datasets.0/@items.31 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.34 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.1/@items.7 //@datasets/@datasets.1/@items.10 //@datasets/@datasets.1/@items.13 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.2/@items.3"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22 //@datasets/@datasets.0/@items.25 //@datasets/@datasets.0/@items.28 //@datasets/@datasets.0/@items.31 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.34 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.1/@items.7 //@datasets/@datasets.1/@items.10 //@datasets/@datasets.1/@items.13 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.2/@items.3 //@datasets/@datasets.0/@items.37"/>
   </chartSheets>
 </scave:Analysis>
