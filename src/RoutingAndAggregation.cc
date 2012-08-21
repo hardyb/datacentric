@@ -14,7 +14,7 @@ unsigned char current_prefix_name[100];
 #include <string.h>
 
 
-#define USE_NODE_STABILITY_COST 1
+//#define USE_NODE_STABILITY_COST 1
 
 #define MAKE_LOCAL_VARIABLES_FOR_DEBUGGER 1
 
@@ -1196,7 +1196,7 @@ void handle_interest_correction(control_data cd)
 
     if ( incoming_packet.excepted_interface == thisAddress )
     {
-        return;
+        //return;
     }
 
     // find incoming state s and interface i and current best cost
@@ -3597,7 +3597,7 @@ void UpdateGradientFile()
 #endif
 
 
-void send_data(int len, unsigned char* _data)
+void send_data(int len, unsigned char* _data, double _creationTime)
 {
     incoming_packet.message_type = DATA;
     incoming_packet.length = len;
@@ -3608,6 +3608,7 @@ void send_data(int len, unsigned char* _data)
     incoming_packet.path_value = 0;
     incoming_packet.down_interface = UNKNOWN_INTERFACE;
     incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
+    incoming_packet.creation_time = _creationTime;
     control_data cd;
     cd.incoming_if = SELF_INTERFACE;
     cd.incoming_lqi = 0;
@@ -3751,7 +3752,7 @@ void handle_advert(control_data cd)
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
     {
-        return;
+        //return;
     }
 
 	//static rpacket p;
@@ -4200,16 +4201,24 @@ void handle_interest(control_data cd)
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
     {
-        return;
+        //return;
     }
 
-// TODO
-// Do this later
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
-	static rpacket p;
+    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
+    State* s = t->s;
+
+    if ( s->converged )
+    {
+        return;
+
+    }
+
+	//static rpacket p;
 	//static struct StateNode* n;
-	trie* t;
-	static struct KDGradientNode* k;
+	//trie* t;
+	//static struct KDGradientNode* k;
 
 	//struct KDGradientNode* setDeliverGradient(int sName, NEIGHBOUR_ADDR iName, int pCost);
 
@@ -4238,10 +4247,16 @@ void handle_interest(control_data cd)
 
 
 
-	t = trie_add(rd->top_state, incoming_packet.data, STATE);
+	//t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
     // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
-	State* s = t->s;
+	//State* s = t->s;
+
+	//if ( s->converged )
+	//{
+
+	//}
+
     if ( incoming_packet.seqno < s->seqno )
     {
         return; // I think this is right, i.e. ignore any old seq ints/advs
@@ -4253,6 +4268,7 @@ void handle_interest(control_data cd)
     //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
     setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
 
+    // check this out!!
     if ( incoming_packet.down_interface == thisAddress )
         return;
 
@@ -4278,7 +4294,7 @@ void handle_interest(control_data cd)
 
             // try doing timeout for ALL nodes
             t->s->converged = 0;
-            setTimer(0.1, t->s, interest_convergence_timeout);
+            setTimer(0.2, t->s, interest_convergence_timeout);
 
             if ( t->s->action == FORWARD_AND_SOURCEPREFIX )
             {

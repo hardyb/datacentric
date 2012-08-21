@@ -63,6 +63,11 @@ static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg, double _creationTime);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 static void cb_recordNeighbourLqi(Interface* i, State* s);
+static void cb_printNeighbour(Interface* i, State* s);
+
+
+
+
 //static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
 
 
@@ -208,10 +213,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         // OLD STUFF
-        //if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
-        //{
-        //    scheduleAt(simTime() + 4.0, mpUpDownMessage);
-        //}
+        if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
+        {
+            scheduleAt(simTime() + 2.0, mpUpDownMessage);
+        }
         //else
         //{
         //    scheduleAt(simTime() + thePoisson, mpUpDownMessage);
@@ -296,6 +301,19 @@ void DataCentricNetworkLayer::finish()
 
 
 }
+
+
+
+static void cb_printNeighbour(Interface* i, State* s)
+{
+    cout << "Neighbour: " << hex<< i->iName << endl;
+
+
+}
+
+
+
+
 
 
 static void cb_recordNeighbourLqi(Interface* i, State* s)
@@ -419,6 +437,9 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if ( msg == mMessageForTesting_1 )
     {
+        TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+        return;
+
         // MOVE THIS BIT INTO FRAMEWORK
         unsigned char temp[30];
         unsigned char x[20];
@@ -439,11 +460,13 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpUpDownMessage )
     {
-        if ( uniform(0,1) <= mStability  )
+        if ( 1 )//uniform(0,1) <= mStability  )
         {
             if ( mPhyModule->isEnabled() )
             {
                 cout << "MODULE GOING DOWN: " << fName << endl;
+                TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+
                 mPhyModule->disableModule();
                 mNetMan->changeInModulesDown(1.0);
 
@@ -469,6 +492,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             else
             {
                 cout << "MODULE COMING UP: " << fName << endl;
+                scheduleAt(simTime() + 0.5, mMessageForTesting_1);
+
                 mPhyModule->enableModule();
                 mNetMan->changeInModulesDown(-1.0);
 
@@ -648,7 +673,7 @@ void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
 {
     unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
-    send_data(appPkt->getPktData().size(), data);
+    send_data(appPkt->getPktData().size(), data, simTime().dbl());
     free(data);
 }
 
@@ -670,7 +695,7 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
     stateLen += strlen((const char*)index);
     unsigned char* data = (unsigned char*)malloc(stateLen);
     memcpy(data, x, stateLen);
-    send_data(stateLen, data);
+    send_data(stateLen, data, simTime().dbl());
     free(data);
 }
 

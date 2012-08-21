@@ -821,7 +821,7 @@ void weAreSinkFor(unsigned char* _data, char seqno);
 int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
 void weAreCollaboratorFor(unsigned char* _data);
 void weAreCollaboratorInitiatorFor(unsigned char* _data);
-void send_data(int len, unsigned char* _data);
+void send_data(int len, unsigned char* _data, double _creationTime);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime);
 void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();

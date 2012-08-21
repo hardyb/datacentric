@@ -3,7 +3,7 @@ AAA00000006
 0202FF06
 11
 20000000001
-seqno: 2
+seqno: 0
 true
 0
 65535
@@ -15,36 +15,101 @@ CONNECTION
 AAA00000006
 0202FF06
 11
+AAA00000010
+seqno: 0
+true
+338
+65535
+false
+false
+false
+true
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA0000007B
+seqno: 0
+true
+292
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA00000042
+seqno: 0
+true
+240
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA0000006E
+seqno: 0
+true
+276
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA00000038
+seqno: 0
+true
+312
+65535
+false
+false
+false
+true
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA00000011
+seqno: 0
+true
+302
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000006
+0202FF06
+11
+AAA00000032
+seqno: 0
+true
+332
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000006
+0202FF06
+11
 AAA0000001A
-seqno: 2
+seqno: 0
 true
-406
-65535
-false
-false
-true
-true
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA00000003
-seqno: 2
-true
-424
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA00000065
-seqno: 2
-true
-370
+312
 65535
 false
 false
@@ -55,98 +120,20 @@ AAA00000006
 0202FF06
 11
 AAA00000049
-seqno: 2
-true
-354
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA0000005E
 seqno: 0
 true
+296
 65535
-65535
 false
 false
-false
+true
 true
 CONNECTION
 AAA00000006
 0202FF06
 11
-AAA0000002B
+AAA00000065
 seqno: 0
-true
-65535
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA0000000B
-seqno: 2
-true
-423
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA0000005C
-seqno: 2
-true
-444
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA00000011
-seqno: 2
-true
-390
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA0000002F
-seqno: 2
-true
-65535
-65535
-false
-false
-false
-true
-CONNECTION
-AAA00000006
-0202FF06
-11
-AAA00000042
-seqno: 2
 true
 65535
 65535
