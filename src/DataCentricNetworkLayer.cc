@@ -58,9 +58,9 @@ static char messageName[9][24] =
 
 
 static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
-static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg);
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
 static void cb_bcast_message(unsigned char* _msg);
-static void cb_handle_application_data(unsigned char* _msg);
+static void cb_handle_application_data(unsigned char* _msg, double _creationTime);
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 static void cb_recordNeighbourLqi(Interface* i, State* s);
 //static void write_one_gradient(KDGradientNode* g, unsigned char* _name);
@@ -91,6 +91,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         TotalInterestArrivalsVector.setName("TotalInterestArrivals");
         InterestInterArrivalTimesVector.setName("InterestInterArrivalTimesVector");
         InterestInterDepartureTimesVector.setName("InterestInterDepartureTimesVector");
+        StabilityVector.setName("StabilityVector");
 
 
         mTotalInterestArrivals = 0.0;
@@ -363,7 +364,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                      * Also may be important to write this aspect into
                      * the requirements of the framework
                      */
-                    interest_breakage_just_ocurred(pkt, destIF);
+                    interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
                     break;
             }
         }
@@ -438,12 +439,13 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpUpDownMessage )
     {
-        if ( mStability <= uniform(0,1) )
+        if ( uniform(0,1) <= mStability  )
         {
             if ( mPhyModule->isEnabled() )
             {
                 cout << "MODULE GOING DOWN: " << fName << endl;
                 mPhyModule->disableModule();
+                mNetMan->changeInModulesDown(1.0);
 
                 freeKDGradientNode(moduleRD.grTree);
                 freeInterfaceNode(moduleRD.interfaceTree);
@@ -468,9 +470,20 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             {
                 cout << "MODULE COMING UP: " << fName << endl;
                 mPhyModule->enableModule();
+                mNetMan->changeInModulesDown(-1.0);
+
                 mQueueModule->requestPacket(); // reprime the previously cleared nic queue
                 StartUp();
             }
+        }
+
+        if ( mPhyModule->isEnabled() )
+        {
+            StabilityVector.record(0.0);
+        }
+        else
+        {
+            StabilityVector.record(1.0);
         }
 
         scheduleAt(simTime() + 1.0, mpUpDownMessage);
@@ -596,7 +609,8 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
         default:
             break;
     }
-    handle_message(pkt, previousAddress, lqi);
+    double creationTime = appPkt->getCreationTime().dbl();
+    handle_message(pkt, previousAddress, lqi, creationTime);
     free(pkt);
 }
 
@@ -959,7 +973,7 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 
 
 
-static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime)
 {
     /*
      * This is a generic call back for the data centric routing framework
@@ -1067,9 +1081,13 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg)
 
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
-    appPkt->setCreationTime(currentModule->currentPktCreationTime);
+    //appPkt->setCreationTime(currentModule->currentPktCreationTime);
+    appPkt->setCreationTime(_creationTime);
 
-    cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+
+
+    //cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+    cout << endl << "RECREATE ORIG CREATE TIME:      " << _creationTime << endl;
 
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
@@ -1167,6 +1185,10 @@ static void cb_bcast_message(unsigned char* _msg)
                     // short term assumption that new seqno out
                     // in long term try to introduce DEBUG code callbacks
                     // from framework - not compile in real thing
+                    currentModule->InterestInterDepartureTimesVector.recordWithTimestamp(
+                            currentModule->mLastInterestDepartureTime+0.0001, 0.0);
+                    currentModule->InterestInterDepartureTimesVector.recordWithTimestamp(
+                            simTime(), 0.0);
                     currentModule->mLastInterestDepartureTime = simTime();
                 }
                 else
@@ -1190,8 +1212,8 @@ static void cb_bcast_message(unsigned char* _msg)
 
 
     //appPkt->setCreationTime(simTime());
-    appPkt->setCreationTime(currentModule->currentPktCreationTime);
-    cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+    //appPkt->setCreationTime(currentModule->currentPktCreationTime);
+    //cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
 
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
@@ -1221,7 +1243,7 @@ static void cb_bcast_message(unsigned char* _msg)
 
 
 
-static void cb_handle_application_data(unsigned char* _msg)
+static void cb_handle_application_data(unsigned char* _msg, double _creationTime)
 {
     // work still to do here
     // packetbuf_copyto(_msg, MESSAGE_SIZE);
@@ -1237,8 +1259,10 @@ static void cb_handle_application_data(unsigned char* _msg)
         _msg++;
     }
 
-    cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
-    simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
+    //cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
+    cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << _creationTime << endl;
+    //simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
+    simtime_t endToEndDelay = simTime() - _creationTime;
     cout <<         "END TO END DELAY:               " << endToEndDelay << endl;
     currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
 

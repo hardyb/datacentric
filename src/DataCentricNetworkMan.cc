@@ -25,6 +25,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         numAdvertPackets = 0;
         numReinforcementPackets = 0;
         numBreakagePackets = 0;
+        numModulesDown = 0;
 
 
         controlPackets.setName("ControlPackets");
@@ -40,6 +41,10 @@ void DataCentricNetworkMan::initialize(int aStage)
         reinforcementPacketFrequency.setName("reinforcementPacketFrequency");
         dataPacketE2EDelay.setName("dataPacketE2EDelay");
         breakagePacketFrequency.setName("breakagePacketFrequency");
+        modulesDownVector.setName("modulesDownVector");
+
+
+
 
         /*
          * A region has top left coord (x,y) and width and height w, h
@@ -189,6 +194,17 @@ void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
     numDataArrivals++;
 
 }
+
+
+void DataCentricNetworkMan::changeInModulesDown(double adjustment)
+{
+    Enter_Method("changeInModulesDown(double adjustment)");
+
+    numModulesDown += adjustment;
+    modulesDownVector.record(numModulesDown);
+
+}
+
 
 
 void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)

@@ -1,393 +1,526 @@
-                                                                
+file 285770 1345559034                                          
 version 2
-run General-0-20120820-22:37:27-3384
+run General-0-20120821-15:20:50-3908
 attr configname General
-attr datetime 20120820-22:37:27
+attr datetime 20120821-15:20:50
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 3384
+attr processid 3908
 attr repetition 0
 attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
 
-vector 1125  DataCentricNet.dataCentricNetworkMan  ControlPackets  ETV
-vector 1126  DataCentricNet.dataCentricNetworkMan  controlPacketFrequency  ETV
-vector 1127  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
-vector 1128  DataCentricNet.dataCentricNetworkMan  helloBackPacketFrequency  ETV
-vector 1129  DataCentricNet.dataCentricNetworkMan  bcastInterestPacketFrequency  ETV
-vector 1130  DataCentricNet.dataCentricNetworkMan  ucastInterestPacketFrequency  ETV
-vector 1131  DataCentricNet.dataCentricNetworkMan  advertPacketFrequency  ETV
-vector 1132  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
-vector 1134  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
-vector 53  DataCentricNet.host[5].net  InterestInterDepartureTimesVector  ETV
-vector 537  DataCentricNet.host[59].net  TotalInterestArrivals  ETV
-vector 528  DataCentricNet.host[58].net  TotalInterestArrivals  ETV
-vector 843  DataCentricNet.host[93].net  TotalInterestArrivals  ETV
-vector 960  DataCentricNet.host[106].net  TotalInterestArrivals  ETV
-vector 591  DataCentricNet.host[65].net  TotalInterestArrivals  ETV
-vector 384  DataCentricNet.host[42].net  TotalInterestArrivals  ETV
-vector 906  DataCentricNet.host[100].net  TotalInterestArrivals  ETV
-vector 987  DataCentricNet.host[109].net  TotalInterestArrivals  ETV
-vector 420  DataCentricNet.host[46].net  TotalInterestArrivals  ETV
-vector 492  DataCentricNet.host[54].net  TotalInterestArrivals  ETV
-vector 1104  DataCentricNet.host[122].net  TotalInterestArrivals  ETV
-vector 654  DataCentricNet.host[72].net  TotalInterestArrivals  ETV
-vector 150  DataCentricNet.host[16].net  TotalInterestArrivals  ETV
-vector 231  DataCentricNet.host[25].net  TotalInterestArrivals  ETV
-vector 501  DataCentricNet.host[55].net  TotalInterestArrivals  ETV
-vector 735  DataCentricNet.host[81].net  TotalInterestArrivals  ETV
-vector 96  DataCentricNet.host[10].net  TotalInterestArrivals  ETV
-vector 105  DataCentricNet.host[11].net  TotalInterestArrivals  ETV
-vector 897  DataCentricNet.host[99].net  TotalInterestArrivals  ETV
-vector 330  DataCentricNet.host[36].net  TotalInterestArrivals  ETV
-vector 24  DataCentricNet.host[2].net  TotalInterestArrivals  ETV
-vector 1122  DataCentricNet.host[124].net  TotalInterestArrivals  ETV
-vector 510  DataCentricNet.host[56].net  TotalInterestArrivals  ETV
-vector 447  DataCentricNet.host[49].net  TotalInterestArrivals  ETV
-vector 141  DataCentricNet.host[15].net  TotalInterestArrivals  ETV
-vector 825  DataCentricNet.host[91].net  TotalInterestArrivals  ETV
-vector 213  DataCentricNet.host[23].net  TotalInterestArrivals  ETV
-vector 807  DataCentricNet.host[89].net  TotalInterestArrivals  ETV
-vector 294  DataCentricNet.host[32].net  TotalInterestArrivals  ETV
-vector 1113  DataCentricNet.host[123].net  TotalInterestArrivals  ETV
-vector 1095  DataCentricNet.host[121].net  TotalInterestArrivals  ETV
-vector 411  DataCentricNet.host[45].net  TotalInterestArrivals  ETV
-vector 699  DataCentricNet.host[77].net  TotalInterestArrivals  ETV
-vector 303  DataCentricNet.host[33].net  TotalInterestArrivals  ETV
-vector 564  DataCentricNet.host[62].net  TotalInterestArrivals  ETV
-vector 312  DataCentricNet.host[34].net  TotalInterestArrivals  ETV
-vector 1086  DataCentricNet.host[120].net  TotalInterestArrivals  ETV
-vector 1023  DataCentricNet.host[113].net  TotalInterestArrivals  ETV
-vector 762  DataCentricNet.host[84].net  TotalInterestArrivals  ETV
-vector 33  DataCentricNet.host[3].net  TotalInterestArrivals  ETV
-vector 1014  DataCentricNet.host[112].net  TotalInterestArrivals  ETV
-vector 474  DataCentricNet.host[52].net  TotalInterestArrivals  ETV
-vector 375  DataCentricNet.host[41].net  TotalInterestArrivals  ETV
-vector 6  DataCentricNet.host[0].net  TotalInterestArrivals  ETV
-vector 456  DataCentricNet.host[50].net  TotalInterestArrivals  ETV
-vector 753  DataCentricNet.host[83].net  TotalInterestArrivals  ETV
-vector 132  DataCentricNet.host[14].net  TotalInterestArrivals  ETV
-vector 933  DataCentricNet.host[103].net  TotalInterestArrivals  ETV
-vector 771  DataCentricNet.host[85].net  TotalInterestArrivals  ETV
-vector 726  DataCentricNet.host[80].net  TotalInterestArrivals  ETV
-vector 672  DataCentricNet.host[74].net  TotalInterestArrivals  ETV
-vector 123  DataCentricNet.host[13].net  TotalInterestArrivals  ETV
-vector 582  DataCentricNet.host[64].net  TotalInterestArrivals  ETV
-vector 816  DataCentricNet.host[90].net  TotalInterestArrivals  ETV
-vector 177  DataCentricNet.host[19].net  TotalInterestArrivals  ETV
-vector 969  DataCentricNet.host[107].net  TotalInterestArrivals  ETV
-vector 60  DataCentricNet.host[6].net  TotalInterestArrivals  ETV
-vector 951  DataCentricNet.host[105].net  TotalInterestArrivals  ETV
-vector 348  DataCentricNet.host[38].net  TotalInterestArrivals  ETV
-vector 519  DataCentricNet.host[57].net  TotalInterestArrivals  ETV
-vector 780  DataCentricNet.host[86].net  TotalInterestArrivals  ETV
-vector 861  DataCentricNet.host[95].net  TotalInterestArrivals  ETV
-vector 1032  DataCentricNet.host[114].net  TotalInterestArrivals  ETV
-vector 366  DataCentricNet.host[40].net  TotalInterestArrivals  ETV
-vector 168  DataCentricNet.host[18].net  TotalInterestArrivals  ETV
-vector 240  DataCentricNet.host[26].net  TotalInterestArrivals  ETV
-vector 663  DataCentricNet.host[73].net  TotalInterestArrivals  ETV
-vector 15  DataCentricNet.host[1].net  TotalInterestArrivals  ETV
-vector 69  DataCentricNet.host[7].net  TotalInterestArrivals  ETV
-vector 717  DataCentricNet.host[79].net  TotalInterestArrivals  ETV
-vector 870  DataCentricNet.host[96].net  TotalInterestArrivals  ETV
-vector 636  DataCentricNet.host[70].net  TotalInterestArrivals  ETV
-vector 249  DataCentricNet.host[27].net  TotalInterestArrivals  ETV
-vector 195  DataCentricNet.host[21].net  TotalInterestArrivals  ETV
-vector 681  DataCentricNet.host[75].net  TotalInterestArrivals  ETV
-vector 267  DataCentricNet.host[29].net  TotalInterestArrivals  ETV
-vector 744  DataCentricNet.host[82].net  TotalInterestArrivals  ETV
-vector 645  DataCentricNet.host[71].net  TotalInterestArrivals  ETV
-vector 1068  DataCentricNet.host[118].net  TotalInterestArrivals  ETV
-vector 78  DataCentricNet.host[8].net  TotalInterestArrivals  ETV
-vector 1050  DataCentricNet.host[116].net  TotalInterestArrivals  ETV
-vector 339  DataCentricNet.host[37].net  TotalInterestArrivals  ETV
-vector 789  DataCentricNet.host[87].net  TotalInterestArrivals  ETV
-vector 42  DataCentricNet.host[4].net  TotalInterestArrivals  ETV
-vector 429  DataCentricNet.host[47].net  TotalInterestArrivals  ETV
-vector 690  DataCentricNet.host[76].net  TotalInterestArrivals  ETV
-vector 942  DataCentricNet.host[104].net  TotalInterestArrivals  ETV
-vector 834  DataCentricNet.host[92].net  TotalInterestArrivals  ETV
-vector 708  DataCentricNet.host[78].net  TotalInterestArrivals  ETV
-vector 627  DataCentricNet.host[69].net  TotalInterestArrivals  ETV
-vector 357  DataCentricNet.host[39].net  TotalInterestArrivals  ETV
-vector 609  DataCentricNet.host[67].net  TotalInterestArrivals  ETV
-vector 573  DataCentricNet.host[63].net  TotalInterestArrivals  ETV
-vector 483  DataCentricNet.host[53].net  TotalInterestArrivals  ETV
-vector 1005  DataCentricNet.host[111].net  TotalInterestArrivals  ETV
-vector 915  DataCentricNet.host[101].net  TotalInterestArrivals  ETV
-vector 186  DataCentricNet.host[20].net  TotalInterestArrivals  ETV
-vector 600  DataCentricNet.host[66].net  TotalInterestArrivals  ETV
-vector 222  DataCentricNet.host[24].net  TotalInterestArrivals  ETV
-vector 618  DataCentricNet.host[68].net  TotalInterestArrivals  ETV
-vector 393  DataCentricNet.host[43].net  TotalInterestArrivals  ETV
-vector 888  DataCentricNet.host[98].net  TotalInterestArrivals  ETV
-vector 1059  DataCentricNet.host[117].net  TotalInterestArrivals  ETV
-vector 798  DataCentricNet.host[88].net  TotalInterestArrivals  ETV
-vector 285  DataCentricNet.host[31].net  TotalInterestArrivals  ETV
-vector 924  DataCentricNet.host[102].net  TotalInterestArrivals  ETV
-vector 276  DataCentricNet.host[30].net  TotalInterestArrivals  ETV
-vector 852  DataCentricNet.host[94].net  TotalInterestArrivals  ETV
-vector 159  DataCentricNet.host[17].net  TotalInterestArrivals  ETV
-vector 204  DataCentricNet.host[22].net  TotalInterestArrivals  ETV
-vector 879  DataCentricNet.host[97].net  TotalInterestArrivals  ETV
-vector 996  DataCentricNet.host[110].net  TotalInterestArrivals  ETV
-vector 1041  DataCentricNet.host[115].net  TotalInterestArrivals  ETV
-vector 258  DataCentricNet.host[28].net  TotalInterestArrivals  ETV
-vector 114  DataCentricNet.host[12].net  TotalInterestArrivals  ETV
-vector 546  DataCentricNet.host[60].net  TotalInterestArrivals  ETV
-vector 555  DataCentricNet.host[61].net  TotalInterestArrivals  ETV
-vector 1077  DataCentricNet.host[119].net  TotalInterestArrivals  ETV
-vector 87  DataCentricNet.host[9].net  TotalInterestArrivals  ETV
-vector 978  DataCentricNet.host[108].net  TotalInterestArrivals  ETV
-vector 465  DataCentricNet.host[51].net  TotalInterestArrivals  ETV
-vector 321  DataCentricNet.host[35].net  TotalInterestArrivals  ETV
-vector 402  DataCentricNet.host[44].net  TotalInterestArrivals  ETV
-vector 438  DataCentricNet.host[48].net  TotalInterestArrivals  ETV
-vector 143  DataCentricNet.host[15].net  InterestInterDepartureTimesVector  ETV
-vector 449  DataCentricNet.host[49].net  InterestInterDepartureTimesVector  ETV
-vector 26  DataCentricNet.host[2].net  InterestInterDepartureTimesVector  ETV
-vector 1124  DataCentricNet.host[124].net  InterestInterDepartureTimesVector  ETV
-vector 512  DataCentricNet.host[56].net  InterestInterDepartureTimesVector  ETV
-vector 503  DataCentricNet.host[55].net  InterestInterDepartureTimesVector  ETV
-vector 332  DataCentricNet.host[36].net  InterestInterDepartureTimesVector  ETV
-vector 107  DataCentricNet.host[11].net  InterestInterDepartureTimesVector  ETV
-vector 152  DataCentricNet.host[16].net  InterestInterDepartureTimesVector  ETV
-vector 737  DataCentricNet.host[81].net  InterestInterDepartureTimesVector  ETV
-vector 494  DataCentricNet.host[54].net  InterestInterDepartureTimesVector  ETV
-vector 386  DataCentricNet.host[42].net  InterestInterDepartureTimesVector  ETV
-vector 593  DataCentricNet.host[65].net  InterestInterDepartureTimesVector  ETV
-vector 98  DataCentricNet.host[10].net  InterestInterDepartureTimesVector  ETV
-vector 233  DataCentricNet.host[25].net  InterestInterDepartureTimesVector  ETV
-vector 845  DataCentricNet.host[93].net  InterestInterDepartureTimesVector  ETV
-vector 656  DataCentricNet.host[72].net  InterestInterDepartureTimesVector  ETV
-vector 899  DataCentricNet.host[99].net  InterestInterDepartureTimesVector  ETV
-vector 827  DataCentricNet.host[91].net  InterestInterDepartureTimesVector  ETV
-vector 989  DataCentricNet.host[109].net  InterestInterDepartureTimesVector  ETV
-vector 908  DataCentricNet.host[100].net  InterestInterDepartureTimesVector  ETV
-vector 530  DataCentricNet.host[58].net  InterestInterDepartureTimesVector  ETV
-vector 539  DataCentricNet.host[59].net  InterestInterDepartureTimesVector  ETV
-vector 1106  DataCentricNet.host[122].net  InterestInterDepartureTimesVector  ETV
-vector 962  DataCentricNet.host[106].net  InterestInterDepartureTimesVector  ETV
-vector 422  DataCentricNet.host[46].net  InterestInterDepartureTimesVector  ETV
-vector 25  DataCentricNet.host[2].net  InterestInterArrivalTimesVector  ETV
-vector 412  DataCentricNet.host[45].net  InterestInterArrivalTimesVector  ETV
-vector 142  DataCentricNet.host[15].net  InterestInterArrivalTimesVector  ETV
-vector 511  DataCentricNet.host[56].net  InterestInterArrivalTimesVector  ETV
-vector 700  DataCentricNet.host[77].net  InterestInterArrivalTimesVector  ETV
-vector 565  DataCentricNet.host[62].net  InterestInterArrivalTimesVector  ETV
-vector 133  DataCentricNet.host[14].net  InterestInterArrivalTimesVector  ETV
-vector 1015  DataCentricNet.host[112].net  InterestInterArrivalTimesVector  ETV
-vector 448  DataCentricNet.host[49].net  InterestInterArrivalTimesVector  ETV
-vector 34  DataCentricNet.host[3].net  InterestInterArrivalTimesVector  ETV
-vector 727  DataCentricNet.host[80].net  InterestInterArrivalTimesVector  ETV
-vector 376  DataCentricNet.host[41].net  InterestInterArrivalTimesVector  ETV
-vector 772  DataCentricNet.host[85].net  InterestInterArrivalTimesVector  ETV
-vector 754  DataCentricNet.host[83].net  InterestInterArrivalTimesVector  ETV
-vector 377  DataCentricNet.host[41].net  InterestInterDepartureTimesVector  ETV
-vector 35  DataCentricNet.host[3].net  InterestInterDepartureTimesVector  ETV
-vector 755  DataCentricNet.host[83].net  InterestInterDepartureTimesVector  ETV
-vector 773  DataCentricNet.host[85].net  InterestInterDepartureTimesVector  ETV
-vector 728  DataCentricNet.host[80].net  InterestInterDepartureTimesVector  ETV
-vector 1016  DataCentricNet.host[112].net  InterestInterDepartureTimesVector  ETV
-vector 134  DataCentricNet.host[14].net  InterestInterDepartureTimesVector  ETV
-vector 566  DataCentricNet.host[62].net  InterestInterDepartureTimesVector  ETV
-vector 413  DataCentricNet.host[45].net  InterestInterDepartureTimesVector  ETV
-vector 701  DataCentricNet.host[77].net  InterestInterDepartureTimesVector  ETV
-vector 1123  DataCentricNet.host[124].net  InterestInterArrivalTimesVector  ETV
-vector 934  DataCentricNet.host[103].net  InterestInterArrivalTimesVector  ETV
-vector 736  DataCentricNet.host[81].net  InterestInterArrivalTimesVector  ETV
-vector 898  DataCentricNet.host[99].net  InterestInterArrivalTimesVector  ETV
-vector 232  DataCentricNet.host[25].net  InterestInterArrivalTimesVector  ETV
-vector 673  DataCentricNet.host[74].net  InterestInterArrivalTimesVector  ETV
-vector 124  DataCentricNet.host[13].net  InterestInterArrivalTimesVector  ETV
-vector 817  DataCentricNet.host[90].net  InterestInterArrivalTimesVector  ETV
-vector 70  DataCentricNet.host[7].net  InterestInterArrivalTimesVector  ETV
-vector 871  DataCentricNet.host[96].net  InterestInterArrivalTimesVector  ETV
-vector 646  DataCentricNet.host[71].net  InterestInterArrivalTimesVector  ETV
-vector 7  DataCentricNet.host[0].net  InterestInterArrivalTimesVector  ETV
-vector 16  DataCentricNet.host[1].net  InterestInterArrivalTimesVector  ETV
-vector 1069  DataCentricNet.host[118].net  InterestInterArrivalTimesVector  ETV
-vector 718  DataCentricNet.host[79].net  InterestInterArrivalTimesVector  ETV
-vector 268  DataCentricNet.host[29].net  InterestInterArrivalTimesVector  ETV
-vector 169  DataCentricNet.host[18].net  InterestInterArrivalTimesVector  ETV
-vector 340  DataCentricNet.host[37].net  InterestInterArrivalTimesVector  ETV
-vector 583  DataCentricNet.host[64].net  InterestInterArrivalTimesVector  ETV
-vector 664  DataCentricNet.host[73].net  InterestInterArrivalTimesVector  ETV
-vector 430  DataCentricNet.host[47].net  InterestInterArrivalTimesVector  ETV
-vector 241  DataCentricNet.host[26].net  InterestInterArrivalTimesVector  ETV
-vector 1051  DataCentricNet.host[116].net  InterestInterArrivalTimesVector  ETV
-vector 196  DataCentricNet.host[21].net  InterestInterArrivalTimesVector  ETV
-vector 520  DataCentricNet.host[57].net  InterestInterArrivalTimesVector  ETV
-vector 943  DataCentricNet.host[104].net  InterestInterArrivalTimesVector  ETV
-vector 691  DataCentricNet.host[76].net  InterestInterArrivalTimesVector  ETV
-vector 790  DataCentricNet.host[87].net  InterestInterArrivalTimesVector  ETV
-vector 250  DataCentricNet.host[27].net  InterestInterArrivalTimesVector  ETV
-vector 745  DataCentricNet.host[82].net  InterestInterArrivalTimesVector  ETV
-vector 637  DataCentricNet.host[70].net  InterestInterArrivalTimesVector  ETV
-vector 1024  DataCentricNet.host[113].net  InterestInterArrivalTimesVector  ETV
-vector 862  DataCentricNet.host[95].net  InterestInterArrivalTimesVector  ETV
-vector 61  DataCentricNet.host[6].net  InterestInterArrivalTimesVector  ETV
-vector 970  DataCentricNet.host[107].net  InterestInterArrivalTimesVector  ETV
-vector 79  DataCentricNet.host[8].net  InterestInterArrivalTimesVector  ETV
-vector 304  DataCentricNet.host[33].net  InterestInterArrivalTimesVector  ETV
-vector 394  DataCentricNet.host[43].net  InterestInterArrivalTimesVector  ETV
-vector 1006  DataCentricNet.host[111].net  InterestInterArrivalTimesVector  ETV
-vector 889  DataCentricNet.host[98].net  InterestInterArrivalTimesVector  ETV
-vector 835  DataCentricNet.host[92].net  InterestInterArrivalTimesVector  ETV
-vector 475  DataCentricNet.host[52].net  InterestInterArrivalTimesVector  ETV
-vector 1060  DataCentricNet.host[117].net  InterestInterArrivalTimesVector  ETV
-vector 484  DataCentricNet.host[53].net  InterestInterArrivalTimesVector  ETV
-vector 709  DataCentricNet.host[78].net  InterestInterArrivalTimesVector  ETV
-vector 619  DataCentricNet.host[68].net  InterestInterArrivalTimesVector  ETV
-vector 610  DataCentricNet.host[67].net  InterestInterArrivalTimesVector  ETV
-vector 43  DataCentricNet.host[4].net  InterestInterArrivalTimesVector  ETV
-vector 223  DataCentricNet.host[24].net  InterestInterArrivalTimesVector  ETV
-vector 358  DataCentricNet.host[39].net  InterestInterArrivalTimesVector  ETV
-vector 628  DataCentricNet.host[69].net  InterestInterArrivalTimesVector  ETV
-vector 997  DataCentricNet.host[110].net  InterestInterArrivalTimesVector  ETV
-vector 277  DataCentricNet.host[30].net  InterestInterArrivalTimesVector  ETV
-vector 925  DataCentricNet.host[102].net  InterestInterArrivalTimesVector  ETV
-vector 160  DataCentricNet.host[17].net  InterestInterArrivalTimesVector  ETV
-vector 115  DataCentricNet.host[12].net  InterestInterArrivalTimesVector  ETV
-vector 556  DataCentricNet.host[61].net  InterestInterArrivalTimesVector  ETV
-vector 205  DataCentricNet.host[22].net  InterestInterArrivalTimesVector  ETV
-vector 466  DataCentricNet.host[51].net  InterestInterArrivalTimesVector  ETV
-vector 259  DataCentricNet.host[28].net  InterestInterArrivalTimesVector  ETV
-vector 322  DataCentricNet.host[35].net  InterestInterArrivalTimesVector  ETV
-vector 88  DataCentricNet.host[9].net  InterestInterArrivalTimesVector  ETV
-vector 979  DataCentricNet.host[108].net  InterestInterArrivalTimesVector  ETV
-vector 439  DataCentricNet.host[48].net  InterestInterArrivalTimesVector  ETV
-vector 403  DataCentricNet.host[44].net  InterestInterArrivalTimesVector  ETV
-vector 106  DataCentricNet.host[11].net  InterestInterArrivalTimesVector  ETV
-vector 313  DataCentricNet.host[34].net  InterestInterArrivalTimesVector  ETV
+vector 9  DataCentricNet.host[0].net  StabilityVector  ETV
+vector 19  DataCentricNet.host[1].net  StabilityVector  ETV
+vector 29  DataCentricNet.host[2].net  StabilityVector  ETV
+vector 39  DataCentricNet.host[3].net  StabilityVector  ETV
+vector 49  DataCentricNet.host[4].net  StabilityVector  ETV
+vector 59  DataCentricNet.host[5].net  StabilityVector  ETV
+vector 69  DataCentricNet.host[6].net  StabilityVector  ETV
+vector 79  DataCentricNet.host[7].net  StabilityVector  ETV
+vector 89  DataCentricNet.host[8].net  StabilityVector  ETV
+vector 99  DataCentricNet.host[9].net  StabilityVector  ETV
+vector 109  DataCentricNet.host[10].net  StabilityVector  ETV
+vector 119  DataCentricNet.host[11].net  StabilityVector  ETV
+vector 129  DataCentricNet.host[12].net  StabilityVector  ETV
+vector 139  DataCentricNet.host[13].net  StabilityVector  ETV
+vector 149  DataCentricNet.host[14].net  StabilityVector  ETV
+vector 159  DataCentricNet.host[15].net  StabilityVector  ETV
+vector 169  DataCentricNet.host[16].net  StabilityVector  ETV
+vector 179  DataCentricNet.host[17].net  StabilityVector  ETV
+vector 189  DataCentricNet.host[18].net  StabilityVector  ETV
+vector 199  DataCentricNet.host[19].net  StabilityVector  ETV
+vector 209  DataCentricNet.host[20].net  StabilityVector  ETV
+vector 219  DataCentricNet.host[21].net  StabilityVector  ETV
+vector 229  DataCentricNet.host[22].net  StabilityVector  ETV
+vector 239  DataCentricNet.host[23].net  StabilityVector  ETV
+vector 249  DataCentricNet.host[24].net  StabilityVector  ETV
+vector 259  DataCentricNet.host[25].net  StabilityVector  ETV
+vector 269  DataCentricNet.host[26].net  StabilityVector  ETV
+vector 279  DataCentricNet.host[27].net  StabilityVector  ETV
+vector 289  DataCentricNet.host[28].net  StabilityVector  ETV
+vector 299  DataCentricNet.host[29].net  StabilityVector  ETV
+vector 309  DataCentricNet.host[30].net  StabilityVector  ETV
+vector 319  DataCentricNet.host[31].net  StabilityVector  ETV
+vector 329  DataCentricNet.host[32].net  StabilityVector  ETV
+vector 339  DataCentricNet.host[33].net  StabilityVector  ETV
+vector 349  DataCentricNet.host[34].net  StabilityVector  ETV
+vector 359  DataCentricNet.host[35].net  StabilityVector  ETV
+vector 369  DataCentricNet.host[36].net  StabilityVector  ETV
+vector 379  DataCentricNet.host[37].net  StabilityVector  ETV
+vector 389  DataCentricNet.host[38].net  StabilityVector  ETV
+vector 399  DataCentricNet.host[39].net  StabilityVector  ETV
+vector 409  DataCentricNet.host[40].net  StabilityVector  ETV
+vector 419  DataCentricNet.host[41].net  StabilityVector  ETV
+vector 429  DataCentricNet.host[42].net  StabilityVector  ETV
+vector 439  DataCentricNet.host[43].net  StabilityVector  ETV
+vector 449  DataCentricNet.host[44].net  StabilityVector  ETV
+vector 459  DataCentricNet.host[45].net  StabilityVector  ETV
+vector 469  DataCentricNet.host[46].net  StabilityVector  ETV
+vector 479  DataCentricNet.host[47].net  StabilityVector  ETV
+vector 489  DataCentricNet.host[48].net  StabilityVector  ETV
+vector 499  DataCentricNet.host[49].net  StabilityVector  ETV
+vector 509  DataCentricNet.host[50].net  StabilityVector  ETV
+vector 519  DataCentricNet.host[51].net  StabilityVector  ETV
+vector 529  DataCentricNet.host[52].net  StabilityVector  ETV
+vector 539  DataCentricNet.host[53].net  StabilityVector  ETV
+vector 549  DataCentricNet.host[54].net  StabilityVector  ETV
+vector 559  DataCentricNet.host[55].net  StabilityVector  ETV
+vector 569  DataCentricNet.host[56].net  StabilityVector  ETV
+vector 579  DataCentricNet.host[57].net  StabilityVector  ETV
+vector 589  DataCentricNet.host[58].net  StabilityVector  ETV
+vector 599  DataCentricNet.host[59].net  StabilityVector  ETV
+vector 609  DataCentricNet.host[60].net  StabilityVector  ETV
+vector 619  DataCentricNet.host[61].net  StabilityVector  ETV
+vector 629  DataCentricNet.host[62].net  StabilityVector  ETV
+vector 639  DataCentricNet.host[63].net  StabilityVector  ETV
+vector 649  DataCentricNet.host[64].net  StabilityVector  ETV
+vector 659  DataCentricNet.host[65].net  StabilityVector  ETV
+vector 669  DataCentricNet.host[66].net  StabilityVector  ETV
+vector 679  DataCentricNet.host[67].net  StabilityVector  ETV
+vector 689  DataCentricNet.host[68].net  StabilityVector  ETV
+vector 699  DataCentricNet.host[69].net  StabilityVector  ETV
+vector 709  DataCentricNet.host[70].net  StabilityVector  ETV
+vector 719  DataCentricNet.host[71].net  StabilityVector  ETV
+vector 729  DataCentricNet.host[72].net  StabilityVector  ETV
+vector 739  DataCentricNet.host[73].net  StabilityVector  ETV
+vector 749  DataCentricNet.host[74].net  StabilityVector  ETV
+vector 759  DataCentricNet.host[75].net  StabilityVector  ETV
+vector 769  DataCentricNet.host[76].net  StabilityVector  ETV
+vector 779  DataCentricNet.host[77].net  StabilityVector  ETV
+vector 789  DataCentricNet.host[78].net  StabilityVector  ETV
+vector 799  DataCentricNet.host[79].net  StabilityVector  ETV
+vector 809  DataCentricNet.host[80].net  StabilityVector  ETV
+vector 819  DataCentricNet.host[81].net  StabilityVector  ETV
+vector 829  DataCentricNet.host[82].net  StabilityVector  ETV
+vector 839  DataCentricNet.host[83].net  StabilityVector  ETV
+vector 849  DataCentricNet.host[84].net  StabilityVector  ETV
+vector 859  DataCentricNet.host[85].net  StabilityVector  ETV
+vector 869  DataCentricNet.host[86].net  StabilityVector  ETV
+vector 879  DataCentricNet.host[87].net  StabilityVector  ETV
+vector 889  DataCentricNet.host[88].net  StabilityVector  ETV
+vector 899  DataCentricNet.host[89].net  StabilityVector  ETV
+vector 909  DataCentricNet.host[90].net  StabilityVector  ETV
+vector 919  DataCentricNet.host[91].net  StabilityVector  ETV
+vector 929  DataCentricNet.host[92].net  StabilityVector  ETV
+vector 939  DataCentricNet.host[93].net  StabilityVector  ETV
+vector 949  DataCentricNet.host[94].net  StabilityVector  ETV
+vector 959  DataCentricNet.host[95].net  StabilityVector  ETV
+vector 969  DataCentricNet.host[96].net  StabilityVector  ETV
+vector 979  DataCentricNet.host[97].net  StabilityVector  ETV
+vector 989  DataCentricNet.host[98].net  StabilityVector  ETV
+vector 999  DataCentricNet.host[99].net  StabilityVector  ETV
+vector 1009  DataCentricNet.host[100].net  StabilityVector  ETV
+vector 1019  DataCentricNet.host[101].net  StabilityVector  ETV
+vector 1029  DataCentricNet.host[102].net  StabilityVector  ETV
+vector 1039  DataCentricNet.host[103].net  StabilityVector  ETV
+vector 1049  DataCentricNet.host[104].net  StabilityVector  ETV
+vector 1059  DataCentricNet.host[105].net  StabilityVector  ETV
+vector 1069  DataCentricNet.host[106].net  StabilityVector  ETV
+vector 1079  DataCentricNet.host[107].net  StabilityVector  ETV
+vector 1089  DataCentricNet.host[108].net  StabilityVector  ETV
+vector 1099  DataCentricNet.host[109].net  StabilityVector  ETV
+vector 1109  DataCentricNet.host[110].net  StabilityVector  ETV
+vector 1119  DataCentricNet.host[111].net  StabilityVector  ETV
+vector 1129  DataCentricNet.host[112].net  StabilityVector  ETV
+vector 1139  DataCentricNet.host[113].net  StabilityVector  ETV
+vector 1149  DataCentricNet.host[114].net  StabilityVector  ETV
+vector 1159  DataCentricNet.host[115].net  StabilityVector  ETV
+vector 1169  DataCentricNet.host[116].net  StabilityVector  ETV
+vector 1179  DataCentricNet.host[117].net  StabilityVector  ETV
+vector 1189  DataCentricNet.host[118].net  StabilityVector  ETV
+vector 1199  DataCentricNet.host[119].net  StabilityVector  ETV
+vector 1209  DataCentricNet.host[120].net  StabilityVector  ETV
+vector 1219  DataCentricNet.host[121].net  StabilityVector  ETV
+vector 1229  DataCentricNet.host[122].net  StabilityVector  ETV
+vector 1239  DataCentricNet.host[123].net  StabilityVector  ETV
+vector 1249  DataCentricNet.host[124].net  StabilityVector  ETV
+vector 1257  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
+vector 1259  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
+vector 58  DataCentricNet.host[5].net  InterestInterDepartureTimesVector  ETV
+vector 28  DataCentricNet.host[2].net  InterestInterDepartureTimesVector  ETV
+vector 158  DataCentricNet.host[15].net  InterestInterDepartureTimesVector  ETV
+vector 568  DataCentricNet.host[56].net  InterestInterDepartureTimesVector  ETV
+vector 818  DataCentricNet.host[81].net  InterestInterDepartureTimesVector  ETV
+vector 258  DataCentricNet.host[25].net  InterestInterDepartureTimesVector  ETV
+vector 998  DataCentricNet.host[99].net  InterestInterDepartureTimesVector  ETV
+vector 118  DataCentricNet.host[11].net  InterestInterDepartureTimesVector  ETV
+vector 548  DataCentricNet.host[54].net  InterestInterDepartureTimesVector  ETV
+vector 498  DataCentricNet.host[49].net  InterestInterDepartureTimesVector  ETV
+vector 728  DataCentricNet.host[72].net  InterestInterDepartureTimesVector  ETV
+vector 1098  DataCentricNet.host[109].net  InterestInterDepartureTimesVector  ETV
+vector 938  DataCentricNet.host[93].net  InterestInterDepartureTimesVector  ETV
+vector 658  DataCentricNet.host[65].net  InterestInterDepartureTimesVector  ETV
+vector 1228  DataCentricNet.host[122].net  InterestInterDepartureTimesVector  ETV
+vector 558  DataCentricNet.host[55].net  InterestInterDepartureTimesVector  ETV
+vector 1008  DataCentricNet.host[100].net  InterestInterDepartureTimesVector  ETV
+vector 588  DataCentricNet.host[58].net  InterestInterDepartureTimesVector  ETV
+vector 428  DataCentricNet.host[42].net  InterestInterDepartureTimesVector  ETV
+vector 168  DataCentricNet.host[16].net  InterestInterDepartureTimesVector  ETV
+vector 598  DataCentricNet.host[59].net  InterestInterDepartureTimesVector  ETV
+vector 1068  DataCentricNet.host[106].net  InterestInterDepartureTimesVector  ETV
+vector 468  DataCentricNet.host[46].net  InterestInterDepartureTimesVector  ETV
+vector 368  DataCentricNet.host[36].net  InterestInterDepartureTimesVector  ETV
+vector 108  DataCentricNet.host[10].net  InterestInterDepartureTimesVector  ETV
+vector 1248  DataCentricNet.host[124].net  InterestInterDepartureTimesVector  ETV
+vector 918  DataCentricNet.host[91].net  InterestInterDepartureTimesVector  ETV
+vector 838  DataCentricNet.host[83].net  InterestInterDepartureTimesVector  ETV
+vector 648  DataCentricNet.host[64].net  InterestInterDepartureTimesVector  ETV
+vector 38  DataCentricNet.host[3].net  InterestInterDepartureTimesVector  ETV
+vector 418  DataCentricNet.host[41].net  InterestInterDepartureTimesVector  ETV
+vector 808  DataCentricNet.host[80].net  InterestInterDepartureTimesVector  ETV
+vector 858  DataCentricNet.host[85].net  InterestInterDepartureTimesVector  ETV
+vector 1128  DataCentricNet.host[112].net  InterestInterDepartureTimesVector  ETV
+vector 458  DataCentricNet.host[45].net  InterestInterDepartureTimesVector  ETV
+vector 148  DataCentricNet.host[14].net  InterestInterDepartureTimesVector  ETV
+vector 628  DataCentricNet.host[62].net  InterestInterDepartureTimesVector  ETV
+vector 778  DataCentricNet.host[77].net  InterestInterDepartureTimesVector  ETV
+vector 238  DataCentricNet.host[23].net  InterestInterDepartureTimesVector  ETV
+vector 898  DataCentricNet.host[89].net  InterestInterDepartureTimesVector  ETV
 vector 8  DataCentricNet.host[0].net  InterestInterDepartureTimesVector  ETV
-vector 935  DataCentricNet.host[103].net  InterestInterDepartureTimesVector  ETV
-vector 502  DataCentricNet.host[55].net  InterestInterArrivalTimesVector  ETV
-vector 818  DataCentricNet.host[90].net  InterestInterDepartureTimesVector  ETV
-vector 1114  DataCentricNet.host[123].net  InterestInterArrivalTimesVector  ETV
-vector 295  DataCentricNet.host[32].net  InterestInterArrivalTimesVector  ETV
-vector 655  DataCentricNet.host[72].net  InterestInterArrivalTimesVector  ETV
-vector 493  DataCentricNet.host[54].net  InterestInterArrivalTimesVector  ETV
-vector 592  DataCentricNet.host[65].net  InterestInterArrivalTimesVector  ETV
-vector 521  DataCentricNet.host[57].net  InterestInterDepartureTimesVector  ETV
-vector 214  DataCentricNet.host[23].net  InterestInterArrivalTimesVector  ETV
-vector 151  DataCentricNet.host[16].net  InterestInterArrivalTimesVector  ETV
-vector 907  DataCentricNet.host[100].net  InterestInterArrivalTimesVector  ETV
-vector 17  DataCentricNet.host[1].net  InterestInterDepartureTimesVector  ETV
-vector 170  DataCentricNet.host[18].net  InterestInterDepartureTimesVector  ETV
-vector 844  DataCentricNet.host[93].net  InterestInterArrivalTimesVector  ETV
-vector 1025  DataCentricNet.host[113].net  InterestInterDepartureTimesVector  ETV
-vector 674  DataCentricNet.host[74].net  InterestInterDepartureTimesVector  ETV
-vector 1105  DataCentricNet.host[122].net  InterestInterArrivalTimesVector  ETV
-vector 385  DataCentricNet.host[42].net  InterestInterArrivalTimesVector  ETV
-vector 331  DataCentricNet.host[36].net  InterestInterArrivalTimesVector  ETV
-vector 872  DataCentricNet.host[96].net  InterestInterDepartureTimesVector  ETV
-vector 719  DataCentricNet.host[79].net  InterestInterDepartureTimesVector  ETV
-vector 988  DataCentricNet.host[109].net  InterestInterArrivalTimesVector  ETV
-vector 125  DataCentricNet.host[13].net  InterestInterDepartureTimesVector  ETV
-vector 62  DataCentricNet.host[6].net  InterestInterDepartureTimesVector  ETV
-vector 529  DataCentricNet.host[58].net  InterestInterArrivalTimesVector  ETV
-vector 584  DataCentricNet.host[64].net  InterestInterDepartureTimesVector  ETV
-vector 269  DataCentricNet.host[29].net  InterestInterDepartureTimesVector  ETV
-vector 1070  DataCentricNet.host[118].net  InterestInterDepartureTimesVector  ETV
-vector 71  DataCentricNet.host[7].net  InterestInterDepartureTimesVector  ETV
-vector 647  DataCentricNet.host[71].net  InterestInterDepartureTimesVector  ETV
-vector 305  DataCentricNet.host[33].net  InterestInterDepartureTimesVector  ETV
-vector 341  DataCentricNet.host[37].net  InterestInterDepartureTimesVector  ETV
-vector 971  DataCentricNet.host[107].net  InterestInterDepartureTimesVector  ETV
-vector 538  DataCentricNet.host[59].net  InterestInterArrivalTimesVector  ETV
-vector 421  DataCentricNet.host[46].net  InterestInterArrivalTimesVector  ETV
-vector 251  DataCentricNet.host[27].net  InterestInterDepartureTimesVector  ETV
-vector 863  DataCentricNet.host[95].net  InterestInterDepartureTimesVector  ETV
-vector 665  DataCentricNet.host[73].net  InterestInterDepartureTimesVector  ETV
-vector 826  DataCentricNet.host[91].net  InterestInterArrivalTimesVector  ETV
-vector 961  DataCentricNet.host[106].net  InterestInterArrivalTimesVector  ETV
-vector 242  DataCentricNet.host[26].net  InterestInterDepartureTimesVector  ETV
-vector 1087  DataCentricNet.host[120].net  InterestInterArrivalTimesVector  ETV
-vector 808  DataCentricNet.host[89].net  InterestInterArrivalTimesVector  ETV
-vector 1096  DataCentricNet.host[121].net  InterestInterArrivalTimesVector  ETV
-vector 476  DataCentricNet.host[52].net  InterestInterDepartureTimesVector  ETV
-vector 51  DataCentricNet.host[5].net  TotalInterestArrivals  ETV
-vector 97  DataCentricNet.host[10].net  InterestInterArrivalTimesVector  ETV
-vector 197  DataCentricNet.host[21].net  InterestInterDepartureTimesVector  ETV
-vector 638  DataCentricNet.host[70].net  InterestInterDepartureTimesVector  ETV
-vector 791  DataCentricNet.host[87].net  InterestInterDepartureTimesVector  ETV
-vector 349  DataCentricNet.host[38].net  InterestInterArrivalTimesVector  ETV
-vector 781  DataCentricNet.host[86].net  InterestInterArrivalTimesVector  ETV
-vector 178  DataCentricNet.host[19].net  InterestInterArrivalTimesVector  ETV
-vector 763  DataCentricNet.host[84].net  InterestInterArrivalTimesVector  ETV
-vector 457  DataCentricNet.host[50].net  InterestInterArrivalTimesVector  ETV
-vector 952  DataCentricNet.host[105].net  InterestInterArrivalTimesVector  ETV
-vector 367  DataCentricNet.host[40].net  InterestInterArrivalTimesVector  ETV
-vector 682  DataCentricNet.host[75].net  InterestInterArrivalTimesVector  ETV
-vector 1033  DataCentricNet.host[114].net  InterestInterArrivalTimesVector  ETV
-vector 187  DataCentricNet.host[20].net  InterestInterArrivalTimesVector  ETV
-vector 574  DataCentricNet.host[63].net  InterestInterArrivalTimesVector  ETV
-vector 286  DataCentricNet.host[31].net  InterestInterArrivalTimesVector  ETV
-vector 853  DataCentricNet.host[94].net  InterestInterArrivalTimesVector  ETV
-vector 916  DataCentricNet.host[101].net  InterestInterArrivalTimesVector  ETV
-vector 880  DataCentricNet.host[97].net  InterestInterArrivalTimesVector  ETV
-vector 601  DataCentricNet.host[66].net  InterestInterArrivalTimesVector  ETV
-vector 799  DataCentricNet.host[88].net  InterestInterArrivalTimesVector  ETV
-vector 1078  DataCentricNet.host[119].net  InterestInterArrivalTimesVector  ETV
-vector 547  DataCentricNet.host[60].net  InterestInterArrivalTimesVector  ETV
-vector 1042  DataCentricNet.host[115].net  InterestInterArrivalTimesVector  ETV
-vector 52  DataCentricNet.host[5].net  InterestInterArrivalTimesVector  ETV
-vector 80  DataCentricNet.host[8].net  InterestInterDepartureTimesVector  ETV
-vector 1007  DataCentricNet.host[111].net  InterestInterDepartureTimesVector  ETV
-vector 944  DataCentricNet.host[104].net  InterestInterDepartureTimesVector  ETV
-vector 1061  DataCentricNet.host[117].net  InterestInterDepartureTimesVector  ETV
-vector 890  DataCentricNet.host[98].net  InterestInterDepartureTimesVector  ETV
-vector 395  DataCentricNet.host[43].net  InterestInterDepartureTimesVector  ETV
-vector 1052  DataCentricNet.host[116].net  InterestInterDepartureTimesVector  ETV
-vector 692  DataCentricNet.host[76].net  InterestInterDepartureTimesVector  ETV
-vector 746  DataCentricNet.host[82].net  InterestInterDepartureTimesVector  ETV
-vector 998  DataCentricNet.host[110].net  InterestInterDepartureTimesVector  ETV
-vector 215  DataCentricNet.host[23].net  InterestInterDepartureTimesVector  ETV
-vector 296  DataCentricNet.host[32].net  InterestInterDepartureTimesVector  ETV
-vector 809  DataCentricNet.host[89].net  InterestInterDepartureTimesVector  ETV
-vector 1115  DataCentricNet.host[123].net  InterestInterDepartureTimesVector  ETV
-vector 1088  DataCentricNet.host[120].net  InterestInterDepartureTimesVector  ETV
-vector 764  DataCentricNet.host[84].net  InterestInterDepartureTimesVector  ETV
-vector 1097  DataCentricNet.host[121].net  InterestInterDepartureTimesVector  ETV
-vector 458  DataCentricNet.host[50].net  InterestInterDepartureTimesVector  ETV
-vector 953  DataCentricNet.host[105].net  InterestInterDepartureTimesVector  ETV
-vector 350  DataCentricNet.host[38].net  InterestInterDepartureTimesVector  ETV
-vector 179  DataCentricNet.host[19].net  InterestInterDepartureTimesVector  ETV
-vector 368  DataCentricNet.host[40].net  InterestInterDepartureTimesVector  ETV
-vector 1034  DataCentricNet.host[114].net  InterestInterDepartureTimesVector  ETV
-vector 404  DataCentricNet.host[44].net  InterestInterDepartureTimesVector  ETV
-vector 782  DataCentricNet.host[86].net  InterestInterDepartureTimesVector  ETV
-vector 431  DataCentricNet.host[47].net  InterestInterDepartureTimesVector  ETV
-vector 836  DataCentricNet.host[92].net  InterestInterDepartureTimesVector  ETV
-vector 485  DataCentricNet.host[53].net  InterestInterDepartureTimesVector  ETV
-vector 710  DataCentricNet.host[78].net  InterestInterDepartureTimesVector  ETV
-vector 611  DataCentricNet.host[67].net  InterestInterDepartureTimesVector  ETV
-vector 44  DataCentricNet.host[4].net  InterestInterDepartureTimesVector  ETV
-vector 620  DataCentricNet.host[68].net  InterestInterDepartureTimesVector  ETV
-vector 359  DataCentricNet.host[39].net  InterestInterDepartureTimesVector  ETV
-vector 224  DataCentricNet.host[24].net  InterestInterDepartureTimesVector  ETV
-vector 683  DataCentricNet.host[75].net  InterestInterDepartureTimesVector  ETV
-vector 161  DataCentricNet.host[17].net  InterestInterDepartureTimesVector  ETV
-vector 629  DataCentricNet.host[69].net  InterestInterDepartureTimesVector  ETV
-vector 116  DataCentricNet.host[12].net  InterestInterDepartureTimesVector  ETV
-vector 287  DataCentricNet.host[31].net  InterestInterDepartureTimesVector  ETV
-vector 278  DataCentricNet.host[30].net  InterestInterDepartureTimesVector  ETV
-vector 188  DataCentricNet.host[20].net  InterestInterDepartureTimesVector  ETV
-vector 926  DataCentricNet.host[102].net  InterestInterDepartureTimesVector  ETV
-vector 557  DataCentricNet.host[61].net  InterestInterDepartureTimesVector  ETV
-vector 854  DataCentricNet.host[94].net  InterestInterDepartureTimesVector  ETV
-vector 1079  DataCentricNet.host[119].net  InterestInterDepartureTimesVector  ETV
-vector 575  DataCentricNet.host[63].net  InterestInterDepartureTimesVector  ETV
-vector 980  DataCentricNet.host[108].net  InterestInterDepartureTimesVector  ETV
-vector 206  DataCentricNet.host[22].net  InterestInterDepartureTimesVector  ETV
-vector 881  DataCentricNet.host[97].net  InterestInterDepartureTimesVector  ETV
-vector 260  DataCentricNet.host[28].net  InterestInterDepartureTimesVector  ETV
-vector 89  DataC
+vector 758  DataCentricNet.host[75].net  InterestInterDepartureTimesVector  ETV
+vector 208  DataCentricNet.host[20].net  InterestInterDepartureTimesVector  ETV
+vector 1018  DataCentricNet.host[101].net  InterestInterDepartureTimesVector  ETV
+vector 908  DataCentricNet.host[90].net  InterestInterDepartureTimesVector  ETV
+vector 78  DataCentricNet.host[7].net  InterestInterDepartureTimesVector  ETV
+vector 968  DataCentricNet.host[96].net  InterestInterDepartureTimesVector  ETV
+vector 738  DataCentricNet.host[73].net  InterestInterDepartureTimesVector  ETV
+vector 268  DataCentricNet.host[26].net  InterestInterDepartureTimesVector  ETV
+vector 578  DataCentricNet.host[57].net  InterestInterDepartureTimesVector  ETV
+vector 708  DataCentricNet.host[70].net  InterestInterDepartureTimesVector  ETV
+vector 278  DataCentricNet.host[27].net  InterestInterDepartureTimesVector  ETV
+vector 478  DataCentricNet.host[47].net  InterestInterDepartureTimesVector  ETV
+vector 1048  DataCentricNet.host[104].net  InterestInterDepartureTimesVector  ETV
+vector 768  DataCentricNet.host[76].net  InterestInterDepartureTimesVector  ETV
+vector 878  DataCentricNet.host[87].net  InterestInterDepartureTimesVector  ETV
+vector 88  DataCentricNet.host[8].net  InterestInterDepartureTimesVector  ETV
+vector 1118  DataCentricNet.host[111].net  InterestInterDepartureTimesVector  ETV
+vector 538  DataCentricNet.host[53].net  InterestInterDepartureTimesVector  ETV
+vector 788  DataCentricNet.host[78].net  InterestInterDepartureTimesVector  ETV
+vector 438  DataCentricNet.host[43].net  InterestInterDepartureTimesVector  ETV
+vector 988  DataCentricNet.host[98].net  InterestInterDepartureTimesVector  ETV
+vector 1178  DataCentricNet.host[117].net  InterestInterDepartureTimesVector  ETV
+vector 688  DataCentricNet.host[68].net  InterestInterDepartureTimesVector  ETV
+vector 948  DataCentricNet.host[94].net  InterestInterDepartureTimesVector  ETV
+vector 608  DataCentricNet.host[60].net  InterestInterDepartureTimesVector  ETV
+vector 1108  DataCentricNet.host[110].net  InterestInterDepartureTimesVector  ETV
+vector 308  DataCentricNet.host[30].net  InterestInterDepartureTimesVector  ETV
+vector 618  DataCentricNet.host[61].net  InterestInterDepartureTimesVector  ETV
+vector 518  DataCentricNet.host[51].net  InterestInterDepartureTimesVector  ETV
+vector 1218  DataCentricNet.host[121].net  InterestInterDepartureTimesVector  ETV
+vector 1138  DataCentricNet.host[113].net  InterestInterDepartureTimesVector  ETV
+vector 1238  DataCentricNet.host[123].net  InterestInterDepartureTimesVector  ETV
+vector 178  DataCentricNet.host[17].net  InterestInterDepartureTimesVector  ETV
+vector 1028  DataCentricNet.host[102].net  InterestInterDepartureTimesVector  ETV
+vector 978  DataCentricNet.host[97].net  InterestInterDepartureTimesVector  ETV
+vector 1198  DataCentricNet.host[119].net  InterestInterDepartureTimesVector  ETV
+vector 228  DataCentricNet.host[22].net  InterestInterDepartureTimesVector  ETV
+vector 128  DataCentricNet.host[12].net  InterestInterDepartureTimesVector  ETV
+vector 1088  DataCentricNet.host[108].net  InterestInterDepartureTimesVector  ETV
+vector 288  DataCentricNet.host[28].net  InterestInterDepartureTimesVector  ETV
+vector 448  DataCentricNet.host[44].net  InterestInterDepartureTimesVector  ETV
+vector 348  DataCentricNet.host[34].net  InterestInterDepartureTimesVector  ETV
+vector 1158  DataCentricNet.host[115].net  InterestInterDepartureTimesVector  ETV
+vector 1208  DataCentricNet.host[120].net  InterestInterDepartureTimesVector  ETV
+vector 528  DataCentricNet.host[52].net  InterestInterDepartureTimesVector  ETV
+vector 848  DataCentricNet.host[84].net  InterestInterDepartureTimesVector  ETV
+vector 508  DataCentricNet.host[50].net  InterestInterDepartureTimesVector  ETV
+vector 198  DataCentricNet.host[19].net  InterestInterDepartureTimesVector  ETV
+vector 488  DataCentricNet.host[48].net  InterestInterDepartureTimesVector  ETV
+vector 378  DataCentricNet.host[37].net  InterestInterDepartureTimesVector  ETV
+vector 798  DataCentricNet.host[79].net  InterestInterDepartureTimesVector  ETV
+vector 1188  DataCentricNet.host[118].net  InterestInterDepartureTimesVector  ETV
+vector 188  DataCentricNet.host[18].net  InterestInterDepartureTimesVector  ETV
+vector 718  DataCentricNet.host[71].net  InterestInterDepartureTimesVector  ETV
+vector 18  DataCentricNet.host[1].net  InterestInterDepartureTimesVector  ETV
+vector 1038  DataCentricNet.host[103].net  InterestInterDepartureTimesVector  ETV
+vector 958  DataCentricNet.host[95].net  InterestInterDepartureTimesVector  ETV
+vector 1168  DataCentricNet.host[116].net  InterestInterDepartureTimesVector  ETV
+vector 218  DataCentricNet.host[21].net  InterestInterDepartureTimesVector  ETV
+vector 828  DataCentricNet.host[82].net  InterestInterDepartureTimesVector  ETV
+vector 928  DataCentricNet.host[92].net  InterestInterDepartureTimesVector  ETV
+vector 358  DataCentricNet.host[35].net  InterestInterDepartureTimesVector  ETV
+vector 138  DataCentricNet.host[13].net  InterestInterDepartureTimesVector  ETV
+vector 328  DataCentricNet.host[32].net  InterestInterDepartureTimesVector  ETV
+vector 748  DataCentricNet.host[74].net  InterestInterDepartureTimesVector  ETV
+vector 338  DataCentricNet.host[33].net  InterestInterDepartureTimesVector  ETV
+vector 1078  DataCentricNet.host[107].net  InterestInterDepartureTimesVector  ETV
+vector 298  DataCentricNet.host[29].net  InterestInterDepartureTimesVector  ETV
+vector 68  DataCentricNet.host[6].net  InterestInterDepartureTimesVector  ETV
+vector 388  DataCentricNet.host[38].net  InterestInterDepartureTimesVector  ETV
+vector 1058  DataCentricNet.host[105].net  InterestInterDepartureTimesVector  ETV
+vector 868  DataCentricNet.host[86].net  InterestInterDepartureTimesVector  ETV
+vector 408  DataCentricNet.host[40].net  InterestInterDepartureTimesVector  ETV
+vector 1148  DataCentricNet.host[114].net  InterestInterDepartureTimesVector  ETV
+vector 48  DataCentricNet.host[4].net  InterestInterDepartureTimesVector  ETV
+vector 678  DataCentricNet.host[67].net  InterestInterDepartureTimesVector  ETV
+vector 398  DataCentricNet.host[39].net  InterestInterDepartureTimesVector  ETV
+vector 698  DataCentricNet.host[69].net  InterestInterDepartureTimesVector  ETV
+vector 248  DataCentricNet.host[24].net  InterestInterDepartureTimesVector  ETV
+vector 638  DataCentricNet.host[63].net  InterestInterDepartureTimesVector  ETV
+vector 318  DataCentricNet.host[31].net  InterestInterDepartureTimesVector  ETV
+vector 668  DataCentricNet.host[66].net  InterestInterDepartureTimesVector  ETV
+vector 888  DataCentricNet.host[88].net  InterestInterDepartureTimesVector  ETV
+vector 98  DataCentricNet.host[9].net  InterestInterDepartureTimesVector  ETV
+vector 1260  DataCentricNet.dataCentricNetworkMan  modulesDownVector  ETV
+vector 1258  DataCentricNet.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+8	18763 900 46095 1449452 1.059003495602 52.178271884881 27 0 0.151429812255 0.903565409276 0.10083923220601
+9	19663 810 388 1452440 1 53 53 0 0 0 0
+18	20473 820 104027 1321969 1.147290713695 47.125402934209 24 0 0.120062752244 0.68897192297 0.064171419446966
+19	21293 863 390 1452441 1 53 53 0 1 4 4
+28	22156 922 36516 1442381 1.043962823359 52.140595652493 27 0 0.135758956687 0.685235281451 0.067838719503368
+29	23078 863 392 1452442 1 53 53 0 0 0 0
+38	23941 965 41562 1410031 1.05182787203 52.004836677038 28 0 0.117908541846 0.639516701121 0.04957913469009
+39	24906 863 394 1452443 1 53 53 0 0 0 0
+48	25769 969 118517 1409941 1.175359424295 52.00483665576 28 0 0.186985744671 0.871510519119 0.10651595249684
+49	26738 863 396 1452444 1 53 53 0 0 0 0
+58	27601 1429 19275 1410169 1.014434678531 52.004836720218 40 0 0.575972788911 0.965781987643 0.36635685874972
+59	29030 863 398 1452445 1 53 53 0 0 0 0
+68	29893 795 118430 1425383 1.175359406434 52.026842070346 24 0 0.1385939556 0.606446036968 0.059758090299667
+69	30688 863 400 1452446 1 53 53 0 0 0 0
+78	31551 452 61358 675031 1.076937108513 20.005867208227 13 0 0.117908543914 0.301345283229 0.021853314884465
+79	32003 863 402 1452447 1 53 53 0 1 32 32
+88	32866 1017 61466 1409917 1.076937119805 52.004836651073 28 0 0.132985607268 0.794865852507 0.072192418396936
+89	33883 863 404 1452448 1 53 53 0 1 11 11
+98	34746 1015 118601 1409986 1.175359446661 52.004836666611 29 0 0.183004935834 1.175452499164 0.147992441259
+99	35761 863 406 1452449 1 53 53 0 0 0 0
+108	36624 776 39201 1442372 1.048411860745 52.140595650279 23 0 0.135758950127 0.490666019034 0.053442013847235
+109	37400 916 408 1452450 1 53 53 0 0 0 0
+118	38316 988 36543 1442375 1.043962834393 52.140595651085 28 0 0.135758955664 0.707476714581 0.068333402956756
+119	39304 916 410 1452451 1 53 53 0 0 0 0
+128	40220 911 84527 1409920 1.110783931812 52.004836651157 26 0 0.186985737341 0.864672276015 0.11373202068036
+129	41131 916 412 1452452 1 53 53 0 0 0 0
+138	42047 617 118343 878280 1.175359387259 23.24756767517 17 0 0.119694979365 0.510465058088 0.045383399248235
+139	42664 916 414 1452453 1 53 53 0 1 24 24
+148	43580 951 41694 1447055 1.051827890817 52.166836383956 27 0 0.161999694134 0.843116748949 0.086879045373813
+149	44531 916 416 1452454 1 53 53 0 0 0 0
+158	45447 860 36522 1442390 1.043962826471 52.140595655965 25 0 0.135758968096 0.443231682941 0.042128683654452
+159	46307 916 418 1452455 1 53 53 0 0 0 0
+168	47223 655 36614 1151933 1.043962848886 34.008278447459 19 0 0.123531514732 0.354907060746 0.034973491020319
+169	47878 916 420 1452456 1 53 53 0 1 13 13
+178	48794 744 84464 1151999 1.110783920334 34.008278458203 21 0 0.186985732203 0.864672294024 0.11578142260141
+179	49538 916 422 1452457 1 53 53 0 1 19 19
+188	50454 569 104021 1443265 1.147290711452 52.144434020411 15 0 0.139597333457 0.511834687815 0.048090793959601
+189	51023 916 424 1452458 1 53 53 0 1 27 27
+198	51939 736 92466 1410049 1.123897632375 52.004836682499 22 0 0.117908529126 0.368750590683 0.028554082712519
+199	52675 916 426 1452459 1 53 53 0 0 0 0
+208	53591 962 54342 1184179 1.068673696486 34.069131862625 26 0 0.207878164348 0.882291040368 0.11227892482541
+209	54553 916 428 1452460 1 53 53 0 1 12 12
+218	55469 912 104090 1151828 1.147290731081 34.008278426884 25 0 0.158570020558 0.953445461115 0.099908703246628
+219	56381 916 430 1452461 1 53 53 0 1 11 11
+228	57297 572 84524 903775 1.110783931384 23.31746741944 16 0 0.20787813614 0.745384832051 0.09921541356181
+229	57869 916 432 1452462 1 53 53 0 1 25 25
+238	58785 740 44208 1174381 1.056809193805 34.038312622888 21 0 0.146669771273 0.528347449405 0.050626027116557
+239	59525 916 434 1452463 1 53 53 0 1 19 19
+248	60441 871 118547 1409923 1.175359429978 52.004836651367 25 0 0.186985732597 0.870317353593 0.1083084086242
+249	61312 916 436 1452464 1 53 53 0 0 0 0
+258	62228 951 36537 1442363 1.04396283398 52.140595648031 27 0 0.123531486113 0.544463453559 0.051384888799361
+259	63179 916 438 1452465 1 53 53 0 0 0 0
+268	64095 452 61370 605225 1.07693711012 16.004045776517 12 0 0.117908543701 0.40336823094 0.027958081427178
+269	64547 916 440 1452466 1 53 53 0 1 34 34
+278	65463 701 61412 901041 1.076937115608 23.308251948793 19 0 0.135173007279 0.695096560846 0.060771504611365
+279	66164 916 442 1452467 1 53 53 0 1 24 24
+288	67080 913 84560 1410007 1.110783935624 52.004836671372 26 0 0.193201391425 0.95942756439 0.12475805314687
+289	67993 916 444 1452468 1 53 53 0 0 0 0
+298	68909 383 118421 675097 1.175359405345 20.005867226352 11 0 0.119694983295 0.301345270985 0.029990193259302
+299	69292 916 446 1452469 1 53 53 0 1 33 33
+308	70208 863 72879 1409974 1.092729690768 52.004836663774 25 0 0.174638571466 0.860589903858 0.11752163080218
+309	71071 916 448 1452470 1 53 53 0 0 0 0
+318	71987 1038 118577 1409977 1.175359438456 52.004836666356 29 0 0.186985736043 0.971141806474 0.10949473907387
+319	73025 916 450 1452471 1 53 53 0 0 0 0
+328	73941 574 118349 1174396 1.175359389021 34.038312624627 17 0 0.122163917082 0.381677683354 0.036995490552538
+329	74515 916 452 1452472 1 53 53 0 1 14 14
+338	75431 743 118364 1410058 1.175359390959 52.004836685655 22 0 0.122163915946 0.404592757448 0.0375205913769
+339	76174 916 454 1452473 1 53 53 0 0 0 0
+348	77090 949 88000 1449467 1.116387063706 52.178271889345 27 0 0.173435213741 0.817368065636 0.085295666897235
+349	78039 916 456 1452474 1 53 53 0 0 0 0
+358	78955 1215 104215 1409962 1.147290757617 52.004836661769 33 0 0.183004942962 1.08453529955 0.10814695536246
+359	80170 916 458 1452475 1 53 53 0 0 0 0
+368	81086 855 39189 1442378 1.048411851972 52.140595652155 25 0 0.135758960314 0.490666026437 0.045244703214322
+369	81941 916 460 1452476 1 53 53 0 0 0 0
+378	82857 735 104012 1151765 1.147290704365 34.008278403352 21 0 0.158570033127 0.622196746732 0.063816415706063
+379	83592 916 462 1452477 1 53 53 0 1 14 14
+388	84508 656 118460 1410016 1.175359408893 52.004836674021 20 0 0.117908531954 0.345835515478 0.034708119385354
+389	85164 916 464 1452478 1 53 53 0 0 0 0
+398	86080 438 118535 1409944 1.175359426536 52.004836656937 12 0 0.11790853728 0.298319049421 0.027444245399409
+399	86518 916 466 1452479 1 53 53 0 1 32 32
+408	87434 647 118493 1410052 1.175359415627 52.004836683786 20 0 0.117908534507 0.34583551516 0.034708119622994
+409	88081 916 468 1452480 1 53 53 0 0 0 0
+418	88997 953 41592 1447067 1.05182787553 52.166836387599 27 0 0.150858277672 0.836352160626 0.08146984438857
+419	89950 916 470 1452481 1 53 53 0 0 0 0
+428	90866 367 36609 605138 1.043962848315 16.004045764118 10 0 0.123531496029 0.286528545653 0.030297865280547
+429	91233 916 472 1452482 1 53 53 0 1 35 35
+438	92149 1036 61517 1409935 1.07693712649 52.004836654955 29 0 0.15857001758 0.879812748871 0.088309776296916
+439	93185 916 474 1452483 1 53 53 0 0 0 0
+448	94101 722 84647 1107950 1.110783944687 30.179797272777 20 0 0.193201388719 0.93130798564 0.13115360885527
+449	94823 916 476 1452484 1 53 53 0 1 23 23
+458	95739 953 41667 1447037 1.051827887372 52.166836376203 27 0 0.16199968416 0.753088226232 0.077407927414943
+459	96692 916 478 1452485 1 53 53 0 0 0 0
+468	97608 653 36631 1151972 1.043962851301 34.008278454426 19 0 0.123531488833 0.338038350485 0.032951121260176
+469	98261 916 480 1452486 1 53 53 0 1 19 19
+478	99177 1032 61415 1409959 1.07693711561 52.00483666112 29 0 0.158570019473 0.811899406252 0.088191655678422
+479	100209 916 482 1452487 1 53 53 0 0 0 0
+488	101125 1084 99451 1409983 1.136856586263 52.004836666469 30 0 0.183004940382 1.004600710018 0.11193796467648
+489	102209 916 484 1452488 1 53 53 0 0 0 0
+498	103125 864 36558 1442387 1.043962840957 52.140595653145 25 0 0.135758959272 0.522222070101 0.054516480032428
+499	103989 916 486 1452489 1 53 53 0 0 0 0
+508	104905 737 92439 1410085 1.123897629216 52.004836689618 22 0 0.11790852902 0.368750587669 0.028554081486005
+509	105642 916 488 1452490 1 53 53 0 0 0 0
+518	106558 952 72904 1409989 1.092729695334 52.00483666662 27 0 0.174638576573 0.857968271947 0.10586262891913
+519	107510 916 490 1452491 1 53 53 0 0 0 0
+528	108426 490 92421 818212 1.123897626452 23.086277155692 14 0 0.117908534935 0.368750583323 0.028554082565005
+529	108916 916 492 1452492 1 53 53 0 1 25 25
+538	109832 455 61505 605306 1.076937125663 16.004045793172 12 0 0.117908537395 0.411431187071 0.028688432110677
+539	110287 916 494 1452493 1 53 53 0 1 37 37
+548	111203 778 36552 1410148 1.043962837571 52.004836708698 23 0 0.123531463163 0.33803834578 0.032951118913646
+549	111981 916 496 1452494 1 53 53 0 0 0 0
+558	112897 712 36594 1410091 1.043962844871 52.004836690547 19 0 0.123531517356 0.420709676225 0.043363183115579
+559	113609 916 498 1452495 1 53 53 0 1 28 28
+568	114525 762 36525 1443187 1.043962828541 52.144433994683 22 0 0.13959729575 0.494504343727 0.054460889751635
+569	115287 916 500 1452496 1 53 53 0 1 6 6
+578	116203 1122 61373 1409971 1.076937111902 52.004836663706 31 0 0.205718220798 0.906700628431 0.095961354336535
+579	117325 916 502 1452497 1 53 53 0 1 1 1
+588	118241 777 36604 1410157 1.043962847523 52.004836713196 23 0 0.123531484761 0.338038350093 0.032951120315864
+589	119018 916 504 1452498 1 53 53 0 0 0 0
+598	119934 775 36623 1410163 1.043962850096 52.004836716488 23 0 0.123531477383 0.33803834995 0.032951118549891
+599	120709 916 506 1452499 1 53 53 0 0 0 0
+608	121625 1122 66439 1410028 1.082657117533 52.004836676345 31 0 0.207878146712 0.928284521504 0.11164874711979
+609	122747 916 508 1452500 1 53 53 0 0 0 0
+618	123663 208 72896 210203 1.092729693407 1.326217715503 5 0.003443472684 0.117908541626 0.23693149478 0.018764727162757
+619	123871 916 510 1452501 1 53 53 0 1 44 44
+628	124787 909 41706 1447046 1.051827891759 52.166836378626 26 0 0.161999683186 0.753088236204 0.078725065674154
+629	125696 916 512 1452502 1 53 53 0 0 0 0
+638	126612 955 118550 1410013 1.175359430857 52.004836673819 27 0 0.20787815046 0.82261043873 0.10580712654662
+639	127567 916 514 1452503 1 53 53 0 0 0 0
+648	128483 618 41538 878330 1.051827869545 23.247567682255 17 0 0.117908544487 0.53828669601 0.043208624277584
+649	129101 916 516 1452504 1 53 53 0 1 25 25
+658	130017 771 36584 1410136 1.043962843549 52.004836704726 23 0 0.123531490564 0.338038352665 0.032951123445583
+659	130788 916 518 1452505 1 53 53 0 0 0 0
+668	131704 1046 118583 1410067 1.175359439426 52.004836687367 29 0 0.207878156598 0.956149320195 0.11344863263042
+669	132750 916 520 1452506 1 53 53 0 0 0 0
+678	133666 915 118529 1409911 1.175359425744 52.004836649884 26 0 0.177295390014 0.870317351527 0.10626463669925
+679	134581 916 522 1452507 1 53 53 0 0 0 0
+688	135497 400 61541 1433110 1.076937130006 52.04918433855 10 0 0.117908537346 0.285558225301 0.021159249834866
+689	135897 916 524 1452508 1 53 53 0 1 47 47
+698	136813 787 118538 1184176 1.175359427207 34.069131861335 22 0 0.177295391583 0.822610431808 0.10025294913366
+699	137600 916 526 1452509 1 53 53 0 1 16 16
+708	138516 992 61406 1409938 1.076937115049 52.004836655266 28 0 0.135172997075 0.734014636325 0.063776126644848
+709	139508 916 528 1452510 1 53 53 0 0 0 0
+718	140424 948 104024 1449458 1.147290711806 52.178271887659 27 0 0.173435219706 0.862407151277 0.094251196963397
+719	141372 916 530 1452511 1 53 53 0 0 0 0
+728	142288 861 36568 1442360 1.043962841775 52.140595643812 25 0 0.13575893875 0.592004469964 0.064782825709526
+729	143149 916 532 1452512 1 53 53 0 0 0 0
+738	144065 995 61367 1409953 1.076937109936 52.004836659374 28 0 0.135172982387 0.734014631861 0.062286118133056
+739	145060 916 534 1452513 1 53 53 0 0 0 0
+748	145976 369 118358 605123 1.175359389651 16.004045760374 10 0 0.119694978418 0.27251196536 0.025307105670969
+749	146345 916 536 1452514 1 53 53 0 1 37 37
+758	147261 907 54295 1410034 1.068673685098 52.004836677546 26 0 0.139714399748 0.656490277052 0.066302283872374
+759	148168 916 538 1452515 1 53 53 0 0 0 0
+768	149084 998 61436 1409950 1.076937117017 52.004836658894 28 0 0.158570016147 0.973608119313 0.10570246461789
+769	150082 916 540 1452516 1 53 53 0 0 0 0
+778	150998 953 41721 1447043 1.051827894098 52.166836377328 27 0 0.1619996776 0.75308822002 0.077407923376812
+779	151951 916 542 1452517 1 53 53 0 0 0 0
+788	152867 828 61511 1151921 1.076937125871 34.008278444197 23 0 0.158570029909 0.879812785345 0.098045319804493
+789	153695 916 544 1452518 1 53 53 0 1 10 10
+798	154611 945 104015 1449440 1.147290704513 52.178271880345 27 0 0.173435199603 0.862407090666 0.094251182877115
+799	155556 916 546 1452519 1 53 53 0 0 0 0
+808	156472 743 41598 1151774 1.05182787701 34.008278409769 21 0 0.117908540196 0.55428971453 0.045888207138458
+809	157215 916 548 1452520 1 53 53 0 1 7 7
+818	158131 987 36531 1442369 1.043962832622 52.140595649371 28 0 0.13575894127 0.718483873501 0.068944181176896
+819	159118 916 550 1452521 1 53 53 0 0 0 0
+828	160034 993 104127 1409947 1.147290736771 52.00483665749 28 0 0.158570019774 0.85841151679 0.09087725280956
+829	161027 916 552 1452522 1 53 53 0 0 0 0
+838	161943 209 41529 209912 1.051827868388 1.326217666976 5 0.001069997007 0.117908539693 0.275459795595 0.024890260862843
+839	162152 916 554 1452523 1 53 53 0 1 43 43
+848	163068 730 92427 1410097 1.123897626809 52.004836691379 22 0 0.11790852784 0.368750584856 0.028554080801194
+849	163798 916 556 1452524 1 53 53 0 0 0 0
+858	164714 995 41610 1447079 1.051827877914 52.166836388713 28 0 0.120062736534 0.836352159514 0.073699733659776
+859	165709 916 558 1452525 1 53 53 0 0 0 0
+868	166625 655 118481 1409998 1.17535941304 52.004836668963 20 0 0.117908531892 0.345835521636 0.034708120467984
+869	167280 916 560 1452526 1 53 53 0 0 0 0
+878	168196 1036 61439 1409914 1.076937117388 52.004836650095 29 0 0.158570025133 0.961749057373 0.096893282924508
+879	169232 916 562 1452527 1 53 53 0 0 0 0
+888	170148 1002 118586 1410055 1.175359439429 52.004836685084 28 0 0.207878142616 0.90890283674 0.11076075232433
+889	171150 916 564 1452528 1 53 53 0 0 0 0
+898	172066 822 44218 1410094 1.056809197915 52.004836690895 24 0 0.117908525325 0.36929558776 0.027331440751128
+899	172888 916 566 1452529 1 53 53 0 0 0 0
+908	173804 864 61343 1151822 1.076937100123 34.008278423513 24 0 0.117908537014 0.702861205158 0.05730920618866
+909	174668 916 568 1452530 1 53 53 0 1 9 9
+918	175584 780 39324 1442393 1.048411877752 52.140595656358 23 0 0.135758961286 0.4906660343 0.053442019555913
+919	176364 916 570 1452531 1 53 53 0 0 0 0
+928	177280 869 104143 1409932 1.147290742357 52.004836654583 25 0 0.174638567979 0.870317319706 0.10829853206528
+929	178149 916 572 1452532 1 53 53 0 0 0 0
+938	179065 779 36581 1410154 1.043962843476 52.004836710728 23 0 0.123531472776 0.33803834878 0.032951119411433
+939	179844 916 574 1452533 1 53 53 0 0 0 0
+948	180760 1423 66417 1410010 1.082657111272 52.004836671455 38 0 0.159750113143 1.034960535715 0.090899253549382
+949	182183 916 576 1452534 1 53 53 0 0 0 0
+958	183099 997 104063 1447103 1.147290727204 52.16683639645 28 0 0.161999693876 0.827889149308 0.081322326973174
+959	184096 916 578 1452535 1 53 53 0 0 0 0
+968	185012 989 61361 1449470 1.076937109672 52.178271889662 28 0 0.173435227175 0.796042834559 0.081688209793969
+969	186001 916 580 1452536 1 53 53 0 0 0 0
+978	186917 1000 84509 1410022 1.110783930341 52.004836675104 27 0 0.166490859088 0.919908374849 0.094642874899206
+979	187917 916 582 1452537 1 53 53 0 1 12 12
+988	188833 1032 61520 1409926 1.076937126804 52.004836651885 29 0 0.158570017876 0.879812755239 0.088309777175409
+989	189865 916 584 1452538 1 53 53 0 0 0 0
+998	190781 741 36540 1174393 1.043962833984 34.038312624533 21 0 0.123531478876 0.408704511804 0.036580655532736
+999	191522 916 586 1452539 1 53 53 0 1 11 11
+1008	192438 839 36599 1410151 1.04396284519 52.004836708777 24 0 0.123531492567 0.354760868141 0.033593456719356
+1009	193277 969 588 1452540 1 53 53 0 0 0 0
+1018	194246 1157 54361 1410061 1.068673699022 52.004836686265 31 0 0.20787815344 0.958516438908 0.10657724626416
+1019	195403 969 590 1452541 1 53 53 0 0 0 0
+1028	196372 337 84503 605339 1.110783928258 16.004045804241 9 0 0.155276833546 0.392208328023 0.043731152004929
+1029	196709 969 592 1452542 1 53 53 0 1 36 36
+1038	197678 1069 104051 1447076 1.14729072438 52.166836387787 29 0 0.117908520189 0.827889143745 0.06772195392787
+1039	198747 969 594 1452543 1 53 53 0 0 0 0
+1048	199716 1156 61433 1409929 1.076937116882 52.004836654359 31 0 0.158570017085 1.006625658575 0.10606808578228
+1049	200872 969 596 1452544 1 53 53 0 0 0 0
+1058	201841 720 118466 1443747 1.175359409122 52.145446991671 21 0 0.140610304196 0.486445813167 0.05447937593507
+1059	202561 969 598 1452545 1 53 53 0 0 0 0
+1068	203530 797 36628 1410166 1.043962850993 52.004836718629 23 0 0.12353148191 0.338038348959 0.03295111921001
+1069	204327 969 600 1452546 1 53 53 0 0 0 0
+1078	205296 672 118418 1410004 1.175359404235 52.004836670128 20 0 0.117908534492 0.345835513301 0.03470811921853
+1079	205968 969 602 1452547 1 53 53 0 0 0 0
+1088	206937 1198 84548 1409956 1.110783934328 52.004836659779 32 0 0.207878162715 1.168111672518 0.14936959942564
+1089	208135 969 604 1452548 1 53 53 0 0 0 0
+1098	209104 273 36573 413814 1.043962842379 11.198232247416 7 0 0.156481258954 0.286528543894 0.038438531185346
+1099	209377 969 606 1452549 1 53 53 0 1 40 40
+1108	210346 935 72841 1409995 1.092729686489 52.004836668953 26 0 0.174638575596 0.860589877855 0.10691081555903
+1109	211281 969 608 1452550 1 53 53 0 0 0 0
+1118	212250 1114 61496 1434783 1.076937124241 52.057919557285 30 0 0.158570023924 0.931332448983 0.090029710596687
+1119	213364 969 610 1452551 1 53 53 0 0 0 0
+1128	214333 935 41661 1410082 1.051827886009 52.004836688907 26 0 0.117908539004 0.545405823941 0.045018271207836
+1129	215268 969 612 1452552 1 53 53 0 0 0 0
+1138	216237 714 83787 1410019 1.109378639844 52.0048366743 21 0 0.117908530587 0.34583550486 0.028060534976395
+1139	216951 969 614 1452553 1 53 53 0 0 0 0
+1148	217920 674 118505 1410076 1.175359417557 52.004836688022 20 0 0.11790853206 0.345835514245 0.034708119156581
+1149	218594 969 616 1452554 1 53 53 0 0 0 0
+1158	219563 1288 89200 1410079 1.118548104567 52.004836688645 34 0 0.207878134497 1.055544960878 0.10876561443406
+1159	220851 969 618 1452555 1 53 53 0 0 0 0
+1168	221820 365 104068 508924 1.147290728634 11.422694078753 9 0 0.117908546538 0.390029948314 0.031255904876959
+1169	222185 969 620 1452556 1 53 53 0 1 41 41
+1178	223154 1114 61526 1434786 1.076937128355 52.057919560753 30 0 0.158570021407 0.931332447067 0.09002970873181
+1179	224268 969 622 1452557 1 53 53 0 0 0 0
+1188	225237 754 104018 1151771 1.147290707841 34.008278408354 21 0 0.117908538428 0.568909171969 0.049756355371712
+1189	225991 969 624 1452558 1 53 53 0 1 16 16
+1198	226960 1024 84521 1409968 1.110783931 52.004836663677 28 0 0.186985734048 0.942033793923 0.10880023509444
+1199	227984 969 626 1452559 1 53 53 0 0 0 0
+1208	228953 757 92418 1410043 1.12389762607 52.004836680739 22 0 0.117908526045 0.368750580883 0.028554081454327
+1209	229710 969 628 1452560 1 53 53 0 0 0 0
+1218	230679 276 82369 431555 1.106982150055 11.238882785768 7 0 0.117908521156 0.295937276098 0.023081661004617
+1219	230955 969 630 1452561 1 53 53 0 1 41 41
+1228	231924 844 36587 1410160 1.043962843793 52.004836713575 24 0 0.123531483461 0.354760857989 0.033593453903904
+1229	232768 969 632 1452562 1 53 53 0 0 0 0
+1238	233737 545 83793 888530 1.109378641082 23.275219732676 15 0 0.141815196114 0.563501141592 0.058947494833851
+1239	234282 969 634 1452563 1 53 53 0 1 29 29
+1248	235251 210 39312 209882 1.04841187606 1.326217656108 5 0.003416011505 0.123531487616 0.286528508868 0.03033588811785
+1249	235461 969 636 1452564 1 53 53 0 1 50 50
+1257	236430 21033 4224 1451054 1.005 52.188271880345 721 0 4 114 196
+1258	257463 6306 344698 1409162 3.127388072237 51.011315802242 142 0.003667241726 36.4097023135 996.83627431792 33986.183519292
+1259	263769 21039 4224 1451054 1.005 52.188271880345 721 0 115 327 34893
+1260	284808 962 341942 1452497 2 53 50 1 36 989 24605

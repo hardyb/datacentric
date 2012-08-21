@@ -49,6 +49,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cOutVector TotalInterestArrivalsVector;
     cOutVector InterestInterArrivalTimesVector;
     cOutVector InterestInterDepartureTimesVector;
+    cOutVector StabilityVector;
     double mTotalInterestArrivals;
     simtime_t          mLastInterestDepartureTime;
 

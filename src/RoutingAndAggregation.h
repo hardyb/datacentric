@@ -434,6 +434,7 @@ struct new_packet
     NEIGHBOUR_ADDR excepted_interface;
     NEIGHBOUR_ADDR down_interface;
     char seqno;
+    double creation_time;
 };
 
 
@@ -811,9 +812,9 @@ void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface);
 void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 */
 
-void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg));
+void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime));
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
-void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg));
+void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime));
 void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject)));
 void weAreSourceFor(unsigned char* _data);
 void weAreSinkFor(unsigned char* _data, char seqno);
@@ -821,7 +822,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
 void weAreCollaboratorFor(unsigned char* _data);
 void weAreCollaboratorInitiatorFor(unsigned char* _data);
 void send_data(int len, unsigned char* _data);
-void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi);
+void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime);
 void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
@@ -838,7 +839,7 @@ void handle_collaboration(control_data cd);
 void handle_reinforce_collaboration(control_data cd);
 void handle_interest_correction(control_data cd);
 void handle_breakage(control_data cd);
-void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf);
+void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);
