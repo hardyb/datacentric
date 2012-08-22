@@ -5,7 +5,7 @@ AAA00000078
 AAA0000005D
 seqno: 0
 true
-589
+630
 65535
 false
 false
@@ -28,10 +28,10 @@ CONNECTION
 AAA00000078
 0202FF06
 11
-AAA00000034
+AAA0000001F
 seqno: 0
 true
-740
+709
 65535
 false
 false
@@ -41,10 +41,10 @@ CONNECTION
 AAA00000078
 0202FF06
 11
-AAA0000001F
+AAA00000034
 seqno: 0
 true
-696
+783
 65535
 false
 false
@@ -57,7 +57,7 @@ AAA00000078
 AAA00000012
 seqno: 0
 true
-654
+715
 65535
 false
 false
@@ -70,7 +70,7 @@ AAA00000078
 AAA0000005F
 seqno: 0
 true
-684
+691
 65535
 false
 false
@@ -96,7 +96,7 @@ AAA00000078
 AAA0000003D
 seqno: 0
 true
-710
+868
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA00000078
 AAA00000015
 seqno: 0
 true
-602
+742
 65535
 false
 false

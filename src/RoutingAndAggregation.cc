@@ -1682,6 +1682,30 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
         case REINFORCE_OBTAIN:
             // We think not possible for reinforcement seqno to be greater than current
             break;
+            /*
+             * case DELIVER:
+             *
+             * if ( seqno > s->seqno )
+             *
+             * IF: this is a rec and we are the sink for it
+             * i.e. we have a best grad already set that is this data rec
+             * interface to self and cost zero (and most likely grad and state seqno zero).
+             *
+             * THEN:  we must leave the best grad to self in place, set its seqno to this
+             * incoming seqno value +1 and the same for the state object.
+             *
+             * Returning from this function with best updated assumes seqno set to the
+             * incoming one at least but not increased and also the forwarded interest
+             * will have an increased cost.
+             *
+             * ACTUALLY we JUST want to send out the initiating interest again with the
+             * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
+             * Then return (not updated so the incoming interest is not forwarded
+             *
+             * I THINK CANNOT GET DATA STRING FOR SENDING HERE
+             * SO MAYBE MOVE THIS IDEA TO handle_interest
+             *
+             */
         default:
             if ( seqno > s->seqno )
             {
@@ -3256,7 +3280,7 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
     {
         new_packet* savePkt = packetCopy(&broken_packet);
         addPkt(&(s->pktQ), savePkt);
-        s->converged = 0;
+        s->converged = 0; // may be wait for the new seqno interest
         freeInterfaceList(s->deliveryInterfaces);
         s->deliveryInterfaces = NULL;
     }
@@ -4209,11 +4233,74 @@ void handle_interest(control_data cd)
     // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
     State* s = t->s;
 
-    if ( s->converged )
+    if ( incoming_packet.seqno < s->seqno )
+    {
+        return; // I think this is right, i.e. ignore any old seq ints/advs
+        // CHECK THIS
+    }
+
+    if ( (incoming_packet.seqno == s->seqno) && s->converged )
     {
         return;
-
     }
+
+    if ( incoming_packet.seqno > s->seqno )
+    {
+        /*
+         * IF: this is a rec and we are the sink for it
+         * i.e. we have a best grad already set that is this data rec
+         * interface to self and cost zero (and most likely grad and state seqno zero).
+         *
+         * THEN:  we must leave the best grad to self in place, set its seqno to this
+         * incoming seqno value +1 and the same for the state object.
+         *
+         * ACTUALLY we JUST want to send out the initiating interest again with the
+         * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
+         *
+         *
+         */
+        if ( s->bestGradientToDeliver &&
+                s->bestGradientToDeliver->key2->iName == SELF_INTERFACE &&
+                s->bestGradientToDeliver->costToDeliver == 0 &&
+                s->bestGradientToDeliver->seqno == 0 &&
+                s->seqno == 0) // pos improve condition
+        {
+            s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
+            s->seqno = incoming_packet.seqno+1;
+            //s->bestGradientToDeliverUpdated = 0;
+
+            outgoing_packet.message_type = INTEREST;
+
+            outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.data = incoming_packet.data;
+
+            //outgoing_packet.length = strlen(queue); // strlen ok in this case
+            //outgoing_packet.data = (unsigned char*)queue; // cannot get
+
+            outgoing_packet.path_value = 0;
+            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.seqno = s->seqno;
+
+            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            bcastAMessage(write_packet(&outgoing_packet));
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 	//static rpacket p;
 	//static struct StateNode* n;
@@ -4257,12 +4344,6 @@ void handle_interest(control_data cd)
 
 	//}
 
-    if ( incoming_packet.seqno < s->seqno )
-    {
-        return; // I think this is right, i.e. ignore any old seq ints/advs
-        // CHECK THIS
-
-    }
 
 
     //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
@@ -4326,7 +4407,7 @@ void handle_interest(control_data cd)
             outgoing_packet.path_value = outgoingLinkCost(cd);
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-            outgoing_packet.seqno = incoming_packet.seqno;
+            outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
             bcastAMessage(write_packet(&outgoing_packet));
 			//SendToAllInterfacesExcept(rd->interfaceTree, _interface);
 		}

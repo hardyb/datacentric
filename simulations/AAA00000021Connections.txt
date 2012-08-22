@@ -41,10 +41,23 @@ CONNECTION
 AAA00000021
 0202FF06
 10
+20000000001
+seqno: 0
+true
+65535
+65535
+false
+false
+true
+true
+CONNECTION
+AAA00000021
+0202FF06
+10
 AAA0000005D
 seqno: 0
 true
-596
+637
 65535
 false
 false
@@ -128,19 +141,6 @@ false
 false
 false
 false
-CONNECTION
-AAA00000021
-0202FF06
-10
-20000000001
-seqno: 0
-true
-65535
-65535
-false
-false
-true
-true
 CONNECTION
 AAA00000021
 0202FF06

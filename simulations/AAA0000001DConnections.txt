@@ -5,9 +5,9 @@ AAA0000001D
 AAA0000005D
 seqno: 0
 true
-576
+617
 65535
-true
+false
 false
 false
 false
@@ -20,7 +20,7 @@ seqno: 0
 true
 584
 65535
-false
+true
 false
 false
 false
@@ -31,33 +31,7 @@ AAA0000001D
 AAA0000001F
 seqno: 0
 true
-643
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000001D
-0202FF06
-11
-AAA00000034
-seqno: 0
-true
-720
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000001D
-0202FF06
-11
-AAA00000067
-seqno: 0
-true
-651
+656
 65535
 false
 false
@@ -70,20 +44,7 @@ AAA0000001D
 AAA0000006F
 seqno: 0
 true
-607
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000001D
-0202FF06
-11
-AAA00000017
-seqno: 0
-true
-665
+614
 65535
 false
 false
@@ -96,7 +57,46 @@ AAA0000001D
 AAA00000012
 seqno: 0
 true
-669
+730
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000001D
+0202FF06
+11
+AAA00000034
+seqno: 0
+true
+763
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000001D
+0202FF06
+11
+AAA00000067
+seqno: 0
+true
+692
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000001D
+0202FF06
+11
+AAA00000017
+seqno: 0
+true
+668
 65535
 false
 false
@@ -122,7 +122,7 @@ AAA0000001D
 AAA0000005F
 seqno: 0
 true
-697
+704
 65535
 false
 false

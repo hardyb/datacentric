@@ -41,10 +41,10 @@ CONNECTION
 AAA0000003F
 0202FF06
 11
-AAA00000001
+AAA00000010
 seqno: 0
 true
-456
+300
 65535
 false
 false
@@ -54,10 +54,10 @@ CONNECTION
 AAA0000003F
 0202FF06
 11
-AAA00000010
+AAA00000001
 seqno: 0
 true
-300
+456
 65535
 false
 false
@@ -96,20 +96,7 @@ AAA0000003F
 AAA0000004B
 seqno: 0
 true
-443
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000003F
-0202FF06
-11
-AAA0000005B
-seqno: 0
-true
-471
+458
 65535
 false
 false
@@ -123,6 +110,19 @@ AAA00000022
 seqno: 0
 true
 499
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000003F
+0202FF06
+11
+AAA0000005B
+seqno: 0
+true
+471
 65535
 false
 false

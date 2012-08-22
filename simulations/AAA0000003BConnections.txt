@@ -28,10 +28,23 @@ CONNECTION
 AAA0000003B
 0202FF06
 11
+AAA00000042
+seqno: 0
+true
+228
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000003B
+0202FF06
+11
 AAA0000007C
 seqno: 0
 true
-409
+473
 65535
 false
 false
@@ -45,19 +58,6 @@ AAA0000007B
 seqno: 0
 true
 269
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000003B
-0202FF06
-11
-AAA00000042
-seqno: 0
-true
-228
 65535
 false
 false

@@ -488,6 +488,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
                 ss.str(s);
                 ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
                 std::remove(ss.str().c_str());
+                scheduleAt(simTime() + 1.0, mpUpDownMessage);
             }
             else
             {
@@ -511,7 +512,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             StabilityVector.record(1.0);
         }
 
-        scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
         return;
     }
 

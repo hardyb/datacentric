@@ -31,20 +31,7 @@ AAA0000005E
 AAA0000007C
 seqno: 0
 true
-409
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000005E
-0202FF06
-11
-AAA0000007B
-seqno: 0
-true
-297
+473
 65535
 false
 false
@@ -58,6 +45,19 @@ AAA00000042
 seqno: 0
 true
 220
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000005E
+0202FF06
+11
+AAA0000007B
+seqno: 0
+true
+297
 65535
 false
 false

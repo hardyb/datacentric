@@ -41,12 +41,12 @@ CONNECTION
 AAA00000023
 0202FF06
 11
-AAA0000007B
+AAA00000011
 seqno: 0
 true
-315
+299
 65535
-false
+true
 false
 false
 false
@@ -54,12 +54,12 @@ CONNECTION
 AAA00000023
 0202FF06
 11
-AAA00000011
+AAA0000007B
 seqno: 0
 true
-299
+315
 65535
-true
+false
 false
 false
 false

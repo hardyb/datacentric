@@ -18,7 +18,7 @@ AAA00000046
 AAA0000005D
 seqno: 0
 true
-563
+604
 65535
 false
 false
@@ -32,19 +32,6 @@ AAA00000028
 seqno: 0
 true
 492
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000046
-0202FF06
-11
-AAA0000005B
-seqno: 0
-true
-473
 65535
 false
 false
@@ -70,7 +57,20 @@ AAA00000046
 AAA00000012
 seqno: 0
 true
-661
+722
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000046
+0202FF06
+11
+AAA0000005B
+seqno: 0
+true
+473
 65535
 false
 false
@@ -96,7 +96,7 @@ AAA00000046
 AAA0000005F
 seqno: 0
 true
-682
+755
 65535
 false
 false
@@ -109,7 +109,7 @@ AAA00000046
 AAA00000033
 seqno: 0
 true
-473
+619
 65535
 false
 false
