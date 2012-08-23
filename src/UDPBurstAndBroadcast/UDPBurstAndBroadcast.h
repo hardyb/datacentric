@@ -81,6 +81,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     bool haveSleepDuration;
     int outputInterface;
     std::vector<int> outputInterfaceMulticastBroadcast;
+    cOutVector e2eDelayVec;
 
     std::map<IPvXAddress, std::string> mInterestedNodes;
     typedef std::map<IPvXAddress, std::string>::iterator InterestedNodesIterator;

@@ -1,0 +1,20 @@
+file 542 1345761303                                             
+version 2
+run General-0-20120823-23:34:11-376
+attr configname General
+attr datetime 20120823-23:34:11
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network csma802154net
+attr processid 376
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 138  csma802154net.fixhost[13].udpApp[0]  "End-to-end delay"  ETV
+138	458 84 55722 57094 33.504871731025 33.582815755184 2 0.582815755184 3.504871731025 4.087687486209 12.623800055429

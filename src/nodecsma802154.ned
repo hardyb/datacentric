@@ -48,8 +48,8 @@ module nodecsma802154
         int numTcpApps = default(0);
         int numUdpApps = default(0);
         int numPingApps = default(0);  // no of PING apps. Specify the app types in INI file with pingApp[0..1].typename="PingApp" syntax       
-        int x @unit("m");
-        int y @unit("m");
+        //int x @unit("m");
+        //int y @unit("m");
         string tcpAppType = default("");
         string udpAppType = default("");
         string routingFile = default("");
@@ -118,8 +118,8 @@ module nodecsma802154
         //            display: "p=248,349;q=queue;i=block/ifcard";
         mobility: StationaryMobility {
             parameters:
-                initialX = x;
-                initialY = y;
+                //initialX = x;
+                //initialY = y;
                 initFromDisplayString=false;
                 @display("p=152,368;i=block/cogwheel");
         }

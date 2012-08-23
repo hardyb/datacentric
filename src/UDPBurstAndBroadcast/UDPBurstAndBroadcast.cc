@@ -89,6 +89,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     nextSleep = startTime;
     nextBurst = startTime;
     nextPkt = startTime;
+    e2eDelayVec.setName("End-to-end delay");
 
     destAddrRNG = par("destAddrRNG");
     const char *addrModeStr = par("chooseDestAddrMode").stringValue();
@@ -341,6 +342,9 @@ void UDPBurstAndBroadcast::processPacket(cPacket *pk)
             }
             pktDelay->collect(simTime() - pk->getTimestamp());
             numReceived++;
+
+            simtime_t e2eDelay = simTime() - pk->getTimestamp();
+            e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
 
             this->getParentModule()->bubble("Received packet");
         }

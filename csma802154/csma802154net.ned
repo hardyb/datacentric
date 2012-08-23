@@ -33,8 +33,8 @@ network csma802154net
     submodules:
         fixhost[numFixHosts]: nodecsma802154 {
             parameters:
-              y =  (floor(index/sqrt(numFixHosts))*nodeSeparation)+(nodeSeparation);
-              x = ((index%floor(sqrt(numFixHosts)))*nodeSeparation)+(nodeSeparation);
+              //y =  (floor(index/sqrt(numFixHosts))*nodeSeparation)+(nodeSeparation);
+              //x = ((index%floor(sqrt(numFixHosts)))*nodeSeparation)+(nodeSeparation);
               @display("i=device/pocketpc_s;r=,,#707070");
         }
         channelControl: ChannelControl {
