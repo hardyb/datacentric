@@ -1,11 +1,11 @@
 CONNECTION
 AAA00000034
 0202FF06
-10
-AAA0000005D
-seqno: 0
+3
+AAA00000036
+seqno: 3
 true
-627
+634
 65535
 false
 false
@@ -14,76 +14,11 @@ false
 CONNECTION
 AAA00000034
 0202FF06
-10
-AAA0000001F
-seqno: 0
-true
-691
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000034
-0202FF06
-10
-AAA0000006F
-seqno: 0
-true
-619
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000034
-0202FF06
-10
-AAA00000078
-seqno: 0
-true
-730
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000034
-0202FF06
-10
-AAA00000062
-seqno: 0
-true
-788
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000034
-0202FF06
-10
-AAA0000002C
-seqno: 0
-true
-616
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000034
-0202FF06
-10
+3
 AAA00000063
-seqno: 0
+seqno: 3
 true
-612
+629
 65535
 false
 false
@@ -92,24 +27,63 @@ false
 CONNECTION
 AAA00000034
 0202FF06
-10
-AAA00000053
-seqno: 0
+3
+AAA00000024
+seqno: 3
 true
-584
+719
 65535
-true
-true
+false
+false
 false
 false
 CONNECTION
 AAA00000034
 0202FF06
-10
+3
+AAA00000012
+seqno: 3
+true
+740
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
+AAA00000069
+seqno: 3
+true
+622
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
+AAA00000067
+seqno: 3
+true
+752
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
 AAA00000044
-seqno: 0
+seqno: 3
 true
-604
+637
 65535
 false
 false
@@ -118,11 +92,11 @@ false
 CONNECTION
 AAA00000034
 0202FF06
-10
-AAA00000028
-seqno: 0
+3
+AAA0000002D
+seqno: 3
 true
-599
+860
 65535
 false
 false
@@ -131,7 +105,33 @@ false
 CONNECTION
 AAA00000034
 0202FF06
-10
+3
+AAA00000075
+seqno: 3
+true
+622
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
+AAA0000004A
+seqno: 3
+true
+617
+65535
+true
+true
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
 20000000001
 seqno: 0
 true
@@ -141,3 +141,29 @@ false
 false
 true
 true
+CONNECTION
+AAA00000034
+0202FF06
+3
+AAA0000000A
+seqno: 3
+true
+729
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+0202FF06
+3
+AAA00000031
+seqno: 3
+true
+731
+65535
+false
+false
+false
+false

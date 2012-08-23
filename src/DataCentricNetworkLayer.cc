@@ -189,6 +189,22 @@ void DataCentricNetworkLayer::initialize(int aStage)
         //mTheAddressString = tempAddressString;
         mTheAddressString = addrObj.str();
         mAddress = addrObj.getInt();
+
+        mNetMan->mNetModules[mAddress] = this;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         //mAddress &= 0x0000FFFFFFFFFFFF;
 
 
@@ -202,7 +218,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         // For the moment comment out to disable stability feature
-        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        scheduleAt(simTime() + 1.0, mpUpDownMessage);
 
 
 
@@ -213,10 +229,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         // OLD STUFF
-        if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
-        {
-            scheduleAt(simTime() + 2.0, mpUpDownMessage);
-        }
+        //if ( !strcmp(this->getParentModule()->getFullName(), "host[52]") )
+        //{
+        //    scheduleAt(simTime() + 2.0, mpUpDownMessage);
+        //}
         //else
         //{
         //    scheduleAt(simTime() + thePoisson, mpUpDownMessage);
@@ -396,7 +412,49 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 }
 
 
+void DataCentricNetworkLayer::sendDownTheNIC()
+{
+    Enter_Method("sendDownTheNIC()");
 
+    if ( uniform(0,255) <= mStability  )
+    {
+        if ( mPhyModule->isEnabled() )
+        {
+            //cout << "MODULE GOING DOWN: " << fName << endl;
+            //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+
+            mPhyModule->disableModule();
+            mNetMan->changeInModulesDown(1.0);
+
+            freeKDGradientNode(moduleRD.grTree);
+            freeInterfaceNode(moduleRD.interfaceTree);
+            // also free packet queue
+            trie_free(moduleRD.top_context);
+            trie_free(moduleRD.top_state);
+            moduleRD.grTree = NULL;
+            moduleRD.pktQ = NULL;
+            moduleRD.interfaceTree = NULL;
+            moduleRD.top_context = trie_new();
+            moduleRD.top_state = trie_new();
+            mQueueModule->dropAll();
+
+            std::string s;
+            std::ostringstream ss;
+            ss.clear();
+            ss.str(s);
+            ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+            std::remove(ss.str().c_str());
+
+            StabilityVector.record(1.0);
+            //scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        }
+    }
+
+
+
+    return;
+
+}
 
 void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 {
@@ -437,8 +495,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if ( msg == mMessageForTesting_1 )
     {
-        TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
-        return;
+        //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+        //return;
 
         // MOVE THIS BIT INTO FRAMEWORK
         unsigned char temp[30];
@@ -460,12 +518,12 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpUpDownMessage )
     {
-        if ( 1 )//uniform(0,1) <= mStability  )
+        if ( uniform(0,1) <= mStability  )
         {
             if ( mPhyModule->isEnabled() )
             {
                 cout << "MODULE GOING DOWN: " << fName << endl;
-                TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+                //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
 
                 mPhyModule->disableModule();
                 mNetMan->changeInModulesDown(1.0);
@@ -488,12 +546,12 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
                 ss.str(s);
                 ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
                 std::remove(ss.str().c_str());
-                scheduleAt(simTime() + 1.0, mpUpDownMessage);
+                //scheduleAt(simTime() + 1.0, mpUpDownMessage);
             }
             else
             {
                 cout << "MODULE COMING UP: " << fName << endl;
-                scheduleAt(simTime() + 0.5, mMessageForTesting_1);
+                //scheduleAt(simTime() + 0.5, mMessageForTesting_1);
 
                 mPhyModule->enableModule();
                 mNetMan->changeInModulesDown(-1.0);
@@ -512,7 +570,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             StabilityVector.record(1.0);
         }
 
-        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        scheduleAt(simTime() + 1.0, mpUpDownMessage);
         return;
     }
 
@@ -532,6 +590,12 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     }
 
     DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(msg);
+
+
+    if ( !strcmp(this->getParentModule()->getFullName(), "host[5]") )
+    {
+        int x = 5;
+    }
 
 
     if (msg->getArrivalGateId() == mUpperLayerIn)
@@ -556,6 +620,7 @@ void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
 
     //nodeConstraint = nodeConstraintValue;
     nodeConstraint = (unsigned int)(255.0 * mStability);
+    //nodeConstraint = (unsigned int)mStability;
     currentModuleId = this->getId();
     thisAddress = mAddress;
     rd = &(moduleRD);
@@ -1007,6 +1072,9 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
      */
     DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
 
+
+
+
     //char msgname[20];
     //sprintf(msgname, "%s", messageName[*_msg]);
     //RoutingMessage *msg = new RoutingMessage(msgname);
@@ -1025,6 +1093,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             break;
         case DATA:
             appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
+            //currentModule->mNetMan->mNetModules[_interface]->sendDownTheNIC();
             break;
         case REINFORCE_INTEREST:
             appPkt = new DataCentricAppPkt("ReinIN_DataCentricAppPkt");

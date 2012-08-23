@@ -36,6 +36,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     virtual void finish();
     void WriteModuleListFile();
     bool FindNode(const string& addressToFind, string& matchingNodeName);
+    void sendDownTheNIC();
 
     double StartTime();
 
@@ -124,5 +125,14 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cMessage *mRegularCheckMessage;
 
 };
+
+
+
+
+
+
+
+
+
 #endif
 

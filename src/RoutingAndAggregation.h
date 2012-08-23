@@ -628,6 +628,7 @@ typedef struct State
 	char converged;
 	char broken;
 	int action;
+	int prefix;
 	// consider putting some of this stuff into bit flags
 	// pos some how combine updated flags and converged flags
 	// save space variously

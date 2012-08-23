@@ -2893,7 +2893,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
              */
 
             // 3)
-            //if ( s->action == FORWARD_AND_SOURCEPREFIX )
+            //if ( s->prefix == FORWARD_AND_SOURCEPREFIX )
             //{
                 // so wait for timeout and reinforcement
             //    new_packet* savePkt = packetCopy(sending_packet);
@@ -3262,7 +3262,13 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
         if ( temp->i->iName == _if )
         {
             // If so, broadcast a BREAKAGE message for that prefix state
-            s->broken = 1;
+
+            // Only mark as broken when participated in forwarding
+            // s->broken = 1;
+
+            new_packet* savePkt = packetCopy(&broken_packet);
+            addPkt(&(s->pktQ), savePkt);
+
             outgoing_packet.message_type = BREAKAGE;
             outgoing_packet.data = _buf;
             outgoing_packet.length = strlen((const char*)_buf); // strl ok here
@@ -3278,11 +3284,18 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
     if ( s->broken )
     {
-        new_packet* savePkt = packetCopy(&broken_packet);
-        addPkt(&(s->pktQ), savePkt);
-        s->converged = 0; // may be wait for the new seqno interest
-        freeInterfaceList(s->deliveryInterfaces);
-        s->deliveryInterfaces = NULL;
+        // MOVE TO ABOVE
+        // new_packet* savePkt = packetCopy(&broken_packet);
+        // addPkt(&(s->pktQ), savePkt);
+
+        // LEAVE AS CONVERGED UNTIL NEW SEQNO INTEREST FROM SINK
+        // s->converged = 0; // may be wait for the new seqno interest
+
+        // LEAVE THIS UNTIL NEW SEQNO INTEREST FROM SINK
+        // SO IF FAILED SUBSEQUENT DATA SEND FAILS CAN ALSO
+        // TRY TO FIX BREAKAGE
+        // freeInterfaceList(s->deliveryInterfaces);
+        // s->deliveryInterfaces = NULL;
     }
 
     return 0;
@@ -3328,6 +3341,7 @@ void initiate_new_interest(void* relevantObject)
     GetStateStr(rd->top_state, s, data);
 
     weAreSinkFor(data, s->seqno+1);
+    s->converged = 1; // SHOULD THIS ALWAYS BE '1' FOR STABLE SINK OF REC ???
     // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
     UcastAllBestGradients(rd->top_state, 0);
 
@@ -4038,7 +4052,7 @@ void interest_convergence_timeout(void* relevantObject)
     State* s = (State*)relevantObject;
     s->converged = 1;
 
-    if ( s->action == FORWARD_AND_SOURCEPREFIX
+    if ( s->prefix == FORWARD_AND_SOURCEPREFIX
             && s->bestGradientToDeliver
             && !s->deliveryInterfaces )
     {
@@ -4050,7 +4064,7 @@ void interest_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
     }
 
-    if ( s->action != FORWARD_AND_SOURCEPREFIX && s->pktQ
+    if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
             && s->bestGradientToDeliver
             && !s->deliveryInterfaces )
     {
@@ -4193,7 +4207,7 @@ void send_queued_data(void* relevantObject)
 
 int isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
-    s->action = FORWARD_AND_SOURCEPREFIX;
+    s->prefix = FORWARD_AND_SOURCEPREFIX;
 
     return 0;
 }
@@ -4239,12 +4253,12 @@ void handle_interest(control_data cd)
         // CHECK THIS
     }
 
-    if ( (incoming_packet.seqno == s->seqno) && s->converged )
+    if ( 0 )//(incoming_packet.seqno == s->seqno) && s->converged )
     {
-        return;
+        //return;
     }
 
-    if ( incoming_packet.seqno > s->seqno )
+    if ( 0 )//incoming_packet.seqno > s->seqno )
     {
         /*
          * IF: this is a rec and we are the sink for it
@@ -4363,13 +4377,13 @@ void handle_interest(control_data cd)
 		    // this is a once only on first sight for all the (interest) states
 		    // we have ever seen, to say whether or not it is a prefix of one
 		    // that was previously set as SOURCE_ACTION
-            if ( t->s->action != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->action != FORWARD_AND_NOTSOURCEPREFIX )
+            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
+                    t->s->prefix != FORWARD_AND_NOTSOURCEPREFIX )
             {
                 traverse(rd->top_state, queue, 0, setAllPrefixStatus);
-                if ( t->s->action != FORWARD_AND_SOURCEPREFIX )
+                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
                 {
-                    t->s->action = FORWARD_AND_NOTSOURCEPREFIX;
+                    t->s->prefix = FORWARD_AND_NOTSOURCEPREFIX;
                 }
             }
 
@@ -4377,8 +4391,8 @@ void handle_interest(control_data cd)
             t->s->converged = 0;
             setTimer(0.2, t->s, interest_convergence_timeout);
 
-            if ( t->s->action == FORWARD_AND_SOURCEPREFIX )
-            {
+            //if ( t->s->prefix == FORWARD_AND_SOURCEPREFIX )
+            //{
                 //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
                 //strcpy(x, (const char*)incoming_packet.data);
                 //setTimer(0.1, x, interest_convergence_timeout);
@@ -4389,11 +4403,11 @@ void handle_interest(control_data cd)
                 //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
                 //memcpy(x, incoming_packet.data, incoming_packet.length);
                 //x[incoming_packet.length] = 0;
-            }
-            else
-            {
+            //}
+            //else
+            //{
                 //setTimer(0.1, t->s, interest_convergence_timeout);
-            }
+            //}
 
 
 
@@ -5345,6 +5359,7 @@ struct State* newStateObject()
 	s->seqno = 0;
 	s->broken = 0;
 	s->converged = 0;
+	s->prefix = 0;
 
 	//n->left = NULL;
 	//n->right = NULL;

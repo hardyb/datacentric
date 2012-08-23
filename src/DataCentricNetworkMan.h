@@ -10,6 +10,11 @@
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
 
+//#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
+
+class DataCentricNetworkLayer;
+
+
 class DataCentricNetworkMan : public cSimpleModule
 {
   public:
@@ -32,6 +37,9 @@ class DataCentricNetworkMan : public cSimpleModule
     typedef std::vector<Region>::iterator RegionsIterator;
     Regions mRegions;
 
+    typedef std::map<uint64_t, DataCentricNetworkLayer*> NetModules;
+    typedef std::map<uint64_t, DataCentricNetworkLayer*>::iterator NetModulesIterator;
+    NetModules mNetModules;
 
   protected:
     void handleMessage(cMessage*);
