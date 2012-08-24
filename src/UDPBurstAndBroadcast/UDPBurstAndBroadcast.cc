@@ -27,6 +27,7 @@
 #include "InterfaceTableAccess.h"
 #include "BroadcastMessage_m.h"
 #include "AppControlMessage_m.h"
+#include "DataCentricNetworkLayer.h"
 
 
 
@@ -232,6 +233,76 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         return;
     }
 
+    if (msg->getArrivalGateId() == mUpperLayerIn)
+    {
+        //handleUpperLayerMessage(appPkt);
+        switch ( msg->getKind() )
+        {
+        case DATA_PACKET:
+            /*
+             * If PUB Data
+             *      Send to server
+             *
+             * If RECORD Data
+             *      Send to server
+             *
+             *
+             */
+            //currentPktCreationTime = simTime();
+            //cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
+            //SendDataWithLongestContext(appPkt);
+            break;
+        case STARTUP_MESSAGE:
+            /*
+             * Clearly datacentric farmework initialisation is not appropriate
+             * we are using AODV
+             *
+             * However in the datacentric case the DataCentricNetworkLayer is
+             * the equivalent to this module and it disables the PhyModule at
+             * initialisation and enables it when the STARTUP_MESSAGE is received
+             */
+            //StartUpModule();
+            break;
+        case CONTEXT_MESSAGE:
+            /*
+             * Not sure
+             *
+             *
+             */
+            //SetContext(appPkt);
+            break;
+        case SOURCE_MESSAGE:
+            /*
+             * If source for RECORD
+             *      Find server
+             *      Register with server?
+             *
+             * If source for PUB
+             *      Find server
+             *      Register with server?
+             *
+             */
+            //SetSourceWithLongestContext(appPkt);
+            break;
+        case SINK_MESSAGE:
+            /*
+             * If sink for PUB
+             *      Find server
+             *      Register for the particular events
+             *
+             *
+             */
+            //SetSinkWithShortestContext(appPkt);
+            break;
+        default:
+            break;
+        }
+    }
+
+
+
+
+
     if (msg->isSelfMessage())
     {
         if (stopTime <= 0 || simTime() < stopTime)
@@ -243,6 +314,11 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     }
     else if (msg->getKind() == UDP_I_DATA)
     {
+        // DO NOT GO IN HERE WITH A PACKET FROM ABOVE
+        // ===========================================
+
+
+
         // process incoming packet
         processPacket(PK(msg));
     }
@@ -263,6 +339,34 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         getDisplayString().setTagArg("t", 0, buf);
     }
 }
+
+
+void UDPBurstAndBroadcast::findServer(cPacket *pk)
+{
+    // IE SEND BROADCAST LOOKING FOR IT?
+
+    // USE SOME OF THIS STUFF
+    // ALSO LOOK AT HOW 'socket' works may be related
+
+    const char *destAddrs = par("destAddresses");
+    cStringTokenizer tokenizer(destAddrs);
+    const char *token;
+
+    IPvXAddress myAddr = IPvXAddressResolver().resolve(this->getParentModule()->getFullPath().c_str());
+    while ((token = tokenizer.nextToken()) != NULL)
+    {
+        if (strstr(token, "Broadcast") != NULL)
+            destAddresses.push_back(IPv4Address::ALLONES_ADDRESS);
+        else
+        {
+            IPvXAddress addr = IPvXAddressResolver().resolve(token);
+            if (addr != myAddr)
+                destAddresses.push_back(addr);
+        }
+    }
+
+}
+
 
 void UDPBurstAndBroadcast::processPacket(cPacket *pk)
 {
