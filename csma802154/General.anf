@@ -1,6 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
-  <inputs/>
-  <datasets/>
-  <chartSheets/>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/datacentric/csma802154/results/General-0.sca"/>
+    <inputs name="/datacentric/csma802154/results/General-0.vec"/>
+  </inputs>
+  <datasets>
+    <datasets name="First">
+      <items xsi:type="scave:Add" filterPattern="&quot;End-to-end delay&quot;" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="End-to-end delay" lineNameFormat=""/>
+    </datasets>
+    <datasets name="Second">
+      <items xsi:type="scave:Add" filterPattern="&quot;Mean delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Mean Delay"/>
+      <items xsi:type="scave:Discard" filterPattern="&quot;Mean delay&quot;"/>
+      <items xsi:type="scave:Add" filterPattern="&quot;Min delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Min delay"/>
+      <items xsi:type="scave:Add" filterPattern="&quot;Max delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Delays"/>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.1 //@datasets/@datasets.1/@items.4"/>
+  </chartSheets>
 </scave:Analysis>

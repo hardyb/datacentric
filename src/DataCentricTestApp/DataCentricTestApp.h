@@ -16,6 +16,8 @@
 //#include <INode.h>
 
 
+#define DATACENTRIC_MODE 1
+#define AODV_MODE 2
 
 
 
@@ -115,7 +117,7 @@ class DataCentricTestApp : public TrafGenPar
 
 
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;
-
+    int mAppMode;
 
 
 

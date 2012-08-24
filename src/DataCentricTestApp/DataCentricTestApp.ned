@@ -10,6 +10,7 @@ simple DataCentricTestApp extends TrafGenPar
         string sinkFor;
         string sourceFor;// = "\x48\x49\x54";
         string nodeContext;
+        string appMode;
         bool mains;
         double probabilityDown;
         string actionThreads;

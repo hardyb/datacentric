@@ -31,6 +31,16 @@ void DataCentricTestApp::initialize(int aStage)
 
         //mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");
+
+        if ( !strcmp(par("appMode").stringValue(), "AODV") )
+        {
+            mAppMode = AODV_MODE;
+        }
+        else
+        {
+            mAppMode = DATACENTRIC_MODE;
+        }
+
         //std::string temp1 = par("sourceFor").stringValue();
         //sourcesData = cStringTokenizer(temp1.c_str()).asVector();
         //std::string temp2 = par("sinkFor").stringValue();

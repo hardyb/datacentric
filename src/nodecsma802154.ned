@@ -21,7 +21,8 @@ package datacentric;
 
 import inet.applications.IPingApp;
 import inet.applications.ITCPApp;
-import inet.applications.IUDPApp;
+//import inet.applications.IUDPApp;
+import datacentric.IUDPApp;
 import inet.base.NotificationBoard;
 import inet.mobility.models.StationaryMobility;
 import inet.wpan.linklayer.ieee802154.Ieee802154csmaNic;
@@ -33,6 +34,7 @@ import inet.transport.udp.UDP;
 import inet.networklayer.IManetRouting;
 import inet.battery.IBattery;
 import inet.wpan.Isabel.Base.Display;
+import datacentric.DataCentricTestApp.DataCentricTestApp;
 
 
 //
@@ -46,7 +48,7 @@ module nodecsma802154
     parameters:
         @node();
         int numTcpApps = default(0);
-        int numUdpApps = default(0);
+        //int numUdpApps = default(0);
         int numPingApps = default(0);  // no of PING apps. Specify the app types in INI file with pingApp[0..1].typename="PingApp" syntax       
         //int x @unit("m");
         //int y @unit("m");
@@ -85,13 +87,19 @@ module nodecsma802154
             parameters:
                 @display("p=163,154;i=block/wheelbarrow");
         }
-        udpApp[numUdpApps]: <udpAppType> like IUDPApp {
-            parameters:
+        //udpApp[numUdpApps]: <udpAppType> like IUDPApp {
+        udpApp: <udpAppType> like IUDPApp {
+                parameters:
                 @display("i=block/app;p=272,67");
         }
         udp: UDP {
             parameters:
                 @display("p=272,154;i=block/transport");
+        }
+        app: DataCentricTestApp {
+            parameters:
+                @display("p=250,100;i=block/source");
+
         }
         pingApp[numPingApps]: <default("PingApp")> like IPingApp {
             parameters:
@@ -143,10 +151,15 @@ module nodecsma802154
         tcp.ipOut --> networkLayer.tcpIn;
         tcp.ipIn <-- networkLayer.tcpOut;
 
-        for i=0..numUdpApps-1 {
-            udpApp[i].udpOut --> udp.appIn++;
-            udpApp[i].udpIn <-- udp.appOut++;
-        }
+        //for i=0..numUdpApps-1 {
+        //    udpApp[i].udpOut --> udp.appIn++;
+        //    udpApp[i].udpIn <-- udp.appOut++;
+        //}
+        udpApp.udpOut --> udp.appIn++;
+        udpApp.udpIn <-- udp.appOut++;
+
+        udpApp.datacentricAppOut --> app.lowerLayerIn;
+        udpApp.datacentricAppIn <-- app.lowerLayerOut;
 
         udp.ipOut --> networkLayer.udpIn;
         udp.ipIn <-- networkLayer.udpOut;

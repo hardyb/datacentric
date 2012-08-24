@@ -78,6 +78,9 @@ void UDPBurstAndBroadcast::initialize(int stage)
     numDeleted = 0;
     numDuplicated = 0;
 
+    mUpperLayerIn  = findGate("datacentricAppIn");
+    mUpperLayerOut = findGate("datacentricAppOut");
+
     delayLimit = par("delayLimit");
     simtime_t startTime = par("startTime");
     stopTime = par("stopTime");

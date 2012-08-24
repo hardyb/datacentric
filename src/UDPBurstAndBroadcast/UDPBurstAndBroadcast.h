@@ -48,6 +48,8 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
   protected:
     UDPSocket socket;
     int localPort, destPort;
+    int mUpperLayerIn;
+    int mUpperLayerOut;
 
     // NOT implementing ucast retransmission
     // So use one bool for any neighbours
