@@ -30,6 +30,11 @@
 
 
 #define FIND_CONTROL_UNIT 0
+#define CONTROL_UNIT_DETAILS 1
+#define REGISTER_AS_SOURCE 2
+#define REGISTER_AS_SINK 3
+#define HOME_ENERGY_DATA 4
+
 
 
 
@@ -68,6 +73,12 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     ChooseDestAddrMode chooseDestAddrMode;
     std::vector<IPvXAddress> destAddresses;
     IPvXAddress destAddr;
+    IPvXAddress mBcastAddr;
+    IPvXAddress mServerAddr;
+    IPvXAddress myAddr;
+    bool mIsControlUnit;
+    std::vector<AppControlMessage*> mPktsForServer;
+
     int destAddrRNG;
 
     typedef std::map<int,int> SourceSequence;
@@ -84,6 +95,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     int outputInterface;
     std::vector<int> outputInterfaceMulticastBroadcast;
     cOutVector e2eDelayVec;
+    DataCentricNetworkMan* mNetMan;
 
     std::map<IPvXAddress, std::string> mInterestedNodes;
     typedef std::map<IPvXAddress, std::string>::iterator InterestedNodesIterator;
@@ -115,6 +127,9 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual cPacket *createPacket2();
     virtual void processPacket(cPacket *msg);
     virtual void generateBurst();
+    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData);
+
+
     //virtual void forwardBroadcast(int moduleId, int msgId);
     virtual void forwardBroadcast(cPacket* payload);
     void ProcessIfAppControlPacket(cPacket* payload);
@@ -123,6 +138,8 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual int numInitStages() const {return 4;}
     virtual void initialize(int stage);
     virtual void handleMessage(cMessage *msg);
+    void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
+    void dupCheck(int moduleId, int msgId);
     virtual void finish();
 
   public:

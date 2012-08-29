@@ -20,7 +20,8 @@
 
 package datacentric.UDPBurstAndBroadcast;
 
-import inet.applications.IUDPApp;
+//import inet.applications.IUDPApp;
+import datacentric.IUDPApp;
 
 
 //
@@ -120,6 +121,7 @@ simple UDPBurstAndBroadcast like IUDPApp
         string outputInterface = default(""); // select the interface in which the packets will be sent
         string outputInterfaceMulticastBroadcast = default(""); // select the interface in which the broadcast packets will be sent
         bool setBroadcast = default(false); // Configure the socket for receive broadcast packets
+        bool isControlUnit = default(false); // Whether this app/node is the server control unit
         
         double nwkNetworkBroadcastDeliveryTime @unit(s) = default(0);
         double nwkPassiveAckTimeout @unit(s) = default(0);

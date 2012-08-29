@@ -95,6 +95,10 @@ void UDPBurstAndBroadcast::initialize(int stage)
     nextPkt = startTime;
     e2eDelayVec.setName("End-to-end delay");
 
+    cSimulation* sim =  cSimulation::getActiveSimulation();
+    mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
+
+
     destAddrRNG = par("destAddrRNG");
     const char *addrModeStr = par("chooseDestAddrMode").stringValue();
     int addrMode = cEnum::get("ChooseDestAddrMode")->lookup(addrModeStr);
@@ -109,6 +113,8 @@ void UDPBurstAndBroadcast::initialize(int stage)
 
     localPort = par("localPort");
     destPort = par("destPort");
+
+    mIsControlUnit = par("isControlUnit").boolValue();
 
     socket.setOutputGate(gate("udpOut"));
     socket.bind(localPort);
@@ -141,12 +147,16 @@ void UDPBurstAndBroadcast::initialize(int stage)
         }
     }
 
+    mBcastAddr = IPv4Address::ALLONES_ADDRESS;
+    //mServerAddr = 0x0;
+    // should return isUnspecified() true
+
 
     const char *destAddrs = par("destAddresses");
     cStringTokenizer tokenizer(destAddrs);
     const char *token;
 
-    IPvXAddress myAddr = IPvXAddressResolver().resolve(this->getParentModule()->getFullPath().c_str());
+    myAddr = IPvXAddressResolver().resolve(this->getParentModule()->getFullPath().c_str());
     while ((token = tokenizer.nextToken()) != NULL)
     {
         if (strstr(token, "Broadcast") != NULL)
@@ -191,7 +201,7 @@ IPvXAddress UDPBurstAndBroadcast::chooseDestAddr()
 cPacket *UDPBurstAndBroadcast::createPacket()
 {
     char msgName[32];
-    sprintf(msgName, "UDPBasicAppData-%d", counter++);
+    sprintf(msgName, "UDPAppData-%d", counter++);
     long msgByteLength = messageLengthPar->longValue();
     cPacket *payload = new cPacket(msgName);
     payload->setByteLength(msgByteLength);
@@ -235,101 +245,35 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 
     if (msg->getArrivalGateId() == mUpperLayerIn)
     {
-        //handleUpperLayerMessage(appPkt);
-        switch ( msg->getKind() )
-        {
-        case DATA_PACKET:
-            /*
-             * If PUB Data
-             *      Send to server
-             *
-             * If RECORD Data
-             *      Send to server
-             *
-             *
-             */
-            //currentPktCreationTime = simTime();
-            //cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
-            //SendDataWithLongestContext(appPkt);
-            break;
-        case STARTUP_MESSAGE:
-            /*
-             * Clearly datacentric farmework initialisation is not appropriate
-             * we are using AODV
-             *
-             * However in the datacentric case the DataCentricNetworkLayer is
-             * the equivalent to this module and it disables the PhyModule at
-             * initialisation and enables it when the STARTUP_MESSAGE is received
-             */
-            //StartUpModule();
-            break;
-        case CONTEXT_MESSAGE:
-            /*
-             * Not sure
-             *
-             *
-             */
-            //SetContext(appPkt);
-            break;
-        case SOURCE_MESSAGE:
-            /*
-             * If source for RECORD
-             *      Find server
-             *      Register with server?
-             *
-             * If source for PUB
-             *      Find server
-             *      Register with server?
-             *
-             */
-            //SetSourceWithLongestContext(appPkt);
-            break;
-        case SINK_MESSAGE:
-            /*
-             * If sink for PUB
-             *      Find server
-             *      Register for the particular events
-             *
-             *
-             */
-            //SetSinkWithShortestContext(appPkt);
-            break;
-        default:
-            break;
-        }
-    }
-
-
-
-
-
-    if (msg->isSelfMessage())
-    {
-        if (stopTime <= 0 || simTime() < stopTime)
-        {
-            // send and reschedule next sending
-            if (isSource) // if the node is a sink, don't generate messages
-                generateBurst();
-        }
-    }
-    else if (msg->getKind() == UDP_I_DATA)
-    {
-        // DO NOT GO IN HERE WITH A PACKET FROM ABOVE
-        // ===========================================
-
-
-
-        // process incoming packet
-        processPacket(PK(msg));
-    }
-    else if (msg->getKind() == UDP_I_ERROR)
-    {
-        EV << "Ignoring UDP error report\n";
-        delete msg;
+        DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(msg);
+        handleUpperLayerMessage(appPkt);
     }
     else
     {
-        error("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
+        if (msg->isSelfMessage())
+        {
+            if (stopTime <= 0 || simTime() < stopTime)
+            {
+                // send and reschedule next sending
+                if (isSource) // if the node is a sink, don't generate messages
+                    generateBurst();
+            }
+        }
+        else if (msg->getKind() == UDP_I_DATA)
+        {
+            // process incoming packet
+            processPacket(PK(msg));
+        }
+        else if (msg->getKind() == UDP_I_ERROR)
+        {
+            EV << "Ignoring UDP error report\n";
+            delete msg;
+        }
+        else
+        {
+            error("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
+        }
+
     }
 
     if (ev.isGUI())
@@ -339,6 +283,108 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         getDisplayString().setTagArg("t", 0, buf);
     }
 }
+
+
+
+
+
+void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
+{
+
+    switch ( appPkt->getKind() )
+    {
+    case DATA_PACKET:
+        /*
+         * If PUB Data
+         *      Send to server
+         *
+         * If RECORD Data
+         *      Send to server
+         *
+         *
+         */
+        //currentPktCreationTime = simTime();
+        //cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
+        //SendDataWithLongestContext(appPkt);
+
+        string sourceData;
+        sourceData.resize(appPkt->getPktData().size(), 0);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", sourceData.c_str());
+        break;
+    case STARTUP_MESSAGE:
+        /*
+         * Clearly datacentric farmework initialisation is not appropriate
+         * we are using AODV
+         *
+         * However in the datacentric case the DataCentricNetworkLayer is
+         * the equivalent to this module and it disables the PhyModule at
+         * initialisation and enables it when the STARTUP_MESSAGE is received
+         */
+        //StartUpModule();
+        generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
+        mNetMan->updateControlPacketData(255, false);
+        break;
+    case CONTEXT_MESSAGE:
+        /*
+         * Not sure
+         *
+         *
+         */
+        //SetContext(appPkt);
+        break;
+    case SOURCE_MESSAGE:
+        /*
+         * If source for RECORD
+         *      Find server
+         *      Register with server?
+         *
+         * If source for PUB
+         *      Find server
+         *      Register with server?
+         *
+         */
+        //SetSourceWithLongestContext(appPkt);
+
+        string sourceData;
+        sourceData.resize(appPkt->getPktData().size(), 0);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+        generatePacket(mServerAddr, REGISTER_AS_SOURCE, "", sourceData.c_str());
+        mNetMan->updateControlPacketData(255, false);
+        break;
+    case SINK_MESSAGE:
+        /*
+         * If sink for PUB
+         *      Find server
+         *      Register for the particular events
+         *
+         *
+         */
+        //SetSinkWithShortestContext(appPkt);
+        string sinkData;
+        sinkData.resize(appPkt->getPktData().size(), 0);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+        if ( mIsControlUnit )
+        {
+            mInterestedNodes[myAddr] = sinkData;
+        }
+        else
+        {
+            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "");
+            mNetMan->updateControlPacketData(255, false);
+        }
+        break;
+    default:
+        break;
+    }
+
+
+
+}
+
+
+
+
 
 
 void UDPBurstAndBroadcast::findServer(cPacket *pk)
@@ -365,6 +411,11 @@ void UDPBurstAndBroadcast::findServer(cPacket *pk)
         }
     }
 
+
+
+
+
+
 }
 
 
@@ -377,48 +428,66 @@ void UDPBurstAndBroadcast::processPacket(cPacket *pk)
         return;
     }
 
+    // Get source and message Id
+    int moduleId;
+    int msgId;
+    if ( pk->hasPar("sourceId") && pk->hasPar("msgId") )
+    {
+        moduleId = (int)pk->par("sourceId");
+        msgId = (int)pk->par("msgId");
+
+    }
+    else
+    {
+        return;
+    }
+
+    // If broadcast consider forwarding
+    UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
+    IPvXAddress destAddr = udpCtrl->getDestAddr();
+    if ( destAddr.get4().isLimitedBroadcastAddress() )
+    {
+        uint64 moduleId64 = moduleId;
+        uint64 msgId64 = msgId;
+        uint64 bcast = (moduleId64 << 32) | msgId64;
+
+        if ( mBTT.find(bcast) != mBTT.end() )
+        {
+            mBTT[bcast].relayed = true;
+        }
+        else
+        {
+            BTR btr;
+            btr.expiry = simTime()+1.5;
+            btr.relayed = false;
+            mBTT[bcast] = btr;
+            this->getParentModule()->bubble("Forwarding broadcast");
+            forwardBroadcast(pk);
+            cMessage* m = new cMessage("");
+            mBroadcastExpiries[m] = bcast;
+            scheduleAt(btr.expiry, m);
+        }
+    }
+
+    // now deal with packet itself
+
 
     if ( dynamic_cast<AppControlMessage*>(pk) )
     {
         ProcessIfAppControlPacket(dynamic_cast<AppControlMessage*>(pk));
     }
 
-    if (pk->hasPar("sourceId") && pk->hasPar("msgId"))
-    {
-        // duplicate control
-        int moduleId = (int)pk->par("sourceId");
-        int msgId = (int)pk->par("msgId");
 
-        UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
-        IPvXAddress destAddr = udpCtrl->getDestAddr();
-        if ( destAddr.get4().isLimitedBroadcastAddress() )
-        {
-            uint64 moduleId64 = moduleId;
-            uint64 msgId64 = msgId;
-            uint64 bcast = (moduleId64 << 32) | msgId64;
+    //mIsControlUnit
 
-            if ( mBTT.find(bcast) != mBTT.end() )
-            {
-                mBTT[bcast].relayed = true;
-            }
-            else
-            {
-                BTR btr;
-                btr.expiry = simTime()+1.5;
-                btr.relayed = false;
-                mBTT[bcast] = btr;
-                this->getParentModule()->bubble("Received broadcast");
-                //pk->getName();
-                //pk->getByteLength();
-                //forwardBroadcast(moduleId, msgId, pk->getName(), pk->getByteLength());
-                forwardBroadcast(pk);
-                cMessage* m = new cMessage("");
-                mBroadcastExpiries[m] = bcast;
-                scheduleAt(btr.expiry, m);
-            }
-        }
+
+
+
+
+
         else
         {
+            // duplicate control
             SourceSequence::iterator it = sourceSequence.find(moduleId);
             if (it != sourceSequence.end())
             {
@@ -456,12 +525,109 @@ void UDPBurstAndBroadcast::processPacket(cPacket *pk)
             this->getParentModule()->bubble("Received packet");
         }
 
-    }
 
     EV << "Received packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
     emit(rcvdPkSignal, pk);
     delete pk;
 }
+
+
+
+
+void UDPBurstAndBroadcast::dupCheck(int moduleId, int msgId, cPacket *pk)
+{
+    SourceSequence::iterator it = sourceSequence.find(moduleId);
+    if (it != sourceSequence.end())
+    {
+        if (it->second >= msgId)
+        {
+            EV << "Out of order packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
+            emit(outOfOrderPkSignal, pk);
+            delete pk;
+            numDuplicated++;
+            return;
+        }
+        else
+        {
+            it->second = msgId;
+
+        }
+    }
+    else
+    {
+        sourceSequence[moduleId] = msgId;
+    }
+
+    if (delayLimit > 0)
+    {
+        if (simTime() - pk->getTimestamp() > delayLimit)
+        {
+            EV << "Old packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
+            emit(dropPkSignal, pk);
+            delete pk;
+            numDeleted++;
+            return;
+        }
+    }
+    pktDelay->collect(simTime() - pk->getTimestamp());
+    numReceived++;
+
+    simtime_t e2eDelay = simTime() - pk->getTimestamp();
+    e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
+
+    this->getParentModule()->bubble("Received packet");
+
+
+
+
+}
+
+
+
+
+
+
+
+void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData)
+{
+    AppControlMessage *payload = createPacket2();
+    payload->setTimestamp();
+    payload->setCntrlType(_cntrlType);
+    payload->setInterests(_interests);
+    payload->setSourceData(_sourceData);
+    emit(sentPkSignal, payload);
+
+    if ( _destAddr.isUnspecified() )
+    {
+        mPktsForServer.push_back(payload);
+    }
+
+    socket.sendTo(payload, _destAddr, destPort, outputInterface);
+
+    numSent++;
+
+    if ( _destAddr.get4().isLimitedBroadcastAddress() )
+    {
+        uint64 moduleId64 = (int)payload->par("sourceId");
+        uint64 msgId64 = (int)payload->par("msgId");
+        uint64 bcast = (moduleId64 << 32) | msgId64;
+        if ( mBTT.find(bcast) == mBTT.end() )
+        {
+            BTR btr;
+            btr.expiry = simTime()+1.5;
+            btr.relayed = false;
+            mBTT[bcast] = btr;
+            cMessage* m = new cMessage("");
+            mBroadcastExpiries[m] = bcast;
+            scheduleAt(btr.expiry, m);
+        }
+    }
+
+}
+
+
+
+
 
 void UDPBurstAndBroadcast::generateBurst()
 {
@@ -582,6 +748,7 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
     destAddr = 0xFFFFFFFF;
 
     // Check address type
+    /*
     if (!outputInterfaceMulticastBroadcast.empty() && (destAddr.isMulticast() || (!destAddr.isIPv6() && destAddr.get4() == IPv4Address::ALLONES_ADDRESS)))
     {
         for (unsigned int i = 0; i< outputInterfaceMulticastBroadcast.size(); i++)
@@ -593,7 +760,11 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
         }
     }
     else
-        socket.sendTo(payload, destAddr, destPort,outputInterface);
+    */
+
+    //socket.sendTo(payload, destAddr, destPort,outputInterface);
+    socket.sendTo(payload, mBcastAddr, destPort,outputInterface);
+    mNetMan->updateControlPacketData(255, false);
 
 }
 
@@ -607,18 +778,67 @@ void UDPBurstAndBroadcast::ProcessIfAppControlPacket(cPacket *pk)
 
     UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
     IPvXAddress destAddr = udpCtrl->getDestAddr();
-    IPvXAddress origAddr = udpCtrl->getSrcAddr();
+
+    IPvXAddress origAddr;
+    //origAddr = udpCtrl->getSrcAddr();
+    int moduleId = (int)pk->par("sourceId");
+    string srcFN = cSimulation::getActiveSimulation()->getModule(moduleId)->getParentModule()->getFullName();
+    origAddr = IPvXAddressResolver().resolve(srcFN.c_str());
 
     AppControlMessage* acm = dynamic_cast<AppControlMessage*>(pk);
-
-
-
     switch ( acm->getCntrlType() )
     {
         case FIND_CONTROL_UNIT:
+            generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullName(), "");
+            mNetMan->updateControlPacketData(255, false);
+            break;
+        case CONTROL_UNIT_DETAILS:
+            mServerAddr = IPvXAddressResolver().resolve(acm->getInterests());
+            for (std::vector<AppControlMessage*>::iterator i = mPktsForServer.begin();
+                    i != mPktsForServer.end(); ++i)
+            {
+                socket.sendTo(*i, mServerAddr, destPort, outputInterface);
+                numSent++;
+            }
+            break;
+        case REGISTER_AS_SOURCE:
+            break;
+        case REGISTER_AS_SINK:
             mInterestedNodes[origAddr] = acm->getInterests();
-            // add interests to destination map
-            // send out our address
+            break;
+        case HOME_ENERGY_DATA:
+            std::string sd = acm->getSourceData();
+            for (std::map<IPvXAddress, std::string>::iterator i = mInterestedNodes.begin();
+                    i != mInterestedNodes.end(); ++i)
+            {
+                auto res = std::mismatch(i->second.begin(), i->second.end(), sd.begin());
+                if (res.first == i->second.end())
+                {
+                    // i->second is a prefix of sd.
+                    if ( i->first != myAddr)
+                    {
+                        socket.sendTo(acm, i->first, destPort, outputInterface);
+                        //should we be sending an acm duplicate?????
+                        numSent++;
+                    }
+                    else
+                    {
+                        // we are the sink so record e2edelay
+                        // pos call function with existing code in
+
+                    }
+                }
+
+            }
+
+
+            //std::string foo("foo");
+            //std::string foobar("foobar");
+            //auto res = std::mismatch(foo.begin(), foo.end(), foobar.begin());
+            //if (res.first == foo.end())
+            //{
+                // foo is a prefix of foobar.
+            //}
             break;
         default:
             break;
