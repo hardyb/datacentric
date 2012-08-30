@@ -1,4 +1,8 @@
 
+#ifndef _DATACENTRICAPPPKT_D_H_
+#define _DATACENTRICAPPPKT_D_H_
+
+
 #include "DataCentricAppPkt_m.h"
 
 
@@ -39,3 +43,5 @@ class DataCentricAppPkt : public DataCentricAppPkt_Base
 
 };
 */
+
+#endif // _DATACENTRICAPPPKT_D_H_

@@ -26,7 +26,6 @@
 #include "InterfaceTable.h"
 #include "InterfaceTableAccess.h"
 #include "BroadcastMessage_m.h"
-#include "AppControlMessage_m.h"
 #include "DataCentricNetworkLayer.h"
 
 
@@ -213,7 +212,7 @@ cPacket *UDPBurstAndBroadcast::createPacket()
 
 
 
-cPacket *UDPBurstAndBroadcast::createPacket2()
+AppControlMessage *UDPBurstAndBroadcast::createPacket2()
 {
     char msgName[32];
     sprintf(msgName, "UDPBroadcast-%d", counter++);
@@ -252,12 +251,12 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     {
         if (msg->isSelfMessage())
         {
-            if (stopTime <= 0 || simTime() < stopTime)
-            {
+            //if (stopTime <= 0 || simTime() < stopTime)
+            //{
                 // send and reschedule next sending
-                if (isSource) // if the node is a sink, don't generate messages
-                    generateBurst();
-            }
+                //if (isSource) // if the node is a sink, don't generate messages
+                //    generateBurst();
+            //}
         }
         else if (msg->getKind() == UDP_I_DATA)
         {
@@ -291,6 +290,9 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 {
 
+    string sourceData;
+    string sinkData;
+    string theData;
     switch ( appPkt->getKind() )
     {
     case DATA_PACKET:
@@ -307,10 +309,9 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
         //SendDataWithLongestContext(appPkt);
 
-        string sourceData;
-        sourceData.resize(appPkt->getPktData().size(), 0);
-        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
-        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", sourceData.c_str());
+        theData.resize(appPkt->getPktData().size(), 0);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), theData.begin());
+        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str());
         break;
     case STARTUP_MESSAGE:
         /*
@@ -346,7 +347,6 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          */
         //SetSourceWithLongestContext(appPkt);
 
-        string sourceData;
         sourceData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
         generatePacket(mServerAddr, REGISTER_AS_SOURCE, "", sourceData.c_str());
@@ -361,7 +361,6 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          *
          */
         //SetSinkWithShortestContext(appPkt);
-        string sinkData;
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
         if ( mIsControlUnit )
@@ -385,38 +384,6 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
 
 
-
-
-void UDPBurstAndBroadcast::findServer(cPacket *pk)
-{
-    // IE SEND BROADCAST LOOKING FOR IT?
-
-    // USE SOME OF THIS STUFF
-    // ALSO LOOK AT HOW 'socket' works may be related
-
-    const char *destAddrs = par("destAddresses");
-    cStringTokenizer tokenizer(destAddrs);
-    const char *token;
-
-    IPvXAddress myAddr = IPvXAddressResolver().resolve(this->getParentModule()->getFullPath().c_str());
-    while ((token = tokenizer.nextToken()) != NULL)
-    {
-        if (strstr(token, "Broadcast") != NULL)
-            destAddresses.push_back(IPv4Address::ALLONES_ADDRESS);
-        else
-        {
-            IPvXAddress addr = IPvXAddressResolver().resolve(token);
-            if (addr != myAddr)
-                destAddresses.push_back(addr);
-        }
-    }
-
-
-
-
-
-
-}
 
 
 void UDPBurstAndBroadcast::processPacket(cPacket *pk)
@@ -470,21 +437,32 @@ void UDPBurstAndBroadcast::processPacket(cPacket *pk)
     }
 
     // now deal with packet itself
-
-
     if ( dynamic_cast<AppControlMessage*>(pk) )
     {
         ProcessIfAppControlPacket(dynamic_cast<AppControlMessage*>(pk));
     }
 
+    if ( !duplicate(moduleId, msgId, pk) )
+    {
+        pktDelay->collect(simTime() - pk->getTimestamp());
+        numReceived++;
 
-    //mIsControlUnit
+        simtime_t e2eDelay = simTime() - pk->getTimestamp();
+        e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
+        mNetMan->addADataPacketE2EDelay(e2eDelay);
+
+        this->getParentModule()->bubble("Received packet");
+
+        EV << "Received packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
+        emit(rcvdPkSignal, pk);
+        delete pk;
+    }
 
 
 
 
 
-
+        /*
         else
         {
             // duplicate control
@@ -524,17 +502,15 @@ void UDPBurstAndBroadcast::processPacket(cPacket *pk)
 
             this->getParentModule()->bubble("Received packet");
         }
+        */
 
 
-    EV << "Received packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
-    emit(rcvdPkSignal, pk);
-    delete pk;
 }
 
 
 
 
-void UDPBurstAndBroadcast::dupCheck(int moduleId, int msgId, cPacket *pk)
+bool UDPBurstAndBroadcast::duplicate(int moduleId, int msgId, cPacket *pk)
 {
     SourceSequence::iterator it = sourceSequence.find(moduleId);
     if (it != sourceSequence.end())
@@ -545,7 +521,7 @@ void UDPBurstAndBroadcast::dupCheck(int moduleId, int msgId, cPacket *pk)
             emit(outOfOrderPkSignal, pk);
             delete pk;
             numDuplicated++;
-            return;
+            return true;
         }
         else
         {
@@ -558,6 +534,9 @@ void UDPBurstAndBroadcast::dupCheck(int moduleId, int msgId, cPacket *pk)
         sourceSequence[moduleId] = msgId;
     }
 
+    return false;
+
+    /*
     if (delayLimit > 0)
     {
         if (simTime() - pk->getTimestamp() > delayLimit)
@@ -576,6 +555,7 @@ void UDPBurstAndBroadcast::dupCheck(int moduleId, int msgId, cPacket *pk)
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
 
     this->getParentModule()->bubble("Received packet");
+    */
 
 
 
@@ -782,14 +762,15 @@ void UDPBurstAndBroadcast::ProcessIfAppControlPacket(cPacket *pk)
     IPvXAddress origAddr;
     //origAddr = udpCtrl->getSrcAddr();
     int moduleId = (int)pk->par("sourceId");
-    string srcFN = cSimulation::getActiveSimulation()->getModule(moduleId)->getParentModule()->getFullName();
-    origAddr = IPvXAddressResolver().resolve(srcFN.c_str());
+    string srcFP = cSimulation::getActiveSimulation()->getModule(moduleId)->getParentModule()->getFullPath();
+    origAddr = IPvXAddressResolver().resolve(srcFP.c_str());
 
     AppControlMessage* acm = dynamic_cast<AppControlMessage*>(pk);
+    std::string sd;
     switch ( acm->getCntrlType() )
     {
         case FIND_CONTROL_UNIT:
-            generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullName(), "");
+            generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "");
             mNetMan->updateControlPacketData(255, false);
             break;
         case CONTROL_UNIT_DETAILS:
@@ -807,11 +788,12 @@ void UDPBurstAndBroadcast::ProcessIfAppControlPacket(cPacket *pk)
             mInterestedNodes[origAddr] = acm->getInterests();
             break;
         case HOME_ENERGY_DATA:
-            std::string sd = acm->getSourceData();
+            sd = acm->getSourceData();
             for (std::map<IPvXAddress, std::string>::iterator i = mInterestedNodes.begin();
                     i != mInterestedNodes.end(); ++i)
             {
-                auto res = std::mismatch(i->second.begin(), i->second.end(), sd.begin());
+                pair<std::string::iterator,std::string::iterator> res;
+                res = std::mismatch(i->second.begin(), i->second.end(), sd.begin());
                 if (res.first == i->second.end())
                 {
                     // i->second is a prefix of sd.

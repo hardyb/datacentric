@@ -27,6 +27,10 @@
 
 #include "INETDefs.h"
 #include "UDPSocket.h"
+#include "AppControlMessage_m.h"
+#include "DataCentricAppPkt_D.h"
+#include "DataCentricNetworkMan.h"
+
 
 
 #define FIND_CONTROL_UNIT 0
@@ -124,7 +128,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     // chooses random destination address
     virtual IPvXAddress chooseDestAddr();
     virtual cPacket *createPacket();
-    virtual cPacket *createPacket2();
+    virtual AppControlMessage *createPacket2();
     virtual void processPacket(cPacket *msg);
     virtual void generateBurst();
     void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData);
@@ -139,7 +143,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual void initialize(int stage);
     virtual void handleMessage(cMessage *msg);
     void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
-    void dupCheck(int moduleId, int msgId);
+    bool duplicate(int moduleId, int msgId, cPacket *pk);
     virtual void finish();
 
   public:
