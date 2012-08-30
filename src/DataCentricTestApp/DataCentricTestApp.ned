@@ -7,13 +7,13 @@ simple DataCentricTestApp extends TrafGenPar
         @class(DataCentricTestApp);
         bool debug;
         
-        string sinkFor;
-        string sourceFor;// = "\x48\x49\x54";
-        string nodeContext;
-        string appMode;
-        bool mains;
-        double probabilityDown;
-        string actionThreads;
+        string sinkFor = default("");
+        string sourceFor = default("");// = "\x48\x49\x54";
+        string nodeContext = default("");
+        string appMode = default("");
+        bool mains = default(true); // TO BE DISCONTINUED?
+        double probabilityDown = default(0); // TO BE DISCONTINUED?
+        string actionThreads = default("");
         
         //sourceFor[5]: string;
         //int x[5];

@@ -22,6 +22,7 @@
 import inet.networklayer.autorouting.ipv4.FlatNetworkConfigurator;
 import inet.world.radio.ChannelControl;
 import datacentric.nodecsma802154;
+import datacentric.DataCentricNetworkMan;
 //import datacentric.
 
 
@@ -36,6 +37,10 @@ network csma802154net
               //y =  (floor(index/sqrt(numFixHosts))*nodeSeparation)+(nodeSeparation);
               //x = ((index%floor(sqrt(numFixHosts)))*nodeSeparation)+(nodeSeparation);
               @display("i=device/pocketpc_s;r=,,#707070");
+        }
+        dataCentricNetworkMan : DataCentricNetworkMan{
+            parameters:
+                @display("p=-10,30");
         }
         channelControl: ChannelControl {
             parameters:

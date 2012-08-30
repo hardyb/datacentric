@@ -25,9 +25,17 @@ void DataCentricTestApp::initialize(int aStage)
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
-        netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
+        //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         cSimulation* sim =  cSimulation::getActiveSimulation();
-        mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
+        if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
+        {
+            mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
+
+        }
+        else
+        {
+            mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
+        }
 
         //mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");

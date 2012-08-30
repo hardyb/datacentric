@@ -105,7 +105,7 @@ import datacentric.IUDPApp;
 simple UDPBurstAndBroadcast like IUDPApp
 {
     parameters:
-        string destAddresses; // space-separated list of destination IP addresses, can be empty;
+        string destAddresses = default(""); // space-separated list of destination IP addresses, can be empty;
                               // see module description for possibilities
         string chooseDestAddrMode @enum("once","perBurst","perSend"); // when to change the destination address
         int destAddrRNG = default(0); // random generator ID for selecting a destination address
@@ -142,5 +142,7 @@ simple UDPBurstAndBroadcast like IUDPApp
     gates:
         input udpIn @labels(UDPControlInfo/up);
         output udpOut @labels(UDPControlInfo/down);
+        input datacentricAppIn;
+        output datacentricAppOut;
 }
 

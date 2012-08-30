@@ -95,8 +95,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     e2eDelayVec.setName("End-to-end delay");
 
     cSimulation* sim =  cSimulation::getActiveSimulation();
-    mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
-
+    mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
 
     destAddrRNG = par("destAddrRNG");
     const char *addrModeStr = par("chooseDestAddrMode").stringValue();
