@@ -157,7 +157,14 @@ void DataCentricTestApp::initialize(int aStage)
             DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
             appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
             appPkt1->setKind(SOURCE_MESSAGE);
-            send(appPkt1, mLowerLayerOut);
+            if ( mAppMode == AODV_MODE )
+            {
+                sendDelayed(appPkt1, NodeStartTime(), mLowerLayerOut);
+            }
+            else
+            {
+                send(appPkt1, mLowerLayerOut);
+            }
         }
 
         std::string temp2 = par("sinkFor").stringValue();
@@ -166,8 +173,17 @@ void DataCentricTestApp::initialize(int aStage)
             DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
             appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
             appPkt2->setKind(SINK_MESSAGE);
-            send(appPkt2, mLowerLayerOut);
+            if ( mAppMode == AODV_MODE )
+            {
+                sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
+            }
+            else
+            {
+                send(appPkt2, mLowerLayerOut);
+            }
         }
+
+
 
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);

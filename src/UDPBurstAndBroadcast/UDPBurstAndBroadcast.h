@@ -129,14 +129,16 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual IPvXAddress chooseDestAddr();
     virtual cPacket *createPacket();
     virtual AppControlMessage *createPacket2();
-    virtual void processPacket(cPacket *msg);
+    virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
     void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData);
+    void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 
 
     //virtual void forwardBroadcast(int moduleId, int msgId);
     virtual void forwardBroadcast(cPacket* payload);
-    void ProcessIfAppControlPacket(cPacket* payload);
+    void ProcessPacket(cPacket* payload);
+    void DataReceived(cPacket *pk);
 
   protected:
     virtual int numInitStages() const {return 4;}
