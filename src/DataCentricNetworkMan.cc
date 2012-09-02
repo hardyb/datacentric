@@ -26,6 +26,12 @@ void DataCentricNetworkMan::initialize(int aStage)
         numReinforcementPackets = 0;
         numBreakagePackets = 0;
         numModulesDown = 0;
+        numRREQPackets = 0;
+        numDiscoveryPackets = 0;
+        numRegisterPackets = 0;
+
+
+
 
 
         controlPackets.setName("ControlPackets");
@@ -42,7 +48,9 @@ void DataCentricNetworkMan::initialize(int aStage)
         dataPacketE2EDelay.setName("dataPacketE2EDelay");
         breakagePacketFrequency.setName("breakagePacketFrequency");
         modulesDownVector.setName("modulesDownVector");
-
+        RREQPacketFrequency.setName("RREQPacketFrequency");
+        DiscoveryPacketFrequency.setName("DiscoveryPacketFrequency");
+        RegisterPacketFrequency.setName("RegisterPacketFrequency");
 
 
 
@@ -155,6 +163,12 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         advertPacketFrequency.record(numAdvertPackets);
         reinforcementPacketFrequency.record(numReinforcementPackets);
         breakagePacketFrequency.record(numBreakagePackets);
+        RREQPacketFrequency.record(numRREQPackets);
+        DiscoveryPacketFrequency.record(numDiscoveryPackets);
+        RegisterPacketFrequency.record(numRegisterPackets);
+
+
+
 
 
 
@@ -171,7 +185,9 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         numAdvertPackets = 0;
         numReinforcementPackets = 0;
         numBreakagePackets = 0;
-
+        numRREQPackets = 0;
+        numDiscoveryPackets = 0;
+        numRegisterPackets = 0;
 
     }
 
@@ -242,6 +258,15 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
         break;
     case BREAKAGE:
         numBreakagePackets++;
+        break;
+    case RREQ_STAT:
+        numRREQPackets++;
+        break;
+    case DISCOVERY_STAT:
+        numDiscoveryPackets++;
+        break;
+    case REGISTER_STAT:
+        numRegisterPackets++;
         break;
     }
 

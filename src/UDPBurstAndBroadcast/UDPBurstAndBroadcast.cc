@@ -54,8 +54,7 @@ DataCentricNetworkMan* netMan;
 
 void cb_record_stats(double stat)
 {
-    netMan->updateControlPacketData(255, false);
-
+    netMan->updateControlPacketData(RREQ_STAT, false);
 }
 
 
@@ -163,7 +162,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     mBcastAddr = IPv4Address::ALLONES_ADDRESS;
     //mServerAddr = 0x0;
     // should return isUnspecified() true
-    mServerAddr = IPvXAddressResolver().resolve("csma802154net.fixhost[115]");
+    //mServerAddr = IPvXAddressResolver().resolve("csma802154net.fixhost[115]");
 
 
     const char *destAddrs = par("destAddresses");
@@ -339,7 +338,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          */
         //StartUpModule();
         //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        //mNetMan->updateControlPacketData(255, false);
+        //mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
         break;
     case CONTEXT_MESSAGE:
         /*
@@ -363,13 +362,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //SetSourceWithLongestContext(appPkt);
 
         // TEMP COMMENT OUT
-        //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        //mNetMan->updateControlPacketData(255, false);
+        generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
+        mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
         //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
         //generatePacket(mServerAddr, REGISTER_AS_SOURCE, "", sourceData.c_str());
-        //mNetMan->updateControlPacketData(255, false);
+        //mNetMan->updateControlPacketData(REGISTER_STAT, false);
         break;
     case SINK_MESSAGE:
         /*
@@ -382,8 +381,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //SetSinkWithShortestContext(appPkt);
 
         // TEMP COMMENT OUT
-        //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        //mNetMan->updateControlPacketData(255, false);
+        generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
+        mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
 
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
@@ -394,7 +393,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         else
         {
             generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "");
-            mNetMan->updateControlPacketData(255, false);
+            mNetMan->updateControlPacketData(REGISTER_STAT, false);
         }
         break;
     default:
@@ -810,7 +809,7 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
     //socket.sendTo(payload, destAddr, destPort,outputInterface);
     //socket.sendTo(payload, mBcastAddr, destPort,outputInterface);
     sendPacket(payload, mBcastAddr);
-    mNetMan->updateControlPacketData(255, false);
+    mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
 
 }
 
@@ -854,7 +853,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             if ( mIsControlUnit )
             {
                 generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "");
-                mNetMan->updateControlPacketData(255, false);
+                mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
             }
             break;
         case CONTROL_UNIT_DETAILS:

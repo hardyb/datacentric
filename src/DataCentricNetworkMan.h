@@ -10,6 +10,11 @@
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
 
+#define RREQ_STAT 12
+#define DISCOVERY_STAT 13
+#define REGISTER_STAT 14
+
+
 //#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
 
 class DataCentricNetworkLayer;
@@ -54,6 +59,9 @@ class DataCentricNetworkMan : public cSimpleModule
     double numReinforcementPackets;
     double numBreakagePackets;
     double numModulesDown;
+    double numRREQPackets;
+    double numDiscoveryPackets;
+    double numRegisterPackets;
 
 
 
@@ -70,6 +78,11 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector dataPacketE2EDelay;
     cOutVector breakagePacketFrequency;
     cOutVector modulesDownVector;
+    cOutVector RREQPacketFrequency;
+    cOutVector DiscoveryPacketFrequency;
+    cOutVector RegisterPacketFrequency;
+
+
 
 
     unsigned int numDataArrivals;
