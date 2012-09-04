@@ -246,25 +246,27 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2()
 
 void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 {
-    BroadcastRetryIterator i = mBroadcastRetries.find(msg);
-    if (i != mBroadcastRetries.end() )
+    BroadcastRetryIterator retryIt = mBroadcastRetries.find(msg);
+    if (retryIt != mBroadcastRetries.end() )
     {
         if ( !mBTT[mBroadcastRetries[msg]].relayed && mBTT[mBroadcastRetries[msg]].retries < 2 )
         {
-            forwardBroadcast(mBTT[mBroadcastRetries[msg]].pkt);
-            mBTT[mBroadcastRetries[msg]].pkt = mBTT[mBroadcastRetries[msg]].pkt->dup();
+            //forwardBroadcast(mBTT[mBroadcastRetries[msg]].pkt);
+            //mBTT[mBroadcastRetries[msg]].pkt = mBTT[mBroadcastRetries[msg]].pkt->dup();
             mBTT[mBroadcastRetries[msg]].retries++;
             this->getParentModule()->bubble("Broadcast retry");
         }
         else
         {
-
+            mBroadcastRetries.erase(msg);
+            delete msg;
+            this->getParentModule()->bubble("Erase broadcast retry");
         }
         return;
     }
 
-    BroadcastExpiryIterator i = mBroadcastExpiries.find(msg);
-    if (i != mBroadcastExpiries.end() )
+    BroadcastExpiryIterator expiryIt = mBroadcastExpiries.find(msg);
+    if (expiryIt != mBroadcastExpiries.end() )
     {
         mBTT.erase(mBroadcastExpiries[msg]);
         mBroadcastExpiries.erase(msg);
@@ -478,7 +480,7 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
 
             m = new cMessage("");
             mBroadcastRetries[m] = bcast;
-            scheduleAt(simTime()+0.1, m);
+            scheduleAt(simTime()+0.25, m);
 
             m = new cMessage("");
             mBroadcastExpiries[m] = bcast;
@@ -683,14 +685,23 @@ void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType
         uint64 bcast = (moduleId64 << 32) | msgId64;
         if ( mBTT.find(bcast) == mBTT.end() )
         {
+            cMessage* m;
             BTR btr;
             btr.expiry = simTime()+1.5;
             btr.relayed = false;
+            btr.pkt = payload->dup();
+            btr.retries = 0;
             mBTT[bcast] = btr;
-            cMessage* m = new cMessage("");
+
+            m = new cMessage("");
+            mBroadcastRetries[m] = bcast;
+            scheduleAt(simTime()+0.25, m);
+
+            m = new cMessage("");
             mBroadcastExpiries[m] = bcast;
             scheduleAt(btr.expiry, m);
         }
+
     }
 
 }
@@ -861,6 +872,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
     if ( !dynamic_cast<AppControlMessage*>(pk) )
         return;
 
+    double currentTime = simTime().dbl();
 
     UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
     IPvXAddress destAddr = udpCtrl->getDestAddr();
@@ -888,6 +900,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                     i != mPktsForServer.end(); ++i)
             {
                 //socket.sendTo(*i, mServerAddr, destPort, outputInterface);
+                int ctrlT = (*i)->getCntrlType();
                 sendPacket(*i, mServerAddr);
                 numSent++;
             }
