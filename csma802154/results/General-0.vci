@@ -1,0 +1,28 @@
+file 15430 1346672381                                           
+version 2
+run General-0-20120903-12:38:49-3808
+attr configname General
+attr datetime 20120903-12:38:49
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network csma802154net
+attr processid 3808
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 386  csma802154net.dataCentricNetworkMan  RREQPacketFrequency  ETV
+vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
+vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
+vector 425  csma802154net.fixhost[36].udpApp  "End-to-end delay"  ETV
+vector 383  csma802154net.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+383	765 1153 119281 475217 3.347989683148 47.207156130411 27 0.068260079243 3.908936627522 12.058916112177 31.639705824692
+386	1918 4131 1142 535051 1.005 52.997762836758 144 0 105 954 63668
+387	6049 4117 1142 535051 1.005 52.997762836758 144 0 78 252 11648
+388	10166 4111 1142 535051 1.005 52.997762836758 144 0 1 1 1
+425	14277 1153 119281 475217 3.347989683148 47.207156130411 27 0.068260079243 3.908936627522 12.058916112177 31.639705824692

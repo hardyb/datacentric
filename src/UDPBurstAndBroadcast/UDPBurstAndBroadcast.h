@@ -66,13 +66,17 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     {
         simtime_t expiry;
         bool relayed;
+        cPacket* pkt;
+        unsigned int retries;
     };
     typedef std::map<uint64, BTR> BcastsType;
     typedef BcastsType::iterator BcastsIterator;
     BcastsType mBTT;
-    typedef std::map<cMessage*, uint64> BroadcastExpiryType;
-    typedef BroadcastExpiryType::iterator BroadcastExpiryIterator;
-    BroadcastExpiryType mBroadcastExpiries;
+    typedef std::map<cMessage*, uint64> BroadcastMessageMapType;
+    typedef BroadcastMessageMapType::iterator BroadcastExpiryIterator;
+    typedef BroadcastMessageMapType::iterator BroadcastRetryIterator;
+    BroadcastMessageMapType mBroadcastExpiries;
+    BroadcastMessageMapType mBroadcastRetries;
 
     ChooseDestAddrMode chooseDestAddrMode;
     std::vector<IPvXAddress> destAddresses;

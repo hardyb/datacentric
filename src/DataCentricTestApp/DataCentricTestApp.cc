@@ -79,11 +79,18 @@ void DataCentricTestApp::initialize(int aStage)
         {
             ifstream* actionStream = new ifstream();
             actionStream->open(i->c_str());
-            ActionStreamHierarchy* ash = new ActionStreamHierarchy();
-            ash->push_back(actionStream);
-            cMessage* m = new cMessage(i->c_str());
-            mActionThreads[m] = ash;
-            scheduleAt(simTime() + ScheduleStartTime(), m);
+            if ( actionStream->is_open() )
+            {
+                ActionStreamHierarchy* ash = new ActionStreamHierarchy();
+                ash->push_back(actionStream);
+                cMessage* m = new cMessage(i->c_str());
+                mActionThreads[m] = ash;
+                scheduleAt(simTime() + ScheduleStartTime(), m);
+            }
+            else
+            {
+                throw cRuntimeError("Cannot open actionThread: '%s' ", i->c_str());
+            }
         }
 
 

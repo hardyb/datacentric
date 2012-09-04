@@ -6,8 +6,16 @@
   </inputs>
   <datasets>
     <datasets name="First">
-      <items xsi:type="scave:Add" filterPattern="&quot;End-to-end delay&quot;" type="VECTOR"/>
-      <items xsi:type="scave:LineChart" name="End-to-end delay" lineNameFormat=""/>
+      <items xsi:type="scave:Add" filterPattern="RREQPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="DiscoveryPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="RegisterPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="dataPacketE2EDelay" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="first line chart" lineNameFormat=""/>
+      <items xsi:type="scave:LineChart" name="Test 2" lineNameFormat="">
+        <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+        <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+      </items>
     </datasets>
     <datasets name="Second">
       <items xsi:type="scave:Add" filterPattern="&quot;Mean delay&quot;"/>
@@ -20,6 +28,6 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.1 //@datasets/@datasets.1/@items.4"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.4"/>
   </chartSheets>
 </scave:Analysis>

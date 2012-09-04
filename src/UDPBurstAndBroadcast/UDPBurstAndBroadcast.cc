@@ -246,6 +246,23 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2()
 
 void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 {
+    BroadcastRetryIterator i = mBroadcastRetries.find(msg);
+    if (i != mBroadcastRetries.end() )
+    {
+        if ( !mBTT[mBroadcastRetries[msg]].relayed && mBTT[mBroadcastRetries[msg]].retries < 2 )
+        {
+            forwardBroadcast(mBTT[mBroadcastRetries[msg]].pkt);
+            mBTT[mBroadcastRetries[msg]].pkt = mBTT[mBroadcastRetries[msg]].pkt->dup();
+            mBTT[mBroadcastRetries[msg]].retries++;
+            this->getParentModule()->bubble("Broadcast retry");
+        }
+        else
+        {
+
+        }
+        return;
+    }
+
     BroadcastExpiryIterator i = mBroadcastExpiries.find(msg);
     if (i != mBroadcastExpiries.end() )
     {
@@ -449,15 +466,24 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
         }
         else
         {
+            cMessage* m;
             BTR btr;
             btr.expiry = simTime()+1.5;
             btr.relayed = false;
+            btr.pkt = pk->dup();
+            btr.retries = 0;
             mBTT[bcast] = btr;
             this->getParentModule()->bubble("Forwarding broadcast");
             forwardBroadcast(pk);
-            cMessage* m = new cMessage("");
+
+            m = new cMessage("");
+            mBroadcastRetries[m] = bcast;
+            scheduleAt(simTime()+0.1, m);
+
+            m = new cMessage("");
             mBroadcastExpiries[m] = bcast;
             scheduleAt(btr.expiry, m);
+
             ProcessPacket(dynamic_cast<AppControlMessage*>(pk));
         }
         return;
