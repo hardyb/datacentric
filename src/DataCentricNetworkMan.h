@@ -13,6 +13,8 @@
 #define RREQ_STAT 12
 #define DISCOVERY_STAT 13
 #define REGISTER_STAT 14
+#define RREPLY_STAT 15
+#define AODV_DATA_STAT 16
 
 
 //#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
@@ -62,6 +64,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numRREQPackets;
     double numDiscoveryPackets;
     double numRegisterPackets;
+    double numRReplyPackets;
+    double numAODVDataPackets;
 
 
 
@@ -81,7 +85,8 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector RREQPacketFrequency;
     cOutVector DiscoveryPacketFrequency;
     cOutVector RegisterPacketFrequency;
-
+    cOutVector RReplyPacketFrequency;
+    cOutVector AODVDataPacketFrequency;
 
 
 

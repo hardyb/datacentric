@@ -48,14 +48,28 @@ simsignal_t UDPBurstAndBroadcast::rcvdPkSignal = SIMSIGNAL_NULL;
 simsignal_t UDPBurstAndBroadcast::outOfOrderPkSignal = SIMSIGNAL_NULL;
 simsignal_t UDPBurstAndBroadcast::dropPkSignal = SIMSIGNAL_NULL;
 
-static void cb_record_stats(double stat);
+static void cb_record_RREQstats(double stat);
+static void cb_record_RReplystats(double stat);
+static void cb_record_Datastats(double stat);
 DataCentricNetworkMan* netMan;
 
 
-void cb_record_stats(double stat)
+void cb_record_RREQstats(double stat)
 {
     netMan->updateControlPacketData(RREQ_STAT, false);
 }
+
+void cb_record_RReplystats(double stat)
+{
+    netMan->updateControlPacketData(RREPLY_STAT, false);
+}
+
+void cb_record_Datastats(double stat)
+{
+    netMan->updateControlPacketData(AODV_DATA_STAT, false);
+}
+
+
 
 
 UDPBurstAndBroadcast::UDPBurstAndBroadcast()
@@ -105,7 +119,9 @@ void UDPBurstAndBroadcast::initialize(int stage)
     nextPkt = startTime;
     e2eDelayVec.setName("End-to-end delay");
 
-    setRecordStatsCallBack(cb_record_stats);
+    setRecordRREQStatsCallBack(cb_record_RREQstats);
+    setRecordRReplyStatsCallBack(cb_record_RReplystats);
+    setRecordDataStatsCallBack(cb_record_Datastats);
 
     cSimulation* sim =  cSimulation::getActiveSimulation();
     mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));

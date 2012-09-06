@@ -29,7 +29,8 @@ void DataCentricNetworkMan::initialize(int aStage)
         numRREQPackets = 0;
         numDiscoveryPackets = 0;
         numRegisterPackets = 0;
-
+        numRReplyPackets = 0;
+        numAODVDataPackets = 0;
 
 
 
@@ -51,7 +52,8 @@ void DataCentricNetworkMan::initialize(int aStage)
         RREQPacketFrequency.setName("RREQPacketFrequency");
         DiscoveryPacketFrequency.setName("DiscoveryPacketFrequency");
         RegisterPacketFrequency.setName("RegisterPacketFrequency");
-
+        RReplyPacketFrequency.setName("RReplyPacketFrequency");
+        AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
 
 
         /*
@@ -166,9 +168,14 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         RREQPacketFrequency.record(numRREQPackets);
         DiscoveryPacketFrequency.record(numDiscoveryPackets);
         RegisterPacketFrequency.record(numRegisterPackets);
+        RReplyPacketFrequency.record(numRReplyPackets);
+        AODVDataPacketFrequency.record(numAODVDataPackets);
 
+        //cOutVector RReplyPacketFrequency;
+        //cOutVector AODVDataPacketFrequency;
 
-
+        //double numRReplyPackets;
+        //double numAODVDataPackets;
 
 
 
@@ -188,7 +195,8 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         numRREQPackets = 0;
         numDiscoveryPackets = 0;
         numRegisterPackets = 0;
-
+        numRReplyPackets = 0;
+        numAODVDataPackets = 0;
     }
 
 
@@ -268,7 +276,16 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
     case REGISTER_STAT:
         numRegisterPackets++;
         break;
+    case RREPLY_STAT:
+        numRReplyPackets++;
+        break;
+    case AODV_DATA_STAT:
+        numAODVDataPackets++;
+        break;
     }
+
+
+
 
     switch ( type )
     {
