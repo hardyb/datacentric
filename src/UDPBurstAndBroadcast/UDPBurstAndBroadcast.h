@@ -69,14 +69,22 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
         cPacket* pkt;
         unsigned int retries;
     };
+    struct SendLater
+    {
+        cPacket* pkt;
+        IPvXAddress destAddr;
+    };
+
     typedef std::map<uint64, BTR> BcastsType;
     typedef BcastsType::iterator BcastsIterator;
     BcastsType mBTT;
+    typedef std::map<cMessage*, SendLater> SendLaterMessageMapType;
     typedef std::map<cMessage*, uint64> BroadcastMessageMapType;
     typedef BroadcastMessageMapType::iterator BroadcastExpiryIterator;
     typedef BroadcastMessageMapType::iterator BroadcastRetryIterator;
     BroadcastMessageMapType mBroadcastExpiries;
     BroadcastMessageMapType mBroadcastRetries;
+    SendLaterMessageMapType mSendLaterMessageMap;
 
     ChooseDestAddrMode chooseDestAddrMode;
     std::vector<IPvXAddress> destAddresses;

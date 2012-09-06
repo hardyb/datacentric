@@ -18,9 +18,10 @@
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="RREQ" lineNameFormat="">
-        <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
         <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
         <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+        <properties name="Line.Display/RREQPacketFrequency" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="E2E" lineNameFormat="">
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>

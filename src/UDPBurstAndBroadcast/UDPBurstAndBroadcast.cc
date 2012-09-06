@@ -669,6 +669,21 @@ void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_dest
         socket.sendTo(payload, _destAddr, destPort,outputInterface);
     }
 
+    //socket.sendDelayed();
+
+    sendDelayed()
+
+    SendLater sendLater;
+    sendLater.destAddr = 0;
+    sendLater.pkt = 0;
+
+    m = new cMessage("");
+    mBroadcastRetries[m] = bcast;
+    scheduleAt(simTime()+0.25, m);
+
+
+
+
 }
 
 
