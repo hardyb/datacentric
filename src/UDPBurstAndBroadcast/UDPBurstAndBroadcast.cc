@@ -176,10 +176,11 @@ void UDPBurstAndBroadcast::initialize(int stage)
     }
 
     mBcastAddr = IPv4Address::ALLONES_ADDRESS;
-    //mServerAddr = 0x0;
-    // should return isUnspecified() true
-    //mServerAddr = IPvXAddressResolver().resolve("csma802154net.fixhost[115]");
 
+    if (strcmp(par("controlUnit").stringValue(),"") != 0)
+    {
+        mServerAddr = IPvXAddressResolver().resolve(par("controlUnit").stringValue());
+    }
 
     const char *destAddrs = par("destAddresses");
     cStringTokenizer tokenizer(destAddrs);
@@ -255,13 +256,22 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2()
     payload->setSourceData("");
     payload->setByteLength(3);
     payload->addPar("sourceId") = getId();
-    payload->addPar("msgId") = numSent;
+    payload->addPar("msgId") = numSent++;
 
     return payload;
 }
 
 void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 {
+    SendLaterMessageMapIterator laterIt = mSendLaterMessageMap.find(msg);
+    if (laterIt != mSendLaterMessageMap.end() )
+    {
+        IPvXAddress addr = mSendLaterMessageMap[msg].destAddr;
+        cPacket *pkt = mSendLaterMessageMap[msg].pkt;
+        sendPacket(pkt, addr);
+        return;
+    }
+
     BroadcastRetryIterator retryIt = mBroadcastRetries.find(msg);
     if (retryIt != mBroadcastRetries.end() )
     {
@@ -360,7 +370,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         theData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), theData.begin());
-        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str());
+        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), 0);
         break;
     case STARTUP_MESSAGE:
         /*
@@ -397,8 +407,12 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //SetSourceWithLongestContext(appPkt);
 
         // TEMP COMMENT OUT
-        generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+
+        if ( mServerAddr.isUnspecified() )
+        {
+            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", 0);
+            mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+        }
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
         //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
@@ -416,8 +430,11 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //SetSinkWithShortestContext(appPkt);
 
         // TEMP COMMENT OUT
-        generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+        if ( mServerAddr.isUnspecified() )
+        {
+            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", 0);
+            mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+        }
 
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
@@ -427,7 +444,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
-            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "");
+            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", 0);
             mNetMan->updateControlPacketData(REGISTER_STAT, false);
         }
         break;
@@ -669,45 +686,24 @@ void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_dest
         socket.sendTo(payload, _destAddr, destPort,outputInterface);
     }
 
-    //socket.sendDelayed();
-
-    sendDelayed()
-
-    SendLater sendLater;
-    sendLater.destAddr = 0;
-    sendLater.pkt = 0;
-
-    m = new cMessage("");
-    mBroadcastRetries[m] = bcast;
-    scheduleAt(simTime()+0.25, m);
-
-
-
-
 }
 
 
 
 
-void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData)
+void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, double _delay)
 {
     AppControlMessage *payload = createPacket2();
     payload->setTimestamp();
     payload->setCntrlType(_cntrlType);
     payload->setInterests(_interests);
     payload->setSourceData(_sourceData);
-    emit(sentPkSignal, payload);
 
     if ( _destAddr.isUnspecified() )
     {
         mPktsForServer.push_back(payload);
         return;
     }
-
-    //socket.sendTo(payload, _destAddr, destPort, outputInterface);
-    sendPacket(payload, _destAddr);
-
-    numSent++;
 
     if ( _destAddr.get4().isLimitedBroadcastAddress() )
     {
@@ -718,7 +714,7 @@ void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType
         {
             cMessage* m;
             BTR btr;
-            btr.expiry = simTime()+1.5;
+            btr.expiry = simTime()+_delay+1.5;
             btr.relayed = false;
             btr.pkt = payload->dup();
             btr.retries = 0;
@@ -726,13 +722,29 @@ void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType
 
             m = new cMessage("");
             mBroadcastRetries[m] = bcast;
-            scheduleAt(simTime()+0.25, m);
+            scheduleAt(simTime()+_delay+0.25, m);
 
             m = new cMessage("");
             mBroadcastExpiries[m] = bcast;
             scheduleAt(btr.expiry, m);
         }
 
+    }
+
+    if ( _delay )
+    {
+        SendLater sendLater;
+        sendLater.destAddr = _destAddr;
+        sendLater.pkt = payload;
+        cMessage* m = new cMessage("");
+        mSendLaterMessageMap[m] = sendLater;
+        scheduleAt(simTime()+_delay, m);
+    }
+    else
+    {
+        sendPacket(payload, _destAddr);
+        emit(sentPkSignal, payload);
+        //numSent++;
     }
 
 }
@@ -795,7 +807,7 @@ void UDPBurstAndBroadcast::generateBurst()
     else
         socket.sendTo(payload, destAddr, destPort,outputInterface);
 
-    numSent++;
+    //numSent++;
 
     if ( destAddr.get4().isLimitedBroadcastAddress() )
     {
@@ -921,7 +933,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
             {
-                generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "");
+                generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", 0.2);
                 mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
             }
             break;
@@ -933,7 +945,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 //socket.sendTo(*i, mServerAddr, destPort, outputInterface);
                 int ctrlT = (*i)->getCntrlType();
                 sendPacket(*i, mServerAddr);
-                numSent++;
+                //numSent++;
             }
             break;
         case REGISTER_AS_SOURCE:
@@ -964,7 +976,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                         {
                             socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
                             sendPacket(acm->dup(), i->first);
-                            numSent++;
+                            //numSent++;
                         }
                     }
 

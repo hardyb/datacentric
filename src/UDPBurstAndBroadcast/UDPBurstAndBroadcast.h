@@ -82,6 +82,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     typedef std::map<cMessage*, uint64> BroadcastMessageMapType;
     typedef BroadcastMessageMapType::iterator BroadcastExpiryIterator;
     typedef BroadcastMessageMapType::iterator BroadcastRetryIterator;
+    typedef SendLaterMessageMapType::iterator SendLaterMessageMapIterator;
     BroadcastMessageMapType mBroadcastExpiries;
     BroadcastMessageMapType mBroadcastRetries;
     SendLaterMessageMapType mSendLaterMessageMap;
@@ -143,7 +144,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual AppControlMessage *createPacket2();
     virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
-    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData);
+    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, double _delay);
     void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 
 
