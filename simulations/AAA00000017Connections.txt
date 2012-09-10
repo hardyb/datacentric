@@ -54,36 +54,36 @@ CONNECTION
 AAA00000017
 0202FF06
 3
-AAA00000067
-seqno: 3
-true
-668
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000017
-0202FF06
-3
-AAA00000040
-seqno: 3
-true
-898
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000017
-0202FF06
-3
 AAA00000044
 seqno: 3
 true
 624
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000017
+0202FF06
+3
+AAA00000074
+seqno: 3
+true
+795
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000017
+0202FF06
+3
+AAA00000067
+seqno: 3
+true
+668
 65535
 false
 false
@@ -106,10 +106,10 @@ CONNECTION
 AAA00000017
 0202FF06
 3
-AAA00000074
+AAA00000040
 seqno: 3
 true
-795
+898
 65535
 false
 false

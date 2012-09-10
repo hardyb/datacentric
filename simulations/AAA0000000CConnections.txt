@@ -54,19 +54,6 @@ CONNECTION
 AAA0000000C
 0202FF06
 3
-AAA00000001
-seqno: 3
-true
-468
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000000C
-0202FF06
-3
 AAA0000000F
 seqno: 3
 true
@@ -110,6 +97,19 @@ AAA00000004
 seqno: 3
 true
 584
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000000C
+0202FF06
+3
+AAA00000001
+seqno: 3
+true
+468
 65535
 false
 false

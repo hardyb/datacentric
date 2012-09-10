@@ -41,6 +41,19 @@ CONNECTION
 AAA00000057
 0202FF06
 3
+AAA00000066
+seqno: 3
+true
+742
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000057
+0202FF06
+3
 AAA00000046
 seqno: 3
 true
@@ -58,32 +71,6 @@ AAA00000027
 seqno: 2
 true
 530
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000057
-0202FF06
-3
-AAA00000073
-seqno: 3
-true
-593
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000057
-0202FF06
-3
-AAA00000066
-seqno: 3
-true
-742
 65535
 false
 false
@@ -123,6 +110,19 @@ AAA0000004C
 seqno: 3
 true
 706
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000057
+0202FF06
+3
+AAA00000073
+seqno: 3
+true
+593
 65535
 false
 false

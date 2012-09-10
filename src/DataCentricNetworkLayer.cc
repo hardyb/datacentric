@@ -218,7 +218,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         // For the moment comment out to disable stability feature
-        scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
 
 
 
@@ -446,7 +446,7 @@ void DataCentricNetworkLayer::sendDownTheNIC()
             std::remove(ss.str().c_str());
 
             StabilityVector.record(1.0);
-            //scheduleAt(simTime() + 1.0, mpUpDownMessage);
+            scheduleAt(simTime() + 2.0, mpUpDownMessage);
         }
     }
 
@@ -619,8 +619,8 @@ void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
     // In the real world a copy of the C Code will be deployed in each device
 
     //nodeConstraint = nodeConstraintValue;
-    nodeConstraint = (unsigned int)(255.0 * mStability);
-    //nodeConstraint = (unsigned int)mStability;
+    //nodeConstraint = (unsigned int)(255.0 * mStability);
+    nodeConstraint = (unsigned int)mStability;
     currentModuleId = this->getId();
     thisAddress = mAddress;
     rd = &(moduleRD);
@@ -1093,7 +1093,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             break;
         case DATA:
             appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
-            //currentModule->mNetMan->mNetModules[_interface]->sendDownTheNIC();
+            currentModule->mNetMan->mNetModules[_interface]->sendDownTheNIC();
             break;
         case REINFORCE_INTEREST:
             appPkt = new DataCentricAppPkt("ReinIN_DataCentricAppPkt");

@@ -93,12 +93,12 @@ CONNECTION
 AAA00000016
 0202FF06
 3
-AAA00000018
+AAA00000071
 seqno: 3
 true
-453
+550
 65535
-true
+false
 false
 false
 false
@@ -106,12 +106,12 @@ CONNECTION
 AAA00000016
 0202FF06
 3
-AAA00000071
+AAA00000018
 seqno: 3
 true
-550
+453
 65535
-false
+true
 false
 false
 false

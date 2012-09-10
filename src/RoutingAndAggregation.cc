@@ -4253,9 +4253,9 @@ void handle_interest(control_data cd)
         // CHECK THIS
     }
 
-    if ( 0 )//(incoming_packet.seqno == s->seqno) && s->converged )
+    if ( (incoming_packet.seqno == s->seqno) && s->converged )
     {
-        //return;
+        return;
     }
 
     if ( 0 )//incoming_packet.seqno > s->seqno )

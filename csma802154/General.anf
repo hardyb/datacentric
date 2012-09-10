@@ -29,6 +29,13 @@
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
       </items>
+      <items xsi:type="scave:LineChart" name="RReplies" lineNameFormat="">
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+        <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+        <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+        <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+      </items>
     </datasets>
     <datasets name="Second">
       <items xsi:type="scave:Add" filterPattern="&quot;Mean delay&quot;"/>
@@ -41,6 +48,6 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.8"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.9"/>
   </chartSheets>
 </scave:Analysis>
