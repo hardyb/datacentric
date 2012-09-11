@@ -416,7 +416,8 @@ void DataCentricNetworkLayer::sendDownTheNIC()
 {
     Enter_Method("sendDownTheNIC()");
 
-    if ( uniform(0,255) <= mStability  )
+    double randomStability = uniform(1,255);
+    if ( randomStability <= mStability  )
     {
         if ( mPhyModule->isEnabled() )
         {
@@ -518,8 +519,9 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg == mpUpDownMessage )
     {
-        if ( uniform(0,1) <= mStability  )
-        {
+        //if ( uniform(0,1) <= mStability  )
+        //{
+            /*
             if ( mPhyModule->isEnabled() )
             {
                 cout << "MODULE GOING DOWN: " << fName << endl;
@@ -549,18 +551,23 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
                 //scheduleAt(simTime() + 1.0, mpUpDownMessage);
             }
             else
+            */
+
+            if ( !mPhyModule->isEnabled() )
             {
                 cout << "MODULE COMING UP: " << fName << endl;
                 //scheduleAt(simTime() + 0.5, mMessageForTesting_1);
 
                 mPhyModule->enableModule();
+                StabilityVector.record(0.0);
                 mNetMan->changeInModulesDown(-1.0);
 
                 mQueueModule->requestPacket(); // reprime the previously cleared nic queue
                 StartUp();
             }
-        }
+        //}
 
+        /*
         if ( mPhyModule->isEnabled() )
         {
             StabilityVector.record(0.0);
@@ -569,8 +576,10 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         {
             StabilityVector.record(1.0);
         }
+        */
 
-        scheduleAt(simTime() + 1.0, mpUpDownMessage);
+
+        //scheduleAt(simTime() + 1.0, mpUpDownMessage);
         return;
     }
 

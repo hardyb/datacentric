@@ -1,7 +1,55 @@
 
+#include "DataCentricTestApp.h"
+
 #include "DataCentricNetworkMan.h"
 #include <stdio.h>
 #include <string.h>
+
+
+
+
+
+
+
+
+
+/*
+static cNEDValue ned_choose(cComponent *context, cNEDValue argv[], int argc)
+{
+int index = (int)argv[0];
+for ( int i = 0; i < index; i++ )
+{
+
+}
+if (index < 0 || index >= argc-1)
+throw cRuntimeError("choose(): index %d is out of range", index);
+return argv[index+1];
+}
+Define_NED_Function(ned_choose, "any choose(int index, ...)");
+Here, the value of argv[0] is read using the typecast operator that maps to longValue
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -81,40 +129,50 @@ void DataCentricNetworkMan::initialize(int aStage)
         Region r6;
         r6.x =0;
         r6.y =0;
-        r6.w =35;
-        r6.h =35;
+        r6.z =0;
+        r6.w =10;
+        r6.h =12;
+        r6.d =3.5;
         memcpy(r6.context, "\x06\x00", 3);
         mRegions.push_back(r6);
 
         Region r61;
         r61.x =0;
         r61.y =0;
-        r61.w =18;
-        r61.h =18;
+        r61.z =0;
+        r61.w =5;
+        r61.h =6;
+        r61.d =3.5;
         memcpy(r61.context, "\x06\x01\x00", 3);
         mRegions.push_back(r61);
 
         Region r62;
-        r62.x =18;
+        r62.x =5;
         r62.y =0;
-        r62.w =17;
-        r62.h =18;
+        r62.z =0;
+        r62.w =5;
+        r62.h =6;
+        r62.d =3.5;
         memcpy(r62.context, "\x06\x02\x00", 3);
         mRegions.push_back(r62);
 
         Region r63;
         r63.x =0;
-        r63.y =18;
-        r63.w =18;
-        r63.h =17;
+        r63.y =6;
+        r63.z =0;
+        r63.w =5;
+        r63.h =6;
+        r63.d =3.5;
         memcpy(r63.context, "\x06\x03\x00", 3);
         mRegions.push_back(r63);
 
         Region r64;
-        r64.x =18;
-        r64.y =18;
-        r64.w =17;
-        r64.h =17;
+        r64.x =5;
+        r64.y =6;
+        r64.z =0;
+        r64.w =5;
+        r64.h =6;
+        r64.d =3.5;
         memcpy(r64.context, "\x06\x04\x00", 3);
         mRegions.push_back(r64);
 
@@ -139,10 +197,88 @@ void DataCentricNetworkMan::initialize(int aStage)
         //e2eDelayVec.setName("End-to-end delay");
         //meanE2EDelayVec.setName("Mean end-to-end delay");
         //scheduleAt(simTime() + StartTime(), mpStartMessage);
+
+        traverseModule(*getParentModule());
+
+        string sinksString = par("sinks").stringValue();
+        std::vector<std::string> sinks = cStringTokenizer(sinksString.c_str(), ",").asVector();
+        //if ( (sinks.size() % 3) != 0 )
+        if ( sinks.size() != 4 )
+        {
+            //throw cRuntimeError("items in sinks must be multiple of 3");
+            throw cRuntimeError("items in sinks must be 4");
+        }
+        string _context = sinks[0];
+        int _from = atoi(sinks[1].c_str());
+        int _to = atoi(sinks[2].c_str());
+        string _data = sinks[3];
+
+        /*
+        for ( int i = 0; i < sinks.size(); i += 3 )
+        {
+            sinks[i];
+            sinks[i+1];
+            sinks[i+2];
+
+        }
+        */
+
+
+        int numInRegion = 0;
+        for (std::vector<DataCentricTestApp*>::iterator i = mNodeArray.begin();
+                i != mNodeArray.end(); ++i)
+        {
+            if ( (*i)->contextData == _context )
+            {
+                if ( _from <= numInRegion <= _to )
+                {
+                    (*i)->processSinkFor(_data); // place holder function only
+                }
+                numInRegion++;
+            }
+
+
+        }
+
     }
 
 
 }
+
+
+void DataCentricNetworkMan::findModule()
+{
+
+}
+
+
+
+void DataCentricNetworkMan::traverseModule(const cModule& m)
+{
+    for (cSubModIterator iter(m); !iter.end(); iter++)
+    {
+        ev << "Traversing:    " << iter()->getFullName() << endl;
+        cModule* sm = dynamic_cast<cModule*>(iter());
+        if ( sm )
+        {
+            DataCentricTestApp* dcApp = dynamic_cast<DataCentricTestApp*>(sm->getSubmodule("app"));
+            if ( dcApp )
+            {
+                ev << "Found:    " << dcApp->getFullName() << endl;
+                mNodeArray.push_back(dcApp);
+                //mNodeArray[mNodeArrayIndex++] = mn;
+            }
+
+        }
+        //else
+        //{
+        //    traverseModule(*iter());
+        //}
+    }
+
+}
+
+
 
 
 void DataCentricNetworkMan::handleMessage(cMessage* msg)

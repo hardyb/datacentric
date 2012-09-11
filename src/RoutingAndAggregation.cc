@@ -4258,7 +4258,7 @@ void handle_interest(control_data cd)
         return;
     }
 
-    if ( 0 )//incoming_packet.seqno > s->seqno )
+    if ( incoming_packet.seqno > s->seqno )
     {
         /*
          * IF: this is a rec and we are the sink for it

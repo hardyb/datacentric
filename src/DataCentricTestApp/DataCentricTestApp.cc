@@ -120,13 +120,16 @@ void DataCentricTestApp::initialize(int aStage)
         StationaryMobility* mob = check_and_cast<StationaryMobility*>(this->getParentModule()->getSubmodule("mobility"));
         double x = mob->par("initialX");
         double y = mob->par("initialY");
+        double z = mob->par("initialZ");
         for (DataCentricNetworkMan::RegionsIterator i = mNetMan->mRegions.begin();
                 i != mNetMan->mRegions.end(); ++i)
         {
             if (       x >= i->x
                     && y >= i->y
+                    && z >= i->z
                     && x < (i->x + i->w)
-                    && y < (i->y + i->h)      )
+                    && y < (i->y + i->h)
+                    && z < (i->z + i->d)      )
             {
                 //string temp((const char*)i->context);
                 //contextData = temp;
@@ -175,6 +178,9 @@ void DataCentricTestApp::initialize(int aStage)
         }
 
         std::string temp2 = par("sinkFor").stringValue();
+        processSinkFor(temp2);
+
+        /*
         if ( temp2.size() )
         {
             DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
@@ -189,6 +195,7 @@ void DataCentricTestApp::initialize(int aStage)
                 send(appPkt2, mLowerLayerOut);
             }
         }
+        */
 
 
 
@@ -203,6 +210,33 @@ void DataCentricTestApp::initialize(int aStage)
 
 
 }
+
+
+
+void DataCentricTestApp::processSinkFor(string &temp2)
+{
+    Enter_Method("processSinkFor(string &temp2)");
+
+    if ( temp2.size() )
+    {
+        DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+        appPkt2->setKind(SINK_MESSAGE);
+        if ( mAppMode == AODV_MODE )
+        {
+            sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
+        }
+        else
+        {
+            send(appPkt2, mLowerLayerOut);
+        }
+    }
+
+}
+
+
+
+
 
 void DataCentricTestApp::finish()
 {

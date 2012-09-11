@@ -9,6 +9,9 @@
 
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
+//#include "DataCentricTestApp.h"
+
+class DataCentricTestApp;
 
 #define RREQ_STAT 12
 #define DISCOVERY_STAT 13
@@ -30,13 +33,17 @@ class DataCentricNetworkMan : public cSimpleModule
     void updateControlPacketData(unsigned char type, bool ucast);
     void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
+    void findModule();
+    void traverseModule(const cModule& m);
 
     typedef struct
     {
         double x;
         double y;
+        double z;
         double w;
         double h;
+        double d;
         char context[20];
     }Region;
 
@@ -66,6 +73,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numRegisterPackets;
     double numRReplyPackets;
     double numAODVDataPackets;
+
+    std::vector<DataCentricTestApp*> mNodeArray;
 
 
 

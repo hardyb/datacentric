@@ -2,23 +2,23 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA00000004
-seqno: 3
-true
-558
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000000F
-0202FF06
-3
 AAA0000007D
-seqno: 3
+seqno: 0
 true
-295
+473
+65535
+true
+false
+false
+false
+CONNECTION
+AAA0000000F
+0202FF06
+3
+AAA00000004
+seqno: 0
+true
+574
 65535
 false
 false
@@ -28,10 +28,10 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA0000002E
-seqno: 3
+AAA00000051
+seqno: 0
 true
-353
+588
 65535
 false
 false
@@ -41,23 +41,36 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA00000008
-seqno: 3
+AAA00000056
+seqno: 0
 true
-594
+580
 65535
 false
 false
 false
-true
+false
 CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA00000016
-seqno: 3
+AAA0000001E
+seqno: 0
 true
-619
+770
+65535
+false
+false
+false
+false
+CONNECTION
+AAA0000000F
+0202FF06
+3
+AAA00000002
+seqno: 0
+true
+770
 65535
 false
 false
@@ -68,9 +81,9 @@ AAA0000000F
 0202FF06
 3
 AAA00000068
-seqno: 3
+seqno: 0
 true
-432
+548
 65535
 false
 false
@@ -80,23 +93,10 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA00000041
-seqno: 3
+AAA00000071
+seqno: 0
 true
-584
-65535
-false
-false
-false
-true
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA00000064
-seqno: 1
-true
-320
+542
 65535
 false
 false
@@ -106,10 +106,10 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA0000001A
-seqno: 3
+AAA00000048
+seqno: 0
 true
-320
+785
 65535
 false
 false
@@ -119,90 +119,12 @@ CONNECTION
 AAA0000000F
 0202FF06
 3
-AAA00000039
-seqno: 3
+AAA0000004B
+seqno: 0
 true
-292
-65535
-true
-true
-false
-false
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA00000051
-seqno: 3
-true
-528
+632
 65535
 false
 false
 false
 false
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA0000005B
-seqno: 3
-true
-470
-65535
-false
-false
-true
-true
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA00000075
-seqno: 3
-true
-620
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA00000018
-seqno: 3
-true
-463
-65535
-false
-false
-false
-true
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA00000021
-seqno: 3
-true
-453
-65535
-false
-false
-false
-true
-CONNECTION
-AAA0000000F
-0202FF06
-3
-AAA0000004A
-seqno: 3
-true
-614
-65535
-false
-false
-false
-true

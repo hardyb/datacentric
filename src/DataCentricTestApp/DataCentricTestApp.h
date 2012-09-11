@@ -64,6 +64,8 @@ class DataCentricTestApp : public TrafGenPar
     virtual void finish();
     double NodeStartTime();
     double ScheduleStartTime();
+    void processSinkFor(string &temp2);
+    std::string contextData;
 
   protected:
 
@@ -93,7 +95,6 @@ class DataCentricTestApp : public TrafGenPar
     bool    m_debug;        // debug switch
     std::vector<std::string> sourcesData;
     std::vector<std::string> sinksData;
-    std::string contextData;
     int     mLowerLayerIn;
     int     mLowerLayerOut;
 

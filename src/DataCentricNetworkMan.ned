@@ -18,6 +18,8 @@ simple DataCentricNetworkMan
 {
     parameters:
         bool debug; 				// debug switch
+        string sinks;
+        string sources;
     gates:
         input upperLayerIn; 			// from the upper layer
 }
