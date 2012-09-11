@@ -200,54 +200,70 @@ void DataCentricNetworkMan::initialize(int aStage)
 
         traverseModule(*getParentModule());
 
-        string sinksString = par("sinks").stringValue();
-        std::vector<std::string> sinks = cStringTokenizer(sinksString.c_str(), ",").asVector();
-        //if ( (sinks.size() % 3) != 0 )
-        if ( sinks.size() != 4 )
-        {
-            //throw cRuntimeError("items in sinks must be multiple of 3");
-            throw cRuntimeError("items in sinks must be 4");
-        }
-        string _context = sinks[0];
-        int _from = atoi(sinks[1].c_str());
-        int _to = atoi(sinks[2].c_str());
-        string _data = sinks[3];
 
-        /*
-        for ( int i = 0; i < sinks.size(); i += 3 )
-        {
-            sinks[i];
-            sinks[i+1];
-            sinks[i+2];
-
-        }
-        */
-
-
-        int numInRegion = 0;
-        for (std::vector<DataCentricTestApp*>::iterator i = mNodeArray.begin();
-                i != mNodeArray.end(); ++i)
-        {
-            if ( (*i)->contextData == _context )
-            {
-                if ( _from <= numInRegion <= _to )
-                {
-                    (*i)->processSinkFor(_data); // place holder function only
-                }
-                numInRegion++;
-            }
-
-
-        }
 
     }
 
+    if (1 == aStage)
+    {
+
+    }
+
+    if (2 == aStage)
+    {
+        bool isSources;
+        string sinksString = par("sinks").stringValue();
+        isSources = false;
+        setSinkOrSources(sinksString, isSources);
+
+        string sourcesString = par("sources").stringValue();
+        isSources = true;
+        setSinkOrSources(sourcesString, isSources);
+
+    }
 
 }
 
 
-void DataCentricNetworkMan::findModule()
+void DataCentricNetworkMan::setSinkOrSources(string &sinksString, bool isSources)
 {
+    std::vector<std::string> sinks = cStringTokenizer(sinksString.c_str(), ",").asVector();
+    if ( sinks.size() != 5 )
+    {
+        //throw cRuntimeError("items in sinks must be multiple of 3");
+        throw cRuntimeError("items in sinks or sources must be 5");
+    }
+    string _context = sinks[0];
+    int _from = atoi(sinks[1].c_str());
+    int _to = atoi(sinks[2].c_str());
+    string _data = sinks[3];
+    string _actions = sinks[4];
+    int numInRegion = 0;
+    for (std::vector<DataCentricTestApp*>::iterator i = mNodeArray.begin();
+            i != mNodeArray.end(); ++i)
+    {
+        std::vector<std::string> contextDataSet = cStringTokenizer((*i)->contextData.c_str()).asVector();
+        for (std::vector<std::string>::iterator it = contextDataSet.begin();
+                it != contextDataSet.end(); ++it)
+        {
+            if ( (*it) == _context )
+            {
+                if ( (_from <= numInRegion) && (numInRegion <= _to) )
+                {
+                    if ( isSources )
+                    {
+                        (*i)->processSourceFor(_data);
+                        (*i)->processActionsFor(_actions);
+                    }
+                    else
+                    {
+                        (*i)->processSinkFor(_data);
+                    }
+                }
+                numInRegion++;
+            }
+        }
+    }
 
 }
 

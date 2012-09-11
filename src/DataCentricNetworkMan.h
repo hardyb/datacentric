@@ -29,11 +29,12 @@ class DataCentricNetworkMan : public cSimpleModule
 {
   public:
     virtual void initialize(int);
+    virtual int numInitStages() const  {return 3;}
     virtual void finish();
     void updateControlPacketData(unsigned char type, bool ucast);
     void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
-    void findModule();
+    void setSinkOrSources(std::string &sinksString, bool isSources);
     void traverseModule(const cModule& m);
 
     typedef struct

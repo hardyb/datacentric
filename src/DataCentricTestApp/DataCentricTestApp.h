@@ -65,6 +65,8 @@ class DataCentricTestApp : public TrafGenPar
     double NodeStartTime();
     double ScheduleStartTime();
     void processSinkFor(string &temp2);
+    void processSourceFor(string &temp1);
+    void processActionsFor(string &actionThreadsString);
     std::string contextData;
 
   protected:

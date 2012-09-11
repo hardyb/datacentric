@@ -73,6 +73,8 @@ void DataCentricTestApp::initialize(int aStage)
 
 
         string actionThreadsString = par("actionThreads").stringValue();
+        processActionsFor(actionThreadsString);
+        /*
         std::vector<std::string> actionThreads = cStringTokenizer(actionThreadsString.c_str()).asVector();
         for (std::vector<std::string>::iterator i = actionThreads.begin();
                 i != actionThreads.end(); ++i)
@@ -92,6 +94,8 @@ void DataCentricTestApp::initialize(int aStage)
                 throw cRuntimeError("Cannot open actionThread: '%s' ", i->c_str());
             }
         }
+        */
+
 
 
         /*
@@ -115,53 +119,78 @@ void DataCentricTestApp::initialize(int aStage)
          */
 
         // Probably no longer take from ini file
-        //contextData = par("nodeContext").stringValue();
-
-        StationaryMobility* mob = check_and_cast<StationaryMobility*>(this->getParentModule()->getSubmodule("mobility"));
-        double x = mob->par("initialX");
-        double y = mob->par("initialY");
-        double z = mob->par("initialZ");
-        for (DataCentricNetworkMan::RegionsIterator i = mNetMan->mRegions.begin();
-                i != mNetMan->mRegions.end(); ++i)
+        /*
+         * If the context(s) set here then skip region check
+         * else create multiple contexts through region check
+         *
+         * next use tokenizer and make multiple calls to
+         * appPkt->setKind(CONTEXT_MESSAGE);
+         * send(appPkt, mLowerLayerOut);
+         */
+        contextData = par("nodeContext").stringValue();
+        if ( !strcmp(contextData.c_str(), "") )
         {
-            if (       x >= i->x
-                    && y >= i->y
-                    && z >= i->z
-                    && x < (i->x + i->w)
-                    && y < (i->y + i->h)
-                    && z < (i->z + i->d)      )
+            StationaryMobility* mob = check_and_cast<StationaryMobility*>(this->getParentModule()->getSubmodule("mobility"));
+            double x = mob->par("initialX");
+            double y = mob->par("initialY");
+            double z = mob->par("initialZ");
+            for (DataCentricNetworkMan::RegionsIterator i = mNetMan->mRegions.begin();
+                    i != mNetMan->mRegions.end(); ++i)
             {
-                //string temp((const char*)i->context);
-                //contextData = temp;
-                // check out below
-                contextData = i->context;
+                if (       x >= i->x
+                        && y >= i->y
+                        && z >= i->z
+                        && x < (i->x + i->w)
+                        && y < (i->y + i->h)
+                        && z < (i->z + i->d)      )
+                {
+                    //string temp((const char*)i->context);
+                    //contextData = temp;
+                    // check out below
+                    contextData = contextData + i->context + " ";
 
-                // what do we put in here - there may be multiple ones
-                //par("nodeContext").setStringValue(contextData.c_str());
+                    // what do we put in here - there may be multiple ones
+                    //par("nodeContext").setStringValue(contextData.c_str());
 
-                DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
-                appPkt->getPktData().insert(appPkt->getPktData().end(), contextData.begin(), contextData.end());
-                appPkt->setKind(CONTEXT_MESSAGE);
-                send(appPkt, mLowerLayerOut);
+                    //DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+                    //appPkt->getPktData().insert(appPkt->getPktData().end(), contextData.begin(), contextData.end());
+                    //appPkt->setKind(CONTEXT_MESSAGE);
+                    //send(appPkt, mLowerLayerOut);
 
-                //break;
-                //
-                // need to think it through but we think NOT break
-                // cause need context object at every hierarchy layer
-                // e.g.
-                // property 6
-                // room1 6-1
-                // room2 6-2
-                //
-                // but need to take care regarding hierarchy and overlap
-                // when proper code is done in DataCentricNetworkMan
-                //
+                    //break;
+                    //
+                    // need to think it through but we think NOT break
+                    // cause need context object at every hierarchy layer
+                    // e.g.
+                    // property 6
+                    // room1 6-1
+                    // room2 6-2
+                    //
+                    // but need to take care regarding hierarchy and overlap
+                    // when proper code is done in DataCentricNetworkMan
+                    //
+                }
             }
         }
 
+        par("nodeContext").setStringValue(contextData.c_str());
+        ev << "Context: " << getFullName() << ": " << contextData << endl;
 
+        // should we do the tokenization here
+        // or in datacentricnetworklayer like for sources and sinks?
+        std::vector<std::string> contextDataSet = cStringTokenizer(contextData.c_str()).asVector();
+        for (std::vector<std::string>::iterator i = contextDataSet.begin();
+                i != contextDataSet.end(); ++i)
+        {
+            DataCentricAppPkt* appPkt = new DataCentricAppPkt("DataCentricAppPkt");
+            appPkt->getPktData().insert(appPkt->getPktData().end(), i->begin(), i->end());
+            appPkt->setKind(CONTEXT_MESSAGE);
+            send(appPkt, mLowerLayerOut);
+        }
 
         std::string temp1 = par("sourceFor").stringValue();
+        processSourceFor(temp1);
+        /*
         if ( temp1.size() )
         {
             DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
@@ -176,6 +205,7 @@ void DataCentricTestApp::initialize(int aStage)
                 send(appPkt1, mLowerLayerOut);
             }
         }
+        */
 
         std::string temp2 = par("sinkFor").stringValue();
         processSinkFor(temp2);
@@ -217,8 +247,11 @@ void DataCentricTestApp::processSinkFor(string &temp2)
 {
     Enter_Method("processSinkFor(string &temp2)");
 
+    par("sinkFor").setStringValue(temp2.c_str());
+
     if ( temp2.size() )
     {
+        ev << "SinksFor: " << getFullName() << ": " << temp2 << endl;
         DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
         appPkt2->setKind(SINK_MESSAGE);
@@ -233,6 +266,75 @@ void DataCentricTestApp::processSinkFor(string &temp2)
     }
 
 }
+
+
+void DataCentricTestApp::processSourceFor(string &temp1)
+{
+    Enter_Method("processSourceFor(string &temp1)");
+
+    par("sourceFor").setStringValue(temp1.c_str());
+
+    if ( temp1.size() )
+    {
+        ev << "SourcesFor: " << getFullName() << ": ";
+        for ( string::iterator i = temp1.begin(); i != temp1.end(); i++ )
+        {
+            ev << std::hex << std::uppercase << (unsigned int)(*i);
+        }
+        ev << endl;
+
+        DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
+        appPkt1->setKind(SOURCE_MESSAGE);
+        if ( mAppMode == AODV_MODE )
+        {
+            sendDelayed(appPkt1, NodeStartTime(), mLowerLayerOut);
+        }
+        else
+        {
+            send(appPkt1, mLowerLayerOut);
+        }
+    }
+
+}
+
+
+void DataCentricTestApp::processActionsFor(string &actionThreadsString)
+{
+    Enter_Method("processActionsFor(string &actionThreadsString)");
+
+    par("actionThreads").setStringValue(actionThreadsString.c_str());
+
+    if ( actionThreadsString.size() )
+    {
+        ev << "actionThreads: " << getFullName() << ": " << actionThreadsString << endl;
+    }
+
+    std::vector<std::string> actionThreads = cStringTokenizer(actionThreadsString.c_str()).asVector();
+    for (std::vector<std::string>::iterator i = actionThreads.begin();
+            i != actionThreads.end(); ++i)
+    {
+        ifstream* actionStream = new ifstream();
+        actionStream->open(i->c_str());
+        if ( actionStream->is_open() )
+        {
+            ActionStreamHierarchy* ash = new ActionStreamHierarchy();
+            ash->push_back(actionStream);
+            cMessage* m = new cMessage(i->c_str());
+            mActionThreads[m] = ash;
+            scheduleAt(simTime() + ScheduleStartTime(), m);
+        }
+        else
+        {
+            throw cRuntimeError("Cannot open actionThread: '%s' ", i->c_str());
+        }
+    }
+
+}
+
+
+
+
 
 
 
