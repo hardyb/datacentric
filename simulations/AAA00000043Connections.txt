@@ -97,7 +97,7 @@ AAA00000040
 seqno: 0
 true
 65535
-274
+296
 false
 false
 false

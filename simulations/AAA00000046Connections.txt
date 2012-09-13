@@ -10,7 +10,7 @@ true
 false
 false
 true
-false
+true
 CONNECTION
 AAA00000046
 8302FF0601
@@ -20,8 +20,8 @@ seqno: 0
 true
 65535
 207
-false
-false
+true
+true
 false
 false
 CONNECTION

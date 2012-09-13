@@ -216,7 +216,8 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 // also in long term we probably need to use bit flags
 // ideas for this below
 #define FORWARD_AND_SOURCEPREFIX 10
-#define FORWARD_AND_NOTSOURCEPREFIX 11
+#define PREFIX_CHECKED 11
+#define FORWARD_AND_SINK_SUFFIX 12
 
 
 
@@ -818,7 +819,7 @@ void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsign
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
 void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime));
 void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject)));
-void weAreSourceFor(unsigned char* _data);
+void weAreSourceFor(unsigned char* _data, char seqno);
 void weAreSinkFor(unsigned char* _data, char seqno);
 int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
 void weAreCollaboratorFor(unsigned char* _data);

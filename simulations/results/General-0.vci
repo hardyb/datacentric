@@ -1,15 +1,15 @@
-file 3670 1347375610                                            
+file 5442 1347496390                                            
 version 2
-run General-0-20120911-15:46:26-3840
+run General-0-20120913-01:16:20-2748
 attr configname General
-attr datetime 20120911-15:46:26
+attr datetime 20120913-01:16:20
 attr experiment General
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 3840
+attr processid 2748
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -19,6 +19,8 @@ attr seedset 0
 vector 1252  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
 vector 1257  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
 vector 1259  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
-1252	632 1014 5060 132226 1.005 1.311485590637 36 0 125 125 15625
-1257	1646 1012 5060 132226 1.005 1.311485590637 36 0 0 0 0
-1259	2658 1012 5060 132226 1.005 1.311485590637 36 0 0 0 0
+vector 1258  DataCentricNet.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+1252	708 1405 5060 182870 1.005 33.020525970043 50 0 125 125 15625
+1257	2113 1403 5060 182870 1.005 33.020525970043 50 0 2 5 7
+1258	3516 523 168545 183236 3.007956934775 33.024662137725 12 0.00503991949 0.024662137725 0.168747873312 0.0028736534240089
+1259	4039 1403 5060 182870 1.005 33.020525970043 50 0 0 0 0

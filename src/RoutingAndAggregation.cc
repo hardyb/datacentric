@@ -3325,6 +3325,28 @@ void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, doub
 
 
 
+void initiate_new_advert(void* relevantObject)
+{
+    State* s = (State*)relevantObject;
+
+    // think we should just use what we get in
+    //t->s->seqno++;
+    // may be we SHOULD NOT actually increase ABOVE
+    // but just pass in below an increased value
+    // becuase may be it later takes IMPORTANT action BASED ON whether
+    // the seqno has just increased!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    static unsigned char data[20];
+    GetStateStr(rd->top_state, s, data);
+
+    weAreSourceFor(data, s->seqno+1);
+    s->converged = 1; // SHOULD THIS ALWAYS BE '1' FOR STABLE SINK OF REC ???
+    // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
+    UcastAllBestGradients(rd->top_state, 0);
+
+}
+
+
 
 void initiate_new_interest(void* relevantObject)
 {
@@ -3464,12 +3486,12 @@ void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject
 
 
 
-void weAreSourceFor(unsigned char* _data)
+void weAreSourceFor(unsigned char* _data, char seqno)
 {
 	if ( ((*_data) & MSB2) == PUBLICATION )
 	{
 	    // reboot not properly supported for now, first seqno always zero
-		setObtainGradient(_data, SELF_INTERFACE, 0, 0);
+		setObtainGradient(_data, SELF_INTERFACE, 0, seqno);
 	}
 
 	//StateNode* sn = FindStateNode(rd->stateTree, _data._dataname_struct1.the_dataname);
@@ -3833,16 +3855,44 @@ void interest_convergence_timeout(void* relevantObject)
 //HEREHERE
 int isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
+    // pos condition record here?  no need must be if its a prefix
     s->prefix = FORWARD_AND_SOURCEPREFIX;
 
     return 0;
 }
 
 
+
+int numSinks;
+int count_sink(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+{
+    if ( s->action == SINK_ACTION )
+    {
+        if ( ((*_buf) & MSB2) == PUBLICATION )
+        {
+            numSinks++;
+        }
+    }
+
+    return 0;
+
+}
+
+
+
+
+
+
+
+
 void setAllPrefixStatus(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
     if ( s->action == SOURCE_ACTION )
     {
+        /*
+         * If ANY state is a prefix of THIS source record state
+         * then mark EACH as a source prefix (prefix of a source record state)
+         */
         if ( ((*_data) & MSB2) == RECORD )
         {
             action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
@@ -3850,10 +3900,48 @@ void setAllPrefixStatus(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
         }
     }
 
-
-
+    numSinks = 0;
+    // pos condition pub here? not sure.
+    action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
+            current_prefix_name, _if, count_sink);
+    /*
+     * If THIS state is a suffix of ANY sink state
+     * then mark IT as a sink suffix (suffix of a sink state)
+     */
+    if ( numSinks )
+    {
+        s->prefix = FORWARD_AND_SINK_SUFFIX;
+    }
 
 }
+
+/*
+std::cout << "FOUND UNREINFORCED ADVERT" << std::endl;
+numSinks = 0;
+action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
+        current_prefix_name, _if, count_sink);
+if ( numSinks )
+{
+    std::cout << "TRY REINFORCING ADVERT" << std::endl;
+    // second parameter no longer used, pos pass s in future to save
+    // unnecessary work in the function
+    start_reinforce(_data, 0, s->seqno);
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void handle_interest_dummy(control_data cd)
@@ -3941,12 +4029,12 @@ void handle_interest_dummy(control_data cd)
             // we have ever seen, to say whether or not it is a prefix of one
             // that was previously set as SOURCE_ACTION
             if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->prefix != FORWARD_AND_NOTSOURCEPREFIX )
+                    t->s->prefix != PREFIX_CHECKED )
             {
                 traverse(rd->top_state, queue, 0, setAllPrefixStatus);
                 if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
                 {
-                    t->s->prefix = FORWARD_AND_NOTSOURCEPREFIX;
+                    t->s->prefix = PREFIX_CHECKED;
                 }
             }
 
@@ -3969,6 +4057,64 @@ void handle_interest_dummy(control_data cd)
 }
 
 
+//HEREAGAIN
+
+
+/*
+ * Should these start_reinforce... functions be incorporated into the handle ones
+ * only treat as arrived from SELF?
+ */
+// probably not thread safe
+void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
+{
+    std::cout << "ABOUT to ADV Reinforce" << std::endl;
+    // did we already do this at start up when we made us a sink for this name?
+    // NO!!! I think we did set best grad but did not REINFORCE
+
+
+    if ( _if != UNKNOWN_INTERFACE )
+    {
+        reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+    }
+
+
+    //StateNode* sn = FindStateNode(rd-, specific_data_value._dataname_struct1.the_dataname);
+    trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
+
+
+
+
+    if ( t && t->s->bestGradientToObtain )
+    {
+        // next hop already reinforced so stop here
+        if ( t->s->obtainInterface )
+            return;
+
+        // find the next interface to reinforce
+        NEIGHBOUR_ADDR interface = t->s->bestGradientToObtain->key2->iName;
+
+        // also reinforce the path to the source for breakage messages
+        // even if it is self
+        reinforceObtainGradient(fullyqualifiedname, interface, seqno);
+        // INCLUDE THIS?
+        //setTimer(0.01, t->s, send_queued_data);
+
+        // If interface is self do not send message on
+        if ( interface == SELF_INTERFACE )
+            return;
+
+        outgoing_packet.message_type = REINFORCE;
+        outgoing_packet.data = (unsigned char*)fullyqualifiedname;
+        outgoing_packet.length = strlen((const char*)outgoing_packet.data);
+        outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+        outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+        outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
+        outgoing_packet.seqno = seqno;
+        std::cout << "FIRST ADV Reinforce to " << std::hex << interface << std::endl;
+        sendAMessage(interface, write_packet(&outgoing_packet), 0);
+    }
+
+}
 
 
 void advert_convergence_timeout(void* relevantObject)
@@ -3980,7 +4126,7 @@ void advert_convergence_timeout(void* relevantObject)
     State* s = (State*)relevantObject;
     s->converged = 1;
 
-    if ( s->prefix == FORWARD_AND_SOURCEPREFIX
+    if ( s->prefix == FORWARD_AND_SINK_SUFFIX
             && s->bestGradientToObtain
             && !s->obtainInterfaces )
     {
@@ -3992,7 +4138,7 @@ void advert_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
     }
 
-    if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
+    if ( s->prefix != FORWARD_AND_SINK_SUFFIX && s->pktQ
             && s->bestGradientToObtain
             && !s->obtainInterfaces )
     {
@@ -4113,13 +4259,13 @@ void handle_advert(control_data cd)
             // this is a once only on first sight for all the (interest) states
             // we have ever seen, to say whether or not it is a prefix of one
             // that was previously set as SOURCE_ACTION
-            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->prefix != FORWARD_AND_NOTSOURCEPREFIX )
+            if ( t->s->prefix != FORWARD_AND_SINK_SUFFIX &&
+                    t->s->prefix != PREFIX_CHECKED )
             {
                 traverse(rd->top_state, queue, 0, setAllPrefixStatus);
-                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
+                if ( t->s->prefix != FORWARD_AND_SINK_SUFFIX )
                 {
-                    t->s->prefix = FORWARD_AND_NOTSOURCEPREFIX;
+                    t->s->prefix = PREFIX_CHECKED;
                 }
             }
 
@@ -4713,12 +4859,12 @@ void handle_interest(control_data cd)
 		    // we have ever seen, to say whether or not it is a prefix of one
 		    // that was previously set as SOURCE_ACTION
             if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->prefix != FORWARD_AND_NOTSOURCEPREFIX )
+                    t->s->prefix != PREFIX_CHECKED )
             {
                 traverse(rd->top_state, queue, 0, setAllPrefixStatus);
                 if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
                 {
-                    t->s->prefix = FORWARD_AND_NOTSOURCEPREFIX;
+                    t->s->prefix = PREFIX_CHECKED;
                 }
             }
 
@@ -4970,61 +5116,6 @@ void handle_reinforce_collaboration(control_data cd)
  */
 
 
-/*
- * Should these start_reinforce... functions be incorporated into the handle ones
- * only treat as arrived from SELF?
- */
-// probably not thread safe
-void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
-{
-    std::cout << "ABOUT to ADV Reinforce" << std::endl;
-	// did we already do this at start up when we made us a sink for this name?
-	// NO!!! I think we did set best grad but did not REINFORCE
-
-
-    if ( _if != UNKNOWN_INTERFACE )
-    {
-        reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
-    }
-
-
-	//StateNode* sn = FindStateNode(rd-, specific_data_value._dataname_struct1.the_dataname);
-	trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
-
-
-
-
-	if ( t && t->s->bestGradientToObtain )
-	{
-		// next hop already reinforced so stop here
-		if ( t->s->obtainInterface )
-			return;
-
-		// find the next interface to reinforce
-		NEIGHBOUR_ADDR interface = t->s->bestGradientToObtain->key2->iName;
-
-        // also reinforce the path to the source for breakage messages
-		// even if it is self
-		reinforceObtainGradient(fullyqualifiedname, interface, seqno);
-        // INCLUDE THIS?
-		//setTimer(0.01, t->s, send_queued_data);
-
-		// If interface is self do not send message on
-		if ( interface == SELF_INTERFACE )
-			return;
-
-		outgoing_packet.message_type = REINFORCE;
-		outgoing_packet.data = (unsigned char*)fullyqualifiedname;
-		outgoing_packet.length = strlen((const char*)outgoing_packet.data);
-		outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-		outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
-		outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
-        outgoing_packet.seqno = seqno;
-        std::cout << "FIRST ADV Reinforce to " << std::hex << interface << std::endl;
-		sendAMessage(interface, write_packet(&outgoing_packet), 0);
-	}
-
-}
 
 
 
@@ -5417,17 +5508,6 @@ int consider_reinforce_collaberation(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
 
 
-int numSinks;
-int count_sink(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
-{
-    if ( s->action == SINK_ACTION )
-    {
-        numSinks++;
-    }
-
-    return 0;
-
-}
 
 
 

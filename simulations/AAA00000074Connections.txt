@@ -102,16 +102,3 @@ false
 false
 false
 false
-CONNECTION
-AAA00000074
-8302FF0601
-3
-AAA00000040
-seqno: 0
-true
-65535
-251
-false
-false
-false
-false

@@ -820,7 +820,7 @@ void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* app
         memcpy(x, i->c_str(), datalen);
         x[datalen] = DOT;
         getLongestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
-        weAreSourceFor(x);
+        weAreSourceFor(x, 0);
     }
 
 }
