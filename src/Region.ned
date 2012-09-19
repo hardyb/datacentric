@@ -15,20 +15,20 @@
 
 package datacentric;
 
-import Region;
-
-module DataCentricNetworkMan
+simple Region
 {
     parameters:
-        int numRegions = default(4);
-        bool debug; 				// debug switch
-        string sinks;
-        string sources;
-        
-    gates:
-        input upperLayerIn; 			// from the upper layer
-        
-    submodules:
-        region[numRegions]: Region;
-        
+        int x; // x, y, z coordinates of starting corner of the region/room
+        int y;
+        int z;
+        int w; // width of the room (x axis)
+        int h; // length of the room front to back (y axis)
+        int d; // height of the room (z axis)
+        string context; // the datacentric context or hierarchical location id of the region 
+    //submodules:
 }
+
+
+
+
+

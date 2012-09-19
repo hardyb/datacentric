@@ -15,20 +15,7 @@
 
 package datacentric;
 
-import Region;
 
-module DataCentricNetworkMan
+simple HostReference
 {
-    parameters:
-        int numRegions = default(4);
-        bool debug; 				// debug switch
-        string sinks;
-        string sources;
-        
-    gates:
-        input upperLayerIn; 			// from the upper layer
-        
-    submodules:
-        region[numRegions]: Region;
-        
 }

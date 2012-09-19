@@ -228,42 +228,55 @@ void DataCentricNetworkMan::initialize(int aStage)
 void DataCentricNetworkMan::setSinkOrSources(string &sinksString, bool isSources)
 {
     std::vector<std::string> sinks = cStringTokenizer(sinksString.c_str(), ",").asVector();
-    if ( sinks.size() != 5 )
+    int numItems = sinks.size();
+
+    //if ( sinks.size() != 5 )
+    if ( (sinks.size() % 5) )
     {
         //throw cRuntimeError("items in sinks must be multiple of 3");
         throw cRuntimeError("items in sinks or sources must be 5");
     }
-    string _context = sinks[0];
-    int _from = atoi(sinks[1].c_str());
-    int _to = atoi(sinks[2].c_str());
-    string _data = sinks[3];
-    string _actions = sinks[4];
-    int numInRegion = 0;
-    for (std::vector<DataCentricTestApp*>::iterator i = mNodeArray.begin();
-            i != mNodeArray.end(); ++i)
+
+    for ( int i = 0; i < sinks.size(); i += 5)
     {
-        std::vector<std::string> contextDataSet = cStringTokenizer((*i)->contextData.c_str()).asVector();
-        for (std::vector<std::string>::iterator it = contextDataSet.begin();
-                it != contextDataSet.end(); ++it)
+        string _context = sinks[i+0];
+        int _from = atoi(sinks[i+1].c_str());
+        int _to = atoi(sinks[i+2].c_str());
+        string _data = sinks[i+3];
+        string _actions = sinks[i+4];
+        int numInRegion = 0;
+        for (std::vector<DataCentricTestApp*>::iterator i = mNodeArray.begin();
+                i != mNodeArray.end(); ++i)
         {
-            if ( (*it) == _context )
+            std::vector<std::string> contextDataSet = cStringTokenizer((*i)->contextData.c_str()).asVector();
+            for (std::vector<std::string>::iterator it = contextDataSet.begin();
+                    it != contextDataSet.end(); ++it)
             {
-                if ( (_from <= numInRegion) && (numInRegion <= _to) )
+                if ( (*it) == _context )
                 {
-                    if ( isSources )
+                    if ( (_from <= numInRegion) && (numInRegion <= _to) )
                     {
-                        (*i)->processSourceFor(_data);
-                        (*i)->processActionsFor(_actions);
+                        if ( isSources )
+                        {
+                            (*i)->processSourceFor(_data);
+                            (*i)->processActionsFor(_actions);
+                        }
+                        else
+                        {
+                            (*i)->processSinkFor(_data);
+                        }
                     }
-                    else
-                    {
-                        (*i)->processSinkFor(_data);
-                    }
+                    numInRegion++;
                 }
-                numInRegion++;
             }
         }
+
     }
+
+    //cSimulation::getActiveSimulation();
+    //cSimulation::getActiveEnvir();
+
+
 
 }
 

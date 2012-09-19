@@ -96,6 +96,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         TotalInterestArrivalsVector.setName("TotalInterestArrivals");
         InterestInterArrivalTimesVector.setName("InterestInterArrivalTimesVector");
         InterestInterDepartureTimesVector.setName("InterestInterDepartureTimesVector");
+        AdvertInterDepartureTimesVector.setName("AdvertInterDepartureTimesVector");
         StabilityVector.setName("StabilityVector");
 
 
@@ -132,6 +133,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         mLengthLatestInterestArrivalPeriod_TESTINGONLY = SIMTIME_ZERO;
         mLastInterestArrivalTime = SIMTIME_ZERO;
         mLastInterestDepartureTime = SIMTIME_ZERO;
+        mLastAdvertDepartureTime = SIMTIME_ZERO;
 
         routingDelayCount = 0;
         testSeqNo = 0;
@@ -1304,7 +1306,31 @@ static void cb_bcast_message(unsigned char* _msg)
             }
             break;
         case ADVERT:
-            //std::cout << "Advert size: " << pktSize;
+            std::cout << "Advert size: " << pktSize << std::endl;
+            if ( SIMTIME_ZERO == currentModule->mLastAdvertDepartureTime )
+            {
+                currentModule->mLastAdvertDepartureTime = simTime();
+            }
+            else
+            {
+                if ( (simTime() - currentModule->mLastAdvertDepartureTime) > 1.0 )
+                {
+                    // short term assumption that new seqno out
+                    // in long term try to introduce DEBUG code callbacks
+                    // from framework - not compile in real thing
+                    currentModule->AdvertInterDepartureTimesVector.recordWithTimestamp(
+                            currentModule->mLastAdvertDepartureTime+0.0001, 0.0);
+                    currentModule->AdvertInterDepartureTimesVector.recordWithTimestamp(
+                            simTime(), 0.0);
+                    currentModule->mLastAdvertDepartureTime = simTime();
+                }
+                else
+                {
+                    currentModule->AdvertInterDepartureTimesVector.record(simTime() -
+                                                            currentModule->mLastAdvertDepartureTime);
+                    currentModule->mLastAdvertDepartureTime = simTime();
+                }
+            }
             break;
         case REINFORCE:
         case REINFORCE_INTEREST:

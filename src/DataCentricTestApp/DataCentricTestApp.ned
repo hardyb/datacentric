@@ -6,6 +6,7 @@ simple DataCentricTestApp extends TrafGenPar
     parameters:
         @class(DataCentricTestApp);
         bool debug;
+        string xxx = default("hello");
         
         string sinkFor = default("");
         string sourceFor = default("");// = "\x48\x49\x54";

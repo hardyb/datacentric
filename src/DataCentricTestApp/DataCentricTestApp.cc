@@ -251,7 +251,16 @@ void DataCentricTestApp::processSinkFor(string &temp2)
 
     if ( temp2.size() )
     {
-        ev << "SinksFor: " << getFullName() << ": " << temp2 << endl;
+        ev << "SinksFor: " << getFullPath() << ": ";
+        for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
+        {
+            char cval1 =  (*i);
+            unsigned char cval2 =  (*i);
+            unsigned int val = (unsigned int)cval2;
+            ev << std::hex << std::uppercase << "\\" << val;
+        }
+        ev << endl;
+
         DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
         appPkt2->setKind(SINK_MESSAGE);
@@ -276,10 +285,13 @@ void DataCentricTestApp::processSourceFor(string &temp1)
 
     if ( temp1.size() )
     {
-        ev << "SourcesFor: " << getFullName() << ": ";
+        ev << "SourcesFor: " << getFullPath() << ": ";
         for ( string::iterator i = temp1.begin(); i != temp1.end(); i++ )
         {
-            ev << std::hex << std::uppercase << (unsigned int)(*i);
+            char cval1 =  (*i);
+            unsigned char cval2 =  (*i);
+            unsigned int val = (unsigned int)cval2;
+            ev << std::hex << std::uppercase << "\\" << val;
         }
         ev << endl;
 

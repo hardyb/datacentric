@@ -49,10 +49,14 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cOutVector RangeLqis;
     cOutVector TotalInterestArrivalsVector;
     cOutVector InterestInterArrivalTimesVector;
-    cOutVector InterestInterDepartureTimesVector;
     cOutVector StabilityVector;
     double mTotalInterestArrivals;
+
+    cOutVector InterestInterDepartureTimesVector;
     simtime_t          mLastInterestDepartureTime;
+
+    cOutVector AdvertInterDepartureTimesVector;
+    simtime_t          mLastAdvertDepartureTime;
 
     map<unsigned int, unsigned int> mNeighboursInLqiRange;
     map<void*, cMessage*> mTimeoutMessages;
