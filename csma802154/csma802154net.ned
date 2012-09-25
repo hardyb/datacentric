@@ -24,14 +24,17 @@ import inet.world.radio.ChannelControl;
 import datacentric.nodecsma802154;
 import datacentric.DataCentricNetworkMan;
 //import datacentric.
+import datacentric.Region;
 
 
 network csma802154net
 {
     parameters:
+        int numRegions = default(4);
         int numFixHosts;
         double nodeSeparation @unit("m")=default (3m); // 3m for home network
     submodules:
+        region[numRegions]: Region;
         fixhost[numFixHosts]: nodecsma802154 {
             parameters:
               //y =  (floor(index/sqrt(numFixHosts))*nodeSeparation)+(nodeSeparation);

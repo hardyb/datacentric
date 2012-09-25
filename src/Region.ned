@@ -15,17 +15,23 @@
 
 package datacentric;
 
-simple Region
+module Region
 {
     parameters:
-        int x; // x, y, z coordinates of starting corner of the region/room
-        int y;
-        int z;
-        int w; // width of the room (x axis)
-        int h; // length of the room front to back (y axis)
-        int d; // height of the room (z axis)
-        string context; // the datacentric context or hierarchical location id of the region 
-    //submodules:
+        int numRegionHosts = default(125);
+        double x = default(0); // x, y, z coordinates of starting corner of the region/room
+        double y = default(0);
+        double z = default(0);
+        double w = default(0); // width of the room (x axis)
+        double h = default(0); // length of the room front to back (y axis)
+        double d = default(0); // height of the room (z axis)
+        string context = default(""); // the datacentric context or hierarchical location id of the region 
+        @display("p=-10,40");
+    submodules:
+        regionHost[numRegionHosts]: HostReference;
+    
+    connections allowunconnected:
+        
 }
 
 

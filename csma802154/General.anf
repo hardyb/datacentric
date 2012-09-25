@@ -12,10 +12,12 @@
       <items xsi:type="scave:Add" filterPattern="dataPacketE2EDelay" type="VECTOR"/>
       <items xsi:type="scave:Add" filterPattern="RReplyPacketFrequency" type="VECTOR"/>
       <items xsi:type="scave:Add" filterPattern="AODVDataPacketFrequency" type="VECTOR"/>
-      <items xsi:type="scave:LineChart" name="Discovery &amp; Register" lineNameFormat="">
+      <items xsi:type="scave:LineChart" name="Register" lineNameFormat="">
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
         <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="RREQ" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>

@@ -952,6 +952,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             break;
         case REGISTER_AS_SINK:
             mInterestedNodes[origAddr] = acm->getInterests();
+            // If we send something back then we will have a route back at this point
+            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", 0.2);
             break;
         case HOME_ENERGY_DATA:
             if ( mIsControlUnit )

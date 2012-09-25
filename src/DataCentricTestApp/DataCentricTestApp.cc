@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "StationaryMobility.h"
+#include "HostReference.h"
 
 #define UNKNOWN_ACTIVITY 0
 #define SENSOR_READING 1
@@ -30,11 +31,12 @@ void DataCentricTestApp::initialize(int aStage)
         if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
         {
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
-
+            mNet = sim->getModuleByPath("DataCentricNet");
         }
         else
         {
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
+            mNet = sim->getModuleByPath("csma802154net");
         }
 
         //mpStartMessage = new cMessage("StartMessage");
@@ -72,8 +74,6 @@ void DataCentricTestApp::initialize(int aStage)
         // SO WATCH CAREFULLY
 
 
-        string actionThreadsString = par("actionThreads").stringValue();
-        processActionsFor(actionThreadsString);
         /*
         std::vector<std::string> actionThreads = cStringTokenizer(actionThreadsString.c_str()).asVector();
         for (std::vector<std::string>::iterator i = actionThreads.begin();
@@ -134,6 +134,46 @@ void DataCentricTestApp::initialize(int aStage)
             double x = mob->par("initialX");
             double y = mob->par("initialY");
             double z = mob->par("initialZ");
+            for (cSubModIterator iter(*mNet); !iter.end(); iter++)
+            {
+                if ( iter()->isName("region") )
+                {
+                    //ev << "Traversing:    " << iter()->getFullName() << endl;
+                    double _x = iter()->par("x");
+                    double _y = iter()->par("y");
+                    double _z = iter()->par("z");
+                    double _w = iter()->par("w");
+                    double _h = iter()->par("h");
+                    double _d = iter()->par("d");
+                    string _c = iter()->par("context").stringValue();
+                    if (       x >= _x
+                            && y >= _y
+                            && z >= _z
+                            && x < (_x + _w)
+                            && y < (_y + _h)
+                            && z < (_z + _d)      )
+                    {
+                        contextData = contextData + _c + " ";
+                        for (cSubModIterator iter2(*(iter())); !iter2.end(); iter2++)
+                        {
+                            if ( iter2()->isName("regionHost") )
+                            {
+                                //ev << "Traversing:    " << iter2()->getFullName() << endl;
+                                HostReference* hr = check_and_cast<HostReference*>(iter2());
+                                if ( !hr->hasUnderlyingModule() )
+                                {
+                                    ev << "Adding this app to:    " << iter2()->getFullPath() << endl;
+                                    hr->setUnderlyingModule(this);
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            /*
             for (DataCentricNetworkMan::RegionsIterator i = mNetMan->mRegions.begin();
                     i != mNetMan->mRegions.end(); ++i)
             {
@@ -171,6 +211,7 @@ void DataCentricTestApp::initialize(int aStage)
                     //
                 }
             }
+            */
         }
 
         par("nodeContext").setStringValue(contextData.c_str());
@@ -188,52 +229,25 @@ void DataCentricTestApp::initialize(int aStage)
             send(appPkt, mLowerLayerOut);
         }
 
+    }
+
+    if (3 == aStage)
+    {
+        string actionThreadsString = par("actionThreads").stringValue();
+        processActionsFor(actionThreadsString);
+
         std::string temp1 = par("sourceFor").stringValue();
         processSourceFor(temp1);
-        /*
-        if ( temp1.size() )
-        {
-            DataCentricAppPkt* appPkt1 = new DataCentricAppPkt("DataCentricAppPkt");
-            appPkt1->getPktData().insert(appPkt1->getPktData().end(), temp1.begin(), temp1.end());
-            appPkt1->setKind(SOURCE_MESSAGE);
-            if ( mAppMode == AODV_MODE )
-            {
-                sendDelayed(appPkt1, NodeStartTime(), mLowerLayerOut);
-            }
-            else
-            {
-                send(appPkt1, mLowerLayerOut);
-            }
-        }
-        */
 
         std::string temp2 = par("sinkFor").stringValue();
         processSinkFor(temp2);
-
-        /*
-        if ( temp2.size() )
-        {
-            DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
-            appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
-            appPkt2->setKind(SINK_MESSAGE);
-            if ( mAppMode == AODV_MODE )
-            {
-                sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
-            }
-            else
-            {
-                send(appPkt2, mLowerLayerOut);
-            }
-        }
-        */
-
-
 
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);
         sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
 
     }
+
 
 
 

@@ -15,20 +15,14 @@
 
 package datacentric;
 
-import Region;
 
-module DataCentricNetworkMan
+simple DataCentricNetworkMan
 {
     parameters:
-        int numRegions = default(4);
-        bool debug; 				// debug switch
-        string sinks;
-        string sources;
+        bool debug = default(false); 				// debug switch
+        string sinks = default("");
+        string sources = default("");
         
     gates:
         input upperLayerIn; 			// from the upper layer
-        
-    submodules:
-        region[numRegions]: Region;
-        
 }

@@ -14,8 +14,13 @@
 // 
 
 package datacentric;
+import datacentric.DataCentricTestApp.DataCentricTestApp;
 
 
-simple HostReference
+simple HostReference extends DataCentricTestApp
 {
+    @class(HostReference);
+    //parameters:
+    //    int numRegionHosts = default(0);
 }
+
