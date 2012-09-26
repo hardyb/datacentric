@@ -370,6 +370,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         theData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), theData.begin());
+        std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << std::endl;
         generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), 0);
         break;
     case STARTUP_MESSAGE:
@@ -444,6 +445,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
+            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << std::endl;
             generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", 0);
             mNetMan->updateControlPacketData(REGISTER_STAT, false);
         }
@@ -952,8 +954,13 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             break;
         case REGISTER_AS_SINK:
             mInterestedNodes[origAddr] = acm->getInterests();
+            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                    << ", Adding reg for: " << origAddr.get4() << std::endl;
+
             // If we send something back then we will have a route back at this point
-            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", 0.2);
+            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                    << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
+            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", 2.0);
             break;
         case HOME_ENERGY_DATA:
             if ( mIsControlUnit )
@@ -978,6 +985,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                         {
                             socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
                             sendPacket(acm->dup(), i->first);
+                            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                                    << ", Forwarding to: " << i->first.get4() << std::endl;
                             //numSent++;
                         }
                     }
