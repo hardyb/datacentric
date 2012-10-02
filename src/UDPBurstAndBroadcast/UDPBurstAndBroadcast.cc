@@ -97,6 +97,12 @@ void UDPBurstAndBroadcast::initialize(int stage)
     if (stage != 3)
         return;
 
+    moduleRD.top_context = trie_new();
+
+    cModule* wlan = this->getParentModule()->getSubmodule("wlan");
+    mPhyModule = check_and_cast<Ieee802154Phy*>(wlan->getSubmodule("phy"));
+    mPhyModule->disableModule();
+
     counter = 0;
     numSent = 0;
     numReceived = 0;
@@ -351,7 +357,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
     string sourceData;
     string sinkData;
+    string context;
     string theData;
+    unsigned char temp[30];
+    unsigned char x[20];
+    unsigned char* index = x;
+
+    rd = &(moduleRD);
     switch ( appPkt->getKind() )
     {
     case DATA_PACKET:
@@ -370,8 +382,14 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         theData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), theData.begin());
+
+        // MOVE THIS BIT INTO FRAMEWORK
+        //getLongestContextTrie(rd->top_context, temp, temp, index);
+        getLongestContextTrie(rd->top_context, temp, temp, x);
+        //context = x;
+
         std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << std::endl;
-        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), 0);
+        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
         break;
     case STARTUP_MESSAGE:
         /*
@@ -383,6 +401,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          * initialisation and enables it when the STARTUP_MESSAGE is received
          */
         //StartUpModule();
+        mPhyModule->enableModule();
         //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
         //mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
         break;
@@ -392,7 +411,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          *
          *
          */
-        //SetContext(appPkt);
+        SetContext(appPkt);
         break;
     case SOURCE_MESSAGE:
         /*
@@ -411,7 +430,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         if ( mServerAddr.isUnspecified() )
         {
-            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", 0);
+            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
             mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
         }
 
@@ -433,20 +452,30 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         // TEMP COMMENT OUT
         if ( mServerAddr.isUnspecified() )
         {
-            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", 0);
+            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
             mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
         }
 
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+
+        // MOVE THIS BIT INTO FRAMEWORK
+        //getLongestContextTrie(rd->top_context, temp, temp, index);
+        getLongestContextTrie(rd->top_context, temp, temp, x);
+        //context = x;
+
+
+
+
         if ( mIsControlUnit )
         {
-            mInterestedNodes[myAddr] = sinkData;
+            mInterestedNodes[myAddr].interest = sinkData;
+            mInterestedNodes[myAddr].context = (const char*)x;
         }
         else
         {
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << std::endl;
-            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", 0);
+            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
             mNetMan->updateControlPacketData(REGISTER_STAT, false);
         }
         break;
@@ -458,6 +487,22 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
 }
 
+
+
+
+void UDPBurstAndBroadcast::SetContext(DataCentricAppPkt* appPkt)
+{
+    string contextData;
+    contextData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), contextData.begin());
+    //int size = appPkt->getPktData().size();
+    //size = contextData.size();
+    unsigned char x[30];
+    unsigned int contextLen = strlen(contextData.c_str());
+    memcpy(x, contextData.c_str(), contextLen);
+    x[contextLen] = 0;
+    trie_add(rd->top_context, x, CONTEXT);
+}
 
 
 
@@ -692,14 +737,14 @@ void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_dest
 
 
 
-
-void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, double _delay)
+void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
 {
     AppControlMessage *payload = createPacket2();
     payload->setTimestamp();
     payload->setCntrlType(_cntrlType);
     payload->setInterests(_interests);
     payload->setSourceData(_sourceData);
+    payload->setContext(_context);
 
     if ( _destAddr.isUnspecified() )
     {
@@ -871,7 +916,9 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
     //std::string sources = payload->getSourceData();
     //int len = payload->getByteLength();
 
-    destAddr = 0xFFFFFFFF;
+    //destAddr = 0xFFFFFFFF;
+    // this assignment operator appears to have been depracated
+    destAddr.set("255.255.255.255");
 
     // Check address type
     /*
@@ -930,12 +977,13 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
 
     AppControlMessage* acm = dynamic_cast<AppControlMessage*>(pk);
     std::string sd;
+    std::string con;
     switch ( acm->getCntrlType() )
     {
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
             {
-                generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", 0.2);
+                generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", "", 0.2);
                 mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
             }
             break;
@@ -953,44 +1001,48 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case REGISTER_AS_SOURCE:
             break;
         case REGISTER_AS_SINK:
-            mInterestedNodes[origAddr] = acm->getInterests();
+            mInterestedNodes[origAddr].interest = acm->getInterests();
+            mInterestedNodes[origAddr].context = acm->getContext();
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                     << ", Adding reg for: " << origAddr.get4() << std::endl;
 
             // If we send something back then we will have a route back at this point
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                     << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
-            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", 2.0);
+            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
             break;
         case HOME_ENERGY_DATA:
             if ( mIsControlUnit )
             {
                 sd = acm->getSourceData();
-                for (std::map<IPvXAddress, std::string>::iterator i = mInterestedNodes.begin();
+                con = acm->getContext();
+                for (std::map<IPvXAddress, TheInterest>::iterator i = mInterestedNodes.begin();
                         i != mInterestedNodes.end(); ++i)
                 {
-                    // this prefixing matching mechanism
-                    // does not take into account data and context portions
-                    // of naming scheme!!!
                     pair<std::string::iterator,std::string::iterator> res;
-                    res = std::mismatch(i->second.begin(), i->second.end(), sd.begin());
-                    if (res.first == i->second.end())
+                    res = std::mismatch(i->second.interest.begin(), i->second.interest.end(), sd.begin());
+                    if (res.first == i->second.interest.end())
                     {
-                        // i->second is a prefix of sd.
-                        if ( i->first == myAddr)
+                        res = std::mismatch(i->second.context.begin(), i->second.context.end(), con.begin());
+                        if (res.first == i->second.context.end())
                         {
-                            DataReceived(pk);
-                        }
-                        else
-                        {
-                            socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
-                            sendPacket(acm->dup(), i->first);
-                            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                                    << ", Forwarding to: " << i->first.get4() << std::endl;
-                            //numSent++;
+                            // both data and context of incoming packet are prefix
+                            // of this node's interest
+                            if ( i->first == myAddr)
+                            {
+                                DataReceived(pk);
+                            }
+                            else
+                            {
+                                //socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
+                                // THINK THE ABOVE IS OLD AND SHOULD HAVE BEEN REMOVED
+                                sendPacket(acm->dup(), i->first);
+                                std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                                        << ", Forwarding to: " << i->first.get4() << std::endl;
+                                //numSent++;
+                            }
                         }
                     }
-
                 }
 
             }

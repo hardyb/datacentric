@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/datacentric/csma802154/results/AODVScenario_1c-0.sca"/>
+    <inputs name="/datacentric/csma802154/results/AODVScenario_1c-0.vec"/>
+  </inputs>
+  <datasets>
+    <datasets name="First">
+      <items xsi:type="scave:Add" filterPattern="RREQPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="DiscoveryPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="RegisterPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="dataPacketE2EDelay" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="RReplyPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="AODVDataPacketFrequency" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Register" lineNameFormat="">
+        <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+        <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:LineChart" name="RREQ" lineNameFormat="">
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+        <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:LineChart" name="E2E" lineNameFormat="">
+        <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+        <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+        <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+      </items>
+      <items xsi:type="scave:LineChart" name="RReplies" lineNameFormat="">
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
+        <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
+        <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
+        <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+      </items>
+    </datasets>
+    <datasets name="Second">
+      <items xsi:type="scave:Add" filterPattern="&quot;Mean delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Mean Delay"/>
+      <items xsi:type="scave:Discard" filterPattern="&quot;Mean delay&quot;"/>
+      <items xsi:type="scave:Add" filterPattern="&quot;Min delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Min delay"/>
+      <items xsi:type="scave:Add" filterPattern="&quot;Max delay&quot;"/>
+      <items xsi:type="scave:BarChart" name="Delays"/>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.9"/>
+  </chartSheets>
+</scave:Analysis>

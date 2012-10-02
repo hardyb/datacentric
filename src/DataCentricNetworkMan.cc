@@ -80,6 +80,8 @@ void DataCentricNetworkMan::initialize(int aStage)
         numRReplyPackets = 0;
         numAODVDataPackets = 0;
 
+        mDemand = 0;
+
 
 
 
@@ -103,6 +105,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         RReplyPacketFrequency.setName("RReplyPacketFrequency");
         AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
 
+        demandVector.setName("demandVector");
 
         /*
          * A region has top left coord (x,y) and width and height w, h
@@ -336,6 +339,8 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         RReplyPacketFrequency.record(numRReplyPackets);
         AODVDataPacketFrequency.record(numAODVDataPackets);
 
+        demandVector.record((double)mDemand);
+
         //cOutVector RReplyPacketFrequency;
         //cOutVector AODVDataPacketFrequency;
 
@@ -394,6 +399,26 @@ void DataCentricNetworkMan::changeInModulesDown(double adjustment)
 
 }
 
+
+void DataCentricNetworkMan::addDemand(signed int _demand)
+{
+    Enter_Method("addDemand(signed int)");
+
+    // negative deamnd is supply
+    mDemand += _demand;
+
+
+}
+
+
+signed int DataCentricNetworkMan::getDemand()
+{
+    Enter_Method("getDemand()");
+
+    // negative deamnd is supply
+    return mDemand;
+
+}
 
 
 void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)

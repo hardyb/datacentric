@@ -439,7 +439,10 @@ void DataCentricNetworkLayer::sendDownTheNIC()
             moduleRD.interfaceTree = NULL;
             moduleRD.top_context = trie_new();
             moduleRD.top_state = trie_new();
-            mQueueModule->dropAll();
+            // IMPORTANT NEED TO DO SOMETHING DIFFERENT HERE
+            // SINCE CHANGES IN INETMANET INTEGRATION BRANCH
+            // FOR DropTailQueue
+            //mQueueModule->dropAll();
 
             std::string s;
             std::ostringstream ss;

@@ -280,7 +280,7 @@ void DataCentricTestApp::processSinkFor(string &temp2)
         appPkt2->setKind(SINK_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
+            sendDelayed(appPkt2, NodeStartTime()+0.01, mLowerLayerOut);
         }
         else
         {
@@ -314,7 +314,7 @@ void DataCentricTestApp::processSourceFor(string &temp1)
         appPkt1->setKind(SOURCE_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt1, NodeStartTime(), mLowerLayerOut);
+            sendDelayed(appPkt1, NodeStartTime()+0.01, mLowerLayerOut);
         }
         else
         {

@@ -3375,6 +3375,13 @@ void initiate_new_interest(void* relevantObject)
 
 void handle_breakage(control_data cd)
 {
+    // NBNBNBNBNBNBNBNBNB
+    // ==============================
+    // I think this breakage will get network broadcasted EVERYWHERE til
+    // it reaches the oroginator, but for adverts it only needs to stay
+    // within the relevant context
+    // POSSIBLE FIX NEEDED
+
     // we can use this if it is pefix state coming and not actual data
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 

@@ -34,6 +34,8 @@ class DataCentricNetworkMan : public cSimpleModule
     void updateControlPacketData(unsigned char type, bool ucast);
     void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
+    void addDemand(signed int _demand);
+    signed int getDemand();
     void setSinkOrSources(std::string &sinksString, bool isSources);
     void traverseModule(const cModule& m);
 
@@ -75,6 +77,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numRReplyPackets;
     double numAODVDataPackets;
 
+    signed int mDemand;
+
     std::vector<DataCentricTestApp*> mNodeArray;
 
 
@@ -98,6 +102,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector RReplyPacketFrequency;
     cOutVector AODVDataPacketFrequency;
 
+    cOutVector demandVector;
 
 
     unsigned int numDataArrivals;

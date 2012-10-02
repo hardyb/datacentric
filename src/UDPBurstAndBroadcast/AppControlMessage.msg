@@ -20,4 +20,5 @@ packet AppControlMessage {
     int cntrlType;
     string interests;
     string sourceData;
+    string context;
 }

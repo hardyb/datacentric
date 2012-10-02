@@ -1,0 +1,34 @@
+file 178545 1349106164                                          
+version 2
+run AODVScenario_1c-0-20121001-16:38:09-788
+attr configname AODVScenario_1c
+attr datetime 20121001-16:38:09
+attr experiment AODVScenario_1c
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network csma802154net
+attr processid 788
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 386  csma802154net.dataCentricNetworkMan  RREQPacketFrequency  ETV
+vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
+vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
+vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
+vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
+vector 411  csma802154net.fixhost[19].udpApp  "End-to-end delay"  ETV
+vector 383  csma802154net.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+vector 412  csma802154net.fixhost[20].udpApp  "End-to-end delay"  ETV
+383	1014 86 554831 562395 21.973364570069 22.108297879565 2 1.973364570069 2.108297879565 4.081662449634 8.3390876753819
+386	1100 35774 1135 822768 2.005 34.987916622463 1212 0 235 16469 1198129
+387	36874 35390 1135 822768 2.005 34.987916622463 1212 0 0 0 0
+388	72264 35390 1135 822768 2.005 34.987916622463 1212 0 1 12 12
+389	107654 35402 1135 822768 2.005 34.987916622463 1212 0 61 601 10459
+390	143056 35403 1135 822768 2.005 34.987916622463 1212 0 62 619 11061
+411	178459 43 554831 554831 21.973364570069 21.973364570069 1 1.973364570069 1.973364570069 1.973364570069 3.8941677264036
+412	178502 43 562395 562395 22.108297879565 22.108297879565 1 2.108297879565 2.108297879565 2.108297879565 4.4449199489783

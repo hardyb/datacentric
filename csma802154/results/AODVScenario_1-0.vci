@@ -1,15 +1,15 @@
-file 243558 1348876475                                          
+file 243579 1349101915                                          
 version 2
-run General-0-20120928-15:46:13-2772
-attr configname General
-attr datetime 20120928-15:46:13
-attr experiment General
+run AODVScenario_1-0-20121001-15:11:22-3788
+attr configname AODVScenario_1
+attr datetime 20121001-15:11:22
+attr experiment AODVScenario_1
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network csma802154net
-attr processid 2772
+attr processid 3788
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -21,8 +21,8 @@ vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
 vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
 vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
 vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
-386	776 49001 1135 1060120 2.005 34.794364602569 1643 0 235 24302 1623818
-387	49777 48438 1135 1060120 2.005 34.794364602569 1643 0 0 0 0
-388	98215 48438 1135 1060120 2.005 34.794364602569 1643 0 1 12 12
-389	146653 48451 1135 1060120 2.005 34.794364602569 1643 0 166 981 39645
-390	195104 48454 1135 1060120 2.005 34.794364602569 1643 0 166 966 42578
+386	797 49001 1135 1060120 2.005 34.794364602569 1643 0 235 24302 1623818
+387	49798 48438 1135 1060120 2.005 34.794364602569 1643 0 0 0 0
+388	98236 48438 1135 1060120 2.005 34.794364602569 1643 0 1 12 12
+389	146674 48451 1135 1060120 2.005 34.794364602569 1643 0 166 981 39645
+390	195125 48454 1135 1060120 2.005 34.794364602569 1643 0 166 966 42578

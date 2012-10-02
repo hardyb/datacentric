@@ -1,14 +1,14 @@
 version 2
-run General-0-20120928-15:46:13-2772
-attr configname General
-attr datetime 20120928-15:46:13
-attr experiment General
+run AODVScenario_1-0-20121001-15:11:22-3788
+attr configname AODVScenario_1
+attr datetime 20121001-15:11:22
+attr experiment AODVScenario_1
 attr inifile omnetpp.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network csma802154net
-attr processid 2772
+attr processid 3788
 attr repetition 0
 attr replication #0
 attr resultdir results

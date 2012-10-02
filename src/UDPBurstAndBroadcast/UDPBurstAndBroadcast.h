@@ -30,6 +30,7 @@
 #include "AppControlMessage_m.h"
 #include "DataCentricAppPkt_D.h"
 #include "DataCentricNetworkMan.h"
+#include "Ieee802154Phy.h"
 
 
 
@@ -54,8 +55,10 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     {
         ONCE = 1, PER_BURST, PER_SEND
     };
+    RoutingData moduleRD;
 
   protected:
+    Ieee802154Phy* mPhyModule;
     UDPSocket socket;
     int localPort, destPort;
     int mUpperLayerIn;
@@ -115,7 +118,13 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     cOutVector e2eDelayVec;
     DataCentricNetworkMan* mNetMan;
 
-    std::map<IPvXAddress, std::string> mInterestedNodes;
+    struct TheInterest
+    {
+        std::string interest;
+        std::string context;
+    };
+
+    std::map<IPvXAddress, TheInterest> mInterestedNodes;
     typedef std::map<IPvXAddress, std::string>::iterator InterestedNodesIterator;
 
 
@@ -145,7 +154,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual AppControlMessage *createPacket2();
     virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
-    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, double _delay);
+    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
     void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 
 
@@ -159,6 +168,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual void initialize(int stage);
     virtual void handleMessage(cMessage *msg);
     void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
+    void SetContext(DataCentricAppPkt* appPkt);
     bool duplicate(int moduleId, int msgId, cPacket *pk);
     virtual void finish();
 
