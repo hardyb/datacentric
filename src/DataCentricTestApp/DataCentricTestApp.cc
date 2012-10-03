@@ -26,6 +26,17 @@ void DataCentricTestApp::initialize(int aStage)
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
+        if ( par("nodeStartTime").isSet() )
+        {
+            string fp = getFullPath();
+            ev << fp << ": nodeStartTime IS set" << std::endl;
+        }
+        else
+        {
+            string fp = getFullPath();
+            ev << fp << ": nodeStartTime NOT set" << std::endl;
+        }
+
         //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         cSimulation* sim =  cSimulation::getActiveSimulation();
         if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
@@ -280,7 +291,7 @@ void DataCentricTestApp::processSinkFor(string &temp2)
         appPkt2->setKind(SINK_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt2, NodeStartTime()+0.01, mLowerLayerOut);
+            sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
         }
         else
         {
@@ -314,7 +325,7 @@ void DataCentricTestApp::processSourceFor(string &temp1)
         appPkt1->setKind(SOURCE_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt1, NodeStartTime()+0.01, mLowerLayerOut);
+            sendDelayed(appPkt1, NodeStartTime()+42.0, mLowerLayerOut);
         }
         else
         {

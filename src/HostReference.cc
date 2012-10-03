@@ -44,6 +44,36 @@ void HostReference::initialize(int aStage)
             }
             ev << std::endl;
 
+
+
+
+            /*
+            if ( underlyingModule->par("nodeStartTime").containsValue() )
+            {
+                string fp = underlyingModule->getFullPath();
+                ev << fp << ": nodeStartTime HAS value" << std::endl;
+            }
+            else
+            {
+                string fp = underlyingModule->getFullPath();
+                ev << fp << ": nodeStartTime has NOT value" << std::endl;
+            }
+
+
+            if ( underlyingModule->par("nodeStartTime").isSet() )
+            {
+                string fp = underlyingModule->getFullPath();
+                ev << fp << ": nodeStartTime IS set" << std::endl;
+            }
+            else
+            {
+                string fp = underlyingModule->getFullPath();
+                ev << fp << ": nodeStartTime NOT set" << std::endl;
+            }
+            */
+
+
+
             underlyingModule->par("sinkFor").setStringValue(sinkFor);
             underlyingModule->par("sourceFor").setStringValue(sourceFor);
             underlyingModule->par("nodeContext").setStringValue(par("nodeContext").stringValue());
@@ -51,8 +81,16 @@ void HostReference::initialize(int aStage)
             underlyingModule->par("mains").setBoolValue(par("mains").boolValue());
             underlyingModule->par("probabilityDown").setDoubleValue(par("probabilityDown").doubleValue());
             underlyingModule->par("actionThreads").setStringValue(actionThreads);
-            underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
+
+            string fp = underlyingModule->getFullPath();
+            if ( strcmp(underlyingModule->getFullPath().c_str(), "csma802154net.fixhost[115].app") )
+            {
+                underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
+            }
+
             underlyingModule->par("scheduleStartTime").setDoubleValue(par("scheduleStartTime").doubleValue());
+
+
         }
         else
         {

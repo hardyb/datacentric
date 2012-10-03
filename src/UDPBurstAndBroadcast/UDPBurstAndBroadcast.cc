@@ -1007,9 +1007,9 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                     << ", Adding reg for: " << origAddr.get4() << std::endl;
 
             // If we send something back then we will have a route back at this point
-            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                    << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
-            generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+            //std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+            //        << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
+            //generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
             break;
         case HOME_ENERGY_DATA:
             if ( mIsControlUnit )
