@@ -980,6 +980,10 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
     std::string con;
     switch ( acm->getCntrlType() )
     {
+        case REGISTER_AS_SINK_CONFIRMATION:
+            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                    << ", Received reg conf from: " << origAddr.get4() << std::endl;
+            break;
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
             {
@@ -1006,10 +1010,15 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                     << ", Adding reg for: " << origAddr.get4() << std::endl;
 
-            // If we send something back then we will have a route back at this point
-            //std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-            //        << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
-            //generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+            // Send a confirmation to show success, but mainly to get a route
+            // during a manual action so known to probably be separated from
+            // other traffic.
+            if ( par("confirmRegistration").boolValue() )
+            {
+                std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                        << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
+                generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+            }
             break;
         case HOME_ENERGY_DATA:
             if ( mIsControlUnit )

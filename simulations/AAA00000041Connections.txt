@@ -2,45 +2,6 @@ CONNECTION
 AAA00000041
 8302FF0604
 3
-AAA00000054
-seqno: 0
-true
-65535
-141
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
-AAA00000051
-seqno: 0
-true
-65535
-241
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
-AAA00000056
-seqno: 0
-true
-65535
-226
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
 AAA00000001
 seqno: 0
 true
@@ -54,50 +15,11 @@ CONNECTION
 AAA00000041
 8302FF0604
 3
-AAA00000071
+AAA00000051
 seqno: 0
 true
 65535
-312
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
-AAA0000002A
-seqno: 0
-true
-65535
-182
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
-AAA00000004
-seqno: 0
-true
-65535
-142
-false
-false
-false
-false
-CONNECTION
-AAA00000041
-8302FF0604
-3
-AAA00000061
-seqno: 0
-true
-65535
-307
+251
 false
 false
 false

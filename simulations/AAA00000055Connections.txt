@@ -6,7 +6,7 @@ AAA00000029
 seqno: 0
 true
 65535
-540
+407
 false
 false
 false
@@ -15,24 +15,11 @@ CONNECTION
 AAA00000055
 8302FF0601
 3
-AAA00000014
+AAA00000035
 seqno: 0
 true
 65535
-282
-false
-false
-false
-false
-CONNECTION
-AAA00000055
-8302FF0601
-3
-AAA00000073
-seqno: 0
-true
-65535
-367
+555
 false
 false
 false
@@ -45,20 +32,20 @@ AAA00000033
 seqno: 0
 true
 65535
-258
+378
 false
 false
-true
+false
 false
 CONNECTION
 AAA00000055
 8302FF0601
 3
-AAA00000027
+AAA0000006A
 seqno: 0
 true
 65535
-282
+397
 false
 false
 false
@@ -74,17 +61,17 @@ true
 312
 false
 false
-false
+true
 false
 CONNECTION
 AAA00000055
 8302FF0601
 3
-AAA0000006A
+AAA00000014
 seqno: 0
 true
 65535
-343
+330
 false
 false
 false

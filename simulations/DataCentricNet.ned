@@ -22,13 +22,18 @@
 import datacentric.DataCentricNode;
 import datacentric.DataCentricNetworkMan;
 import inet.world.radio.ChannelControl;
+import datacentric.Region;
+
+
 
 network DataCentricNet
 {
     parameters:
+        int numRegions = default(4);
         double numHosts;
         double nodeSeparation @unit("m")=default (3m);
-                submodules:
+    submodules:
+        region[numRegions]: Region;
         host[numHosts]: DataCentricNode {
             parameters:
                   //y =  (floor(index/sqrt(numHosts))*nodeSeparation)+(nodeSeparation);

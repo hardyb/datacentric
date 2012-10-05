@@ -83,9 +83,16 @@ void HostReference::initialize(int aStage)
             underlyingModule->par("actionThreads").setStringValue(actionThreads);
 
             string fp = underlyingModule->getFullPath();
-            if ( strcmp(underlyingModule->getFullPath().c_str(), "csma802154net.fixhost[115].app") )
+            if ( strcmp(underlyingModule->getFullPath().c_str(), "csma802154net.fixhost[64].app") )
             {
                 underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
+            }
+            else
+            {
+                if ( underlyingModule->par("nodeStartTime").doubleValue() != 1.0 )
+                {
+                    throw cRuntimeError("64 must be nodeStartTime 1.0");
+                }
             }
 
             underlyingModule->par("scheduleStartTime").setDoubleValue(par("scheduleStartTime").doubleValue());
