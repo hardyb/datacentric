@@ -38,6 +38,12 @@ class DataCentricNetworkMan : public cSimpleModule
     signed int getDemand();
     void setSinkOrSources(std::string &sinksString, bool isSources);
     void traverseModule(const cModule& m);
+    void addAppliance(DataCentricTestApp* _appliance);
+    signed short totalDemand(); // local version
+    signed short getTotalDemand(); // remote version
+    void recordDemand(); // remote version
+    void recordDemandLocal(); // local version
+
 
     typedef struct
     {
@@ -118,6 +124,8 @@ class DataCentricNetworkMan : public cSimpleModule
     //DataCentricNetworkLayer* netModule;
 
   private:
+    std::set<DataCentricTestApp*> mAppliances;
+
     //bool    m_debug;        // debug switch
     //std::vector<std::string> sourcesData;
     //std::vector<std::string> sinksData;

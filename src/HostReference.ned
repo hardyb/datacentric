@@ -19,8 +19,8 @@ import datacentric.DataCentricTestApp.DataCentricTestApp;
 
 simple HostReference extends DataCentricTestApp
 {
-    @class(HostReference);
-    //parameters:
-    //    int numRegionHosts = default(0);
+    parameters:
+    	@class(HostReference);
+        bool setHostParametersDirectly = default(false);
 }
 

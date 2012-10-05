@@ -26,6 +26,7 @@ void DataCentricTestApp::initialize(int aStage)
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
+        /*
         if ( par("nodeStartTime").isSet() )
         {
             string fp = getFullPath();
@@ -36,6 +37,8 @@ void DataCentricTestApp::initialize(int aStage)
             string fp = getFullPath();
             ev << fp << ": nodeStartTime NOT set" << std::endl;
         }
+        */
+
 
         //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         cSimulation* sim =  cSimulation::getActiveSimulation();
@@ -49,6 +52,15 @@ void DataCentricTestApp::initialize(int aStage)
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
             mNet = sim->getModuleByPath("csma802154net");
         }
+
+        isAppliance = par("isAppliance").boolValue();
+        if ( isAppliance )
+        {
+            mNetMan->addAppliance(this);
+        }
+
+
+
 
         //mpStartMessage = new cMessage("StartMessage");
         m_debug             = par("debug");
@@ -291,7 +303,8 @@ void DataCentricTestApp::processSinkFor(string &temp2)
         appPkt2->setKind(SINK_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
+            //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
+            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
         }
         else
         {
@@ -325,7 +338,8 @@ void DataCentricTestApp::processSourceFor(string &temp1)
         appPkt1->setKind(SOURCE_MESSAGE);
         if ( mAppMode == AODV_MODE )
         {
-            sendDelayed(appPkt1, NodeStartTime()+42.0, mLowerLayerOut);
+            //sendDelayed(appPkt1, NodeStartTime()+42.0, mLowerLayerOut);
+            sendDelayed(appPkt1, TimeSourceRegisterWithControlUnit(), mLowerLayerOut);
         }
         else
         {
@@ -388,7 +402,60 @@ void DataCentricTestApp::finish()
 void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 {
     simtime_t e2eDelay;
-    DataCentricAppPkt* tmpPkt = check_and_cast<DataCentricAppPkt *>(apMsg);
+    DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(apMsg);
+
+    if ( appPkt->getKind() == DATA_PACKET )
+    {
+        unsigned int _size = appPkt->getPktData().size()
+        unsigned char* pkt = (unsigned char*)malloc(_size);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+
+        for (int i = 0; i < _size; i++ )
+        {
+            int i = 0;
+            switch ( pkt[i] )
+            {
+            case 0x83: // Environmental event
+                processEnvironmentalData(pkt++);
+                break;
+            case 0x02: // Demand Query
+                processDemandData(pkt++);
+                break;
+            case 0x0:
+                break;
+            case 0x0:
+                break;
+
+
+            }
+
+//        string DEMAND_QUERYBASED = "\x2";
+//        string DEMAND_COLLABERATIONBASED = "\x42";
+//        string ENVIRONMENTAL_EVENTBASED = "\x83";
+//        string CURRENT = "\x2";
+//        string BID = "\x1";
+//        string OCCUPANCY = "\x1";
+//        string TEMP = "\x2";
+
+
+
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     e2eDelay = simTime() - tmpPkt->getCreationTime();
     totalByteRecv += tmpPkt->getByteLength();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
@@ -399,6 +466,98 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
     this->getParentModule()->bubble("Data received!");
     delete apMsg;
 }
+
+
+
+
+
+
+void DataCentricTestApp::processEnvironmentalData(unsigned char* pkt)
+{
+    switch ( *pkt )
+    {
+    case 0x01: // Occupancy
+        processOccupancyData(pkt++);
+        break;
+    case 0x02: // Temperature
+        processTemperatureData(pkt++);
+        break;
+    }
+
+}
+
+
+
+void DataCentricTestApp::processDemandData(unsigned char* pkt)
+{
+    switch ( *pkt )
+    {
+    case 0x01: // Bid
+        processBidData(pkt++);
+        break;
+    case 0x02: // Watts
+        processWattsData(pkt++);
+        break;
+    }
+
+}
+
+
+
+
+union wattsData
+{
+    char data[2];
+    signed short demand;
+};
+
+
+void DataCentricTestApp::processWattsData(unsigned char* pkt)
+{
+    signed short d;
+    wattsData w;
+    w.data[0] = pkt[0];
+    w.data[0] = pkt[1];
+    d = w.demand;
+
+
+}
+
+
+
+void DataCentricTestApp::processBidData(unsigned char* pkt)
+{
+
+}
+
+
+void DataCentricTestApp::processOccupancyData(unsigned char* pkt)
+{
+    if ( *pkt != 1 )// 1 indicates occupancy else indicates absence
+    {
+        setCurrentDemand(0);
+    }
+
+}
+
+
+
+void DataCentricTestApp::processTemperatureData(unsigned char* pkt)
+{
+
+}
+
+
+
+
+void DataCentricTestApp::setCurrentDemand(signed short _demand)
+{
+    currentDemand = _demand;
+    netMan->recordDemand();
+
+}
+
+
 
 //***************************************************************
 // Reimplement this function and use msg type DataCentricAppPkt for app pkts
@@ -491,11 +650,13 @@ void DataCentricTestApp::FileEnd(ActionThreadsIterator& i)
 
 void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
 {
-    unsigned short watts;
+    signed short watts;
     double period;
     ifstream* ifs = i->second->back();
     *ifs >> watts;
     *ifs >> period;
+
+    setCurrentDemand(watts);
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
@@ -665,6 +826,25 @@ double DataCentricTestApp::NodeStartTime()
 {
     return par("nodeStartTime").doubleValue();
 }
+
+
+
+double DataCentricTestApp::TimeSinkRegisterWithControlUnit()
+{
+    return par("timeSinkRegisterWithControlUnit").doubleValue();
+}
+
+
+
+double DataCentricTestApp::TimeSourceRegisterWithControlUnit()
+{
+    return par("timeSourceRegisterWithControlUnit").doubleValue();
+}
+
+
+
+
+
 
 
 double DataCentricTestApp::ScheduleStartTime()

@@ -63,11 +63,15 @@ class DataCentricTestApp : public TrafGenPar
     virtual void initialize(int);
     virtual void finish();
     double NodeStartTime();
+    double TimeSinkRegisterWithControlUnit();
+    double TimeSourceRegisterWithControlUnit();
     double ScheduleStartTime();
     void processSinkFor(string &temp2);
     void processSourceFor(string &temp1);
     void processActionsFor(string &actionThreadsString);
     std::string contextData;
+    signed short currentDemand;
+    bool isAppliance;
 
   protected:
 
@@ -86,6 +90,14 @@ class DataCentricTestApp : public TrafGenPar
     //void actionProgram(string program);
     void FileEnd(ActionThreadsIterator& i);
     void SensorReading(ActionThreadsIterator& i);
+    void setCurrentDemand(signed short _demand);
+    void processEnvironmentalData(unsigned char* pkt);
+    void processDemandData(unsigned char* pkt);
+    void processWattsData(unsigned char* pkt);
+    void processBidData(unsigned char* pkt);
+    void processOccupancyData(unsigned char* pkt);
+    void processTemperatureData(unsigned char* pkt);
+
 
     virtual void SendTraf(cPacket *msg, const char*);
 

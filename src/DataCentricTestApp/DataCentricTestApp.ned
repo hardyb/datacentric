@@ -20,6 +20,14 @@ simple DataCentricTestApp extends TrafGenPar
         //int x[5];
         double nodeStartTime = default(0.0);
         double scheduleStartTime = default(0.0);
+        bool setParametersDirectly = default(false);
+        
+        double timeSinkRegisterWithControlUnit = default(0.0);
+        double timeSourceRegisterWithControlUnit = default(0.0);
+        double timeSinkBindWithSourceDevice = default(0.0);
+        double otherAction1 = default(0.0);
+        double otherAction2 = default(0.0);
+        
         
         //sinks[numSinks] : 
         //byte y;

@@ -1404,6 +1404,10 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
     //currentModule->bubble(bubbleText);
     //currentModule->bubble("Data received");
 
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
+    appPkt->setKind(DATA_PACKET);
+    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+strlen((const char*)_msg));
+    currentModule->send(appPkt, currentModule->mUpperLayerOut);
 
 
 }

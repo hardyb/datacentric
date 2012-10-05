@@ -18,84 +18,64 @@ void HostReference::initialize(int aStage)
     {
         if ( underlyingModule )
         {
-            std::string sinkFor = par("sinkFor").stringValue();
-            if ( sinkFor.size() )
+            if ( underlyingModule->par("setParametersDirectly").boolValue()
+                    && !par("setHostParametersDirectly").boolValue() )
             {
-                ev << "Setting sinkFor in:    " << getFullPath() << std::endl;
-            }
-            std::string sourceFor = par("sourceFor").stringValue();
-            if ( sourceFor.size() )
-            {
-                ev << "Setting sourceFor in:    " << getFullPath() << std::endl;
-            }
-            std::string actionThreads = par("actionThreads").stringValue();
-            if ( actionThreads.size() )
-            {
-                ev << "Setting actionThreads in:    " << getFullPath() << std::endl;
+                std::string s = underlyingModule->getFullPath() + " is set direct and referenced by "
+                        + getFullPath() + " which is not set direct";
+                throw cRuntimeError(s.c_str());
             }
 
-            ev << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
-            for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
+            if ( !underlyingModule->par("setParametersDirectly").boolValue()
+                    && par("setHostParametersDirectly").boolValue() )
             {
-                char cval1 =  (*i);
-                unsigned char cval2 =  (*i);
-                unsigned int val = (unsigned int)cval2;
-                ev << std::hex << std::uppercase << "\\" << val;
-            }
-            ev << std::endl;
-
-
-
-
-            /*
-            if ( underlyingModule->par("nodeStartTime").containsValue() )
-            {
-                string fp = underlyingModule->getFullPath();
-                ev << fp << ": nodeStartTime HAS value" << std::endl;
-            }
-            else
-            {
-                string fp = underlyingModule->getFullPath();
-                ev << fp << ": nodeStartTime has NOT value" << std::endl;
+                std::string s = underlyingModule->getFullPath() + " is not set direct and referenced by "
+                        + getFullPath() + " which is set direct";
+                throw cRuntimeError(s.c_str());
             }
 
-
-            if ( underlyingModule->par("nodeStartTime").isSet() )
+            if ( !underlyingModule->par("setParametersDirectly").boolValue()
+                    && !par("setHostParametersDirectly").boolValue() )
             {
-                string fp = underlyingModule->getFullPath();
-                ev << fp << ": nodeStartTime IS set" << std::endl;
-            }
-            else
-            {
-                string fp = underlyingModule->getFullPath();
-                ev << fp << ": nodeStartTime NOT set" << std::endl;
-            }
-            */
-
-
-
-            underlyingModule->par("sinkFor").setStringValue(sinkFor);
-            underlyingModule->par("sourceFor").setStringValue(sourceFor);
-            underlyingModule->par("nodeContext").setStringValue(par("nodeContext").stringValue());
-            underlyingModule->par("appMode").setStringValue(par("appMode").stringValue());
-            underlyingModule->par("mains").setBoolValue(par("mains").boolValue());
-            underlyingModule->par("probabilityDown").setDoubleValue(par("probabilityDown").doubleValue());
-            underlyingModule->par("actionThreads").setStringValue(actionThreads);
-
-            string fp = underlyingModule->getFullPath();
-            if ( strcmp(underlyingModule->getFullPath().c_str(), "csma802154net.fixhost[64].app") )
-            {
-                underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
-            }
-            else
-            {
-                if ( underlyingModule->par("nodeStartTime").doubleValue() != 1.0 )
+                std::string sinkFor = par("sinkFor").stringValue();
+                if ( sinkFor.size() )
                 {
-                    throw cRuntimeError("64 must be nodeStartTime 1.0");
+                    ev << "Setting sinkFor in:    " << getFullPath() << std::endl;
                 }
+                std::string sourceFor = par("sourceFor").stringValue();
+                if ( sourceFor.size() )
+                {
+                    ev << "Setting sourceFor in:    " << getFullPath() << std::endl;
+                }
+                std::string actionThreads = par("actionThreads").stringValue();
+                if ( actionThreads.size() )
+                {
+                    ev << "Setting actionThreads in:    " << getFullPath() << std::endl;
+                }
+
+                ev << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
+                for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
+                {
+                    char cval1 =  (*i);
+                    unsigned char cval2 =  (*i);
+                    unsigned int val = (unsigned int)cval2;
+                    ev << std::hex << std::uppercase << "\\" << val;
+                }
+                ev << std::endl;
+
+                underlyingModule->par("sinkFor").setStringValue(sinkFor);
+                underlyingModule->par("sourceFor").setStringValue(sourceFor);
+                underlyingModule->par("nodeContext").setStringValue(par("nodeContext").stringValue());
+                underlyingModule->par("appMode").setStringValue(par("appMode").stringValue());
+                underlyingModule->par("mains").setBoolValue(par("mains").boolValue());
+                underlyingModule->par("probabilityDown").setDoubleValue(par("probabilityDown").doubleValue());
+                underlyingModule->par("actionThreads").setStringValue(actionThreads);
+                underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
+                underlyingModule->par("scheduleStartTime").setDoubleValue(par("scheduleStartTime").doubleValue());
             }
 
-            underlyingModule->par("scheduleStartTime").setDoubleValue(par("scheduleStartTime").doubleValue());
+
+
 
 
         }
@@ -151,4 +131,45 @@ void HostReference::handleSelfMsg(cMessage *apMsg)
 
 
 
+
+/*
+if ( underlyingModule->par("nodeStartTime").containsValue() )
+{
+    string fp = underlyingModule->getFullPath();
+    ev << fp << ": nodeStartTime HAS value" << std::endl;
+}
+else
+{
+    string fp = underlyingModule->getFullPath();
+    ev << fp << ": nodeStartTime has NOT value" << std::endl;
+}
+
+
+if ( underlyingModule->par("nodeStartTime").isSet() )
+{
+    string fp = underlyingModule->getFullPath();
+    ev << fp << ": nodeStartTime IS set" << std::endl;
+}
+else
+{
+    string fp = underlyingModule->getFullPath();
+    ev << fp << ": nodeStartTime NOT set" << std::endl;
+}
+*/
+
+
+
+
+//string fp = underlyingModule->getFullPath();
+//if ( strcmp(underlyingModule->getFullPath().c_str(), "csma802154net.fixhost[115].app") )
+//{
+//    underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
+//}
+//else
+//{
+//    if ( underlyingModule->par("nodeStartTime").doubleValue() != 1.0 )
+//    {
+//        throw cRuntimeError("115 must be nodeStartTime 1.0");
+//    }
+//}
 

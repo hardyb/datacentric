@@ -313,6 +313,54 @@ void DataCentricNetworkMan::traverseModule(const cModule& m)
 
 
 
+void DataCentricNetworkMan::addAppliance(DataCentricTestApp* _appliance)
+{
+    Enter_Method("addAppliance(DataCentricTestApp* _appliance)");
+    mAppliances.insert(_appliance);
+
+}
+
+
+signed short DataCentricNetworkMan::getTotalDemand()
+{
+    Enter_Method("getTotalDemand()");
+    // just in case local and remote call are different
+
+    return totalDemand();
+
+}
+
+
+signed short DataCentricNetworkMan::totalDemand()
+{
+    signed short demand;
+    for ( std::set<DataCentricTestApp*>::iterator i = mAppliances.begin(); i != mAppliances.end(); i++ )
+    {
+        demand += i->currentDemand;
+    }
+
+    return demand;
+}
+
+
+void DataCentricNetworkMan::recordDemandLocal()
+{
+    demandVector.record((double)totalDemand());
+
+}
+
+
+
+void DataCentricNetworkMan::recordDemand()
+{
+    Enter_Method("recordDemand()");
+
+    demandVector.record((double)totalDemand());
+
+}
+
+
+
 void DataCentricNetworkMan::handleMessage(cMessage* msg)
 {
     //nodeConstraint = nodeConstraintValue;
@@ -339,7 +387,8 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         RReplyPacketFrequency.record(numRReplyPackets);
         AODVDataPacketFrequency.record(numAODVDataPackets);
 
-        demandVector.record((double)mDemand);
+        //demandVector.record((double)mDemand);
+        recordDemandLocal();
 
         //cOutVector RReplyPacketFrequency;
         //cOutVector AODVDataPacketFrequency;
@@ -405,7 +454,9 @@ void DataCentricNetworkMan::addDemand(signed int _demand)
     Enter_Method("addDemand(signed int)");
 
     // negative deamnd is supply
-    mDemand += _demand;
+    //mDemand += _demand;
+
+    // possibly discontinueds
 
 
 }
@@ -416,8 +467,9 @@ signed int DataCentricNetworkMan::getDemand()
     Enter_Method("getDemand()");
 
     // negative deamnd is supply
-    return mDemand;
+    //return mDemand;
 
+    // possibly discontinueds
 }
 
 
