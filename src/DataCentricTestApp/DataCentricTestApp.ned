@@ -25,6 +25,7 @@ simple DataCentricTestApp extends TrafGenPar
         double timeSinkRegisterWithControlUnit = default(0.0);
         double timeSourceRegisterWithControlUnit = default(0.0);
         double timeSinkBindWithSourceDevice = default(0.0);
+        bool isAppliance = default(false);
         double otherAction1 = default(0.0);
         double otherAction2 = default(0.0);
         

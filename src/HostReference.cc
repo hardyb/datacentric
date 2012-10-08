@@ -72,6 +72,12 @@ void HostReference::initialize(int aStage)
                 underlyingModule->par("actionThreads").setStringValue(actionThreads);
                 underlyingModule->par("nodeStartTime").setDoubleValue(par("nodeStartTime").doubleValue());
                 underlyingModule->par("scheduleStartTime").setDoubleValue(par("scheduleStartTime").doubleValue());
+
+                underlyingModule->par("timeSinkRegisterWithControlUnit").setDoubleValue(par("timeSinkRegisterWithControlUnit").doubleValue());
+                underlyingModule->par("timeSourceRegisterWithControlUnit").setDoubleValue(par("timeSourceRegisterWithControlUnit").doubleValue());
+                underlyingModule->par("timeSinkBindWithSourceDevice").setDoubleValue(par("timeSinkBindWithSourceDevice").doubleValue());
+                underlyingModule->par("isAppliance").setBoolValue(par("isAppliance").boolValue());
+
             }
 
 

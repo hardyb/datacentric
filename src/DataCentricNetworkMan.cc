@@ -336,7 +336,7 @@ signed short DataCentricNetworkMan::totalDemand()
     signed short demand;
     for ( std::set<DataCentricTestApp*>::iterator i = mAppliances.begin(); i != mAppliances.end(); i++ )
     {
-        demand += i->currentDemand;
+        demand += (*i)->currentDemand;
     }
 
     return demand;

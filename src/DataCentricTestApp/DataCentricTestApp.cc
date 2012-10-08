@@ -406,7 +406,7 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 
     if ( appPkt->getKind() == DATA_PACKET )
     {
-        unsigned int _size = appPkt->getPktData().size()
+        unsigned int _size = appPkt->getPktData().size();
         unsigned char* pkt = (unsigned char*)malloc(_size);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
 
@@ -421,10 +421,10 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
             case 0x02: // Demand Query
                 processDemandData(pkt++);
                 break;
-            case 0x0:
-                break;
-            case 0x0:
-                break;
+            //case 0x0:
+            //    break;
+            //case 0x0:
+            //    break;
 
 
             }
@@ -443,27 +443,14 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    e2eDelay = simTime() - tmpPkt->getCreationTime();
-    totalByteRecv += tmpPkt->getByteLength();
-    e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
+    //e2eDelay = simTime() - tmpPkt->getCreationTime();
+    //totalByteRecv += tmpPkt->getByteLength();
+    //e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     numReceived++;
-    sumE2EDelay += e2eDelay;
-    meanE2EDelayVec.record(sumE2EDelay/numReceived);
+    //sumE2EDelay += e2eDelay;
+    //meanE2EDelayVec.record(sumE2EDelay/numReceived);
     //EV << "[APP]: a message sent by " << tmpPkt->getDataName() << " arrived at application with delay " << e2eDelay << " s" << std::endl;
-    this->getParentModule()->bubble("Data received!");
+    //this->getParentModule()->bubble("Data received!");
     delete apMsg;
 }
 
@@ -553,7 +540,7 @@ void DataCentricTestApp::processTemperatureData(unsigned char* pkt)
 void DataCentricTestApp::setCurrentDemand(signed short _demand)
 {
     currentDemand = _demand;
-    netMan->recordDemand();
+    mNetMan->recordDemand();
 
 }
 
@@ -831,7 +818,9 @@ double DataCentricTestApp::NodeStartTime()
 
 double DataCentricTestApp::TimeSinkRegisterWithControlUnit()
 {
-    return par("timeSinkRegisterWithControlUnit").doubleValue();
+    double result = par("timeSinkRegisterWithControlUnit").doubleValue();
+    return result;
+
 }
 
 

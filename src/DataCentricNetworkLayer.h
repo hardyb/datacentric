@@ -85,6 +85,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     // accessed from C function call back
     int             mLowerLayerOut;
+    int             mUpperLayerOut;
     double          mRoutingDelay;
 
   protected:
@@ -114,7 +115,6 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
     // module gate ID
     int             mUpperLayerIn;
-    int             mUpperLayerOut;
     int             mLowerLayerIn;
 
     // for statistical data
