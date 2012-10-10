@@ -373,7 +373,30 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
             ash->push_back(actionStream);
             cMessage* m = new cMessage(i->c_str());
             mActionThreads[m] = ash;
-            scheduleAt(simTime() + ScheduleStartTime(), m);
+
+            unsigned int hours;
+            unsigned int minutes;
+            unsigned int seconds;
+            unsigned int finalSeconds;
+            *actionStream >> hours;
+            if (actionStream->failbit)
+            {
+                cout << "fail" << endl;
+            }
+            *actionStream >> minutes;
+            if (actionStream->failbit)
+            {
+                cout << "fail" << endl;
+            }
+            *actionStream >> seconds;
+            if (actionStream->failbit)
+            {
+                cout << "fail" << endl;
+            }
+            finalSeconds = (hours*3600)+(minutes*60)+seconds;
+            scheduleAt(finalSeconds + ScheduleStartTime(), m);
+            //scheduleAt(simTime() + ScheduleStartTime(), m);
+            // may be this should be right away then read time first
         }
         else
         {
@@ -555,6 +578,8 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
     ActionThreadsIterator i = mActionThreads.find(apMsg);
     if (i != mActionThreads.end() )
     {
+        double t = simTime().dbl();
+
         switch ( getNextAction(i) )
         {
             case SENSOR_READING:
@@ -641,7 +666,16 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     double period;
     ifstream* ifs = i->second->back();
     *ifs >> watts;
-    *ifs >> period;
+    //*ifs >> period;
+
+    double hours;
+    double minutes;
+    double seconds;
+    double finalSeconds;
+    *ifs >> hours;
+    *ifs >> minutes;
+    *ifs >> seconds;
+    finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
     setCurrentDemand(watts);
 
@@ -658,9 +692,15 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
     send(appPkt, mLowerLayerOut);
-    scheduleAt(simTime()+period, i->first);
+
+    //scheduleAt(simTime()+period, i->first);
+
+    //i->first->
+    //this->cancelEvent(i->first);
 
 
+
+    scheduleAt(finalSeconds + ScheduleStartTime(), i->first);
 }
 
 
@@ -675,6 +715,8 @@ void DataCentricTestApp::startProgram(ActionThreadsIterator& i)
     ifstream* newIfs = new ifstream();
     newIfs->open(program.c_str());
     i->second->push_back(newIfs);
+
+    // need to test this out not sure about this line
     scheduleAt(simTime(), i->first);
 
 }
@@ -687,7 +729,17 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
     unsigned short reading;
     double period;
     *ifs >> reading;
-    *ifs >> period;
+    //*ifs >> period;
+
+    double hours;
+    double minutes;
+    double seconds;
+    double finalSeconds;
+    *ifs >> hours;
+    *ifs >> minutes;
+    *ifs >> seconds;
+    finalSeconds = (hours*3600)+(minutes*60)+seconds;
+
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Sensor_Data");
     std::ostringstream ss;
@@ -701,7 +753,8 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
     appPkt->setKind(DATA_PACKET);
     send(appPkt, mLowerLayerOut);
 
-    scheduleAt(simTime() + period, i->first);
+    //scheduleAt(simTime() + period, i->first);
+    scheduleAt(finalSeconds + ScheduleStartTime(), i->first);
 }
 
 

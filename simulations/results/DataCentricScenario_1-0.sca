@@ -1,14 +1,14 @@
 version 2
-run DataCentricScenario_1-0-20121005-14:27:12-3288
+run DataCentricScenario_1-0-20121010-15:00:06-3852
 attr configname DataCentricScenario_1
-attr datetime 20121005-14:27:12
+attr datetime 20121010-15:00:06
 attr experiment DataCentricScenario_1
-attr inifile omnetpp2.ini
+attr inifile DataCentric.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network DataCentricNet
-attr processid 3288
+attr processid 3852
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -28,21 +28,21 @@ scalar DataCentricNet.host[1].net 	AverageNeighborLqi 	123
 scalar DataCentricNet.host[1].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[1].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[1].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[1].net 	ignoreRatio 	0.7741935483871
+scalar DataCentricNet.host[1].net 	ignoreRatio 	0.78688524590164
 scalar DataCentricNet.host[2].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[2].net 	TotalNeighborLqi 	1039
 scalar DataCentricNet.host[2].net 	AverageNeighborLqi 	94.454545454545
 scalar DataCentricNet.host[2].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[2].net 	MinNeighborLqi 	1
 scalar DataCentricNet.host[2].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[2].net 	ignoreRatio 	0.75111111111111
+scalar DataCentricNet.host[2].net 	ignoreRatio 	0.76470588235294
 scalar DataCentricNet.host[3].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[3].net 	TotalNeighborLqi 	914
 scalar DataCentricNet.host[3].net 	AverageNeighborLqi 	83.090909090909
 scalar DataCentricNet.host[3].net 	MaxNeighborLqi 	151
 scalar DataCentricNet.host[3].net 	MinNeighborLqi 	1
 scalar DataCentricNet.host[3].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[3].net 	ignoreRatio 	0.74056603773585
+scalar DataCentricNet.host[3].net 	ignoreRatio 	0.75480769230769
 scalar DataCentricNet.host[4].net 	NumberOfNeighbours 	9
 scalar DataCentricNet.host[4].net 	TotalNeighborLqi 	907
 scalar DataCentricNet.host[4].net 	AverageNeighborLqi 	100.77777777778
@@ -63,7 +63,7 @@ scalar DataCentricNet.host[6].net 	AverageNeighborLqi 	110.22222222222
 scalar DataCentricNet.host[6].net 	MaxNeighborLqi 	159
 scalar DataCentricNet.host[6].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[6].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[6].net 	ignoreRatio 	0.53140096618357
+scalar DataCentricNet.host[6].net 	ignoreRatio 	0.54187192118227
 scalar DataCentricNet.host[7].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[7].net 	TotalNeighborLqi 	1381
 scalar DataCentricNet.host[7].net 	AverageNeighborLqi 	138.1
@@ -84,28 +84,28 @@ scalar DataCentricNet.host[9].net 	AverageNeighborLqi 	100.36363636364
 scalar DataCentricNet.host[9].net 	MaxNeighborLqi 	156
 scalar DataCentricNet.host[9].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[9].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[9].net 	ignoreRatio 	0.76
+scalar DataCentricNet.host[9].net 	ignoreRatio 	0.77551020408163
 scalar DataCentricNet.host[10].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[10].net 	TotalNeighborLqi 	1326
 scalar DataCentricNet.host[10].net 	AverageNeighborLqi 	120.54545454545
 scalar DataCentricNet.host[10].net 	MaxNeighborLqi 	169
 scalar DataCentricNet.host[10].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[10].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[10].net 	ignoreRatio 	0.71171171171171
+scalar DataCentricNet.host[10].net 	ignoreRatio 	0.72477064220183
 scalar DataCentricNet.host[11].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[11].net 	TotalNeighborLqi 	1416
 scalar DataCentricNet.host[11].net 	AverageNeighborLqi 	128.72727272727
 scalar DataCentricNet.host[11].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[11].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[11].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[11].net 	ignoreRatio 	0.66086956521739
+scalar DataCentricNet.host[11].net 	ignoreRatio 	0.67256637168142
 scalar DataCentricNet.host[12].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[12].net 	TotalNeighborLqi 	1351
 scalar DataCentricNet.host[12].net 	AverageNeighborLqi 	122.81818181818
 scalar DataCentricNet.host[12].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[12].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[12].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[12].net 	ignoreRatio 	0.75961538461538
+scalar DataCentricNet.host[12].net 	ignoreRatio 	0.77450980392157
 scalar DataCentricNet.host[13].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[13].net 	TotalNeighborLqi 	1253
 scalar DataCentricNet.host[13].net 	AverageNeighborLqi 	125.3
@@ -133,14 +133,14 @@ scalar DataCentricNet.host[16].net 	AverageNeighborLqi 	122.36363636364
 scalar DataCentricNet.host[16].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[16].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[16].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[16].net 	ignoreRatio 	0.74390243902439
+scalar DataCentricNet.host[16].net 	ignoreRatio 	0.75619834710744
 scalar DataCentricNet.host[17].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[17].net 	TotalNeighborLqi 	1263
 scalar DataCentricNet.host[17].net 	AverageNeighborLqi 	114.81818181818
 scalar DataCentricNet.host[17].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[17].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[17].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[17].net 	ignoreRatio 	0.79835390946502
+scalar DataCentricNet.host[17].net 	ignoreRatio 	0.81171548117155
 scalar DataCentricNet.host[18].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[18].net 	TotalNeighborLqi 	1270
 scalar DataCentricNet.host[18].net 	AverageNeighborLqi 	127
@@ -154,14 +154,14 @@ scalar DataCentricNet.host[19].net 	AverageNeighborLqi 	99.272727272727
 scalar DataCentricNet.host[19].net 	MaxNeighborLqi 	159
 scalar DataCentricNet.host[19].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[19].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[19].net 	ignoreRatio 	0.76262626262626
+scalar DataCentricNet.host[19].net 	ignoreRatio 	0.77835051546392
 scalar DataCentricNet.host[20].net 	NumberOfNeighbours 	11
 scalar DataCentricNet.host[20].net 	TotalNeighborLqi 	1322
 scalar DataCentricNet.host[20].net 	AverageNeighborLqi 	120.18181818182
 scalar DataCentricNet.host[20].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[20].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[20].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[20].net 	ignoreRatio 	0.76255707762557
+scalar DataCentricNet.host[20].net 	ignoreRatio 	0.77674418604651
 scalar DataCentricNet.host[21].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[21].net 	TotalNeighborLqi 	1114
 scalar DataCentricNet.host[21].net 	AverageNeighborLqi 	111.4
@@ -427,14 +427,14 @@ scalar DataCentricNet.host[58].net 	AverageNeighborLqi 	78.181818181818
 scalar DataCentricNet.host[58].net 	MaxNeighborLqi 	169
 scalar DataCentricNet.host[58].net 	MinNeighborLqi 	13
 scalar DataCentricNet.host[58].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[58].net 	ignoreRatio 	0.65236051502146
+scalar DataCentricNet.host[58].net 	ignoreRatio 	0.66375545851528
 scalar DataCentricNet.host[59].net 	NumberOfNeighbours 	12
 scalar DataCentricNet.host[59].net 	TotalNeighborLqi 	1108
 scalar DataCentricNet.host[59].net 	AverageNeighborLqi 	92.333333333333
 scalar DataCentricNet.host[59].net 	MaxNeighborLqi 	169
 scalar DataCentricNet.host[59].net 	MinNeighborLqi 	1
 scalar DataCentricNet.host[59].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[59].net 	ignoreRatio 	0.67391304347826
+scalar DataCentricNet.host[59].net 	ignoreRatio 	0.6858407079646
 scalar DataCentricNet.host[60].net 	NumberOfNeighbours 	8
 scalar DataCentricNet.host[60].net 	TotalNeighborLqi 	1044
 scalar DataCentricNet.host[60].net 	AverageNeighborLqi 	130.5
@@ -504,7 +504,7 @@ scalar DataCentricNet.host[69].net 	AverageNeighborLqi 	103.3
 scalar DataCentricNet.host[69].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[69].net 	MinNeighborLqi 	1
 scalar DataCentricNet.host[69].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[69].net 	ignoreRatio 	0.70135746606335
+scalar DataCentricNet.host[69].net 	ignoreRatio 	0.71428571428571
 scalar DataCentricNet.host[70].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[70].net 	TotalNeighborLqi 	1075
 scalar DataCentricNet.host[70].net 	AverageNeighborLqi 	107.5
@@ -546,7 +546,7 @@ scalar DataCentricNet.host[75].net 	AverageNeighborLqi 	133.7
 scalar DataCentricNet.host[75].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[75].net 	MinNeighborLqi 	95
 scalar DataCentricNet.host[75].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[75].net 	ignoreRatio 	0.77777777777778
+scalar DataCentricNet.host[75].net 	ignoreRatio 	0.79310344827586
 scalar DataCentricNet.host[76].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[76].net 	TotalNeighborLqi 	974
 scalar DataCentricNet.host[76].net 	AverageNeighborLqi 	97.4
@@ -602,7 +602,7 @@ scalar DataCentricNet.host[83].net 	AverageNeighborLqi 	92.272727272727
 scalar DataCentricNet.host[83].net 	MaxNeighborLqi 	164
 scalar DataCentricNet.host[83].net 	MinNeighborLqi 	8
 scalar DataCentricNet.host[83].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[83].net 	ignoreRatio 	0.73181818181818
+scalar DataCentricNet.host[83].net 	ignoreRatio 	0.74537037037037
 scalar DataCentricNet.host[84].net 	NumberOfNeighbours 	9
 scalar DataCentricNet.host[84].net 	TotalNeighborLqi 	959
 scalar DataCentricNet.host[84].net 	AverageNeighborLqi 	106.55555555556
@@ -651,7 +651,7 @@ scalar DataCentricNet.host[90].net 	AverageNeighborLqi 	91.5
 scalar DataCentricNet.host[90].net 	MaxNeighborLqi 	159
 scalar DataCentricNet.host[90].net 	MinNeighborLqi 	8
 scalar DataCentricNet.host[90].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[90].net 	ignoreRatio 	0.43119266055046
+scalar DataCentricNet.host[90].net 	ignoreRatio 	0.4392523364486
 scalar DataCentricNet.host[91].net 	NumberOfNeighbours 	10
 scalar DataCentricNet.host[91].net 	TotalNeighborLqi 	1382
 scalar DataCentricNet.host[91].net 	AverageNeighborLqi 	138.2
@@ -672,7 +672,7 @@ scalar DataCentricNet.host[93].net 	AverageNeighborLqi 	123.4
 scalar DataCentricNet.host[93].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[93].net 	MinNeighborLqi 	62
 scalar DataCentricNet.host[93].net 	TEST_LengthLatestInterestArrivalPeriod 	0
-scalar DataCentricNet.host[93].net 	ignoreRatio 	0.70464135021097
+scalar DataCentricNet.host[93].net 	ignoreRatio 	0.71673819742489
 scalar DataCentricNet.host[94].net 	NumberOfNeighbours 	9
 scalar DataCentricNet.host[94].net 	TotalNeighborLqi 	1018
 scalar DataCentricNet.host[94].net 	AverageNeighborLqi 	113.11111111111
@@ -890,4 +890,4 @@ scalar DataCentricNet.host[124].net 	MaxNeighborLqi 	166
 scalar DataCentricNet.host[124].net 	MinNeighborLqi 	1
 scalar DataCentricNet.host[124].net 	TEST_LengthLatestInterestArrivalPeriod 	0
 scalar DataCentricNet.host[124].net 	ignoreRatio 	0.77272727272727
-scalar DataCentricNet.dataCentricNetworkMan 	numDataArrivals 	48
+scalar DataCentricNet.dataCentricNetworkMan 	numDataArrivals 	0
