@@ -89,7 +89,7 @@ class DataCentricTestApp : public TrafGenPar
     //void actionReading(int reading);
     //void actionProgram(string program);
     void FileEnd(ActionThreadsIterator& i);
-    void SensorReading(ActionThreadsIterator& i);
+    void SensorReading(ActionThreadsIterator& i, const char* sensorDataName);
     void setCurrentDemand(signed short _demand);
     void processEnvironmentalData(unsigned char* pkt);
     void processDemandData(unsigned char* pkt);
@@ -134,6 +134,13 @@ class DataCentricTestApp : public TrafGenPar
 
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;
     int mAppMode;
+
+    typedef NEIGHBOUR_ADDR ApplianceId;
+    typedef unsigned short DemandBid;
+    typedef unsigned short Priority;
+
+    std::map<ApplianceId, DemandBid> mBids;
+    std::map<ApplianceId, Priority> mPriorities;
 
 
 

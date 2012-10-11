@@ -10,6 +10,11 @@
 #define SET_PROGRAM 2
 #define WATTS 3
 #define FILE_END 4
+#define OCCUPANCY_READING 5
+#define TEMP_READING 6
+
+
+
 
 
 
@@ -26,6 +31,8 @@ void DataCentricTestApp::initialize(int aStage)
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
+        currentDemand = 0;
+
         /*
         if ( par("nodeStartTime").isSet() )
         {
@@ -52,13 +59,6 @@ void DataCentricTestApp::initialize(int aStage)
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
             mNet = sim->getModuleByPath("csma802154net");
         }
-
-        isAppliance = par("isAppliance").boolValue();
-        if ( isAppliance )
-        {
-            mNetMan->addAppliance(this);
-        }
-
 
 
 
@@ -256,6 +256,12 @@ void DataCentricTestApp::initialize(int aStage)
 
     if (3 == aStage)
     {
+        isAppliance = par("isAppliance").boolValue();
+        if ( isAppliance )
+        {
+            mNetMan->addAppliance(this);
+        }
+
         string actionThreadsString = par("actionThreads").stringValue();
         processActionsFor(actionThreadsString);
 
@@ -439,10 +445,10 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
             switch ( pkt[i] )
             {
             case 0x83: // Environmental event
-                processEnvironmentalData(pkt++);
+                processEnvironmentalData(++pkt);
                 break;
             case 0x02: // Demand Query
-                processDemandData(pkt++);
+                processDemandData(++pkt);
                 break;
             //case 0x0:
             //    break;
@@ -487,10 +493,10 @@ void DataCentricTestApp::processEnvironmentalData(unsigned char* pkt)
     switch ( *pkt )
     {
     case 0x01: // Occupancy
-        processOccupancyData(pkt++);
+        processOccupancyData(++pkt);
         break;
     case 0x02: // Temperature
-        processTemperatureData(pkt++);
+        processTemperatureData(++pkt);
         break;
     }
 
@@ -503,10 +509,10 @@ void DataCentricTestApp::processDemandData(unsigned char* pkt)
     switch ( *pkt )
     {
     case 0x01: // Bid
-        processBidData(pkt++);
+        processBidData(++pkt);
         break;
     case 0x02: // Watts
-        processWattsData(pkt++);
+        processWattsData(++pkt);
         break;
     }
 
@@ -537,6 +543,13 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 
 void DataCentricTestApp::processBidData(unsigned char* pkt)
 {
+    signed short bid;
+    bidData bd;
+    w.data[0] = pkt[0];
+    w.data[0] = pkt[1];
+    d = w.demand;
+
+
 
 }
 
@@ -583,7 +596,13 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
         switch ( getNextAction(i) )
         {
             case SENSOR_READING:
-                SensorReading(i);
+                SensorReading(i, "\x83\x2");
+                break;
+            case OCCUPANCY_READING:
+                SensorReading(i, "\x83\x1");
+                break;
+            case TEMP_READING:
+                SensorReading(i, "\x83\x2");
                 break;
             case SET_PROGRAM:
                 startProgram(i);
@@ -617,6 +636,14 @@ int DataCentricTestApp::getNextAction(ActionThreadsIterator& i)
         if ( action == "SENSOR_READING" )
         {
             return SENSOR_READING;
+        }
+        if ( action == "OCCUPANCY_READING" )
+        {
+            return OCCUPANCY_READING;
+        }
+        if ( action == "TEMP_READING" )
+        {
+            return TEMP_READING;
         }
         if ( action == "SET_PROGRAM" )
         {
@@ -722,7 +749,7 @@ void DataCentricTestApp::startProgram(ActionThreadsIterator& i)
 }
 
 
-void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
+void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sensorDataName)
 {
     ifstream* ifs = i->second->back();
 
@@ -744,7 +771,8 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i)
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Sensor_Data");
     std::ostringstream ss;
     ss.clear();
-    ss << "\x83\x2";
+    //ss << "\x83\x1";
+    ss << sensorDataName;
     ss << (unsigned char)(reading & 0xff);
     ss << (unsigned char)((reading >>8) & 0xff);
     ss << "\x0";

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="/datacentric/simulations/results/DataCentricScenario_1-0.sca"/>
-    <inputs name="/datacentric/simulations/results/DataCentricScenario_1-0.vec"/>
+    <inputs name="/datacentric/simulations/results/DataCentricScenario_2-0.sca"/>
+    <inputs name="/datacentric/simulations/results/DataCentricScenario_2-0.vec"/>
   </inputs>
   <datasets>
     <datasets name="My Dataset">

@@ -1385,11 +1385,12 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
 
     char bubbleText[40];
     char* bubbleTextPtr = bubbleText;
-    while (*_msg)
+    unsigned char* index = _msg;
+    while (*index)
     {
-        int numChar = std::sprintf(bubbleTextPtr, "%d-", (unsigned int)*_msg);
+        int numChar = std::sprintf(bubbleTextPtr, "%d-", (unsigned int)*index);
         bubbleTextPtr += numChar;
-        _msg++;
+        index++;
     }
 
     //cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;

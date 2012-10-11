@@ -115,6 +115,7 @@ class DataCentricNetworkMan : public cSimpleModule
 
 
     cMessage *mpControlPacketFrequencyMessage;
+    cMessage *mpDemandMessage;
     // OPERATIONS
     //virtual void handleSelfMsg(cMessage*);
     //virtual void handleLowerMsg(cMessage*);

@@ -28,19 +28,6 @@ CONNECTION
 AAA0000005F
 8301FF0601
 3
-AAA0000003D
-seqno: 0
-true
-65535
-297
-false
-false
-false
-false
-CONNECTION
-AAA0000005F
-8301FF0601
-3
 AAA00000028
 seqno: 0
 true
@@ -49,6 +36,19 @@ true
 false
 false
 true
+false
+CONNECTION
+AAA0000005F
+8301FF0601
+3
+AAA0000003D
+seqno: 0
+true
+65535
+297
+false
+false
+false
 false
 CONNECTION
 AAA0000005F

@@ -88,6 +88,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         controlPackets.setName("ControlPackets");
         controlPacketFrequency.setName("controlPacketFrequency");
         mpControlPacketFrequencyMessage = new cMessage("ControlPacketFrequencyMessage");
+        mpDemandMessage = new cMessage("DemandMessage");
 
 
         helloPacketFrequency.setName("helloPacketFrequency");
@@ -333,7 +334,7 @@ signed short DataCentricNetworkMan::getTotalDemand()
 
 signed short DataCentricNetworkMan::totalDemand()
 {
-    signed short demand;
+    signed short demand = 0;
     for ( std::set<DataCentricTestApp*>::iterator i = mAppliances.begin(); i != mAppliances.end(); i++ )
     {
         demand += (*i)->currentDemand;
@@ -346,7 +347,8 @@ signed short DataCentricNetworkMan::totalDemand()
 void DataCentricNetworkMan::recordDemandLocal()
 {
     demandVector.record((double)totalDemand());
-
+    this->cancelEvent(mpDemandMessage);
+    scheduleAt(simTime() + 300, mpDemandMessage);
 }
 
 
@@ -356,7 +358,8 @@ void DataCentricNetworkMan::recordDemand()
     Enter_Method("recordDemand()");
 
     demandVector.record((double)totalDemand());
-
+    this->cancelEvent(mpDemandMessage);
+    scheduleAt(simTime() + 300, mpDemandMessage);
 }
 
 
@@ -368,6 +371,10 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
     //thisAddress = mAddress;
     //rd = &(moduleRD);
 
+    if ( msg == mpDemandMessage )
+    {
+        recordDemandLocal();
+    }
 
 
     if ( msg == mpControlPacketFrequencyMessage )
@@ -387,8 +394,6 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         RReplyPacketFrequency.record(numRReplyPackets);
         AODVDataPacketFrequency.record(numAODVDataPackets);
 
-        //demandVector.record((double)mDemand);
-        recordDemandLocal();
 
         //cOutVector RReplyPacketFrequency;
         //cOutVector AODVDataPacketFrequency;

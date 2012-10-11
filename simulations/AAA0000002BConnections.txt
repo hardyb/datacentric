@@ -41,19 +41,6 @@ CONNECTION
 AAA0000002B
 8301FF0603
 3
-AAA0000006E
-seqno: 0
-true
-65535
-538
-false
-false
-false
-false
-CONNECTION
-AAA0000002B
-8301FF0603
-3
 AAA0000005E
 seqno: 0
 true
@@ -67,11 +54,11 @@ CONNECTION
 AAA0000002B
 8301FF0603
 3
-AAA00000006
+AAA0000006E
 seqno: 0
 true
 65535
-131
+538
 false
 false
 false
@@ -85,6 +72,19 @@ seqno: 0
 true
 65535
 239
+false
+false
+false
+false
+CONNECTION
+AAA0000002B
+8301FF0603
+3
+AAA00000006
+seqno: 0
+true
+65535
+131
 false
 false
 false
