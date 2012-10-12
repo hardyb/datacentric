@@ -521,20 +521,20 @@ void DataCentricTestApp::processDemandData(unsigned char* pkt)
 
 
 
-union wattsData
+union signedShortData
 {
-    char data[2];
-    signed short demand;
+    char theBytes[2];
+    signed short theSignedShort;
 };
 
 
 void DataCentricTestApp::processWattsData(unsigned char* pkt)
 {
     signed short d;
-    wattsData w;
-    w.data[0] = pkt[0];
-    w.data[0] = pkt[1];
-    d = w.demand;
+    signedShortData w;
+    w.theBytes[0] = pkt[0];
+    w.theBytes[1] = pkt[1];
+    d = w.theSignedShort;
 
 
 }
@@ -543,11 +543,33 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 
 void DataCentricTestApp::processBidData(unsigned char* pkt)
 {
+    signed short applianceId;
     signed short bid;
-    bidData bd;
-    w.data[0] = pkt[0];
-    w.data[0] = pkt[1];
-    d = w.demand;
+    signedShortData ai;
+    signedShortData bd;
+
+    ai.theBytes[0] = pkt[0];
+    ai.theBytes[1] = pkt[1];
+    applianceId = ai.theSignedShort;
+
+    bd.theBytes[0] = pkt[2];
+    bd.theBytes[1] = pkt[3];
+    bid = bd.theSignedShort;
+
+    if ( bid == 0 ) // or how ever we are oing to denote zero.  Null term issues?
+    {
+        mBids.erase(0); // need to identify the appl id - need to think
+        // whether we have bid as key or id as key is an issue
+
+    }
+
+    //mBids[applianceId] = bid;
+    mBids[bid] = applianceId;
+
+    if ( mBids.begin()->second == 0 ) // myApplianceId
+    {
+
+    }
 
 
 

@@ -135,13 +135,16 @@ class DataCentricTestApp : public TrafGenPar
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;
     int mAppMode;
 
-    typedef NEIGHBOUR_ADDR ApplianceId;
+    //typedef NEIGHBOUR_ADDR ApplianceId;
+    typedef signed short ApplianceId;
     typedef unsigned short DemandBid;
     typedef unsigned short Priority;
 
+    //std::map<DemandBid, ApplianceId> mBids;
+    //std::map<Priority, ApplianceId> mPriorities;
+
     std::map<ApplianceId, DemandBid> mBids;
     std::map<ApplianceId, Priority> mPriorities;
-
 
 
 };
