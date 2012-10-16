@@ -32,6 +32,13 @@ void DataCentricTestApp::initialize(int aStage)
     if (0 == aStage)
     {
         currentDemand = 0;
+        mDownTime = 0;
+
+        mLastOnTime = 0;
+        mLastOffTime = 0;
+        mOriginalNextDemandActionTime = 0;
+        mDemandActionMessage = 0;
+
 
         /*
         if ( par("nodeStartTime").isSet() )
@@ -47,12 +54,12 @@ void DataCentricTestApp::initialize(int aStage)
         */
 
 
-        //netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         cSimulation* sim =  cSimulation::getActiveSimulation();
         if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
         {
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
             mNet = sim->getModuleByPath("DataCentricNet");
+            netModule = check_and_cast<DataCentricNetworkLayer*>(this->getParentModule()->getSubmodule("net"));
         }
         else
         {
@@ -556,24 +563,150 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
     bd.theBytes[1] = pkt[3];
     bid = bd.theSignedShort;
 
-    if ( bid == 0 ) // or how ever we are oing to denote zero.  Null term issues?
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////
+
+    BidI existingApplianceBid;
+    if ( bid == 0 ) // or how ever we are going to denote zero.  Null term issues?
     {
-        mBids.erase(0); // need to identify the appl id - need to think
-        // whether we have bid as key or id as key is an issue
+        existingApplianceBid = 0;
+        for ( BidI i = mBids.begin(); i != mBids.end(); i++ )
+        {
+            if ( i->second == applianceId )
+            {
+                existingApplianceBid = i;
+                break;
+            }
+        }
+        mBids.erase(existingApplianceBid);
+
+        if ( mBids.begin()->second == myAddr )
+        {
+
+        }
+
 
     }
+
+
+
+    mBids.erase(0); // need to identify the appl id - need to think
+    // whether we have bid as key or id as key is an issue
+
+
+
+    if ( mBids.begin()->second == myAddr )
+    {
+        // first to finish is US
+
+        std::map<ApplianceId, DemandBid> mBids2 = mBids;
+        mBids2[finishTime] = applianceId;
+        if ( mBids2.begin()->second != myAddr )
+        {
+            // If we add this new bid then we are not soonest to finish
+
+            // calculate our pause time
+
+
+            setCurrentDemand(0);
+            mLastOffTime = simTime().dbl();
+            this->cancelEvent(mDemandActionMessage);
+        }
+
+    }
+
+    // In situation where we start up again
+    mLastOnTime = simTime().dbl();
+    mDownTime = mDownTime + (mLastOnTime = mLastOffTime);
+
+
+
 
     //mBids[applianceId] = bid;
     mBids[bid] = applianceId;
 
-    if ( mBids.begin()->second == 0 ) // myApplianceId
+    if ( mBids.begin()->second != myAddr )
     {
+        // shortest time bid is not us
+        // so if we are running we must pause
+
+
+
+        this->getId();
 
     }
 
 
 
 }
+
+
+
+
+
+
+
+void DataCentricTestApp::processABid(signed short _applianceId, signed short _bid)
+{
+    unsigned short myAddr = netModule->mAddress & 0xFFFF;
+    double finishTime = simTime().dbl() + _bid;
+
+    removeBidByApplianceId(_applianceId);
+    if ( _bid )
+    {
+        // (re)insert bid if non-zero
+        mBids[finishTime] = _applianceId;
+    }
+
+    if ( mBids.begin()->second == myAddr )
+    {
+        if ( !currentDemand )
+        {
+            // In situation where we start up again
+            mLastOnTime = simTime().dbl();
+            if ( mLastOffTime )
+            {
+                mDownTime = mDownTime + (mLastOnTime - mLastOffTime);
+            }
+            setCurrentDemand(mCurrentWatts);
+            scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+        }
+    }
+    else
+    {
+        if ( currentDemand )
+        {
+            // In situation where we pause
+            setCurrentDemand(0);
+            mLastOffTime = simTime().dbl();
+            this->cancelEvent(mDemandActionMessage);
+        }
+        /*
+         * if we are called following the read of an action stream (not a bid packet)
+         * and we are not at the top then we want to
+         *   -  set demand zero
+         *   -  set off time so we will know pause time
+         *   -  NOT set an event for the next action time
+         *
+         * If we are called following receipt of a bid packet and we are now / still
+         * not at the top we want to
+         *   -  set demand zero
+         *   -  set off time so we will know pause time
+         *   -  cancel event for next action
+         *
+         */
+    }
+
+
+}
+
+
+
+
 
 
 void DataCentricTestApp::processOccupancyData(unsigned char* pkt)
@@ -715,6 +848,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     double period;
     ifstream* ifs = i->second->back();
     *ifs >> watts;
+
     //*ifs >> period;
 
     double hours;
@@ -727,6 +861,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
     setCurrentDemand(watts);
+    mCurrentWatts = watts;
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
@@ -748,8 +883,10 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     //this->cancelEvent(i->first);
 
 
+    mOriginalNextDemandActionTime = finalSeconds + ScheduleStartTime();
+    mDemandActionMessage = i->first;
 
-    scheduleAt(finalSeconds + ScheduleStartTime(), i->first);
+    scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
 }
 
 

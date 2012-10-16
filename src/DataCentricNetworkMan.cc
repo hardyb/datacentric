@@ -1,7 +1,9 @@
 
 #include "DataCentricTestApp.h"
 
-#include "DataCentricNetworkMan.h"
+// Possible problem with this
+//#include "DataCentricNetworkMan.h"
+
 #include <stdio.h>
 #include <string.h>
 
@@ -107,6 +109,10 @@ void DataCentricNetworkMan::initialize(int aStage)
         AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
 
         demandVector.setName("demandVector");
+        pendingRREQVector.setName("pendingRREQVector");
+
+
+
 
         /*
          * A region has top left coord (x,y) and width and height w, h
@@ -465,6 +471,36 @@ void DataCentricNetworkMan::addDemand(signed int _demand)
 
 
 }
+
+
+
+void DataCentricNetworkMan::addPendingRREQ(uint32 _originator, uint32 _destination)
+{
+    Enter_Method("addPendingRREQ(uint32 _originator, uint32 _destination)");
+
+    PendingRREQ pr;
+    pr.originator = _originator;
+    pr.destination = _destination;
+    mPendingRREQSet.insert(pr);
+    mPendingRREQSet.size();
+    pendingRREQVector.record((double)mPendingRREQSet.size());
+
+
+}
+
+
+void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destination)
+{
+    Enter_Method("removePendingRREQ(uint32 _originator, uint32 _destination)");
+
+    PendingRREQ pr;
+    pr.originator = _originator;
+    pr.destination = _destination;
+    mPendingRREQSet.erase(pr);
+    pendingRREQVector.record((double)mPendingRREQSet.size());
+
+}
+
 
 
 signed int DataCentricNetworkMan::getDemand()

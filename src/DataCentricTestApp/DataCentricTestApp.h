@@ -97,6 +97,7 @@ class DataCentricTestApp : public TrafGenPar
     void processBidData(unsigned char* pkt);
     void processOccupancyData(unsigned char* pkt);
     void processTemperatureData(unsigned char* pkt);
+    void processABid(signed short _applianceId, signed short _bid);
 
 
     virtual void SendTraf(cPacket *msg, const char*);
@@ -119,6 +120,14 @@ class DataCentricTestApp : public TrafGenPar
     double  mNumTrafficMsgRcvd;
     double  mNumTrafficMsgNotDelivered;
 
+    // member variables for appliance bid process
+    double mLastOnTime;
+    double mLastOffTime;
+    signed short mCurrentWatts;
+    double mOriginalNextDemandActionTime;
+    cMessage *mDemandActionMessage;
+    double mDownTime;
+
     const char* m_moduleName;
     simtime_t   sumE2EDelay;
     double  numReceived;
@@ -140,10 +149,29 @@ class DataCentricTestApp : public TrafGenPar
     typedef unsigned short DemandBid;
     typedef unsigned short Priority;
 
-    //std::map<DemandBid, ApplianceId> mBids;
+    std::map<DemandBid, ApplianceId> mBids;
+    void removeBidByApplianceId(signed short _applianceId)
+    {
+        // Remove bid
+        BidI existingApplianceBid;
+        existingApplianceBid = 0;
+        for ( BidI i = mBids.begin(); i != mBids.end(); i++ )
+        {
+            if ( i->second == _applianceId )
+            {
+                existingApplianceBid = i;
+                break;
+            }
+        }
+        mBids.erase(existingApplianceBid);
+    };
+
+
+
     //std::map<Priority, ApplianceId> mPriorities;
 
-    std::map<ApplianceId, DemandBid> mBids;
+    //std::map<ApplianceId, DemandBid> mBids;
+    typedef std::map<DemandBid, ApplianceId>::iterator BidI;
     std::map<ApplianceId, Priority> mPriorities;
 
 

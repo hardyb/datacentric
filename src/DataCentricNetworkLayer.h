@@ -87,6 +87,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     int             mLowerLayerOut;
     int             mUpperLayerOut;
     double          mRoutingDelay;
+    uint64              mAddress;
 
   protected:
     // Message handle functions
@@ -109,7 +110,6 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     unsigned int        nodeConstraintValue;
     double              mStability;
     std::string         mTheAddressString;
-    uint64              mAddress;
     const char*     m_moduleName;
     NotificationBoard* mpNb;
 

@@ -50,6 +50,8 @@ simsignal_t UDPBurstAndBroadcast::dropPkSignal = SIMSIGNAL_NULL;
 
 static void cb_record_RREQstats(double stat);
 static void cb_record_RReplystats(double stat);
+static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
+static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
 static void cb_record_Datastats(double stat);
 DataCentricNetworkMan* netMan;
 
@@ -63,6 +65,23 @@ void cb_record_RReplystats(double stat)
 {
     netMan->updateControlPacketData(RREPLY_STAT, false);
 }
+
+void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
+{
+    //netMan->updateControlPacketData(RREPLY_STAT, false);
+    netMan->removePendingRREQ(_originator, _destination);
+
+}
+
+
+void cb_record_RREQInitiation(uint32 _originator, uint32 _destination)
+{
+    //netMan->updateControlPacketData(RREPLY_STAT, false);
+    netMan->addPendingRREQ(_originator, _destination);
+
+}
+
+
 
 void cb_record_Datastats(double stat)
 {
@@ -127,6 +146,8 @@ void UDPBurstAndBroadcast::initialize(int stage)
 
     setRecordRREQStatsCallBack(cb_record_RREQstats);
     setRecordRReplyStatsCallBack(cb_record_RReplystats);
+    setRecordRReplyCompletionCallBack(cb_record_RReplyCompletion);
+    setRecordRREQInitiationCallBack(cb_record_RREQInitiation);
     setRecordDataStatsCallBack(cb_record_Datastats);
 
     cSimulation* sim =  cSimulation::getActiveSimulation();

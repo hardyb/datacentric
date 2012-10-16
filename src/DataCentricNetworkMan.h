@@ -43,6 +43,8 @@ class DataCentricNetworkMan : public cSimpleModule
     signed short getTotalDemand(); // remote version
     void recordDemand(); // remote version
     void recordDemandLocal(); // local version
+    void addPendingRREQ(uint32 _originator, uint32 _destination);
+    void removePendingRREQ(uint32 _originator, uint32 _destination);
 
 
     typedef struct
@@ -87,6 +89,33 @@ class DataCentricNetworkMan : public cSimpleModule
 
     std::vector<DataCentricTestApp*> mNodeArray;
 
+    typedef struct
+    {
+        uint32 originator;
+        uint32 destination;
+    }PendingRREQ;
+
+    struct Compare {
+        bool operator() (PendingRREQ const &lhs, PendingRREQ const &rhs) const
+        {
+            if ( lhs.originator < rhs.originator )
+            {
+                return true;
+            }
+
+            if ( lhs.originator == rhs.originator
+                    && lhs.destination < rhs.destination )
+            {
+                return true;
+            }
+
+            return false;
+        }
+    };
+    typedef std::set<PendingRREQ, Compare> PendingRREQSet;
+    PendingRREQSet mPendingRREQSet; // A buffer to store a pointer to a message and the related receive power.
+
+
 
 
 
@@ -109,6 +138,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector AODVDataPacketFrequency;
 
     cOutVector demandVector;
+    cOutVector pendingRREQVector;
 
 
     unsigned int numDataArrivals;
