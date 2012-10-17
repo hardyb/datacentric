@@ -20,6 +20,12 @@
 #define AODV_MODE 2
 
 
+#define APPSTATE_ENTRY 1
+#define APPSTATE_RUNNING 2
+#define APPSTATE_PAUSED 2
+
+
+
 
 class DataCentricTestApp : public TrafGenPar
 {
@@ -127,6 +133,7 @@ class DataCentricTestApp : public TrafGenPar
     double mOriginalNextDemandActionTime;
     cMessage *mDemandActionMessage;
     double mDownTime;
+    unsigned int appState;
 
     const char* m_moduleName;
     simtime_t   sumE2EDelay;

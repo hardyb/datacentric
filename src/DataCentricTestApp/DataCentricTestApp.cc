@@ -660,7 +660,61 @@ void DataCentricTestApp::processABid(signed short _applianceId, signed short _bi
     {
         // (re)insert bid if non-zero
         mBids[finishTime] = _applianceId;
+
+        // what if we get multiple bids for same app
     }
+
+
+    // NB Some member variables may not be set if we are receiving
+    // bids from others but we have not reached an action time yet
+
+
+    switch ( appState )
+    {
+        case APPSTATE_ENTRY:
+            if ( mBids.begin()->second == myAddr )
+            {
+                //mLastOnTime = simTime().dbl();
+                //if ( mLastOffTime )
+                //{
+                //    mDownTime = mDownTime + (mLastOnTime - mLastOffTime);
+                //}
+                setCurrentDemand(mCurrentWatts);
+                scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
+                //scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+                appState = APPSTATE_RUNNING;
+            }
+            else
+            {
+                setCurrentDemand(0);
+                mLastOffTime = simTime().dbl();
+                appState = APPSTATE_PAUSED;
+            }
+            break;
+        case APPSTATE_RUNNING:
+            break;
+        case APPSTATE_PAUSED:
+            if ( mBids.begin()->second == myAddr )
+            {
+                mLastOnTime = simTime().dbl();
+                mDownTime += (mLastOnTime - mLastOffTime);
+                setCurrentDemand(mCurrentWatts);
+                scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+            }
+            break;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
     if ( mBids.begin()->second == myAddr )
     {
@@ -692,11 +746,16 @@ void DataCentricTestApp::processABid(signed short _applianceId, signed short _bi
          *   -  set off time so we will know pause time
          *   -  NOT set an event for the next action time
          *
-         * If we are called following receipt of a bid packet and we are now / still
-         * not at the top we want to
+         * If we are called following receipt of a bid packet and we have just moved TO
+         * 'not' at the top FROM 'at' the top, we want to
          *   -  set demand zero
          *   -  set off time so we will know pause time
          *   -  cancel event for next action
+         *
+         *
+         * If we are called following receipt of a bid packet and we are currently and
+         * are remaining 'not' at the top we want to
+         *
          *
          */
     }
