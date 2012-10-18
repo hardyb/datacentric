@@ -9,6 +9,8 @@ simple DataCentricTestApp extends TrafGenPar
         string xxx = default("hello");
         
         string sinkFor = default("");
+        string collaboratorInitiatorFor = default("");
+        string collaboratorFor = default("");
         string sourceFor = default("");// = "\x48\x49\x54";
         string nodeContext = default("");
         string appMode = default("");

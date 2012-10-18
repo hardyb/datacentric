@@ -2728,6 +2728,17 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     bool event_based = ( (*(sending_packet->data)&MSB2) == PUBLICATION );
     bool collaberation_based = ( (*(sending_packet->data)&MSB2) == COLLABORATIONBASED );
 
+
+    // Not all collaborators have delivery grads to self
+    // only the collaborator initiator
+    // needs some thought
+    if ( s->action == COLLABORATE_ACTION )
+    {
+        handleApplicationData(sending_packet->data, sending_packet->creation_time);
+        sent = 1;
+    }
+
+    // non-initiating collaborator nodes may still participate in forwarding
     if ( s->deliveryInterfaces )
     {
         //dataRate = 0;
@@ -3538,7 +3549,7 @@ void weAreSinkFor(unsigned char* _data, char seqno)
 
 
 
-void weAreCollaboratorInitiatorFor(unsigned char* _data)
+void weAreCollaboratorInitiatorFor(unsigned char* _data, char seqno)
 {
     if ( ((*_data) & MSB2) == COLLABORATIONBASED )
     {
@@ -3546,7 +3557,7 @@ void weAreCollaboratorInitiatorFor(unsigned char* _data)
 
         // For now we only support network restart not sink restart
         // ie always begin with zero seqno
-        setDeliverGradient(_data, SELF_INTERFACE, 0, 0);
+        setDeliverGradient(_data, SELF_INTERFACE, 0, seqno);
     }
 
     //StateNode* sn = FindStateNode(rd->stateTree, _data._dataname_struct1.the_dataname);
@@ -3562,7 +3573,7 @@ void weAreCollaboratorInitiatorFor(unsigned char* _data)
 
 
 
-void weAreCollaboratorFor(unsigned char* _data)
+void weAreCollaboratorFor(unsigned char* _data, char seqno)
 {
     if ( ((*_data) & MSB2) == COLLABORATIONBASED )
     {
@@ -4488,10 +4499,354 @@ void handle_advert_almost_same_as_old(control_data cd)
 
 
 
+void handle_interestTODELETETODELETE(control_data cd)
+{
+    std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
+    if ( incoming_packet.excepted_interface == thisAddress )
+    {
+        //return;
+    }
+
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
+    State* s = t->s;
+
+    if ( incoming_packet.seqno < s->seqno )
+    {
+        return; // I think this is right, i.e. ignore any old seq ints/advs
+        // CHECK THIS
+    }
+
+    if ( (incoming_packet.seqno == s->seqno) && s->converged )
+    {
+        return;
+    }
+
+    if ( incoming_packet.seqno > s->seqno )
+    {
+        /*
+         * IF: this is a rec and we are the sink for it
+         * i.e. we have a best grad already set that is this data rec
+         * interface to self and cost zero (and most likely grad and state seqno zero).
+         *
+         * THEN:  we must leave the best grad to self in place, set its seqno to this
+         * incoming seqno value +1 and the same for the state object.
+         *
+         * ACTUALLY we JUST want to send out the initiating interest again with the
+         * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
+         *
+         *
+         */
+        if ( s->bestGradientToDeliver &&
+                s->bestGradientToDeliver->key2->iName == SELF_INTERFACE &&
+                s->bestGradientToDeliver->costToDeliver == 0 &&
+                s->bestGradientToDeliver->seqno == 0 &&
+                s->seqno == 0) // pos improve condition
+        {
+            s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
+            s->seqno = incoming_packet.seqno+1;
+            //s->bestGradientToDeliverUpdated = 0;
+
+            outgoing_packet.message_type = INTEREST;
+
+            outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.data = incoming_packet.data;
+
+            //outgoing_packet.length = strlen(queue); // strlen ok in this case
+            //outgoing_packet.data = (unsigned char*)queue; // cannot get
+
+            outgoing_packet.path_value = 0;
+            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.seqno = s->seqno;
+
+            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            bcastAMessage(write_packet(&outgoing_packet));
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //static rpacket p;
+    //static struct StateNode* n;
+    //trie* t;
+    //static struct KDGradientNode* k;
+
+    //struct KDGradientNode* setDeliverGradient(int sName, NEIGHBOUR_ADDR iName, int pCost);
+
+
+    /*
+     * Comment this code out for the moment
+     * because we think we may want to query for narrow context but at a distance from some some other context
+     */
+    //char* ptr = strchr((const char*)incoming_packet.data, DOT);
+    //if ( ptr )
+    //{
+    //  t = trie_lookup2(rd->top_context, ptr+1);
+    //}
+    //if ( !t )
+    //{
+    //  return;
+    //}
+
+
+
+    int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
+    i->lqi = cd.incoming_lqi;
+
+
+
+
+    //t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
+    //State* s = t->s;
+
+    //if ( s->converged )
+    //{
+
+    //}
+
+
+
+    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
+
+    // check this out!!
+    if ( incoming_packet.down_interface == thisAddress )
+        return;
+
+    //if ( (n = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value)) )
+    if ( t )
+    {
+        if ( t->s->bestGradientToDeliverUpdated )
+        {
+            // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
+
+            // this is a once only on first sight for all the (interest) states
+            // we have ever seen, to say whether or not it is a prefix of one
+            // that was previously set as SOURCE_ACTION
+            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
+                    t->s->prefix != PREFIX_CHECKED )
+            {
+                traverse(rd->top_state, queue, 0, setAllPrefixStatus);
+                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
+                {
+                    t->s->prefix = PREFIX_CHECKED;
+                }
+            }
+
+            // try doing timeout for ALL nodes
+            t->s->converged = 0;
+            setTimer(0.2, t->s, interest_convergence_timeout);
+
+            //if ( t->s->prefix == FORWARD_AND_SOURCEPREFIX )
+            //{
+                //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
+                //strcpy(x, (const char*)incoming_packet.data);
+                //setTimer(0.1, x, interest_convergence_timeout);
+
+                //setTimer(0.1, t->s, source_interest_convergence_timeout);
+
+                // Alternative longer method?
+                //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
+                //memcpy(x, incoming_packet.data, incoming_packet.length);
+                //x[incoming_packet.length] = 0;
+            //}
+            //else
+            //{
+                //setTimer(0.1, t->s, interest_convergence_timeout);
+            //}
+
+
+
+
+
+            t->s->bestGradientToDeliverUpdated = false;
+            outgoing_packet.message_type = INTEREST;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
+            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.path_value = outgoingLinkCost(cd);
+            outgoing_packet.excepted_interface = _interface;
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
+            bcastAMessage(write_packet(&outgoing_packet));
+            //SendToAllInterfacesExcept(rd->interfaceTree, _interface);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 void handle_collaboration(control_data cd)
 {
+    std::cout << "Collaboration received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+
+    NEIGHBOUR_ADDR _interface = cd.incoming_if;
+
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
+    State* s = t->s;
+
+    if ( incoming_packet.seqno < s->seqno )
+    {
+        return; // I think this is right, i.e. ignore any old seq ints/advs
+        // CHECK THIS
+    }
+
+    if ( (incoming_packet.seqno == s->seqno) && s->converged )
+    {
+        return;
+    }
+
+
+    if ( incoming_packet.seqno > s->seqno )
+    {
+        /*
+         * IF: this is a rec and we are the sink for it
+         * i.e. we have a best grad already set that is this data rec
+         * interface to self and cost zero (and most likely grad and state seqno zero).
+         *
+         * THEN:  we must leave the best grad to self in place, set its seqno to this
+         * incoming seqno value +1 and the same for the state object.
+         *
+         * ACTUALLY we JUST want to send out the initiating interest again with the
+         * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
+         *
+         *
+         */
+        if ( s->bestGradientToDeliver &&
+                s->bestGradientToDeliver->key2->iName == SELF_INTERFACE &&
+                s->bestGradientToDeliver->costToDeliver == 0 &&
+                s->bestGradientToDeliver->seqno == 0 &&
+                s->seqno == 0) // pos improve condition
+        {
+            s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
+            s->seqno = incoming_packet.seqno+1;
+            //s->bestGradientToDeliverUpdated = 0;
+
+            outgoing_packet.message_type = INTEREST;
+
+            outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.data = incoming_packet.data;
+
+            //outgoing_packet.length = strlen(queue); // strlen ok in this case
+            //outgoing_packet.data = (unsigned char*)queue; // cannot get
+
+            outgoing_packet.path_value = 0;
+            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
+            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
+            outgoing_packet.seqno = s->seqno;
+
+            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            bcastAMessage(write_packet(&outgoing_packet));
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //static rpacket p;
+    //trie* t;
+    //static struct KDGradientNode* k;
+    //t = trie_add(rd->top_state, incoming_packet.data, STATE);
+    //int inserted;
+    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+
+
+
+
+
+
+
+
+
+
+
+
+    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
+    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi, incoming_packet.seqno);
+
+    if ( t )
+    {
+        if ( t->s->bestGradientToDeliverUpdated )
+        {
+            t->s->bestGradientToDeliverUpdated = false;
+            outgoing_packet.message_type = COLLABORATION;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
+            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
+            outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            outgoing_packet.excepted_interface = _interface;
+            bcastAMessage(write_packet(&outgoing_packet));
+            //SendToAllInterfacesExcept(rd->interfaceTree, _interface);
+        }
+    }
+
+}
+
+
+
+
+
+
+
+
+void handle_collaborationOLDOLDOLD(control_data cd)
+{
+
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
     static rpacket p;
@@ -4521,6 +4876,8 @@ void handle_collaboration(control_data cd)
     }
 
 }
+
+
 
 
 
@@ -5065,25 +5422,29 @@ void handle_reinforce_collaboration(control_data cd)
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
+    // reinforce obtain back to collaboration reinforcement originator
+    // because it is the sender
     reinforceObtainGradient(incoming_packet.data, _interface, incoming_packet.seqno);
 
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
     if ( t && t->s->bestGradientToDeliver )
     {
+        // if we have reached a node which has already had forward reinforcement done
         if ( t->s->deliveryInterfaces )
         {
+            // just reinforce also DELIVER back to collaboration reinforcement originator
+            // because it wants to receive as well, then finish
             reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
             return;
         }
 
+        // reinforce also DELIVER back to collaboration reinforcement originator
+        // because it wants to receive as well
         reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
 
-        // find the next interface to reinforce
+        // now find the forward interface and reinforce that for delivery
         NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
-
-        // IS THIS COMMENT IN RIGHT PLACE?                  also reinforce the path to the source for breakage messages
-        // even if it is self
         reinforceDeliverGradient(incoming_packet.data, interface, incoming_packet.seqno);
 
         // If interface is self do not send message on

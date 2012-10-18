@@ -33,11 +33,11 @@ void DataCentricTestApp::initialize(int aStage)
     {
         currentDemand = 0;
         mDownTime = 0;
-
         mLastOnTime = 0;
         mLastOffTime = 0;
         mOriginalNextDemandActionTime = 0;
         mDemandActionMessage = 0;
+        appState = APPSTATE_IDLE;
 
 
         /*
@@ -278,6 +278,17 @@ void DataCentricTestApp::initialize(int aStage)
         std::string temp2 = par("sinkFor").stringValue();
         processSinkFor(temp2);
 
+        std::string temp2 = par("collaboratorInitiatorFor").stringValue();
+        processCollaboratorInitiatorFor(temp2);
+
+        std::string temp2 = par("collaboratorFor").stringValue();
+        processCollaboratorFor(temp2);
+
+
+
+
+
+
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);
         sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
@@ -326,6 +337,83 @@ void DataCentricTestApp::processSinkFor(string &temp2)
     }
 
 }
+
+
+
+
+
+
+
+void DataCentricTestApp::processCollaboratorInitiatorFor(string &temp2)
+{
+    Enter_Method("processCollaboratorInitiatorFor(string &temp2)");
+
+    par("collaboratorInitiatorFor").setStringValue(temp2.c_str());
+
+    if ( temp2.size() )
+    {
+        ev << "collaboratorInitiatorFor: " << getFullPath() << ": ";
+        for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
+        {
+            char cval1 =  (*i);
+            unsigned char cval2 =  (*i);
+            unsigned int val = (unsigned int)cval2;
+            ev << std::hex << std::uppercase << "\\" << val;
+        }
+        ev << endl;
+
+        DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+        appPkt2->setKind(COLLABORATOR_INITITOR_MESSAGE);
+        if ( mAppMode == AODV_MODE )
+        {
+            //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
+            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+        }
+        else
+        {
+            send(appPkt2, mLowerLayerOut);
+        }
+    }
+
+}
+
+
+
+void DataCentricTestApp::processCollaboratorFor(string &temp2)
+{
+    Enter_Method("processCollaboratorFor(string &temp2)");
+
+    par("collaboratorFor").setStringValue(temp2.c_str());
+
+    if ( temp2.size() )
+    {
+        ev << "collaboratorFor: " << getFullPath() << ": ";
+        for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
+        {
+            char cval1 =  (*i);
+            unsigned char cval2 =  (*i);
+            unsigned int val = (unsigned int)cval2;
+            ev << std::hex << std::uppercase << "\\" << val;
+        }
+        ev << endl;
+
+        DataCentricAppPkt* appPkt2 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt2->getPktData().insert(appPkt2->getPktData().end(), temp2.begin(), temp2.end());
+        appPkt2->setKind(COLLABORATOR_MESSAGE);
+        if ( mAppMode == AODV_MODE )
+        {
+            //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
+            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+        }
+        else
+        {
+            send(appPkt2, mLowerLayerOut);
+        }
+    }
+
+}
+
 
 
 void DataCentricTestApp::processSourceFor(string &temp1)
@@ -531,7 +619,7 @@ void DataCentricTestApp::processDemandData(unsigned char* pkt)
 union signedShortData
 {
     char theBytes[2];
-    signed short theSignedShort;
+    unsigned short theSignedShort;
 };
 
 
@@ -550,8 +638,8 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 
 void DataCentricTestApp::processBidData(unsigned char* pkt)
 {
-    signed short applianceId;
-    signed short bid;
+    unsigned short applianceId;
+    unsigned short bid;
     signedShortData ai;
     signedShortData bd;
 
@@ -563,84 +651,7 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
     bd.theBytes[1] = pkt[3];
     bid = bd.theSignedShort;
 
-
-
-
-
-
-///////////////////////////////////////////////////////////////////////
-
-    BidI existingApplianceBid;
-    if ( bid == 0 ) // or how ever we are going to denote zero.  Null term issues?
-    {
-        existingApplianceBid = 0;
-        for ( BidI i = mBids.begin(); i != mBids.end(); i++ )
-        {
-            if ( i->second == applianceId )
-            {
-                existingApplianceBid = i;
-                break;
-            }
-        }
-        mBids.erase(existingApplianceBid);
-
-        if ( mBids.begin()->second == myAddr )
-        {
-
-        }
-
-
-    }
-
-
-
-    mBids.erase(0); // need to identify the appl id - need to think
-    // whether we have bid as key or id as key is an issue
-
-
-
-    if ( mBids.begin()->second == myAddr )
-    {
-        // first to finish is US
-
-        std::map<ApplianceId, DemandBid> mBids2 = mBids;
-        mBids2[finishTime] = applianceId;
-        if ( mBids2.begin()->second != myAddr )
-        {
-            // If we add this new bid then we are not soonest to finish
-
-            // calculate our pause time
-
-
-            setCurrentDemand(0);
-            mLastOffTime = simTime().dbl();
-            this->cancelEvent(mDemandActionMessage);
-        }
-
-    }
-
-    // In situation where we start up again
-    mLastOnTime = simTime().dbl();
-    mDownTime = mDownTime + (mLastOnTime = mLastOffTime);
-
-
-
-
-    //mBids[applianceId] = bid;
-    mBids[bid] = applianceId;
-
-    if ( mBids.begin()->second != myAddr )
-    {
-        // shortest time bid is not us
-        // so if we are running we must pause
-
-
-
-        this->getId();
-
-    }
-
-
+    processABid(applianceId, bid);
 
 }
 
@@ -650,48 +661,71 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
 
 
 
-void DataCentricTestApp::processABid(signed short _applianceId, signed short _bid)
+void DataCentricTestApp::processABid(signed short _applianceId, unsigned short _bid)
 {
+    double currentTime = simTime().dbl();
     unsigned short myAddr = netModule->mAddress & 0xFFFF;
     double finishTime = simTime().dbl() + _bid;
 
-    removeBidByApplianceId(_applianceId);
-    if ( _bid )
-    {
-        // (re)insert bid if non-zero
-        mBids[finishTime] = _applianceId;
 
-        // what if we get multiple bids for same app
+    /*
+     * If we remove an entry then...
+     *
+     * what if it is for this appliance?
+     *   -  It is happening because we are processing an action stream entry for zero demand
+     *   -  We should be running state otherwise there would be no scheduled action
+     *   -
+     *
+     *
+     */
+
+    if ( !_bid )
+    {
+        removeBidByApplianceId(_applianceId);
+        if ( _applianceId == myAddr )
+        {
+            setCurrentDemand(0);
+            scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+            appState = APPSTATE_IDLE;
+            return;
+        }
     }
 
-
-    // NB Some member variables may not be set if we are receiving
-    // bids from others but we have not reached an action time yet
-
+    if ( _bid )
+    {
+        // Remove first this way we only ever have one
+        // per appliance
+        removeBidByApplianceId(_applianceId);
+        mBids[finishTime] = _applianceId;
+    }
 
     switch ( appState )
     {
-        case APPSTATE_ENTRY:
-            if ( mBids.begin()->second == myAddr )
+        case APPSTATE_IDLE:
+            if ( _applianceId == myAddr )
             {
-                //mLastOnTime = simTime().dbl();
-                //if ( mLastOffTime )
-                //{
-                //    mDownTime = mDownTime + (mLastOnTime - mLastOffTime);
-                //}
-                setCurrentDemand(mCurrentWatts);
-                scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
-                //scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
-                appState = APPSTATE_RUNNING;
-            }
-            else
-            {
-                setCurrentDemand(0);
-                mLastOffTime = simTime().dbl();
-                appState = APPSTATE_PAUSED;
+                if ( mBids.begin()->second == myAddr )
+                {
+                    setCurrentDemand(mCurrentWatts);
+                    scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+                    appState = APPSTATE_RUNNING;
+                }
+                else
+                {
+                    setCurrentDemand(0);
+                    mLastOffTime = simTime().dbl();
+                    appState = APPSTATE_PAUSED;
+                }
             }
             break;
         case APPSTATE_RUNNING:
+            if ( mBids.begin()->second != myAddr )
+            {
+                setCurrentDemand(0);
+                mLastOffTime = simTime().dbl();
+                cancelEvent(mDemandActionMessage);
+                appState = APPSTATE_PAUSED;
+            }
             break;
         case APPSTATE_PAUSED:
             if ( mBids.begin()->second == myAddr )
@@ -700,66 +734,10 @@ void DataCentricTestApp::processABid(signed short _applianceId, signed short _bi
                 mDownTime += (mLastOnTime - mLastOffTime);
                 setCurrentDemand(mCurrentWatts);
                 scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
+                appState = APPSTATE_RUNNING;
             }
             break;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-    if ( mBids.begin()->second == myAddr )
-    {
-        if ( !currentDemand )
-        {
-            // In situation where we start up again
-            mLastOnTime = simTime().dbl();
-            if ( mLastOffTime )
-            {
-                mDownTime = mDownTime + (mLastOnTime - mLastOffTime);
-            }
-            setCurrentDemand(mCurrentWatts);
-            scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
-        }
-    }
-    else
-    {
-        if ( currentDemand )
-        {
-            // In situation where we pause
-            setCurrentDemand(0);
-            mLastOffTime = simTime().dbl();
-            this->cancelEvent(mDemandActionMessage);
-        }
-        /*
-         * if we are called following the read of an action stream (not a bid packet)
-         * and we are not at the top then we want to
-         *   -  set demand zero
-         *   -  set off time so we will know pause time
-         *   -  NOT set an event for the next action time
-         *
-         * If we are called following receipt of a bid packet and we have just moved TO
-         * 'not' at the top FROM 'at' the top, we want to
-         *   -  set demand zero
-         *   -  set off time so we will know pause time
-         *   -  cancel event for next action
-         *
-         *
-         * If we are called following receipt of a bid packet and we are currently and
-         * are remaining 'not' at the top we want to
-         *
-         *
-         */
-    }
-
 
 }
 
@@ -907,6 +885,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     double period;
     ifstream* ifs = i->second->back();
     *ifs >> watts;
+    mCurrentWatts = watts;
 
     //*ifs >> period;
 
@@ -919,8 +898,6 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     *ifs >> seconds;
     finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
-    setCurrentDemand(watts);
-    mCurrentWatts = watts;
 
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
@@ -945,7 +922,51 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     mOriginalNextDemandActionTime = finalSeconds + ScheduleStartTime();
     mDemandActionMessage = i->first;
 
-    scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
+    bool operatingBidSystem = true;
+    if ( operatingBidSystem )
+    {
+        unsigned short lengthToBidFor;
+        if ( watts == 0 )
+        {
+            lengthToBidFor = 0;
+        }
+        else
+        {
+            // check this works
+            lengthToBidFor = (unsigned short)(mOriginalNextDemandActionTime - simTime().dbl());
+        }
+        unsigned short myAddr = netModule->mAddress & 0xFFFF;
+
+
+        processABid(myAddr, lengthToBidFor);
+
+        DataCentricAppPkt* appPkt = new DataCentricAppPkt("Bid");
+        std::ostringstream ss;
+        ss.clear();
+        ss << "\x2\x1";
+
+        // could use the union instead
+        ss << (unsigned char)(myAddr & 0xff);
+        ss << (unsigned char)((myAddr >>8) & 0xff);
+
+        ss << (unsigned char)(lengthToBidFor & 0xff);
+        ss << (unsigned char)((lengthToBidFor >>8) & 0xff);
+        ss << "\x0";
+        std::string s(ss.str());
+
+        // check size, follow size and content
+        unsigned int a = s.size();
+        appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
+        appPkt->setKind(DATA_PACKET);
+        send(appPkt, mLowerLayerOut);
+
+    }
+    else
+    {
+        setCurrentDemand(watts);
+        scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
+    }
+
 }
 
 

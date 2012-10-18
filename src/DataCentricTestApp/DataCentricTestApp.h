@@ -20,9 +20,9 @@
 #define AODV_MODE 2
 
 
-#define APPSTATE_ENTRY 1
+#define APPSTATE_IDLE 1
 #define APPSTATE_RUNNING 2
-#define APPSTATE_PAUSED 2
+#define APPSTATE_PAUSED 3
 
 
 
@@ -75,6 +75,11 @@ class DataCentricTestApp : public TrafGenPar
     void processSinkFor(string &temp2);
     void processSourceFor(string &temp1);
     void processActionsFor(string &actionThreadsString);
+    void processCollaboratorInitiatorFor(string &temp2);
+    void processCollaboratorFor(string &temp2);
+
+
+
     std::string contextData;
     signed short currentDemand;
     bool isAppliance;
@@ -103,7 +108,7 @@ class DataCentricTestApp : public TrafGenPar
     void processBidData(unsigned char* pkt);
     void processOccupancyData(unsigned char* pkt);
     void processTemperatureData(unsigned char* pkt);
-    void processABid(signed short _applianceId, signed short _bid);
+    void processABid(signed short _applianceId, unsigned short _bid);
 
 
     virtual void SendTraf(cPacket *msg, const char*);
@@ -161,7 +166,7 @@ class DataCentricTestApp : public TrafGenPar
     {
         // Remove bid
         BidI existingApplianceBid;
-        existingApplianceBid = 0;
+        existingApplianceBid = mBids.end();
         for ( BidI i = mBids.begin(); i != mBids.end(); i++ )
         {
             if ( i->second == _applianceId )

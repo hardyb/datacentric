@@ -741,9 +741,17 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         case SINK_MESSAGE:
             SetSinkWithShortestContext(appPkt);
             break;
+        case COLLABORATOR_INITITOR_MESSAGE:
+            SetCollaboratorInitiatorWithShortestContext(appPkt);
+            break;
+        case COLLABORATOR_MESSAGE:
+            SetCollaboratorWithShortestContext(appPkt);
+            break;
         default:
             break;
     }
+
+
 
 
 }
@@ -855,6 +863,60 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
 
 }
 
+
+
+
+
+void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCentricAppPkt* appPkt)
+{
+    string collabData;
+    collabData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
+    int size = appPkt->getPktData().size();
+    size = collabData.size();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
+    unsigned char temp[30];
+    for (std::vector<std::string>::iterator i = collabsData.begin();
+            i != collabsData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = DOT;
+        getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+        weAreCollaboratorInitiatorFor(x, 0);
+    }
+
+}
+
+
+
+
+
+
+void DataCentricNetworkLayer::SetCollaboratorWithShortestContext(DataCentricAppPkt* appPkt)
+{
+    string collabData;
+    collabData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
+    int size = appPkt->getPktData().size();
+    size = collabData.size();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
+    unsigned char temp[30];
+    for (std::vector<std::string>::iterator i = collabsData.begin();
+            i != collabsData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = DOT;
+        getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
+        weAreCollaboratorFor(x, 0);
+    }
+
+}
 
 
 

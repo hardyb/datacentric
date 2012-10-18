@@ -53,6 +53,21 @@ void HostReference::initialize(int aStage)
                     ev << "Setting actionThreads in:    " << getFullPath() << std::endl;
                 }
 
+
+                std::string collaboratorInitiatorFor = par("collaboratorInitiatorFor").stringValue();
+                if ( collaboratorInitiatorFor.size() )
+                {
+                    ev << "Setting collaboratorInitiatorFor in:    " << getFullPath() << std::endl;
+                }
+                std::string collaboratorFor = par("collaboratorFor").stringValue();
+                if ( collaboratorFor.size() )
+                {
+                    ev << "Setting collaboratorFor in:    " << getFullPath() << std::endl;
+                }
+
+
+
+
                 ev << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
                 for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
                 {
@@ -65,6 +80,8 @@ void HostReference::initialize(int aStage)
 
                 underlyingModule->par("sinkFor").setStringValue(sinkFor);
                 underlyingModule->par("sourceFor").setStringValue(sourceFor);
+                underlyingModule->par("collaboratorInitiatorFor").setStringValue(collaboratorInitiatorFor);
+                underlyingModule->par("collaboratorFor").setStringValue(collaboratorFor);
                 underlyingModule->par("nodeContext").setStringValue(par("nodeContext").stringValue());
                 underlyingModule->par("appMode").setStringValue(par("appMode").stringValue());
                 underlyingModule->par("mains").setBoolValue(par("mains").boolValue());

@@ -26,6 +26,11 @@
 #define CONTEXT_MESSAGE 3
 #define SOURCE_MESSAGE 4
 #define SINK_MESSAGE 5
+#define COLLABORATOR_INITITOR_MESSAGE 6
+#define COLLABORATOR_MESSAGE 7
+
+
+
 
 class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 {
@@ -101,6 +106,10 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     void SetContext(DataCentricAppPkt* appPkt);
     void SetSourceWithLongestContext(DataCentricAppPkt* appPkt);
     void SetSinkWithShortestContext(DataCentricAppPkt* appPkt);
+    void SetCollaboratorInitiatorWithShortestContext(DataCentricAppPkt* appPkt);
+    void SetCollaboratorWithShortestContext(DataCentricAppPkt* appPkt);
+
+
 
     virtual void receiveChangeNotification(int category, const cPolymorphic *details);
 

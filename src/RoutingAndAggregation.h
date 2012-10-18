@@ -822,8 +822,8 @@ void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject
 void weAreSourceFor(unsigned char* _data, char seqno);
 void weAreSinkFor(unsigned char* _data, char seqno);
 int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
-void weAreCollaboratorFor(unsigned char* _data);
-void weAreCollaboratorInitiatorFor(unsigned char* _data);
+void weAreCollaboratorFor(unsigned char* _data, char seqno);
+void weAreCollaboratorInitiatorFor(unsigned char* _data, char seqno);
 void send_data(int len, unsigned char* _data, double _creationTime);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime);
 void read_packet(unsigned char* pkt);
