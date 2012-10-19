@@ -3870,6 +3870,69 @@ void interest_convergence_timeout(void* relevantObject)
 
 
 
+
+
+
+
+
+
+void collaboration_convergence_timeout(void* relevantObject)
+{
+    //unsigned char* data = (unsigned char*)relevantObject;
+    //trie* t = trie_add(rd->top_state, data, STATE);
+    //State* s = t->s;
+
+    State* s = (State*)relevantObject;
+    s->converged = 1;
+
+    if ( s->prefix == FORWARD_AND_SOURCEPREFIX
+            && s->bestGradientToDeliver
+            && !s->deliveryInterfaces )
+    {
+        static unsigned char data[20];
+        GetStateStr(rd->top_state, s, data);
+        // second parameter no longer used, pos pass s in future to save
+        // unnecessary work in the function
+        start_reinforce_collaboration(data, SELF_INTERFACE, s->seqno);
+        UpdateGradientFile();
+    }
+
+    if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
+            && s->bestGradientToDeliver
+            && !s->deliveryInterfaces )
+    {
+        static unsigned char data[20];
+        GetStateStr(rd->top_state, s, data);
+        // second parameter no longer used, pos pass s in future to save
+        // unnecessary work in the function
+        start_reinforce_collaboration(data, UNKNOWN_INTERFACE, s->seqno);
+        UpdateGradientFile();
+    }
+
+    /*
+     * I think we may also need to reinforce interest when
+     * there are items in the queue for this state because
+     * after a (re)convergence it is not guarenteed that (where
+     * a data packet has previously stopped due to an immediate breakage
+     * or an ongoing new seqno reconvergence due to a breakage else where)
+     * the grad will be reinforced at that node from behind, i.e. the new
+     * convergence may result in a different path
+     */
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 //HEREHERE
 int isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
@@ -4569,72 +4632,16 @@ void handle_interestTODELETETODELETE(control_data cd)
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    //static rpacket p;
-    //static struct StateNode* n;
-    //trie* t;
-    //static struct KDGradientNode* k;
-
-    //struct KDGradientNode* setDeliverGradient(int sName, NEIGHBOUR_ADDR iName, int pCost);
-
-
-    /*
-     * Comment this code out for the moment
-     * because we think we may want to query for narrow context but at a distance from some some other context
-     */
-    //char* ptr = strchr((const char*)incoming_packet.data, DOT);
-    //if ( ptr )
-    //{
-    //  t = trie_lookup2(rd->top_context, ptr+1);
-    //}
-    //if ( !t )
-    //{
-    //  return;
-    //}
-
-
-
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface)->i;
     i->lqi = cd.incoming_lqi;
 
-
-
-
-    //t = trie_add(rd->top_state, incoming_packet.data, STATE);
-
-    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
-    //State* s = t->s;
-
-    //if ( s->converged )
-    //{
-
-    //}
-
-
-
-    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
     setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
 
     // check this out!!
     if ( incoming_packet.down_interface == thisAddress )
         return;
 
-    //if ( (n = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value)) )
     if ( t )
     {
         if ( t->s->bestGradientToDeliverUpdated )
@@ -4658,39 +4665,15 @@ void handle_interestTODELETETODELETE(control_data cd)
             t->s->converged = 0;
             setTimer(0.2, t->s, interest_convergence_timeout);
 
-            //if ( t->s->prefix == FORWARD_AND_SOURCEPREFIX )
-            //{
-                //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
-                //strcpy(x, (const char*)incoming_packet.data);
-                //setTimer(0.1, x, interest_convergence_timeout);
-
-                //setTimer(0.1, t->s, source_interest_convergence_timeout);
-
-                // Alternative longer method?
-                //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
-                //memcpy(x, incoming_packet.data, incoming_packet.length);
-                //x[incoming_packet.length] = 0;
-            //}
-            //else
-            //{
-                //setTimer(0.1, t->s, interest_convergence_timeout);
-            //}
-
-
-
-
-
             t->s->bestGradientToDeliverUpdated = false;
             outgoing_packet.message_type = INTEREST;
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
-            //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.path_value = outgoingLinkCost(cd);
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
             bcastAMessage(write_packet(&outgoing_packet));
-            //SendToAllInterfacesExcept(rd->interfaceTree, _interface);
         }
     }
 
@@ -4763,23 +4746,59 @@ void handle_collaboration(control_data cd)
         {
             s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
             s->seqno = incoming_packet.seqno+1;
-            //s->bestGradientToDeliverUpdated = 0;
 
-            outgoing_packet.message_type = INTEREST;
+            outgoing_packet.message_type = COLLABORATION;
 
             outgoing_packet.length = incoming_packet.length;
             outgoing_packet.data = incoming_packet.data;
-
-            //outgoing_packet.length = strlen(queue); // strlen ok in this case
-            //outgoing_packet.data = (unsigned char*)queue; // cannot get
-
             outgoing_packet.path_value = 0;
-            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
             std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            bcastAMessage(write_packet(&outgoing_packet));
+        }
+    }
+
+    int inserted;
+    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    i->lqi = cd.incoming_lqi;
+    setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
+
+    if ( t )
+    {
+        if ( t->s->bestGradientToDeliverUpdated )
+        {
+            // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
+
+            // this is a once only on first sight for all the (interest) states
+            // we have ever seen, to say whether or not it is a prefix of one
+            // that was previously set as SOURCE_ACTION
+            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
+                    t->s->prefix != PREFIX_CHECKED )
+            {
+                // NBNB ADJUST THIS CODE ANDTHE CALLED FUNCTIONS SO
+                // THEY WORK FOR COLLABORATIONS ASWELL
+                traverse(rd->top_state, queue, 0, setAllPrefixStatus);
+                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
+                {
+                    t->s->prefix = PREFIX_CHECKED;
+                }
+            }
+
+            // try doing timeout for ALL nodes
+            t->s->converged = 0;
+            setTimer(0.2, t->s, interest_convergence_timeout);
+
+            t->s->bestGradientToDeliverUpdated = false;
+            outgoing_packet.message_type = COLLABORATION;
+            outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.path_value = outgoingLinkCost(cd);
+            outgoing_packet.excepted_interface = _interface;
+            outgoing_packet.down_interface = UNKNOWN_INTERFACE;
+            outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -4792,9 +4811,7 @@ void handle_collaboration(control_data cd)
 
 
 
-
-
-
+    ////////////////////////////////////////////
 
 
 
@@ -4804,20 +4821,7 @@ void handle_collaboration(control_data cd)
     //t = trie_add(rd->top_state, incoming_packet.data, STATE);
     //int inserted;
     //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-
-
-
-
-
-
-
-
-
-
-
-
-    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
-    setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi, incoming_packet.seqno);
+    //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi, incoming_packet.seqno);
 
     if ( t )
     {
