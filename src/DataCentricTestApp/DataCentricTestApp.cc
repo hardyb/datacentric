@@ -278,11 +278,11 @@ void DataCentricTestApp::initialize(int aStage)
         std::string temp2 = par("sinkFor").stringValue();
         processSinkFor(temp2);
 
-        std::string temp2 = par("collaboratorInitiatorFor").stringValue();
-        processCollaboratorInitiatorFor(temp2);
+        std::string temp3 = par("collaboratorInitiatorFor").stringValue();
+        processCollaboratorInitiatorFor(temp3);
 
-        std::string temp2 = par("collaboratorFor").stringValue();
-        processCollaboratorFor(temp2);
+        std::string temp4 = par("collaboratorFor").stringValue();
+        processCollaboratorFor(temp4);
 
 
 

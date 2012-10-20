@@ -3656,7 +3656,7 @@ void UpdateGradientFile()
     std::ostringstream ss;
     ss.clear();
     ss.str(s);
-    ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+    ss << ".\\GradientData\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
 
     //int remove_failure = std::remove(ss.str().c_str());
     //if ( remove_failure )
@@ -3777,14 +3777,18 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 	{
     case ADVERT:
     case INTEREST:
+    case COLLABORATION:
     case REINFORCE:
     case REINFORCE_INTEREST:
+    case REINFORCE_COLLABORATION:
     case INTEREST_CORRECTION:
     case REINFORCE_INTEREST_CANCEL:
         UpdateGradientFile();
 	    break;
 	}
 #endif
+
+
 
 }
 
@@ -3885,7 +3889,7 @@ void collaboration_convergence_timeout(void* relevantObject)
     State* s = (State*)relevantObject;
     s->converged = 1;
 
-    if ( s->prefix == FORWARD_AND_SOURCEPREFIX
+    if ( s->prefix == FORWARD_AND_COLLABORATIONPREFIX
             && s->bestGradientToDeliver
             && !s->deliveryInterfaces )
     {
@@ -3897,7 +3901,7 @@ void collaboration_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
     }
 
-    if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
+    if ( s->prefix != FORWARD_AND_COLLABORATIONPREFIX && s->pktQ
             && s->bestGradientToDeliver
             && !s->deliveryInterfaces )
     {
@@ -3909,15 +3913,6 @@ void collaboration_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
     }
 
-    /*
-     * I think we may also need to reinforce interest when
-     * there are items in the queue for this state because
-     * after a (re)convergence it is not guarenteed that (where
-     * a data packet has previously stopped due to an immediate breakage
-     * or an ongoing new seqno reconvergence due to a breakage else where)
-     * the grad will be reinforced at that node from behind, i.e. the new
-     * convergence may result in a different path
-     */
 
 }
 
@@ -3937,7 +3932,22 @@ void collaboration_convergence_timeout(void* relevantObject)
 int isPrefix(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
     // pos condition record here?  no need must be if its a prefix
-    s->prefix = FORWARD_AND_SOURCEPREFIX;
+
+    //s->prefix = FORWARD_AND_SOURCEPREFIX;
+
+    if ( ((*_buf) & MSB2) == RECORD )
+    {
+        s->prefix = FORWARD_AND_SOURCEPREFIX;
+    }
+
+    if ( ((*_buf) & MSB2) == COLLABORATIONBASED )
+    {
+        s->prefix = FORWARD_AND_COLLABORATIONPREFIX;
+    }
+
+
+
+
 
     return 0;
 }
@@ -3974,11 +3984,24 @@ void setAllPrefixStatus(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
          * If ANY state is a prefix of THIS source record state
          * then mark EACH as a source prefix (prefix of a source record state)
          */
-        if ( ((*_data) & MSB2) == RECORD )
-        {
+        //if ( ((*_data) & MSB2) == RECORD )
+        //{
             action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
                    current_prefix_name, 0, isPrefix); // CHECK IF ZERO OK? YES.
-        }
+        //}
+    }
+
+    if ( s->action == COLLABORATE_ACTION )
+    {
+        /*
+         * If ANY state is a prefix of THIS source record state
+         * then mark EACH as a source prefix (prefix of a source record state)
+         */
+        //if ( ((*_data) & MSB2) == COLLABORATIONBASED )
+        //{
+            action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
+                   current_prefix_name, 0, isPrefix); // CHECK IF ZERO OK? YES.
+        //}
     }
 
     numSinks = 0;
@@ -4775,13 +4798,11 @@ void handle_collaboration(control_data cd)
             // this is a once only on first sight for all the (interest) states
             // we have ever seen, to say whether or not it is a prefix of one
             // that was previously set as SOURCE_ACTION
-            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
+            if ( t->s->prefix != FORWARD_AND_COLLABORATIONPREFIX &&
                     t->s->prefix != PREFIX_CHECKED )
             {
-                // NBNB ADJUST THIS CODE ANDTHE CALLED FUNCTIONS SO
-                // THEY WORK FOR COLLABORATIONS ASWELL
                 traverse(rd->top_state, queue, 0, setAllPrefixStatus);
-                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
+                if ( t->s->prefix != FORWARD_AND_COLLABORATIONPREFIX )
                 {
                     t->s->prefix = PREFIX_CHECKED;
                 }
@@ -4789,7 +4810,7 @@ void handle_collaboration(control_data cd)
 
             // try doing timeout for ALL nodes
             t->s->converged = 0;
-            setTimer(0.2, t->s, interest_convergence_timeout);
+            setTimer(0.2, t->s, collaboration_convergence_timeout);
 
             t->s->bestGradientToDeliverUpdated = false;
             outgoing_packet.message_type = COLLABORATION;
@@ -5543,25 +5564,36 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
 
 
 
-
-
-
 /*
  * Should these start_reinforce... functions be incorporated into the handle ones
  * only treat as arrived from SELF?
  */
 void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
 {
-    reinforceObtainGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+    // ??????????????
+    if ( _if != UNKNOWN_INTERFACE )
+    {
+        reinforceObtainGradient(fullyqualifiedname, _if, seqno);
+    }
+
+    // think 'obtain' grad to self is ok for collaborators
+    // but allow calling code to choose - see above
+    //reinforceObtainGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+
     //StateNode* sn = FindStateNode(rd->stateTree, specific_data_value._dataname_struct1.the_dataname);
     trie* t = trie_add(rd->top_state, fullyqualifiedname, STATE);
 
     if ( t && t->s->bestGradientToDeliver )
     {
-        // next hop already reinforced so stop here
         if ( t->s->deliveryInterfaces )
         {
-            reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+            // next hop already reinforced so stop here
+            // I think the deliver gradient to self should probably only
+            // be on the collaborator initiator
+            // otherwise may cause issues because new start ups will get
+            // passed a grad showing best cost to several different places
+
+            //reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
             return;
         }
 
@@ -5570,8 +5602,18 @@ void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_
 
         // also reinforce the path to the source for breakage messages
         // even if it is self
-        reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+
+        // Think not to do this see above comment
+        // data will get delivered by virtue of the state action type
+        //reinforceDeliverGradient(fullyqualifiedname, SELF_INTERFACE, seqno);
+
         reinforceDeliverGradient(fullyqualifiedname, interface, seqno);
+
+
+        //?????????
+        setTimer(0.01, t->s, send_queued_data);
+
+
 
         // If interface is self do not send message on
         // NEED to think a bit more about this iro collaberation

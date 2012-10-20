@@ -218,6 +218,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define FORWARD_AND_SOURCEPREFIX 10
 #define PREFIX_CHECKED 11
 #define FORWARD_AND_SINK_SUFFIX 12
+#define FORWARD_AND_COLLABORATIONPREFIX 13
 
 
 
@@ -834,6 +835,7 @@ void handle_advert(control_data cd);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
 void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
+void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void handle_reinforce_interest(control_data cd);
 void handle_data(control_data cd);
 void handle_neighbor_bcast(control_data cd);

@@ -30,6 +30,10 @@ class HostReference  : public cSimpleModule
     // OPERATIONS
     virtual void handleSelfMsg(cMessage*);
     virtual void handleLowerMsg(cMessage*);
+    void SetString(cPar& _par, const char * _s);
+    void SetDouble(cPar& _par, double _d);
+    void SetBool(cPar& _par, bool _b);
+    void SetInt(cPar& _par, int _i);
 
 
 

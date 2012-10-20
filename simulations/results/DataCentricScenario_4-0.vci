@@ -1,0 +1,24 @@
+file 5567 1350693769                                            
+version 2
+run DataCentricScenario_4-0-20121020-01:40:41-3288
+attr configname DataCentricScenario_4
+attr datetime 20121020-01:40:41
+attr experiment DataCentricScenario_4
+attr inifile DataCentric.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network DataCentricNet
+attr processid 3288
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+vector 1377  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
+vector 1382  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
+vector 1384  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
+1377	678 1631 5691 338226 1.005 1.568162057436 62 0 125 125 15625
+1382	2309 1629 5691 338226 1.005 1.568162057436 62 0 0 0 0
+1384	3938 1629 5691 338226 1.005 1.568162057436 62 0 0 0 0

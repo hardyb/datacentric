@@ -5,16 +5,31 @@ simple DataCentricTestApp extends TrafGenPar
 {
     parameters:
         @class(DataCentricTestApp);
-        bool debug;
-        string xxx = default("hello");
         
+        // IMPORTANT
+        // #######################
+        // These parameters are being set indirectly through a host reference
+        // which resides in a geographical region module
+        //
+        // Since there is no way in omnet to know whether a parameter
+        // has been set from default or set programatically through the reference
+        // we must impose a manual rule that in this ned file parameters MUST
+        // have the following defaults
+        //
+        // int    -  0
+        // double - 0.0
+        // bool   - false
+        // string - ""
+        //
+         
+        bool debug;
         string sinkFor = default("");
         string collaboratorInitiatorFor = default("");
         string collaboratorFor = default("");
         string sourceFor = default("");// = "\x48\x49\x54";
         string nodeContext = default("");
         string appMode = default("");
-        bool mains = default(true); // TO BE DISCONTINUED?
+        bool mains = default(false); // TO BE DISCONTINUED?
         double probabilityDown = default(0); // TO BE DISCONTINUED?
         string actionThreads = default("");
         
@@ -30,7 +45,6 @@ simple DataCentricTestApp extends TrafGenPar
         bool isAppliance = default(false);
         double otherAction1 = default(0.0);
         double otherAction2 = default(0.0);
-        
         
         //sinks[numSinks] : 
         //byte y;
