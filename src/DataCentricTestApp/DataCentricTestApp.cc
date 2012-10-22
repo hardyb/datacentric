@@ -23,6 +23,97 @@
 
 Define_Module(DataCentricTestApp);
 
+
+
+
+int escapeBuffer(unsigned char* pkt, unsigned int len, unsigned char* out)
+{
+int i = 0;
+while ( len )
+{
+        switch (*(pkt))
+        {
+            case 0x27:
+                out[i++] = 0x27;
+                out[i++] = 0x27;
+                break;
+            case 0x0:
+                out[i++] = 0x27;
+                out[i++] = 0x1;
+                break;
+            case 0xFF:
+                out[i++] = 0x27;
+                out[i++] = 0x2;
+                break;
+            default:
+                out[i++] = *pkt;
+                break;
+        }
+        pkt++;
+        len--;
+}
+out[i] = 0x0;
+
+return i;
+}
+
+
+
+
+
+
+
+
+
+int unescapeBuffer(unsigned char* pkt, unsigned char* out)
+{
+bool escaped = false;
+int i = 0;
+while ( *pkt )
+{
+    if ( !escaped )
+    {
+        if ( *(pkt) == 0x27 )
+        {
+            escaped = true;
+        }
+        else
+        {
+            out[i++] = *(pkt);
+        }
+    }
+    else
+    {
+        switch (*(pkt))
+        {
+            case 0x27:
+                out[i++] = 0x27;
+                break;
+            case 0x1:
+                out[i++] = 0x00;
+                break;
+            case 0x2:
+                out[i++] = 0xFF;
+                break;
+            default:
+                out[i++] = *pkt;
+                break;
+        }
+        escaped = false;
+    }
+    pkt++;
+}
+
+return i;
+}
+
+
+
+
+
+
+
+
 void DataCentricTestApp::initialize(int aStage)
 {
     TrafGenPar::initialize(aStage); //DO NOT DELETE!!
@@ -531,8 +622,9 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
     if ( appPkt->getKind() == DATA_PACKET )
     {
         unsigned int _size = appPkt->getPktData().size();
-        unsigned char* pkt = (unsigned char*)malloc(_size);
+        unsigned char* pkt = (unsigned char*)malloc(_size+1);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
+        pkt[_size] = 0;
 
         for (int i = 0; i < _size; i++ )
         {
@@ -618,8 +710,14 @@ void DataCentricTestApp::processDemandData(unsigned char* pkt)
 
 union signedShortData
 {
-    char theBytes[2];
-    unsigned short theSignedShort;
+    unsigned char theBytes[2];
+    signed short theSignedShort;
+};
+
+union unSignedShortData
+{
+    unsigned char theBytes[2];
+    unsigned short theUnSignedShort;
 };
 
 
@@ -627,12 +725,28 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 {
     signed short d;
     signedShortData w;
-    w.theBytes[0] = pkt[0];
-    w.theBytes[1] = pkt[1];
+    unsigned char out[4];
+    *(strchr((char*)pkt, 0xFF)) = 0;
+    //for ( int i; i < strlen((const char*)pkt); i++ )
+    //{
+    //    if ( pkt[i] == 0xFF )
+    //    {
+    //        pkt[i] = 0x0;
+    //        break;
+    //    }
+    //}
+
+    unsigned int len = unescapeBuffer(pkt, out);
+    if ( len != 2 )
+        throw cRuntimeError("Watts must be 2 bytes signed short");
+
+    w.theBytes[0] = out[0];
+    w.theBytes[1] = out[1];
     d = w.theSignedShort;
-
-
 }
+
+
+
 
 
 
@@ -640,16 +754,16 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
 {
     unsigned short applianceId;
     unsigned short bid;
-    signedShortData ai;
-    signedShortData bd;
+    unSignedShortData ai;
+    unSignedShortData bd;
 
     ai.theBytes[0] = pkt[0];
     ai.theBytes[1] = pkt[1];
-    applianceId = ai.theSignedShort;
+    applianceId = ai.theUnSignedShort;
 
     bd.theBytes[0] = pkt[2];
     bd.theBytes[1] = pkt[3];
-    bid = bd.theSignedShort;
+    bid = bd.theUnSignedShort;
 
     processABid(applianceId, bid);
 
@@ -898,13 +1012,19 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     *ifs >> seconds;
     finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
-
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
     ss.clear();
     ss << "\x2\x2";
-    ss << (unsigned char)(watts & 0xff);
-    ss << (unsigned char)((watts >>8) & 0xff);
+
+    signedShortData d;
+    d.theSignedShort = watts;
+    unsigned char escapedData[8];
+    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    ss << escapedData;
+
+    //ss << (unsigned char)(watts & 0xff);
+    //ss << (unsigned char)((watts >>8) & 0xff);
     ss << "\x0";
     //ss << "\x2\x2\x" << hex << watts << "\x0";
     std::string s(ss.str());
@@ -945,12 +1065,26 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
         ss.clear();
         ss << "\x2\x1";
 
-        // could use the union instead
-        ss << (unsigned char)(myAddr & 0xff);
-        ss << (unsigned char)((myAddr >>8) & 0xff);
+        unSignedShortData d;
+        d.theUnSignedShort = myAddr;
+        unsigned char escapedData[8];
+        unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+        ss << escapedData;
 
-        ss << (unsigned char)(lengthToBidFor & 0xff);
-        ss << (unsigned char)((lengthToBidFor >>8) & 0xff);
+        d.theUnSignedShort = lengthToBidFor;
+        len = escapeBuffer(d.theBytes, 2, escapedData);
+        ss << escapedData;
+
+
+
+
+
+        // could use the union instead
+        //ss << (unsigned char)(myAddr & 0xff);
+        //ss << (unsigned char)((myAddr >>8) & 0xff);
+
+        //ss << (unsigned char)(lengthToBidFor & 0xff);
+        //ss << (unsigned char)((lengthToBidFor >>8) & 0xff);
         ss << "\x0";
         std::string s(ss.str());
 
