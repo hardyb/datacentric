@@ -2732,7 +2732,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     // Not all collaborators have delivery grads to self
     // only the collaborator initiator
     // needs some thought
-    if ( s->action == COLLABORATE_ACTION )
+    if ( s->action == COLLABORATE_ACTION && excludedInterface != SELF_INTERFACE )
     {
         handleApplicationData(sending_packet->data, sending_packet->creation_time);
         sent = 1;

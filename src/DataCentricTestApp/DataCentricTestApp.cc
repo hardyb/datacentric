@@ -122,7 +122,7 @@ void DataCentricTestApp::initialize(int aStage)
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)
     {
-        currentDemand = 0;
+        actualDemand = 0;
         mDownTime = 0;
         mLastOnTime = 0;
         mLastOffTime = 0;
@@ -557,8 +557,10 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
     for (std::vector<std::string>::iterator i = actionThreads.begin();
             i != actionThreads.end(); ++i)
     {
+        string actionsFolder(".\\Actions\\");
+        string actionFile = actionsFolder + *(i);
         ifstream* actionStream = new ifstream();
-        actionStream->open(i->c_str());
+        actionStream->open(actionFile.c_str());
         if ( actionStream->is_open() )
         {
             ActionStreamHierarchy* ash = new ActionStreamHierarchy();
@@ -635,6 +637,7 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
                 processEnvironmentalData(++pkt);
                 break;
             case 0x02: // Demand Query
+            case 0x42: // Demand Collaboration
                 processDemandData(++pkt);
                 break;
             //case 0x0:
@@ -757,15 +760,23 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
     unSignedShortData ai;
     unSignedShortData bd;
 
-    ai.theBytes[0] = pkt[0];
-    ai.theBytes[1] = pkt[1];
+    unsigned char out[8];
+    *(strchr((char*)pkt, 0xFF)) = 0;
+
+    unsigned int len = unescapeBuffer(pkt, out);
+    if ( len != 4 )
+        throw cRuntimeError("Bid must be 4 bytes appliance Id unsigned short & bid unsigned short");
+
+    ai.theBytes[0] = out[0];
+    ai.theBytes[1] = out[1];
     applianceId = ai.theUnSignedShort;
 
-    bd.theBytes[0] = pkt[2];
-    bd.theBytes[1] = pkt[3];
+    bd.theBytes[0] = out[2];
+    bd.theBytes[1] = out[3];
     bid = bd.theUnSignedShort;
 
     processABid(applianceId, bid);
+    sendActualDemandPkt();
 
 }
 
@@ -775,7 +786,7 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
 
 
 
-void DataCentricTestApp::processABid(signed short _applianceId, unsigned short _bid)
+void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short _bid)
 {
     double currentTime = simTime().dbl();
     unsigned short myAddr = netModule->mAddress & 0xFFFF;
@@ -820,7 +831,7 @@ void DataCentricTestApp::processABid(signed short _applianceId, unsigned short _
             {
                 if ( mBids.begin()->second == myAddr )
                 {
-                    setCurrentDemand(mCurrentWatts);
+                    setCurrentDemand(mRequestedDemand);
                     scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                     appState = APPSTATE_RUNNING;
                 }
@@ -846,7 +857,7 @@ void DataCentricTestApp::processABid(signed short _applianceId, unsigned short _
             {
                 mLastOnTime = simTime().dbl();
                 mDownTime += (mLastOnTime - mLastOffTime);
-                setCurrentDemand(mCurrentWatts);
+                setCurrentDemand(mRequestedDemand);
                 scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                 appState = APPSTATE_RUNNING;
             }
@@ -881,7 +892,7 @@ void DataCentricTestApp::processTemperatureData(unsigned char* pkt)
 
 void DataCentricTestApp::setCurrentDemand(signed short _demand)
 {
-    currentDemand = _demand;
+    actualDemand = _demand;
     mNetMan->recordDemand();
 
 }
@@ -996,12 +1007,9 @@ void DataCentricTestApp::FileEnd(ActionThreadsIterator& i)
 void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
 {
     signed short watts;
-    double period;
     ifstream* ifs = i->second->back();
     *ifs >> watts;
-    mCurrentWatts = watts;
-
-    //*ifs >> period;
+    mRequestedDemand = watts;
 
     double hours;
     double minutes;
@@ -1012,31 +1020,6 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     *ifs >> seconds;
     finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
-    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
-    std::ostringstream ss;
-    ss.clear();
-    ss << "\x2\x2";
-
-    signedShortData d;
-    d.theSignedShort = watts;
-    unsigned char escapedData[8];
-    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
-    ss << escapedData;
-
-    //ss << (unsigned char)(watts & 0xff);
-    //ss << (unsigned char)((watts >>8) & 0xff);
-    ss << "\x0";
-    //ss << "\x2\x2\x" << hex << watts << "\x0";
-    std::string s(ss.str());
-    unsigned int a = s.size();
-    appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
-    appPkt->setKind(DATA_PACKET);
-    send(appPkt, mLowerLayerOut);
-
-    //scheduleAt(simTime()+period, i->first);
-
-    //i->first->
-    //this->cancelEvent(i->first);
 
 
     mOriginalNextDemandActionTime = finalSeconds + ScheduleStartTime();
@@ -1059,49 +1042,75 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
 
 
         processABid(myAddr, lengthToBidFor);
-
-        DataCentricAppPkt* appPkt = new DataCentricAppPkt("Bid");
-        std::ostringstream ss;
-        ss.clear();
-        ss << "\x2\x1";
-
-        unSignedShortData d;
-        d.theUnSignedShort = myAddr;
-        unsigned char escapedData[8];
-        unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
-        ss << escapedData;
-
-        d.theUnSignedShort = lengthToBidFor;
-        len = escapeBuffer(d.theBytes, 2, escapedData);
-        ss << escapedData;
-
-
-
-
-
-        // could use the union instead
-        //ss << (unsigned char)(myAddr & 0xff);
-        //ss << (unsigned char)((myAddr >>8) & 0xff);
-
-        //ss << (unsigned char)(lengthToBidFor & 0xff);
-        //ss << (unsigned char)((lengthToBidFor >>8) & 0xff);
-        ss << "\x0";
-        std::string s(ss.str());
-
-        // check size, follow size and content
-        unsigned int a = s.size();
-        appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
-        appPkt->setKind(DATA_PACKET);
-        send(appPkt, mLowerLayerOut);
+        sendActualDemandPkt();
+        sendAGivenBidPkt(lengthToBidFor);
 
     }
     else
     {
         setCurrentDemand(watts);
+        sendActualDemandPkt();
         scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
     }
 
 }
+
+
+
+
+
+
+void DataCentricTestApp::sendActualDemandPkt()
+{
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
+    std::ostringstream ss;
+    ss.clear();
+    ss << "\x2\x2";
+
+    signedShortData d;
+    d.theSignedShort = actualDemand;
+    unsigned char escapedData[8];
+    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    ss << escapedData;
+
+    ss << "\x0";
+    std::string s(ss.str());
+    unsigned int a = s.size();
+    appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
+    appPkt->setKind(DATA_PACKET);
+    send(appPkt, mLowerLayerOut);
+}
+
+
+void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor)
+{
+    unsigned short myAddr = netModule->mAddress & 0xFFFF;
+
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Bid");
+    std::ostringstream ss;
+    ss.clear();
+    ss << "\x42\x1";
+
+    unSignedShortData d;
+    d.theUnSignedShort = myAddr;
+    unsigned char escapedData[8];
+    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    ss << escapedData;
+
+    d.theUnSignedShort = lengthToBidFor;
+    len = escapeBuffer(d.theBytes, 2, escapedData);
+    ss << escapedData;
+    ss << "\x0";
+    std::string s(ss.str());
+
+    // check size, follow size and content
+    unsigned int a = s.size();
+    appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
+    appPkt->setKind(DATA_PACKET);
+    send(appPkt, mLowerLayerOut);
+}
+
+
 
 
 

@@ -81,7 +81,15 @@ class DataCentricTestApp : public TrafGenPar
 
 
     std::string contextData;
-    signed short currentDemand;
+
+
+
+    // This is the actual demand the appliance is currently using
+    //
+    // If the appliance is collaborating then the actual demand could be different
+    // from requested demand for example zero if the appliance is paused
+    signed short actualDemand;
+
     bool isAppliance;
 
   protected:
@@ -96,6 +104,9 @@ class DataCentricTestApp : public TrafGenPar
     int getNextAction(ActionThreadsIterator& i);
     //int getReading(ifstream* ifs);
     void processWatts(ActionThreadsIterator& i);
+    void sendActualDemandPkt();
+    void sendAGivenBidPkt(unsigned short lengthToBidFor);
+
     void startProgram(ActionThreadsIterator& i);
     //void actionReading(int reading);
     //void actionProgram(string program);
@@ -108,7 +119,7 @@ class DataCentricTestApp : public TrafGenPar
     void processBidData(unsigned char* pkt);
     void processOccupancyData(unsigned char* pkt);
     void processTemperatureData(unsigned char* pkt);
-    void processABid(signed short _applianceId, unsigned short _bid);
+    void processABid(unsigned short _applianceId, unsigned short _bid);
 
 
     virtual void SendTraf(cPacket *msg, const char*);
@@ -134,7 +145,14 @@ class DataCentricTestApp : public TrafGenPar
     // member variables for appliance bid process
     double mLastOnTime;
     double mLastOffTime;
-    signed short mCurrentWatts;
+
+    // This is the demand the appliance currently wants to use, eg it has been turned on
+    // and normally would immediately use this demand
+    //
+    // If the appliance is collaborating then the actual demand could be different
+    // for example zero if the appliance is paused
+    signed short mRequestedDemand;
+
     double mOriginalNextDemandActionTime;
     cMessage *mDemandActionMessage;
     double mDownTime;
@@ -157,25 +175,31 @@ class DataCentricTestApp : public TrafGenPar
     int mAppMode;
 
     //typedef NEIGHBOUR_ADDR ApplianceId;
-    typedef signed short ApplianceId;
-    typedef unsigned short DemandBid;
+    typedef unsigned short ApplianceId;
+    typedef double DemandBid;
     typedef unsigned short Priority;
 
     std::map<DemandBid, ApplianceId> mBids;
-    void removeBidByApplianceId(signed short _applianceId)
+    void removeBidByApplianceId(unsigned short _applianceId)
     {
         // Remove bid
-        BidI existingApplianceBid;
-        existingApplianceBid = mBids.end();
+        DemandBid foundKey = 0;
+
+        //BidI existingApplianceBid;
+        //existingApplianceBid = mBids.end();
         for ( BidI i = mBids.begin(); i != mBids.end(); i++ )
         {
             if ( i->second == _applianceId )
             {
-                existingApplianceBid = i;
+                //existingApplianceBid = i;
+                foundKey = i->first;
                 break;
             }
         }
-        mBids.erase(existingApplianceBid);
+        if ( foundKey )
+        {
+            mBids.erase(foundKey);
+        }
     };
 
 
