@@ -248,10 +248,22 @@
       <items xsi:type="scave:Add" filterPattern="demandVector" type="VECTOR"/>
       <items xsi:type="scave:LineChart" name="demandVector" lineNameFormat="">
         <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Type/demandVector" value="SampleHold"/>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="demandVec" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="demandVec" lineNameFormat="">
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan demandVector" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan dataPacketE2EDelay" value="false"/>
+        <properties name="Line.Type/DataCentricNet.host[1].app demandVec" value="SampleHold"/>
+        <properties name="Line.Type/DataCentricNet.host[2].app demandVec" value="SampleHold"/>
+        <properties name="Line.Type/DataCentricNet.host[3].app demandVec" value="SampleHold"/>
+        <properties name="Line.Type/DataCentricNet.host[4].app demandVec" value="SampleHold"/>
+        <properties name="Line.Display/DataCentricNet.host[2].app demandVec" value="false"/>
+        <properties name="Line.Display/DataCentricNet.host[3].app demandVec" value="false"/>
       </items>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22 //@datasets/@datasets.0/@items.25 //@datasets/@datasets.0/@items.28 //@datasets/@datasets.0/@items.31 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.34 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.1/@items.7 //@datasets/@datasets.1/@items.10 //@datasets/@datasets.1/@items.13 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.2/@items.3 //@datasets/@datasets.0/@items.37 //@datasets/@datasets.2/@items.5 //@datasets/@datasets.2/@items.7 //@datasets/@datasets.1/@items.16 //@datasets/@datasets.2/@items.9"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.16 //@datasets/@datasets.0/@items.14 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.6 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.19 //@datasets/@datasets.0/@items.22 //@datasets/@datasets.0/@items.25 //@datasets/@datasets.0/@items.28 //@datasets/@datasets.0/@items.31 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.0/@items.34 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.1/@items.7 //@datasets/@datasets.1/@items.10 //@datasets/@datasets.1/@items.13 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.2/@items.3 //@datasets/@datasets.0/@items.37 //@datasets/@datasets.2/@items.5 //@datasets/@datasets.2/@items.7 //@datasets/@datasets.1/@items.16 //@datasets/@datasets.2/@items.9 //@datasets/@datasets.2/@items.11"/>
   </chartSheets>
 </scave:Analysis>

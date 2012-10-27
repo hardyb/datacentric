@@ -185,6 +185,7 @@ void DataCentricTestApp::initialize(int aStage)
         mNumTrafficMsgs     = 0;
         totalByteRecv           = 0;
         e2eDelayVec.setName("End-to-end delay");
+        demandVec.setName("demandVec");
         meanE2EDelayVec.setName("Mean end-to-end delay");
 
     }
@@ -806,9 +807,11 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
 
     if ( !_bid )
     {
+        cout << "#" << myAddr << "# Appliance " << _applianceId << " bid zero, removing from list" << endl;
         removeBidByApplianceId(_applianceId);
         if ( _applianceId == myAddr )
         {
+            cout << "#" << myAddr << "# We are going into IDLE state" << endl;
             setCurrentDemand(0);
             scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
             appState = APPSTATE_IDLE;
@@ -831,12 +834,16 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
             {
                 if ( mBids.begin()->second == myAddr )
                 {
+                    cout << "#" << myAddr << "# Appliance " << _applianceId <<
+                            " bid " << _bid << ", RUNNING" << endl;
                     setCurrentDemand(mRequestedDemand);
                     scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                     appState = APPSTATE_RUNNING;
                 }
                 else
                 {
+                    cout << "#" << myAddr << "# Appliance " << _applianceId <<
+                            " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << endl;
                     setCurrentDemand(0);
                     mLastOffTime = simTime().dbl();
                     appState = APPSTATE_PAUSED;
@@ -846,6 +853,8 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
         case APPSTATE_RUNNING:
             if ( mBids.begin()->second != myAddr )
             {
+                cout << "#" << myAddr << "# Appliance " << _applianceId <<
+                        " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << endl;
                 setCurrentDemand(0);
                 mLastOffTime = simTime().dbl();
                 cancelEvent(mDemandActionMessage);
@@ -855,6 +864,8 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
         case APPSTATE_PAUSED:
             if ( mBids.begin()->second == myAddr )
             {
+                cout << "#" << myAddr << "# Appliance " << _applianceId <<
+                        " bid " << _bid << ", we are RUNNING again"<< endl;
                 mLastOnTime = simTime().dbl();
                 mDownTime += (mLastOnTime - mLastOffTime);
                 setCurrentDemand(mRequestedDemand);
@@ -893,6 +904,8 @@ void DataCentricTestApp::processTemperatureData(unsigned char* pkt)
 void DataCentricTestApp::setCurrentDemand(signed short _demand)
 {
     actualDemand = _demand;
+
+    demandVec.record((double)actualDemand);
     mNetMan->recordDemand();
 
 }

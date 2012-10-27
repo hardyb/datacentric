@@ -28,6 +28,19 @@ CONNECTION
 AAA00000046
 4201FF06
 3
+AAA00000005
+seqno: 0
+true
+246
+65535
+true
+false
+false
+false
+CONNECTION
+AAA00000046
+4201FF06
+3
 AAA00000078
 seqno: 0
 true
@@ -54,36 +67,10 @@ CONNECTION
 AAA00000046
 4201FF06
 3
-AAA00000005
-seqno: 0
-true
-246
-65535
-true
-false
-false
-false
-CONNECTION
-AAA00000046
-4201FF06
-3
 AAA0000005D
 seqno: 0
 true
 441
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000046
-4201FF06
-3
-AAA00000036
-seqno: 0
-true
-528
 65535
 false
 false
@@ -110,6 +97,19 @@ AAA00000019
 seqno: 0
 true
 819
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000046
+4201FF06
+3
+AAA00000036
+seqno: 0
+true
+528
 65535
 false
 false

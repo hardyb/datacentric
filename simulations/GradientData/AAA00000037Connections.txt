@@ -41,6 +41,19 @@ CONNECTION
 AAA00000037
 4201FF06
 3
+AAA00000039
+seqno: 0
+true
+310
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000037
+4201FF06
+3
 AAA0000006E
 seqno: 0
 true
@@ -73,19 +86,6 @@ true
 281
 65535
 true
-false
-false
-false
-CONNECTION
-AAA00000037
-4201FF06
-3
-AAA00000039
-seqno: 0
-true
-310
-65535
-false
 false
 false
 false

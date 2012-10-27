@@ -90,6 +90,7 @@ class DataCentricTestApp : public TrafGenPar
     // from requested demand for example zero if the appliance is paused
     signed short actualDemand;
 
+
     bool isAppliance;
 
   protected:
@@ -164,6 +165,7 @@ class DataCentricTestApp : public TrafGenPar
     double  totalByteRecv;
     cOutVector e2eDelayVec;
     cOutVector meanE2EDelayVec;
+    cOutVector demandVec;
 
     cMessage *mpStartMessage;
     //ifstream mActivityFile;

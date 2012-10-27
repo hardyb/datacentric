@@ -106,12 +106,12 @@ CONNECTION
 AAA00000019
 4201FF06
 3
-AAA00000005
+AAA0000001C
 seqno: 0
 true
-363
+441
 65535
-true
+false
 false
 false
 false
@@ -119,12 +119,12 @@ CONNECTION
 AAA00000019
 4201FF06
 3
-AAA0000001C
+AAA00000005
 seqno: 0
 true
-441
+363
 65535
-false
+true
 false
 false
 false

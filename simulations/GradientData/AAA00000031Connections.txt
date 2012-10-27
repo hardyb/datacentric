@@ -28,12 +28,12 @@ CONNECTION
 AAA00000031
 4201FF06
 3
-AAA00000024
+AAA0000006D
 seqno: 0
 true
-473
+619
 65535
-true
+false
 false
 false
 false
@@ -41,12 +41,12 @@ CONNECTION
 AAA00000031
 4201FF06
 3
-AAA0000006D
+AAA00000024
 seqno: 0
 true
-619
+473
 65535
-false
+true
 false
 false
 false

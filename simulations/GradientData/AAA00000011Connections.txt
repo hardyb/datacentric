@@ -80,19 +80,6 @@ CONNECTION
 AAA00000011
 4201FF06
 3
-AAA0000003B
-seqno: 0
-true
-563
-65535
-false
-false
-false
-false
-CONNECTION
-AAA00000011
-4201FF06
-3
 AAA0000003C
 seqno: 0
 true
@@ -110,6 +97,19 @@ AAA00000006
 seqno: 0
 true
 651
+65535
+false
+false
+false
+false
+CONNECTION
+AAA00000011
+4201FF06
+3
+AAA0000003B
+seqno: 0
+true
+563
 65535
 false
 false

@@ -54,12 +54,12 @@ CONNECTION
 AAA0000002B
 4201FF06
 3
-AAA00000018
+AAA00000011
 seqno: 0
 true
-299
+389
 65535
-true
+false
 false
 false
 false
@@ -93,10 +93,23 @@ CONNECTION
 AAA0000002B
 4201FF06
 3
-AAA00000011
+AAA00000018
 seqno: 0
 true
-389
+299
+65535
+true
+false
+false
+false
+CONNECTION
+AAA0000002B
+4201FF06
+3
+AAA00000006
+seqno: 0
+true
+618
 65535
 false
 false
@@ -110,19 +123,6 @@ AAA0000003B
 seqno: 0
 true
 541
-65535
-false
-false
-false
-false
-CONNECTION
-AAA0000002B
-4201FF06
-3
-AAA00000006
-seqno: 0
-true
-618
 65535
 false
 false

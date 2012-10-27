@@ -28,12 +28,12 @@ CONNECTION
 AAA00000064
 4201FF06
 3
-AAA0000000C
+AAA0000007D
 seqno: 0
 true
-409
+274
 65535
-false
+true
 false
 false
 false
@@ -41,12 +41,12 @@ CONNECTION
 AAA00000064
 4201FF06
 3
-AAA0000007D
+AAA0000000C
 seqno: 0
 true
-274
+409
 65535
-true
+false
 false
 false
 false
