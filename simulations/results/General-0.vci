@@ -1,4 +1,4 @@
-file 746 1349392750                                             
+file 746 1349389150                                             
 version 2
 run General-0-20121005-00:18:35-400
 attr configname General
@@ -15,10 +15,9 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-
 vector 1377  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
-vector 1382  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
-vector 1384  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
 1377	630 40 5209 16355 1.005 1.01 2 0 125 125 15625
+vector 1382  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
 1382	670 38 5209 16355 1.005 1.01 2 0 0 0 0
+vector 1384  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
 1384	708 38 5209 16355 1.005 1.01 2 0 0 0 0

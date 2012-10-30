@@ -1,4 +1,4 @@
-file 235888 1349104208                                          
+file 235888 1349100608                                          
 version 2
 run AODVScenario_1b-0-20121001-16:03:48-3064
 attr configname AODVScenario_1b
@@ -15,22 +15,21 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-
 vector 386  csma802154net.dataCentricNetworkMan  RREQPacketFrequency  ETV
-vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
-vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
-vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
-vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
-vector 398  csma802154net.fixhost[6].udpApp  "End-to-end delay"  ETV
-vector 383  csma802154net.dataCentricNetworkMan  dataPacketE2EDelay  ETV
-vector 412  csma802154net.fixhost[20].udpApp  "End-to-end delay"  ETV
-vector 401  csma802154net.fixhost[9].udpApp  "End-to-end delay"  ETV
-383	1085 129 694353 841840 20.041276037288 26.608575485469 3 0.041276037288 5.608575485469 5.713455591053 31.461868164962
 386	1214 47457 1135 858096 2.005 33.07559115307 1602 0 193 31408 2127264
+vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
 387	48671 46770 1135 858096 2.005 33.07559115307 1602 0 0 0 0
+vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
 388	95441 46770 1135 858096 2.005 33.07559115307 1602 0 1 12 12
+vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
 389	142211 46774 1135 858096 2.005 33.07559115307 1602 0 29 356 2834
+vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
 390	188985 46774 1135 858096 2.005 33.07559115307 1602 0 26 318 2516
+vector 398  csma802154net.fixhost[6].udpApp  "End-to-end delay"  ETV
 398	235759 43 694353 694353 20.041276037288 20.041276037288 1 0.041276037288 0.041276037288 0.041276037288 0.0017037112542004
-401	235802 43 841840 841840 26.608575485469 26.608575485469 1 5.608575485469 5.608575485469 5.608575485469 31.456118976204
+vector 383  csma802154net.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+383	1085 129 694353 841840 20.041276037288 26.608575485469 3 0.041276037288 5.608575485469 5.713455591053 31.461868164962
+vector 412  csma802154net.fixhost[20].udpApp  "End-to-end delay"  ETV
 412	235845 43 695077 695077 20.063604068296 20.063604068296 1 0.063604068296 0.063604068296 0.063604068296 0.0040454775038022
+vector 401  csma802154net.fixhost[9].udpApp  "End-to-end delay"  ETV
+401	235802 43 841840 841840 26.608575485469 26.608575485469 1 5.608575485469 5.608575485469 5.608575485469 31.456118976204

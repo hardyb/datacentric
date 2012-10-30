@@ -1,4 +1,4 @@
-file 243558 1348876475                                          
+file 243558 1348872875                                          
 version 2
 run General-0-20120928-15:46:13-2772
 attr configname General
@@ -15,14 +15,13 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-
 vector 386  csma802154net.dataCentricNetworkMan  RREQPacketFrequency  ETV
-vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
-vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
-vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
-vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
 386	776 49001 1135 1060120 2.005 34.794364602569 1643 0 235 24302 1623818
+vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
 387	49777 48438 1135 1060120 2.005 34.794364602569 1643 0 0 0 0
+vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
 388	98215 48438 1135 1060120 2.005 34.794364602569 1643 0 1 12 12
+vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
 389	146653 48451 1135 1060120 2.005 34.794364602569 1643 0 166 981 39645
+vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
 390	195104 48454 1135 1060120 2.005 34.794364602569 1643 0 166 966 42578

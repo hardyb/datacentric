@@ -1,14 +1,14 @@
 version 2
-run AODVScenario_1f-0-20121029-22:56:20-3412
+run AODVScenario_1f-0-20121030-12:14:29-2756
 attr configname AODVScenario_1f
-attr datetime 20121029-22:56:20
+attr datetime 20121030-12:14:29
 attr experiment AODVScenario_1f
 attr inifile AODV.ini
 attr iterationvars ""
 attr iterationvars2 $repetition=0
 attr measurement ""
 attr network csma802154net
-attr processid 3412
+attr processid 2756
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -21,14 +21,15 @@ vector 512  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
 vector 513  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
 vector 514  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
 vector 515  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
-vector 537  csma802154net.fixhost[19].udpApp  "End-to-end delay"  ETV
+vector 518  csma802154net.dataCentricNetworkMan  pendingRegistrationVector  ETV
+vector 538  csma802154net.fixhost[19].udpApp  "End-to-end delay"  ETV
 vector 508  csma802154net.dataCentricNetworkMan  dataPacketE2EDelay  ETV
-vector 538  csma802154net.fixhost[20].udpApp  "End-to-end delay"  ETV
-vector 527  csma802154net.fixhost[9].udpApp  "End-to-end delay"  ETV
-vector 530  csma802154net.fixhost[12].udpApp  "End-to-end delay"  ETV
-vector 534  csma802154net.fixhost[16].udpApp  "End-to-end delay"  ETV
-vector 519  csma802154net.fixhost[1].udpApp  "End-to-end delay"  ETV
-vector 528  csma802154net.fixhost[10].udpApp  "End-to-end delay"  ETV
+vector 539  csma802154net.fixhost[20].udpApp  "End-to-end delay"  ETV
+vector 528  csma802154net.fixhost[9].udpApp  "End-to-end delay"  ETV
+vector 531  csma802154net.fixhost[12].udpApp  "End-to-end delay"  ETV
+vector 535  csma802154net.fixhost[16].udpApp  "End-to-end delay"  ETV
+vector 520  csma802154net.fixhost[1].udpApp  "End-to-end delay"  ETV
+vector 529  csma802154net.fixhost[10].udpApp  "End-to-end delay"  ETV
 508	4002216	70.037012032825	0.037012032825
 508	4003745	70.043052059372	0.043052059372
 508	4084145	71.062468043737	0.062468043737
@@ -8607,10 +8608,29 @@ vector 528  csma802154net.fixhost[10].udpApp  "End-to-end delay"  ETV
 517	4806166	80.406446040953	3
 517	4807860	80.418713130797	3
 517	4810040	80.422999667161	2
-519	4251579	73.104308063749	0.104308063749
-527	4084145	71.062468043737	0.062468043737
-528	4961609	80.903124568144	8.903124568144
-530	4129740	71.199251786485	0.199251786485
-534	4208862	72.273114889475	0.273114889475
-537	4002216	70.037012032825	0.037012032825
-538	4003745	70.043052059372	0.043052059372
+518	63159	43.5	1
+518	340039	44.5	2
+518	564664	45.271508191125	1
+518	567163	45.5	2
+518	793617	46.290608993976	1
+518	802096	46.5	2
+518	916717	46.866289338107	1
+518	998001	47.5	2
+518	1167626	48.075681434021	1
+518	1208188	48.5	2
+518	1435937	49.5	3
+518	1656078	50.263637296687	2
+518	1656532	50.5	3
+518	1914493	51.5	4
+518	2163864	52.293870286293	3
+518	2173316	52.5	4
+518	2376828	53.172353575753	3
+518	2383108	53.5	4
+518	2593756	54.5	5
+520	4251579	73.104308063749	0.104308063749
+528	4084145	71.062468043737	0.062468043737
+529	4961609	80.903124568144	8.903124568144
+531	4129740	71.199251786485	0.199251786485
+535	4208862	72.273114889475	0.273114889475
+538	4002216	70.037012032825	0.037012032825
+539	4003745	70.043052059372	0.043052059372

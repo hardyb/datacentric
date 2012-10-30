@@ -1,4 +1,4 @@
-file 243579 1349101915                                          
+file 243579 1349098315                                          
 version 2
 run AODVScenario_1-0-20121001-15:11:22-3788
 attr configname AODVScenario_1
@@ -15,14 +15,13 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-
 vector 386  csma802154net.dataCentricNetworkMan  RREQPacketFrequency  ETV
-vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
-vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
-vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
-vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
 386	797 49001 1135 1060120 2.005 34.794364602569 1643 0 235 24302 1623818
+vector 387  csma802154net.dataCentricNetworkMan  DiscoveryPacketFrequency  ETV
 387	49798 48438 1135 1060120 2.005 34.794364602569 1643 0 0 0 0
+vector 388  csma802154net.dataCentricNetworkMan  RegisterPacketFrequency  ETV
 388	98236 48438 1135 1060120 2.005 34.794364602569 1643 0 1 12 12
+vector 389  csma802154net.dataCentricNetworkMan  RReplyPacketFrequency  ETV
 389	146674 48451 1135 1060120 2.005 34.794364602569 1643 0 166 981 39645
+vector 390  csma802154net.dataCentricNetworkMan  AODVDataPacketFrequency  ETV
 390	195125 48454 1135 1060120 2.005 34.794364602569 1643 0 166 966 42578
