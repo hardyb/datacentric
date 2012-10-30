@@ -443,6 +443,7 @@ void DataCentricNetworkLayer::sendDownTheNIC()
             // SINCE CHANGES IN INETMANET INTEGRATION BRANCH
             // FOR DropTailQueue
             //mQueueModule->dropAll();
+            mQueueModule->clear();
 
             std::string s;
             std::ostringstream ss;
@@ -545,7 +546,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
                 moduleRD.interfaceTree = NULL;
                 moduleRD.top_context = trie_new();
                 moduleRD.top_state = trie_new();
-                mQueueModule->dropAll();
+                //mQueueModule->dropAll();
+                mQueueModule->clear();
 
                 std::string s;
                 std::ostringstream ss;

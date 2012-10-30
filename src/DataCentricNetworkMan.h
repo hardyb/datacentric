@@ -10,6 +10,7 @@
 // DataCentric 'C' associations
 #include "RoutingAndAggregation.h"
 //#include "DataCentricTestApp.h"
+#include "IPvXAddressResolver.h"
 
 class DataCentricTestApp;
 
@@ -23,7 +24,7 @@ class DataCentricTestApp;
 //#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
 
 class DataCentricNetworkLayer;
-
+class UDPBurstAndBroadcast;
 
 class DataCentricNetworkMan : public cSimpleModule
 {
@@ -45,6 +46,8 @@ class DataCentricNetworkMan : public cSimpleModule
     void recordDemandLocal(); // local version
     void addPendingRREQ(uint32 _originator, uint32 _destination);
     void removePendingRREQ(uint32 _originator, uint32 _destination);
+    void addPendingRegistration(uint32 _originator);
+    void removePendingRegistration(uint32 _originator);
 
 
     typedef struct
@@ -65,6 +68,10 @@ class DataCentricNetworkMan : public cSimpleModule
     typedef std::map<uint64_t, DataCentricNetworkLayer*> NetModules;
     typedef std::map<uint64_t, DataCentricNetworkLayer*>::iterator NetModulesIterator;
     NetModules mNetModules;
+
+    typedef std::map<IPvXAddress, UDPBurstAndBroadcast*> AppModules;
+    typedef std::map<IPvXAddress, UDPBurstAndBroadcast*>::iterator AppModulesIterator;
+    AppModules mAppModules;
 
   protected:
     void handleMessage(cMessage*);
@@ -112,10 +119,13 @@ class DataCentricNetworkMan : public cSimpleModule
             return false;
         }
     };
+
     typedef std::set<PendingRREQ, Compare> PendingRREQSet;
     PendingRREQSet mPendingRREQSet; // A buffer to store a pointer to a message and the related receive power.
 
 
+    typedef std::set<uint32> PendingRegistrationSet;
+    PendingRegistrationSet mPendingRegistrationSet;
 
 
 
@@ -139,6 +149,7 @@ class DataCentricNetworkMan : public cSimpleModule
 
     cOutVector demandVector;
     cOutVector pendingRREQVector;
+    cOutVector pendingRegistrationVector;
 
 
     unsigned int numDataArrivals;

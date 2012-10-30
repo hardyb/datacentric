@@ -147,6 +147,8 @@ class DataCentricTestApp : public TrafGenPar
     double mLastOnTime;
     double mLastOffTime;
 
+    bool mBeenSetDirect;
+
     // This is the demand the appliance currently wants to use, eg it has been turned on
     // and normally would immediately use this demand
     //

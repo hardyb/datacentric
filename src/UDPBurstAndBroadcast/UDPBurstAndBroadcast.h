@@ -31,6 +31,7 @@
 #include "DataCentricAppPkt_D.h"
 #include "DataCentricNetworkMan.h"
 #include "Ieee802154Phy.h"
+#include "DropTailQueue.h"
 
 
 
@@ -59,10 +60,14 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
 
   protected:
     Ieee802154Phy* mPhyModule;
+    DropTailQueue* mQueueModule;
     UDPSocket socket;
     int localPort, destPort;
     int mUpperLayerIn;
     int mUpperLayerOut;
+    cMessage *mpUpDownMessage;
+    int              mStability;
+    //double              mStability;
 
     // NOT implementing ucast retransmission
     // So use one bool for any neighbours
@@ -155,6 +160,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
     void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
+    void sendDownTheNIC();
     void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 
 

@@ -18,6 +18,12 @@ void HostReference::initialize(int aStage)
     {
         if ( underlyingModule )
         {
+            if ( !strcmp(underlyingModule->getParentModule()->getFullName(), "fixhost[4]") )
+            {
+                string fn = getFullPath();
+                cout << "We are here!" << endl;
+            }
+
             if ( underlyingModule->par("setParametersDirectly").boolValue()
                     && !par("setHostParametersDirectly").boolValue() )
             {
@@ -153,7 +159,7 @@ void HostReference::SetString(cPar& _par, const char * _s)
     {
         // the underlying host has already been set non-default
         // this host ref is trying to set additional non-default again
-        std::string s = underlyingModule->getFullPath() + " has already been set non-" +
+        std::string s = underlyingModule->getFullPath() + " (" + _par.getName() + ") has already been set non-" +
                 "default somewhere else, and now " + getFullPath() +
                 " is trying to set it non-default as well.";
         throw cRuntimeError(s.c_str());
@@ -186,7 +192,7 @@ void HostReference::SetDouble(cPar& _par, double _d)
     {
         // the underlying host has already been set non-default
         // this host ref is trying to set additional non-default again
-        std::string s = underlyingModule->getFullPath() + " has already been set non-" +
+        std::string s = underlyingModule->getFullPath() + " (" + _par.getName() + ") has already been set non-" +
                 "default somewhere else, and now " + getFullPath() +
                 " is trying to set it non-default as well.";
         throw cRuntimeError(s.c_str());
@@ -220,7 +226,7 @@ void HostReference::SetBool(cPar& _par, bool _b)
     {
         // the underlying host has already been set non-default
         // this host ref is trying to set additional non-default again
-        std::string s = underlyingModule->getFullPath() + " has already been set non-" +
+        std::string s = underlyingModule->getFullPath() + " (" + _par.getName() + ") has already been set non-" +
                 "default somewhere else, and now " + getFullPath() +
                 " is trying to set it non-default as well.";
         throw cRuntimeError(s.c_str());
@@ -254,7 +260,7 @@ void HostReference::SetInt(cPar& _par, int _i)
     {
         // the underlying host has already been set non-default
         // this host ref is trying to set additional non-default again
-        std::string s = underlyingModule->getFullPath() + " has already been set non-" +
+        std::string s = underlyingModule->getFullPath() + " (" + _par.getName() + ") has already been set non-" +
                 "default somewhere else, and now " + getFullPath() +
                 " is trying to set it non-default as well.";
         throw cRuntimeError(s.c_str());

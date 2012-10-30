@@ -131,6 +131,61 @@ void DataCentricTestApp::initialize(int aStage)
         appState = APPSTATE_IDLE;
 
 
+        // TODO
+        string fn = this->getParentModule()->getFullName();
+        if ( !strcmp(this->getParentModule()->getFullName(), "fixhost[115]") )
+        {
+            cout << "We are here!" << endl;
+        }
+
+        mBeenSetDirect = false;
+
+        mBeenSetDirect = !mBeenSetDirect ? par("isAppliance").boolValue() : true;
+        //mBeenSetDirect = !mBeenSetDirect ? par("debug").boolValue() : true;
+        mBeenSetDirect = !mBeenSetDirect ? strcmp(par("actionThreads").stringValue(), "") : true;
+        mBeenSetDirect = !mBeenSetDirect ? strcmp(par("sourceFor").stringValue(), "") : true;
+        mBeenSetDirect = !mBeenSetDirect ? strcmp(par("sinkFor").stringValue(), "") : true;
+        mBeenSetDirect = !mBeenSetDirect ? strcmp(par("collaboratorInitiatorFor").stringValue(), "") : true;
+        mBeenSetDirect = !mBeenSetDirect ? strcmp(par("collaboratorFor").stringValue(), "") : true;
+        //mBeenSetDirect = !mBeenSetDirect ? strcmp(par("appMode").stringValue(), "") : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("nodeStartTime").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("timeSinkRegisterWithControlUnit").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("timeSourceRegisterWithControlUnit").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("timeSinkBindWithSourceDevice").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("scheduleStartTime").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("mains").boolValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("probabilityDown").doubleValue() : true;
+
+        // nodeContext is always set from region
+
+        // Need to write something about debug and appMode
+
+        if ( mBeenSetDirect )
+        {
+            cout << "We are here!" << endl;
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         /*
         if ( par("nodeStartTime").isSet() )
         {
@@ -276,6 +331,16 @@ void DataCentricTestApp::initialize(int aStage)
                             && z < (_z + _d)      )
                     {
                         contextData = contextData + _c + " ";
+                        if ( mBeenSetDirect )
+                        {
+                            // In this app one or more relevent parameters have been set directly
+                            // so DO NOT connect with the next available regionHost
+                            // Relevant parameters should be set directly or via regionHost
+                            // never both
+                            string fn = this->getParentModule()->getFullName();
+                            fn = this->getParentModule()->getFullName();
+                            continue;
+                        }
                         for (cSubModIterator iter2(*(iter())); !iter2.end(); iter2++)
                         {
                             if ( iter2()->isName("regionHost") )
@@ -336,6 +401,7 @@ void DataCentricTestApp::initialize(int aStage)
             */
         }
 
+        string fn = this->getParentModule()->getFullName();
         par("nodeContext").setStringValue(contextData.c_str());
         ev << "Context: " << getFullName() << ": " << contextData << endl;
 

@@ -22,7 +22,7 @@ simple DataCentricTestApp extends TrafGenPar
         // string - ""
         //
          
-        bool debug;
+        bool debug = default(flase);
         string sinkFor = default("");
         string collaboratorInitiatorFor = default("");
         string collaboratorFor = default("");
@@ -37,18 +37,13 @@ simple DataCentricTestApp extends TrafGenPar
         //int x[5];
         double nodeStartTime = default(0.0);
         double scheduleStartTime = default(0.0);
+        
+        // soon not to be used
         bool setParametersDirectly = default(false);
         
         double timeSinkRegisterWithControlUnit = default(0.0);
         double timeSourceRegisterWithControlUnit = default(0.0);
         double timeSinkBindWithSourceDevice = default(0.0);
         bool isAppliance = default(false);
-        double otherAction1 = default(0.0);
-        double otherAction2 = default(0.0);
         
-        //sinks[numSinks] : 
-        //byte y;
-        //char x;
-        
-   
 }

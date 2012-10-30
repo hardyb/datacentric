@@ -1,4 +1,4 @@
-file 16713 1351252844                                           
+file 16713 1351249244                                           
 version 2
 run DataCentricScenario_4-0-20121026-12:59:33-2268
 attr configname DataCentricScenario_4
@@ -15,22 +15,21 @@ attr replication #0
 attr resultdir results
 attr runnumber 0
 attr seedset 0
-
 vector 1502  DataCentricNet.dataCentricNetworkMan  helloPacketFrequency  ETV
-vector 1507  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
-vector 1509  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
-vector 14  DataCentricNet.host[1].app  demandVec  ETV
-vector 1516  DataCentricNet.dataCentricNetworkMan  demandVector  ETV
-vector 26  DataCentricNet.host[2].app  demandVec  ETV
-vector 38  DataCentricNet.host[3].app  demandVec  ETV
-vector 50  DataCentricNet.host[4].app  demandVec  ETV
-vector 1508  DataCentricNet.dataCentricNetworkMan  dataPacketE2EDelay  ETV
-14	1044 246 336235 2344717 3 14942.943195301636 8 0 3000 12000 36000000
-26	1290 179 336236 2545093 3 16383 9 0 3000 12000 36000000
-38	1469 173 336237 2914935 3 19142.959722220816 6 0 3000 6000 18000000
-50	1642 114 336238 857188 3 3782.989624664925 4 0 3000 6000 18000000
 1502	1756 2897 5690 2917001 1.005 19142.977506914095 102 0 125 125 15625
+vector 1507  DataCentricNet.dataCentricNetworkMan  reinforcementPacketFrequency  ETV
 1507	4653 2895 5690 2917001 1.005 19142.977506914095 102 0 0 0 0
-1508	7548 3310 336573 2918133 3.005017879712 19142.987356521842 72 0.004418024924 0.121013993434 1.803548797114 0.091597901879329
+vector 1509  DataCentricNet.dataCentricNetworkMan  breakagePacketFrequency  ETV
 1509	10858 2895 5690 2917001 1.005 19142.977506914095 102 0 0 0 0
+vector 14  DataCentricNet.host[1].app  demandVec  ETV
+14	1044 246 336235 2344717 3 14942.943195301636 8 0 3000 12000 36000000
+vector 1516  DataCentricNet.dataCentricNetworkMan  demandVector  ETV
 1516	13753 2960 336235 3273114 3 21842.959722220816 91 0 6000 207000 693000000
+vector 26  DataCentricNet.host[2].app  demandVec  ETV
+26	1290 179 336236 2545093 3 16383 9 0 3000 12000 36000000
+vector 38  DataCentricNet.host[3].app  demandVec  ETV
+38	1469 173 336237 2914935 3 19142.959722220816 6 0 3000 6000 18000000
+vector 50  DataCentricNet.host[4].app  demandVec  ETV
+50	1642 114 336238 857188 3 3782.989624664925 4 0 3000 6000 18000000
+vector 1508  DataCentricNet.dataCentricNetworkMan  dataPacketE2EDelay  ETV
+1508	7548 3310 336573 2918133 3.005017879712 19142.987356521842 72 0.004418024924 0.121013993434 1.803548797114 0.091597901879329

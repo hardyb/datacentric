@@ -110,6 +110,7 @@ void DataCentricNetworkMan::initialize(int aStage)
 
         demandVector.setName("demandVector");
         pendingRREQVector.setName("pendingRREQVector");
+        pendingRegistrationVector.setName("pendingRegistrationVector");
 
 
 
@@ -484,9 +485,20 @@ void DataCentricNetworkMan::addPendingRREQ(uint32 _originator, uint32 _destinati
     mPendingRREQSet.insert(pr);
     mPendingRREQSet.size();
     pendingRREQVector.record((double)mPendingRREQSet.size());
-
-
 }
+
+
+
+void DataCentricNetworkMan::addPendingRegistration(uint32 _originator)
+{
+    Enter_Method("addPendingRegistration(uint32 _originator)");
+
+    mPendingRegistrationSet.insert(_originator);
+    mPendingRegistrationSet.size();
+    pendingRegistrationVector.record((double)mPendingRegistrationSet.size());
+}
+
+
 
 
 void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destination)
@@ -498,6 +510,18 @@ void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destin
     pr.destination = _destination;
     mPendingRREQSet.erase(pr);
     pendingRREQVector.record((double)mPendingRREQSet.size());
+
+}
+
+
+
+
+void DataCentricNetworkMan::removePendingRegistration(uint32 _originator)
+{
+    Enter_Method("removePendingRegistration(uint32 _originator)");
+
+    mPendingRegistrationSet.erase(_originator);
+    pendingRegistrationVector.record((double)mPendingRegistrationSet.size());
 
 }
 

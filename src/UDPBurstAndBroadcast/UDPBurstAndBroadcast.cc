@@ -117,8 +117,15 @@ void UDPBurstAndBroadcast::initialize(int stage)
         return;
 
     moduleRD.top_context = trie_new();
+    mpUpDownMessage = new cMessage("UpDownMessage");
+    //scheduleAt(simTime() + 1800.0, mpUpDownMessage); // first check in half an hour
+    mStability         = par("Stability");
+
 
     cModule* wlan = this->getParentModule()->getSubmodule("wlan");
+    mQueueModule = check_and_cast<DropTailQueue*>(wlan->getSubmodule("ifq"));
+
+
     mPhyModule = check_and_cast<Ieee802154Phy*>(wlan->getSubmodule("phy"));
     mPhyModule->disableModule();
 
@@ -214,6 +221,8 @@ void UDPBurstAndBroadcast::initialize(int stage)
     const char *token;
 
     myAddr = IPvXAddressResolver().resolve(this->getParentModule()->getFullPath().c_str());
+    mNetMan->mAppModules[myAddr] = this;
+
     while ((token = tokenizer.nextToken()) != NULL)
     {
         if (strstr(token, "Broadcast") != NULL)
@@ -290,6 +299,45 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2()
 
 void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 {
+    if (msg == mpUpDownMessage )
+    {
+        if ( mPhyModule->isEnabled() )
+        {
+            // stability zero implements never
+            // other implements a percentage chance
+            if ( intuniform(1,100) <= mStability  )
+            {
+                cout << "MODULE GOING DOWN: " << this->getParentModule()->getFullName() << endl;
+                //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+
+                mPhyModule->disableModule();
+                mNetMan->changeInModulesDown(1.0);
+
+                //mQueueModule->dropAll();
+                mQueueModule->clear();
+
+                scheduleAt(simTime() + 1800.0, mpUpDownMessage); // down for half an hour
+            }
+            else
+            {
+                scheduleAt(simTime() + 1800.0, mpUpDownMessage); // check again in half an hour
+            }
+        }
+        else
+        {
+            cout << "MODULE COMING UP: " << this->getParentModule()->getFullName() << endl;
+
+            mPhyModule->enableModule();
+            //StabilityVector.record(0.0);
+            //mNetMan->changeInModulesDown(-1.0);
+
+            mQueueModule->requestPacket(); // reprime the previously cleared nic queue
+            scheduleAt(simTime() + 1800.0, mpUpDownMessage); // check again in half an hour
+        }
+
+        return;
+    }
+
     SendLaterMessageMapIterator laterIt = mSendLaterMessageMap.find(msg);
     if (laterIt != mSendLaterMessageMap.end() )
     {
@@ -497,6 +545,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         {
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << std::endl;
             generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
+            //IPv4Address pending = myAddr.get4();
+            mNetMan->addPendingRegistration(myAddr.get4().getInt());
             mNetMan->updateControlPacketData(REGISTER_STAT, false);
         }
         break;
@@ -733,8 +783,81 @@ bool UDPBurstAndBroadcast::duplicate(int moduleId, int msgId, cPacket *pk)
 
 
 
+
+
+void UDPBurstAndBroadcast::sendDownTheNIC()
+{
+    Enter_Method("sendDownTheNIC()");
+
+    return;
+
+    /*
+
+    double simtimelimit;
+    //simtimelimit = cSimulation::getActiveEnvir()->getConfig()->getAsDouble(CFGID_SIM_TIME_LIMIT);
+
+    std::stringstream ss(ev.getConfig()->getConfigValue("sim-time-limit"));
+    ss >> simtimelimit;
+
+
+    double randomStability = uniform(1,255);
+    if ( randomStability <= mStability  )
+    {
+        if ( mPhyModule->isEnabled() )
+        {
+            //cout << "MODULE GOING DOWN: " << fName << endl;
+            //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
+
+            mPhyModule->disableModule();
+            mNetMan->changeInModulesDown(1.0);
+
+            // IMPORTANT NEED TO DO SOMETHING DIFFERENT HERE
+            // SINCE CHANGES IN INETMANET INTEGRATION BRANCH
+            // FOR DropTailQueue
+            //mQueueModule->dropAll();
+            mQueueModule->clear();
+
+
+
+            std::string s;
+            std::ostringstream ss;
+            ss.clear();
+            ss.str(s);
+            ss << ".\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+            std::remove(ss.str().c_str());
+
+            StabilityVector.record(1.0);
+            scheduleAt(simTime() + 2.0, mpUpDownMessage);
+        }
+    }
+
+
+
+    return;
+    */
+
+
+}
+
+
+
+
+
 void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_destAddr)
 {
+    /*
+    if ( dynamic_cast<AppControlMessage*>(payload) )
+    {
+        AppControlMessage* appPkt = dynamic_cast<AppControlMessage*>(payload);
+        if ( appPkt->getCntrlType() ==  HOME_ENERGY_DATA )
+        {
+            mNetMan->mAppModules[_destAddr]->sendDownTheNIC();
+        }
+    }
+    */
+
+
+
     if (!outputInterfaceMulticastBroadcast.empty() && (_destAddr.isMulticast() || (!_destAddr.isIPv6() && _destAddr.get4() == IPv4Address::ALLONES_ADDRESS)))
     {
         for (unsigned int i = 0; i< outputInterfaceMulticastBroadcast.size(); i++)
@@ -1028,6 +1151,10 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case REGISTER_AS_SINK:
             mInterestedNodes[origAddr].interest = acm->getInterests();
             mInterestedNodes[origAddr].context = acm->getContext();
+            //origAddr.get4().getInt()
+            //IPv4Address pending(origAddr.get4());
+            mNetMan->removePendingRegistration(origAddr.get4().getInt());
+
             std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                     << ", Adding reg for: " << origAddr.get4() << std::endl;
 
