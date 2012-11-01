@@ -130,7 +130,7 @@ simple UDPBurstAndBroadcast like IUDPApp
         double nwkcMaxBroadcastJitter @unit(s) = default(0); // not used, see aodv
         int nwkMaxBroadcastRetries = default(0);
         bool macRxOnWhenIdle = default(true); // ignored at this early stage
-        int Stability = default(0);
+        int Instability = default(0);
         
         @signal[sentPk](type=cPacket);
         @signal[rcvdPk](type=cPacket);

@@ -118,9 +118,21 @@ void UDPBurstAndBroadcast::initialize(int stage)
 
     moduleRD.top_context = trie_new();
     mpUpDownMessage = new cMessage("UpDownMessage");
-    //scheduleAt(simTime() + 1800.0, mpUpDownMessage); // first check in half an hour
-    mStability         = par("Stability");
+    scheduleAt(simTime() + 1800.0, mpUpDownMessage); // first check in half an hour
 
+
+    cModule* app = this->getParentModule()->getSubmodule("app");
+    bool excludeFromStability = false;
+    excludeFromStability = !excludeFromStability ? strcmp(app->par("sinkFor").stringValue(), "") : true;
+    excludeFromStability = !excludeFromStability ? strcmp(app->par("sourceFor").stringValue(), "") : true;
+    excludeFromStability = !excludeFromStability ? strcmp(app->par("collaboratorInitiatorFor").stringValue(), "") : true;
+    excludeFromStability = !excludeFromStability ? strcmp(app->par("collaboratorFor").stringValue(), "") : true;
+
+    mStability = 0;
+    if ( !excludeFromStability )
+    {
+        mStability         = par("Instability");
+    }
 
     cModule* wlan = this->getParentModule()->getSubmodule("wlan");
     mQueueModule = check_and_cast<DropTailQueue*>(wlan->getSubmodule("ifq"));
@@ -305,7 +317,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         {
             // stability zero implements never
             // other implements a percentage chance
-            if ( intuniform(1,100) <= mStability  )
+            int r = intuniform(1,100);
+            if ( r <= mStability  )
             {
                 cout << "MODULE GOING DOWN: " << this->getParentModule()->getFullName() << endl;
                 //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
