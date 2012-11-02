@@ -52,7 +52,7 @@ static void cb_record_RREQstats(double stat);
 static void cb_record_RReplystats(double stat);
 static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
 static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
-static void cb_record_Datastats(double stat);
+static void cb_record_Datastats(unsigned char type, double stat);
 DataCentricNetworkMan* netMan;
 
 
@@ -83,9 +83,11 @@ void cb_record_RREQInitiation(uint32 _originator, uint32 _destination)
 
 
 
-void cb_record_Datastats(double stat)
+void cb_record_Datastats(unsigned char type, double stat)
 {
-    netMan->updateControlPacketData(AODV_DATA_STAT, false);
+    netMan->updateControlPacketData(type, false);
+
+
 }
 
 
@@ -472,6 +474,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << std::endl;
         generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+        mNetMan->addPendingDataPkt();
         break;
     case STARTUP_MESSAGE:
         /*
@@ -1182,6 +1185,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             }
             break;
         case HOME_ENERGY_DATA:
+            mNetMan->removePendingDataPkt();
             if ( mIsControlUnit )
             {
                 sd = acm->getSourceData();
@@ -1206,6 +1210,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                             {
                                 //socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
                                 // THINK THE ABOVE IS OLD AND SHOULD HAVE BEEN REMOVED
+                                mNetMan->addPendingDataPkt();
                                 sendPacket(acm->dup(), i->first);
                                 std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                                         << ", Forwarding to: " << i->first.get4() << std::endl;

@@ -77,10 +77,13 @@ void DataCentricNetworkMan::initialize(int aStage)
         numBreakagePackets = 0;
         numModulesDown = 0;
         numRREQPackets = 0;
+        numRERRPackets = 0;
         numDiscoveryPackets = 0;
         numRegisterPackets = 0;
         numRReplyPackets = 0;
         numAODVDataPackets = 0;
+        numAODVDataLineBreaks = 0;
+        numPendingDataPackets = 0;
 
         mDemand = 0;
 
@@ -103,10 +106,16 @@ void DataCentricNetworkMan::initialize(int aStage)
         breakagePacketFrequency.setName("breakagePacketFrequency");
         modulesDownVector.setName("modulesDownVector");
         RREQPacketFrequency.setName("RREQPacketFrequency");
+        RERRPacketFrequency.setName("RERRPacketFrequency");
+
         DiscoveryPacketFrequency.setName("DiscoveryPacketFrequency");
         RegisterPacketFrequency.setName("RegisterPacketFrequency");
         RReplyPacketFrequency.setName("RReplyPacketFrequency");
         AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
+        AODVDataLineBreakVector.setName("AODVDataLineBreakVector");
+        PendingDataPacketsVector.setName("PendingDataPacketsVector");
+
+
 
         demandVector.setName("demandVector");
         pendingRREQVector.setName("pendingRREQVector");
@@ -396,6 +405,7 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         reinforcementPacketFrequency.record(numReinforcementPackets);
         breakagePacketFrequency.record(numBreakagePackets);
         RREQPacketFrequency.record(numRREQPackets);
+        RERRPacketFrequency.record(numRERRPackets);
         DiscoveryPacketFrequency.record(numDiscoveryPackets);
         RegisterPacketFrequency.record(numRegisterPackets);
         RReplyPacketFrequency.record(numRReplyPackets);
@@ -424,6 +434,7 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
         numReinforcementPackets = 0;
         numBreakagePackets = 0;
         numRREQPackets = 0;
+        numRERRPackets = 0;
         numDiscoveryPackets = 0;
         numRegisterPackets = 0;
         numRReplyPackets = 0;
@@ -499,6 +510,16 @@ void DataCentricNetworkMan::addPendingRegistration(uint32 _originator)
 }
 
 
+void DataCentricNetworkMan::addPendingDataPkt()
+{
+    Enter_Method("addPendingDataPkt()");
+
+    numPendingDataPackets++;
+    PendingDataPacketsVector.record(numPendingDataPackets);
+
+}
+
+
 
 
 void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destination)
@@ -526,6 +547,16 @@ void DataCentricNetworkMan::removePendingRegistration(uint32 _originator)
 }
 
 
+void DataCentricNetworkMan::removePendingDataPkt()
+{
+    Enter_Method("removePendingDataPkt()");
+
+    numPendingDataPackets--;
+    PendingDataPacketsVector.record(numPendingDataPackets);
+
+}
+
+
 
 signed int DataCentricNetworkMan::getDemand()
 {
@@ -538,9 +569,12 @@ signed int DataCentricNetworkMan::getDemand()
 }
 
 
+// This is now used to record a variety of things - so remove Control from name
 void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)
 {
     Enter_Method("updateControlPacketData(unsigned char type, bool ucast)");
+
+    // probably only do this for the frequency type stats
     if ( !mpControlPacketFrequencyMessage->isScheduled() )
     {
         scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
@@ -588,6 +622,13 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
         break;
     case AODV_DATA_STAT:
         numAODVDataPackets++;
+        break;
+    case AODV_DATA_LINEBREAK:
+        numAODVDataLineBreaks++;
+        AODVDataLineBreakVector.record(numAODVDataLineBreaks);
+        break;
+    case RERR_STAT:
+        numRERRPackets++;
         break;
     }
 

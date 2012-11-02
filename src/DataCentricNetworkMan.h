@@ -19,6 +19,8 @@ class DataCentricTestApp;
 #define REGISTER_STAT 14
 #define RREPLY_STAT 15
 #define AODV_DATA_STAT 16
+#define AODV_DATA_LINEBREAK 17
+#define RERR_STAT 18
 
 
 //#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
@@ -47,7 +49,9 @@ class DataCentricNetworkMan : public cSimpleModule
     void addPendingRREQ(uint32 _originator, uint32 _destination);
     void removePendingRREQ(uint32 _originator, uint32 _destination);
     void addPendingRegistration(uint32 _originator);
+    void addPendingDataPkt();
     void removePendingRegistration(uint32 _originator);
+    void removePendingDataPkt();
 
 
     typedef struct
@@ -87,10 +91,14 @@ class DataCentricNetworkMan : public cSimpleModule
     double numBreakagePackets;
     double numModulesDown;
     double numRREQPackets;
+    double numRERRPackets;
     double numDiscoveryPackets;
     double numRegisterPackets;
     double numRReplyPackets;
     double numAODVDataPackets;
+    double numAODVDataLineBreaks;
+    double numPendingDataPackets;
+
 
     signed int mDemand;
 
@@ -142,10 +150,13 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector breakagePacketFrequency;
     cOutVector modulesDownVector;
     cOutVector RREQPacketFrequency;
+    cOutVector RERRPacketFrequency;
     cOutVector DiscoveryPacketFrequency;
     cOutVector RegisterPacketFrequency;
     cOutVector RReplyPacketFrequency;
     cOutVector AODVDataPacketFrequency;
+    cOutVector AODVDataLineBreakVector;
+    cOutVector PendingDataPacketsVector;
 
     cOutVector demandVector;
     cOutVector pendingRREQVector;
