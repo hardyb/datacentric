@@ -34,6 +34,7 @@
         <properties name="Line.Display/pendingRegistrationVector" value="false"/>
         <properties name="Line.Display/pendingRREQVector" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="E2E" lineNameFormat="">
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
@@ -45,6 +46,7 @@
         <properties name="Line.Display/pendingRREQVector" value="false"/>
         <properties name="Line.Display/AODVDataLineBreakVector" value="false"/>
         <properties name="Line.Display/PendingDataPacketsVector" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="RReplies" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
@@ -61,6 +63,9 @@
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
         <properties name="Line.Display/pendingRegistrationVector" value="false"/>
+        <properties name="Line.Display/AODVDataLineBreakVector" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
+        <properties name="Line.Display/PendingDataPacketsVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="PendingRegistrationVector" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
@@ -72,6 +77,7 @@
         <properties name="Line.Display/pendingRREQVector" value="false"/>
         <properties name="Line.Display/AODVDataLineBreakVector" value="false"/>
         <properties name="Line.Display/PendingDataPacketsVector" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="PendingDataPacketsVector" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
@@ -83,6 +89,8 @@
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
         <properties name="Line.Color/PendingDataPacketsVector" value="black"/>
+        <properties name="Line.Display/AODVDataLineBreakVector" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="AODVDataLineBreakVector" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
@@ -94,6 +102,7 @@
         <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+        <properties name="Line.Display/modulesDownVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="modulesDownVector" lineNameFormat="">
         <properties name="Line.Display/AODVDataLineBreakVector" value="false"/>

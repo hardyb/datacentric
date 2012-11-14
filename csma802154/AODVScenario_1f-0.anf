@@ -33,8 +33,9 @@
         <properties name="Line.Display/DiscoveryPacketFrequency" value="false"/>
         <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
-        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
         <properties name="Line.Display/pendingRREQVector" value="false"/>
+        <properties name="Line.Display/pendingRegistrationVector" value="false"/>
+        <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="RReplies" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>

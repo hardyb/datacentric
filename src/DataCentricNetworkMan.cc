@@ -81,10 +81,13 @@ void DataCentricNetworkMan::initialize(int aStage)
         numDiscoveryPackets = 0;
         numRegisterPackets = 0;
         numRReplyPackets = 0;
+
+        // Unicast forwarded packets (this includes all RREP, data & RERR I think
         numAODVDataPackets = 0;
         numAODVDataLineBreaks = 0;
+        numAODVAllLineBreaks = 0;
+        numAODVDataArrival = 0;
         numPendingDataPackets = 0;
-
         mDemand = 0;
 
 
@@ -111,8 +114,12 @@ void DataCentricNetworkMan::initialize(int aStage)
         DiscoveryPacketFrequency.setName("DiscoveryPacketFrequency");
         RegisterPacketFrequency.setName("RegisterPacketFrequency");
         RReplyPacketFrequency.setName("RReplyPacketFrequency");
+
+        // Unicast forwarded packets (this includes all RREP, data & RERR I think
         AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
         AODVDataLineBreakVector.setName("AODVDataLineBreakVector");
+        AODVAllLineBreakVector.setName("AODVAllLineBreakVector");
+        AODVDataArrivalVector.setName("AODVDataArrivalVector");
         PendingDataPacketsVector.setName("PendingDataPacketsVector");
 
 
@@ -536,6 +543,15 @@ void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destin
 
 
 
+unsigned int DataCentricNetworkMan::numPendingRREQs()
+{
+    Enter_Method("DataCentricNetworkMan::numPendingRREQs()");
+
+    return mPendingRREQSet.size();
+
+}
+
+
 
 void DataCentricNetworkMan::removePendingRegistration(uint32 _originator)
 {
@@ -545,6 +561,17 @@ void DataCentricNetworkMan::removePendingRegistration(uint32 _originator)
     pendingRegistrationVector.record((double)mPendingRegistrationSet.size());
 
 }
+
+
+
+unsigned int DataCentricNetworkMan::numPendingRegistrations()
+{
+    Enter_Method("numPendingRegistrations()");
+
+    return mPendingRegistrationSet.size();
+
+}
+
 
 
 void DataCentricNetworkMan::removePendingDataPkt()
@@ -626,6 +653,14 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
     case AODV_DATA_LINEBREAK:
         numAODVDataLineBreaks++;
         AODVDataLineBreakVector.record(numAODVDataLineBreaks);
+        break;
+    case AODV_ALL_LINEBREAK:
+        numAODVAllLineBreaks++;
+        AODVAllLineBreakVector.record(numAODVAllLineBreaks);
+        break;
+    case AODV_DATA_ARRIVAL:
+        numAODVDataArrival++;
+        AODVDataArrivalVector.record(numAODVDataArrival);
         break;
     case RERR_STAT:
         numRERRPackets++;

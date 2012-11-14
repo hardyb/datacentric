@@ -21,6 +21,10 @@ class DataCentricTestApp;
 #define AODV_DATA_STAT 16
 #define AODV_DATA_LINEBREAK 17
 #define RERR_STAT 18
+#define AODV_ALL_LINEBREAK 19
+#define AODV_DATA_ARRIVAL 20
+
+
 
 
 //#include "DataCentricNetworkLayer.h" // Cyclic dependancy may need some attention
@@ -48,9 +52,11 @@ class DataCentricNetworkMan : public cSimpleModule
     void recordDemandLocal(); // local version
     void addPendingRREQ(uint32 _originator, uint32 _destination);
     void removePendingRREQ(uint32 _originator, uint32 _destination);
+    unsigned int numPendingRREQs();
     void addPendingRegistration(uint32 _originator);
     void addPendingDataPkt();
     void removePendingRegistration(uint32 _originator);
+    unsigned int numPendingRegistrations();
     void removePendingDataPkt();
 
 
@@ -95,8 +101,12 @@ class DataCentricNetworkMan : public cSimpleModule
     double numDiscoveryPackets;
     double numRegisterPackets;
     double numRReplyPackets;
+
+    // Unicast forwarded packets (this includes all RREP, data & RERR I think
     double numAODVDataPackets;
     double numAODVDataLineBreaks;
+    double numAODVAllLineBreaks;
+    double numAODVDataArrival;
     double numPendingDataPackets;
 
 
@@ -156,8 +166,9 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector RReplyPacketFrequency;
     cOutVector AODVDataPacketFrequency;
     cOutVector AODVDataLineBreakVector;
+    cOutVector AODVAllLineBreakVector;
+    cOutVector AODVDataArrivalVector;
     cOutVector PendingDataPacketsVector;
-
     cOutVector demandVector;
     cOutVector pendingRREQVector;
     cOutVector pendingRegistrationVector;

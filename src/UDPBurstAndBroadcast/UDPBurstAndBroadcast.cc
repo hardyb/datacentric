@@ -344,7 +344,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 
             mPhyModule->enableModule();
             //StabilityVector.record(0.0);
-            //mNetMan->changeInModulesDown(-1.0);
+            mNetMan->changeInModulesDown(-1.0);
 
             mQueueModule->requestPacket(); // reprime the previously cleared nic queue
             scheduleAt(simTime() + 1800.0, mpUpDownMessage); // check again in half an hour
@@ -1049,6 +1049,19 @@ void UDPBurstAndBroadcast::finish()
     recordScalar("Min delay", pktDelay->getMin());
     recordScalar("Max delay", pktDelay->getMax());
     recordScalar("Deviation delay", pktDelay->getStddev());
+
+    // Additional scalar recording for scatter charts in multi simulation runs
+    recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
+    recordScalar("FailedRegistrations", (double)mNetMan->numPendingRegistrations());
+
+    recordScalar("LinkFailures", (double)mNetMan->numPendingRREQs());
+    recordScalar("DataArrivals", (double)mNetMan->numPendingRREQs());
+    //recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
+
+
+
+
+
 }
 
 
