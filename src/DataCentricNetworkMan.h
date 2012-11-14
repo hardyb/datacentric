@@ -57,6 +57,8 @@ class DataCentricNetworkMan : public cSimpleModule
     void addPendingDataPkt();
     void removePendingRegistration(uint32 _originator);
     unsigned int numPendingRegistrations();
+    unsigned int numAODVAllLineBreaksValue();
+    unsigned int numAODVDataArrivalValue();
     void removePendingDataPkt();
 
 

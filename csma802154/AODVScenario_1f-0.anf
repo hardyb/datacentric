@@ -27,6 +27,8 @@
         <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
         <properties name="Line.Display/dataPacketE2EDelay" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
+        <properties name="Line.Display/pendingRegistrationVector" value="false"/>
+        <properties name="Line.Display/pendingRREQVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="E2E" lineNameFormat="">
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
@@ -51,6 +53,7 @@
         <properties name="Line.Display/RegisterPacketFrequency" value="false"/>
         <properties name="Line.Display/RReplyPacketFrequency" value="false"/>
         <properties name="Line.Display/RREQPacketFrequency" value="false"/>
+        <properties name="Line.Display/pendingRegistrationVector" value="false"/>
       </items>
       <items xsi:type="scave:LineChart" name="pendingRegistrationVector" lineNameFormat="">
         <properties name="Line.Display/AODVDataPacketFrequency" value="false"/>
@@ -71,8 +74,17 @@
       <items xsi:type="scave:Add" filterPattern="&quot;Max delay&quot;"/>
       <items xsi:type="scave:BarChart" name="Delays"/>
     </datasets>
+    <datasets name="Dataset3">
+      <items xsi:type="scave:Add" filterPattern="FailedRREQs"/>
+      <items xsi:type="scave:Add" filterPattern="FailedRegistrations"/>
+      <items xsi:type="scave:Add" filterPattern="LinkFailures"/>
+      <items xsi:type="scave:Add" filterPattern="DataArrivals"/>
+      <items xsi:type="scave:BarChart" name="test">
+        <barFields>name</barFields>
+      </items>
+    </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.9 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.11 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.13"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.6 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.0/@items.9 //@datasets/@datasets.0/@items.8 //@datasets/@datasets.0/@items.10 //@datasets/@datasets.0/@items.11 //@datasets/@datasets.0/@items.12 //@datasets/@datasets.0/@items.13 //@datasets/@datasets.2/@items.4"/>
   </chartSheets>
 </scave:Analysis>

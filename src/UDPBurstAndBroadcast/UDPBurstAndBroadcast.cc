@@ -1053,10 +1053,8 @@ void UDPBurstAndBroadcast::finish()
     // Additional scalar recording for scatter charts in multi simulation runs
     recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
     recordScalar("FailedRegistrations", (double)mNetMan->numPendingRegistrations());
-
-    recordScalar("LinkFailures", (double)mNetMan->numPendingRREQs());
-    recordScalar("DataArrivals", (double)mNetMan->numPendingRREQs());
-    //recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
+    recordScalar("LinkFailures", (double)mNetMan->numAODVAllLineBreaksValue());
+    recordScalar("DataArrivals", (double)mNetMan->numAODVDataArrivalValue());
 
 
 
@@ -1124,6 +1122,7 @@ void UDPBurstAndBroadcast::DataReceived(cPacket *pk)
     simtime_t e2eDelay = simTime() - pk->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     mNetMan->addADataPacketE2EDelay(e2eDelay);
+    mNetMan->updateControlPacketData(AODV_DATA_ARRIVAL, false);
 
     this->getParentModule()->bubble("Received data packet");
 

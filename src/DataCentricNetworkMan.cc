@@ -545,7 +545,7 @@ void DataCentricNetworkMan::removePendingRREQ(uint32 _originator, uint32 _destin
 
 unsigned int DataCentricNetworkMan::numPendingRREQs()
 {
-    Enter_Method("DataCentricNetworkMan::numPendingRREQs()");
+    Enter_Method("numPendingRREQs()");
 
     return mPendingRREQSet.size();
 
@@ -569,6 +569,28 @@ unsigned int DataCentricNetworkMan::numPendingRegistrations()
     Enter_Method("numPendingRegistrations()");
 
     return mPendingRegistrationSet.size();
+
+}
+
+
+
+
+unsigned int DataCentricNetworkMan::numAODVAllLineBreaksValue()
+{
+    Enter_Method("numAODVAllLineBreaksValue()");
+
+    return numAODVAllLineBreaks;
+
+}
+
+
+
+
+unsigned int DataCentricNetworkMan::numAODVDataArrivalValue()
+{
+    Enter_Method("numAODVDataArrivalValue()");
+
+    return numAODVDataArrival;
 
 }
 
