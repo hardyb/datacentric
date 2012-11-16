@@ -453,7 +453,17 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
 
 void DataCentricNetworkMan::finish()
 {
-    recordScalar("numDataArrivals", numDataArrivals);
+    //recordScalar("numDataArrivals", numDataArrivals);
+
+    // Additional scalar recording for scatter charts in multi simulation runs
+    recordScalar("FailedRREQs", (double)numPendingRREQs());
+    recordScalar("FailedRegistrations", (double)numPendingRegistrations());
+    recordScalar("LinkFailures", (double)numAODVAllLineBreaksValue());
+    recordScalar("DataArrivals", (double)numAODVDataArrivalValue());
+
+
+
+
     //recordScalar("total bytes received", totalByteRecv);
     //recordScalar("total time", simTime() - FirstPacketTime());
     //recordScalar("goodput (Bytes/s)", totalByteRecv / (simTime() - FirstPacketTime()));

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/datacentric/csma802154/results/AODVScenario_1f-*.vec"/>
+    <inputs name="/datacentric/csma802154/results/AODVScenario_1f-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Dataset1">
+      <items xsi:type="scave:Add" filterPattern="numNodes"/>
+      <items xsi:type="scave:Add" filterPattern="FailedRegistrations"/>
+      <items xsi:type="scave:Add" filterPattern="LinkFailures"/>
+      <items xsi:type="scave:Add" filterPattern="FailedRREQs"/>
+      <items xsi:type="scave:Add" filterPattern="DataArrivals"/>
+      <items xsi:type="scave:ScatterChart" name="test" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRegistrations - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRREQs - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan LinkFailures - configname=AODVScenario_1f" value="false"/>
+        <isoDataPattern>attr:configname(*)</isoDataPattern>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5"/>
+  </chartSheets>
+</scave:Analysis>

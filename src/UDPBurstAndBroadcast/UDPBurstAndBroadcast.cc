@@ -1051,10 +1051,10 @@ void UDPBurstAndBroadcast::finish()
     recordScalar("Deviation delay", pktDelay->getStddev());
 
     // Additional scalar recording for scatter charts in multi simulation runs
-    recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
-    recordScalar("FailedRegistrations", (double)mNetMan->numPendingRegistrations());
-    recordScalar("LinkFailures", (double)mNetMan->numAODVAllLineBreaksValue());
-    recordScalar("DataArrivals", (double)mNetMan->numAODVDataArrivalValue());
+    //recordScalar("FailedRREQs", (double)mNetMan->numPendingRREQs());
+    //recordScalar("FailedRegistrations", (double)mNetMan->numPendingRegistrations());
+    //recordScalar("LinkFailures", (double)mNetMan->numAODVAllLineBreaksValue());
+    //recordScalar("DataArrivals", (double)mNetMan->numAODVDataArrivalValue());
 
 
 
