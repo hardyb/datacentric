@@ -52,6 +52,7 @@ static void cb_record_RREQstats(double stat);
 static void cb_record_RReplystats(double stat);
 static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
 static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
+static void cb_record_ProactiveRoute(uint32 _originator);
 static void cb_record_Datastats(unsigned char type, double stat);
 DataCentricNetworkMan* netMan;
 
@@ -80,6 +81,22 @@ void cb_record_RREQInitiation(uint32 _originator, uint32 _destination)
     netMan->addPendingRREQ(_originator, _destination);
 
 }
+
+
+void cb_record_ProactiveRoute(uint32 _originator)
+{
+    if ( _originator )
+    {
+        netMan->addProactiveRREQ(_originator);
+    }
+    else
+    {
+        netMan->clearProactiveRREQ();
+    }
+
+}
+
+
 
 
 
@@ -169,6 +186,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     setRecordRReplyStatsCallBack(cb_record_RReplystats);
     setRecordRReplyCompletionCallBack(cb_record_RReplyCompletion);
     setRecordRREQInitiationCallBack(cb_record_RREQInitiation);
+    setRecordProactiveRouteCallBack(cb_record_ProactiveRoute);
     setRecordDataStatsCallBack(cb_record_Datastats);
 
     cSimulation* sim =  cSimulation::getActiveSimulation();

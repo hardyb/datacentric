@@ -60,6 +60,11 @@ class DataCentricNetworkMan : public cSimpleModule
     unsigned int numAODVAllLineBreaksValue();
     unsigned int numAODVDataArrivalValue();
     void removePendingDataPkt();
+    void addProactiveRREQ(uint32 _originator);
+    void clearProactiveRREQ();
+    unsigned int numProactiveRREQ();
+
+
 
 
     typedef struct
@@ -111,6 +116,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numAODVDataArrival;
     double numPendingDataPackets;
 
+    unsigned int mExpectedDataArrivals;
+
 
     signed int mDemand;
 
@@ -147,6 +154,8 @@ class DataCentricNetworkMan : public cSimpleModule
     typedef std::set<uint32> PendingRegistrationSet;
     PendingRegistrationSet mPendingRegistrationSet;
 
+    typedef std::set<uint32> ProactiveRREQSet;
+    ProactiveRREQSet mProactiveRREQSet;
 
 
 

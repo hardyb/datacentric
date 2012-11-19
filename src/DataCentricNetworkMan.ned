@@ -22,6 +22,7 @@ simple DataCentricNetworkMan
         bool debug = default(false); 				// debug switch
         string sinks = default("");
         string sources = default("");
+        int expectedDataArrivals = default(0);
         
     gates:
         input upperLayerIn; 			// from the upper layer

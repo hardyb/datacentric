@@ -68,6 +68,8 @@ void DataCentricNetworkMan::initialize(int aStage)
         std::string fName2 = this->getFullPath();
         numControlPackets = 0;
 
+        mExpectedDataArrivals = par("expectedDataArrivals");
+
         numHelloPackets = 0;
         numHelloBackPackets = 0;
         bcastNumInterestPackets = 0;
@@ -460,6 +462,11 @@ void DataCentricNetworkMan::finish()
     recordScalar("FailedRegistrations", (double)numPendingRegistrations());
     recordScalar("LinkFailures", (double)numAODVAllLineBreaksValue());
     recordScalar("DataArrivals", (double)numAODVDataArrivalValue());
+    recordScalar("ProactiveRREQs", (double)numProactiveRREQ());
+    recordScalar("DataFailures", (double)(mExpectedDataArrivals-numAODVDataArrivalValue()));
+
+
+
 
 
 
@@ -527,6 +534,23 @@ void DataCentricNetworkMan::addPendingRegistration(uint32 _originator)
 }
 
 
+void DataCentricNetworkMan::addProactiveRREQ(uint32 _originator)
+{
+    Enter_Method("addProactiveRREQ(uint32 _originator)");
+
+    mProactiveRREQSet.insert(_originator);
+
+}
+
+void DataCentricNetworkMan::clearProactiveRREQ()
+{
+    Enter_Method("clearProactiveRREQ()");
+
+    mProactiveRREQSet.clear();
+
+}
+
+
 void DataCentricNetworkMan::addPendingDataPkt()
 {
     Enter_Method("addPendingDataPkt()");
@@ -579,6 +603,15 @@ unsigned int DataCentricNetworkMan::numPendingRegistrations()
     Enter_Method("numPendingRegistrations()");
 
     return mPendingRegistrationSet.size();
+
+}
+
+
+unsigned int DataCentricNetworkMan::numProactiveRREQ()
+{
+    Enter_Method("numProactiveRREQ()");
+
+    return mProactiveRREQSet.size();
 
 }
 
