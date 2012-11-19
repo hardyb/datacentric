@@ -1,7 +1,7 @@
 version 2
-run AODVScenario_1f-38-20121119-11:18:05-1392
+run AODVScenario_1f-38-20121119-16:12:20-3432
 attr configname AODVScenario_1f
-attr datetime 20121119-11:18:05
+attr datetime 20121119-16:12:20
 attr experiment AODVScenario_1f
 attr inifile AODV.ini
 attr iterationvars $numNodes=88
@@ -9,7 +9,7 @@ attr iterationvars2 "$numNodes=88, $repetition=0"
 attr measurement $numNodes=88
 attr network csma802154net
 attr numNodes 88
-attr processid 1392
+attr processid 3432
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -34,10 +34,10 @@ scalar csma802154net.fixhost[1].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[2].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[2].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[2].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[2].udpApp 	"Mean delay" 	0.008774476777
-scalar csma802154net.fixhost[2].udpApp 	"Min delay" 	0.006756015239
-scalar csma802154net.fixhost[2].udpApp 	"Max delay" 	0.011876015239
-scalar csma802154net.fixhost[2].udpApp 	"Deviation delay" 	0.0014802356014081
+scalar csma802154net.fixhost[2].udpApp 	"Mean delay" 	0.010177568122385
+scalar csma802154net.fixhost[2].udpApp 	"Min delay" 	0.007076029661
+scalar csma802154net.fixhost[2].udpApp 	"Max delay" 	0.027236029661
+scalar csma802154net.fixhost[2].udpApp 	"Deviation delay" 	0.005208214419229
 scalar csma802154net.fixhost[3].udpApp 	"Total sent" 	13
 scalar csma802154net.fixhost[3].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[3].udpApp 	"Total deleted" 	0
@@ -48,17 +48,17 @@ scalar csma802154net.fixhost[3].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[4].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[4].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[4].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[4].udpApp 	"Mean delay" 	0.029651471792769
-scalar csma802154net.fixhost[4].udpApp 	"Min delay" 	0.023876073369
-scalar csma802154net.fixhost[4].udpApp 	"Max delay" 	0.038196106004
-scalar csma802154net.fixhost[4].udpApp 	"Deviation delay" 	0.0055708335798888
+scalar csma802154net.fixhost[4].udpApp 	"Mean delay" 	0.037524096618308
+scalar csma802154net.fixhost[4].udpApp 	"Min delay" 	0.030556096618
+scalar csma802154net.fixhost[4].udpApp 	"Max delay" 	0.057612096619
+scalar csma802154net.fixhost[4].udpApp 	"Deviation delay" 	0.0073409369064133
 scalar csma802154net.fixhost[5].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[5].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[5].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[5].udpApp 	"Mean delay" 	0.018412051063462
-scalar csma802154net.fixhost[5].udpApp 	"Min delay" 	0.015956051064
-scalar csma802154net.fixhost[5].udpApp 	"Max delay" 	0.023636051063
-scalar csma802154net.fixhost[5].udpApp 	"Deviation delay" 	0.0025713539882321
+scalar csma802154net.fixhost[5].udpApp 	"Mean delay" 	0.014666829539538
+scalar csma802154net.fixhost[5].udpApp 	"Min delay" 	0.010556060309
+scalar csma802154net.fixhost[5].udpApp 	"Max delay" 	0.031996060309
+scalar csma802154net.fixhost[5].udpApp 	"Deviation delay" 	0.005304743885735
 scalar csma802154net.fixhost[6].udpApp 	"Total sent" 	13
 scalar csma802154net.fixhost[6].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[6].udpApp 	"Total deleted" 	0
@@ -69,45 +69,45 @@ scalar csma802154net.fixhost[6].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[7].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[7].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[7].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[7].udpApp 	"Mean delay" 	0.02606683564
-scalar csma802154net.fixhost[7].udpApp 	"Min delay" 	0.016916066409
-scalar csma802154net.fixhost[7].udpApp 	"Max delay" 	0.04372406641
-scalar csma802154net.fixhost[7].udpApp 	"Deviation delay" 	0.0091147990120662
+scalar csma802154net.fixhost[7].udpApp 	"Mean delay" 	0.019008389880077
+scalar csma802154net.fixhost[7].udpApp 	"Min delay" 	0.015956082187
+scalar csma802154net.fixhost[7].udpApp 	"Max delay" 	0.036756082188
+scalar csma802154net.fixhost[7].udpApp 	"Deviation delay" 	0.0054472350079628
 scalar csma802154net.fixhost[8].udpApp 	"Total sent" 	1
-scalar csma802154net.fixhost[8].udpApp 	"Total received" 	0
+scalar csma802154net.fixhost[8].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[8].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[8].udpApp 	"Mean delay" 	0
-scalar csma802154net.fixhost[8].udpApp 	"Min delay" 	0
-scalar csma802154net.fixhost[8].udpApp 	"Max delay" 	0
-scalar csma802154net.fixhost[8].udpApp 	"Deviation delay" 	-1.#IND
+scalar csma802154net.fixhost[8].udpApp 	"Mean delay" 	0.025536363363692
+scalar csma802154net.fixhost[8].udpApp 	"Min delay" 	0.015636055671
+scalar csma802154net.fixhost[8].udpApp 	"Max delay" 	0.048452055672
+scalar csma802154net.fixhost[8].udpApp 	"Deviation delay" 	0.012225144194348
 scalar csma802154net.fixhost[9].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[9].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[9].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[9].udpApp 	"Mean delay" 	0.0088483332883077
-scalar csma802154net.fixhost[9].udpApp 	"Min delay" 	0.006756025596
-scalar csma802154net.fixhost[9].udpApp 	"Max delay" 	0.011876025596
-scalar csma802154net.fixhost[9].udpApp 	"Deviation delay" 	0.0015925982640858
+scalar csma802154net.fixhost[9].udpApp 	"Mean delay" 	0.018946839186
+scalar csma802154net.fixhost[9].udpApp 	"Min delay" 	0.014356059801
+scalar csma802154net.fixhost[9].udpApp 	"Max delay" 	0.029956125801
+scalar csma802154net.fixhost[9].udpApp 	"Deviation delay" 	0.0045232121361307
 scalar csma802154net.fixhost[10].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[10].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[10].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[10].udpApp 	"Mean delay" 	0.044704425209615
-scalar csma802154net.fixhost[10].udpApp 	"Min delay" 	0.032116110133
-scalar csma802154net.fixhost[10].udpApp 	"Max delay" 	0.05860410986
-scalar csma802154net.fixhost[10].udpApp 	"Deviation delay" 	0.0083476558173738
+scalar csma802154net.fixhost[10].udpApp 	"Mean delay" 	0.059900754245538
+scalar csma802154net.fixhost[10].udpApp 	"Min delay" 	0.034604123631
+scalar csma802154net.fixhost[10].udpApp 	"Max delay" 	0.114668156628
+scalar csma802154net.fixhost[10].udpApp 	"Deviation delay" 	0.021281497587827
 scalar csma802154net.fixhost[11].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[11].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[11].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[11].udpApp 	"Mean delay" 	0.053831834894308
-scalar csma802154net.fixhost[11].udpApp 	"Min delay" 	0.040076124992
-scalar csma802154net.fixhost[11].udpApp 	"Max delay" 	0.087932141311
-scalar csma802154net.fixhost[11].udpApp 	"Deviation delay" 	0.013084604896747
+scalar csma802154net.fixhost[11].udpApp 	"Mean delay" 	0.085648478563308
+scalar csma802154net.fixhost[11].udpApp 	"Min delay" 	0.064924185576
+scalar csma802154net.fixhost[11].udpApp 	"Max delay" 	0.122556189001
+scalar csma802154net.fixhost[11].udpApp 	"Deviation delay" 	0.018296947891854
 scalar csma802154net.fixhost[12].udpApp 	"Total sent" 	1
-scalar csma802154net.fixhost[12].udpApp 	"Total received" 	0
+scalar csma802154net.fixhost[12].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[12].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[12].udpApp 	"Mean delay" 	0
-scalar csma802154net.fixhost[12].udpApp 	"Min delay" 	0
-scalar csma802154net.fixhost[12].udpApp 	"Max delay" 	0
-scalar csma802154net.fixhost[12].udpApp 	"Deviation delay" 	-1.#IND
+scalar csma802154net.fixhost[12].udpApp 	"Mean delay" 	0.032033645280538
+scalar csma802154net.fixhost[12].udpApp 	"Min delay" 	0.023204091619
+scalar csma802154net.fixhost[12].udpApp 	"Max delay" 	0.051004124621
+scalar csma802154net.fixhost[12].udpApp 	"Deviation delay" 	0.0092730776710138
 scalar csma802154net.fixhost[13].udpApp 	"Total sent" 	0
 scalar csma802154net.fixhost[13].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[13].udpApp 	"Total deleted" 	0
@@ -139,10 +139,10 @@ scalar csma802154net.fixhost[16].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[17].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[17].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[17].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[17].udpApp 	"Mean delay" 	0.013509901668615
-scalar csma802154net.fixhost[17].udpApp 	"Min delay" 	0.010236055514
-scalar csma802154net.fixhost[17].udpApp 	"Max delay" 	0.016956055515
-scalar csma802154net.fixhost[17].udpApp 	"Deviation delay" 	0.0020496403688312
+scalar csma802154net.fixhost[17].udpApp 	"Mean delay" 	0.045839221643846
+scalar csma802154net.fixhost[17].udpApp 	"Min delay" 	0.03496413031
+scalar csma802154net.fixhost[17].udpApp 	"Max delay" 	0.064012130314
+scalar csma802154net.fixhost[17].udpApp 	"Deviation delay" 	0.010602213637889
 scalar csma802154net.fixhost[18].udpApp 	"Total sent" 	0
 scalar csma802154net.fixhost[18].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[18].udpApp 	"Total deleted" 	0
@@ -151,12 +151,12 @@ scalar csma802154net.fixhost[18].udpApp 	"Min delay" 	0
 scalar csma802154net.fixhost[18].udpApp 	"Max delay" 	0
 scalar csma802154net.fixhost[18].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[19].udpApp 	"Total sent" 	1
-scalar csma802154net.fixhost[19].udpApp 	"Total received" 	13
+scalar csma802154net.fixhost[19].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[19].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[19].udpApp 	"Mean delay" 	0.025154828022077
-scalar csma802154net.fixhost[19].udpApp 	"Min delay" 	0.019436058792
-scalar csma802154net.fixhost[19].udpApp 	"Max delay" 	0.047276058792
-scalar csma802154net.fixhost[19].udpApp 	"Deviation delay" 	0.0071622937452906
+scalar csma802154net.fixhost[19].udpApp 	"Mean delay" 	0
+scalar csma802154net.fixhost[19].udpApp 	"Min delay" 	0
+scalar csma802154net.fixhost[19].udpApp 	"Max delay" 	0
+scalar csma802154net.fixhost[19].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[20].udpApp 	"Total sent" 	0
 scalar csma802154net.fixhost[20].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[20].udpApp 	"Total deleted" 	0
@@ -167,10 +167,10 @@ scalar csma802154net.fixhost[20].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.fixhost[21].udpApp 	"Total sent" 	1
 scalar csma802154net.fixhost[21].udpApp 	"Total received" 	13
 scalar csma802154net.fixhost[21].udpApp 	"Total deleted" 	0
-scalar csma802154net.fixhost[21].udpApp 	"Mean delay" 	0.041596713291846
-scalar csma802154net.fixhost[21].udpApp 	"Min delay" 	0.030556097908
-scalar csma802154net.fixhost[21].udpApp 	"Max delay" 	0.081364097908
-scalar csma802154net.fixhost[21].udpApp 	"Deviation delay" 	0.014730527200294
+scalar csma802154net.fixhost[21].udpApp 	"Mean delay" 	0.026634235247538
+scalar csma802154net.fixhost[21].udpApp 	"Min delay" 	0.0187960814
+scalar csma802154net.fixhost[21].udpApp 	"Max delay" 	0.047204081402
+scalar csma802154net.fixhost[21].udpApp 	"Deviation delay" 	0.009094105434105
 scalar csma802154net.fixhost[22].udpApp 	"Total sent" 	0
 scalar csma802154net.fixhost[22].udpApp 	"Total received" 	0
 scalar csma802154net.fixhost[22].udpApp 	"Total deleted" 	0
@@ -634,9 +634,9 @@ scalar csma802154net.fixhost[87].udpApp 	"Min delay" 	0
 scalar csma802154net.fixhost[87].udpApp 	"Max delay" 	0
 scalar csma802154net.fixhost[87].udpApp 	"Deviation delay" 	-1.#IND
 scalar csma802154net.dataCentricNetworkMan 	FailedRREQs 	0
-scalar csma802154net.dataCentricNetworkMan 	FailedRegistrations 	2
-scalar csma802154net.dataCentricNetworkMan 	LinkFailures 	100
-scalar csma802154net.dataCentricNetworkMan 	DataArrivals 	130
+scalar csma802154net.dataCentricNetworkMan 	FailedRegistrations 	1
+scalar csma802154net.dataCentricNetworkMan 	LinkFailures 	87
+scalar csma802154net.dataCentricNetworkMan 	DataArrivals 	143
 scalar csma802154net.dataCentricNetworkMan 	ProactiveRREQs 	76
-scalar csma802154net.dataCentricNetworkMan 	DataFailures 	4294967166
+scalar csma802154net.dataCentricNetworkMan 	DataFailures 	13
 scalar csma802154net.dataCentricNetworkMan 	ProactiveRREQFailures 	12

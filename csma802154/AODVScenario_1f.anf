@@ -16,13 +16,13 @@
       <items xsi:type="scave:Add" filterPattern="ProactiveRREQFailures"/>
       <items xsi:type="scave:ScatterChart" name="test" xDataPattern="module(.) AND name(numNodes)">
         <properties name="Y.Axis.Min" value="0.0"/>
-        <properties name="Y.Axis.Max" value="30.0"/>
-        <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRegistrations - configname=AODVScenario_1f" value="false"/>
+        <properties name="Y.Axis.Max" value="120.0"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRREQs - configname=AODVScenario_1f" value="false"/>
-        <properties name="Line.Display/csma802154net.dataCentricNetworkMan LinkFailures - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataArrivals - configname=AODVScenario_1f" value="false"/>
-        <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataFailures - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan ProactiveRREQs - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan ProactiveRREQFailures - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRegistrations - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan LinkFailures - configname=AODVScenario_1f" value="false"/>
         <isoDataPattern>attr:configname(*)</isoDataPattern>
       </items>
     </datasets>
