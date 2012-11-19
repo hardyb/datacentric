@@ -1,7 +1,7 @@
 version 2
-run AODVScenario_1f-51-20121116-00:12:31-2968
+run AODVScenario_1f-51-20121119-11:25:05-176
 attr configname AODVScenario_1f
-attr datetime 20121116-00:12:31
+attr datetime 20121119-11:25:05
 attr experiment AODVScenario_1f
 attr inifile AODV.ini
 attr iterationvars $numNodes=101
@@ -9,7 +9,7 @@ attr iterationvars2 "$numNodes=101, $repetition=0"
 attr measurement $numNodes=101
 attr network csma802154net
 attr numNodes 101
-attr processid 2968
+attr processid 176
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -728,3 +728,6 @@ scalar csma802154net.dataCentricNetworkMan 	FailedRREQs 	0
 scalar csma802154net.dataCentricNetworkMan 	FailedRegistrations 	4
 scalar csma802154net.dataCentricNetworkMan 	LinkFailures 	115
 scalar csma802154net.dataCentricNetworkMan 	DataArrivals 	104
+scalar csma802154net.dataCentricNetworkMan 	ProactiveRREQs 	89
+scalar csma802154net.dataCentricNetworkMan 	DataFailures 	4294967192
+scalar csma802154net.dataCentricNetworkMan 	ProactiveRREQFailures 	12

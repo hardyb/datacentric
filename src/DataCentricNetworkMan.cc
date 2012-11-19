@@ -8,6 +8,7 @@
 #include <string.h>
 
 
+//#include "SpecialDebug.h"
 
 
 
@@ -465,9 +466,8 @@ void DataCentricNetworkMan::finish()
     recordScalar("ProactiveRREQs", (double)numProactiveRREQ());
     recordScalar("DataFailures", (double)(mExpectedDataArrivals-numAODVDataArrivalValue()));
 
-
-
-
+    unsigned int numFixHosts = getParentModule()->par("numFixHosts");
+    recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
 
 
 

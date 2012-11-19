@@ -5,6 +5,9 @@
 #include "StationaryMobility.h"
 #include "HostReference.h"
 
+#include "SpecialDebug.h"
+
+
 #define UNKNOWN_ACTIVITY 0
 #define SENSOR_READING 1
 #define SET_PROGRAM 2
@@ -19,7 +22,7 @@
 
 
 //#undef EV
-//#define EV (ev.isDisabled() || !m_debug) ? std::cout : ev ==> EV is now part of <omnetpp.h>
+//#define EV (ev.isDisabled() || !m_debug) ? COUT : ev ==> EV is now part of <omnetpp.h>
 
 Define_Module(DataCentricTestApp);
 
@@ -135,7 +138,7 @@ void DataCentricTestApp::initialize(int aStage)
         string fn = this->getParentModule()->getFullName();
         if ( !strcmp(this->getParentModule()->getFullName(), "fixhost[115]") )
         {
-            cout << "We are here!" << endl;
+            COUT << "We are here!" << "\n";
         }
 
         mBeenSetDirect = false;
@@ -162,7 +165,7 @@ void DataCentricTestApp::initialize(int aStage)
 
         if ( mBeenSetDirect )
         {
-            cout << "We are here!" << endl;
+            COUT << "We are here!" << "\n";
         }
 
 
@@ -642,17 +645,17 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
             *actionStream >> hours;
             if (actionStream->failbit)
             {
-                cout << "fail" << endl;
+                COUT << "fail" << "\n";
             }
             *actionStream >> minutes;
             if (actionStream->failbit)
             {
-                cout << "fail" << endl;
+                COUT << "fail" << "\n";
             }
             *actionStream >> seconds;
             if (actionStream->failbit)
             {
-                cout << "fail" << endl;
+                COUT << "fail" << "\n";
             }
             finalSeconds = (hours*3600)+(minutes*60)+seconds;
             scheduleAt(finalSeconds + ScheduleStartTime(), m);
@@ -873,11 +876,11 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
 
     if ( !_bid )
     {
-        cout << "#" << myAddr << "# Appliance " << _applianceId << " bid zero, removing from list" << endl;
+        COUT << "#" << myAddr << "# Appliance " << _applianceId << " bid zero, removing from list" << "\n";
         removeBidByApplianceId(_applianceId);
         if ( _applianceId == myAddr )
         {
-            cout << "#" << myAddr << "# We are going into IDLE state" << endl;
+            COUT << "#" << myAddr << "# We are going into IDLE state" << "\n";
             setCurrentDemand(0);
             scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
             appState = APPSTATE_IDLE;
@@ -900,16 +903,16 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
             {
                 if ( mBids.begin()->second == myAddr )
                 {
-                    cout << "#" << myAddr << "# Appliance " << _applianceId <<
-                            " bid " << _bid << ", RUNNING" << endl;
+                    COUT << "#" << myAddr << "# Appliance " << _applianceId <<
+                            " bid " << _bid << ", RUNNING" << "\n";
                     setCurrentDemand(mRequestedDemand);
                     scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                     appState = APPSTATE_RUNNING;
                 }
                 else
                 {
-                    cout << "#" << myAddr << "# Appliance " << _applianceId <<
-                            " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << endl;
+                    COUT << "#" << myAddr << "# Appliance " << _applianceId <<
+                            " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << "\n";
                     setCurrentDemand(0);
                     mLastOffTime = simTime().dbl();
                     appState = APPSTATE_PAUSED;
@@ -919,8 +922,8 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
         case APPSTATE_RUNNING:
             if ( mBids.begin()->second != myAddr )
             {
-                cout << "#" << myAddr << "# Appliance " << _applianceId <<
-                        " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << endl;
+                COUT << "#" << myAddr << "# Appliance " << _applianceId <<
+                        " bid " << _bid << ", we are PAUSING for " << mBids.begin()->second << "\n";
                 setCurrentDemand(0);
                 mLastOffTime = simTime().dbl();
                 cancelEvent(mDemandActionMessage);
@@ -930,8 +933,8 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
         case APPSTATE_PAUSED:
             if ( mBids.begin()->second == myAddr )
             {
-                cout << "#" << myAddr << "# Appliance " << _applianceId <<
-                        " bid " << _bid << ", we are RUNNING again"<< endl;
+                COUT << "#" << myAddr << "# Appliance " << _applianceId <<
+                        " bid " << _bid << ", we are RUNNING again"<< "\n";
                 mLastOnTime = simTime().dbl();
                 mDownTime += (mLastOnTime - mLastOffTime);
                 setCurrentDemand(mRequestedDemand);

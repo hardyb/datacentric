@@ -11,6 +11,9 @@
 #include "Ieee802154Frame_m.h"
 #include "Ieee802154NetworkCtrlInfo_m.h"
 
+#include "SpecialDebug.h"
+
+
 //#include "InterfaceTableAccess.h"
 //#include "MACAddress.h"
 //#include "Ieee802Ctrl_m.h"
@@ -20,7 +23,7 @@
 
 
 //#undef EV
-//#define EV (ev.isDisabled()||!m_debug) ? std::cout : ev ==> EV is now part of <omnetpp.h>
+//#define EV (ev.isDisabled()||!m_debug) ? COUT : ev ==> EV is now part of <omnetpp.h>
 
 Define_Module( DataCentricNetworkLayer );
 
@@ -215,7 +218,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         // SPECIAL TEMPORARY CODE
         // ======================
         //int thePoisson = mMeanUpTimeSeconds;
-        //cout << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
+        //COUT << "POISSON " << this->getParentModule()->getFullName() << ": " << thePoisson << endl;
 
 
 
@@ -324,7 +327,7 @@ void DataCentricNetworkLayer::finish()
 
 static void cb_printNeighbour(Interface* i, State* s)
 {
-    cout << "Neighbour: " << hex<< i->iName << endl;
+    COUT << "Neighbour: " << hex<< i->iName << "\n";
 
 
 }
@@ -423,7 +426,7 @@ void DataCentricNetworkLayer::sendDownTheNIC()
     {
         if ( mPhyModule->isEnabled() )
         {
-            //cout << "MODULE GOING DOWN: " << fName << endl;
+            //COUT << "MODULE GOING DOWN: " << fName << endl;
             //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
 
             mPhyModule->disableModule();
@@ -530,7 +533,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
             /*
             if ( mPhyModule->isEnabled() )
             {
-                cout << "MODULE GOING DOWN: " << fName << endl;
+                COUT << "MODULE GOING DOWN: " << fName << endl;
                 //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
 
                 mPhyModule->disableModule();
@@ -562,7 +565,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
             if ( !mPhyModule->isEnabled() )
             {
-                cout << "MODULE COMING UP: " << fName << endl;
+                COUT << "MODULE COMING UP: " << fName << "\n";
                 //scheduleAt(simTime() + 0.5, mMessageForTesting_1);
 
                 mPhyModule->enableModule();
@@ -728,7 +731,7 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     {
         case DATA_PACKET:
             currentPktCreationTime = simTime();
-            cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
+            COUT << "\n" << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << "\n";
             SendDataWithLongestContext(appPkt);
             break;
         case STARTUP_MESSAGE:
@@ -1218,20 +1221,20 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
     switch ( *_msg )
     {
         case NEIGHBOR_BCAST:
-            //std::cout << "Bcast size: " << pktSize;
+            //COUT << "Bcast size: " << pktSize;
             break;
         case NEIGHBOR_UCAST:
-            std::cout << "HelloReply size: " << pktSize << std::endl;
+            COUT << "HelloReply size: " << pktSize << "\n";
             break;
         case INTEREST:
-            std::cout << "Interest size: " << pktSize << std::endl;
+            COUT << "Interest size: " << pktSize << "\n";
             break;
         case ADVERT:
-            //std::cout << "Advert size: " << pktSize;
+            //COUT << "Advert size: " << pktSize;
             break;
         case REINFORCE:
         case REINFORCE_INTEREST:
-            //std::cout << "Reinforcement size: " << pktSize;
+            //COUT << "Reinforcement size: " << pktSize;
             break;
         default:
             break;
@@ -1259,8 +1262,8 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
 
 
 
-    //cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
-    cout << endl << "RECREATE ORIG CREATE TIME:      " << _creationTime << endl;
+    //COUT << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+    COUT << "\n" << "RECREATE ORIG CREATE TIME:      " << _creationTime << "\n";
 
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
@@ -1340,13 +1343,13 @@ static void cb_bcast_message(unsigned char* _msg)
     switch ( *_msg )
     {
         case NEIGHBOR_BCAST:
-            //std::cout << "Bcast size: " << pktSize;
+            //COUT << "Bcast size: " << pktSize;
             break;
         case NEIGHBOR_UCAST:
-            std::cout << "HelloReply size: " << pktSize << std::endl;
+            COUT << "HelloReply size: " << pktSize << "\n";
             break;
         case INTEREST:
-            std::cout << "Interest size: " << pktSize << std::endl;
+            COUT << "Interest size: " << pktSize << "\n";
             if ( SIMTIME_ZERO == currentModule->mLastInterestDepartureTime )
             {
                 currentModule->mLastInterestDepartureTime = simTime();
@@ -1373,7 +1376,7 @@ static void cb_bcast_message(unsigned char* _msg)
             }
             break;
         case ADVERT:
-            std::cout << "Advert size: " << pktSize << std::endl;
+            COUT << "Advert size: " << pktSize << "\n";
             if ( SIMTIME_ZERO == currentModule->mLastAdvertDepartureTime )
             {
                 currentModule->mLastAdvertDepartureTime = simTime();
@@ -1401,7 +1404,7 @@ static void cb_bcast_message(unsigned char* _msg)
             break;
         case REINFORCE:
         case REINFORCE_INTEREST:
-            //std::cout << "Reinforcement size: " << pktSize;
+            //COUT << "Reinforcement size: " << pktSize;
             break;
         default:
             break;
@@ -1410,7 +1413,7 @@ static void cb_bcast_message(unsigned char* _msg)
 
     //appPkt->setCreationTime(simTime());
     //appPkt->setCreationTime(currentModule->currentPktCreationTime);
-    //cout << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
+    //COUT << endl << "RECREATE ORIG CREATE TIME:      " << currentModule->currentPktCreationTime << endl;
 
     //Ieee802Ctrl *controlInfo = new Ieee802Ctrl();
     Ieee802154NetworkCtrlInfo *controlInfo = new Ieee802154NetworkCtrlInfo();
@@ -1427,7 +1430,7 @@ static void cb_bcast_message(unsigned char* _msg)
     //        currentModule->getd
 
     currentModule->mRoutingDelay = currentModule->par("routingDelay");
-    cout << "ROUTING DELAY " << routingDelayCount++ << ": " << currentModule->mRoutingDelay << endl;
+    COUT << "ROUTING DELAY " << routingDelayCount++ << ": " << currentModule->mRoutingDelay << "\n";
     if ( routingDelayCount == 25 )
     {
         routingDelayCount = 25;
@@ -1457,11 +1460,11 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
         index++;
     }
 
-    //cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
-    cout << endl << "DATA RECEIVED ORIG CREATE TIME: " << _creationTime << endl;
+    //COUT << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
+    COUT << "\n" << "DATA RECEIVED ORIG CREATE TIME: " << _creationTime << "\n";
     //simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
     simtime_t endToEndDelay = simTime() - _creationTime;
-    cout <<         "END TO END DELAY:               " << endToEndDelay << endl;
+    COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
     currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
 
 

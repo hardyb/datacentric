@@ -11,15 +11,23 @@
       <items xsi:type="scave:Add" filterPattern="LinkFailures"/>
       <items xsi:type="scave:Add" filterPattern="FailedRREQs"/>
       <items xsi:type="scave:Add" filterPattern="DataArrivals"/>
+      <items xsi:type="scave:Add" filterPattern="ProactiveRREQs"/>
+      <items xsi:type="scave:Add" filterPattern="DataFailures"/>
+      <items xsi:type="scave:Add" filterPattern="ProactiveRREQFailures"/>
       <items xsi:type="scave:ScatterChart" name="test" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Y.Axis.Max" value="30.0"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRegistrations - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRREQs - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan LinkFailures - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataArrivals - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataFailures - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan ProactiveRREQs - configname=AODVScenario_1f" value="false"/>
         <isoDataPattern>attr:configname(*)</isoDataPattern>
       </items>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.8"/>
   </chartSheets>
 </scave:Analysis>

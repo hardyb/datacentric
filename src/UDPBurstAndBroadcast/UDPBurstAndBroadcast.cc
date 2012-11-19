@@ -29,7 +29,7 @@
 #include "DataCentricNetworkLayer.h"
 #include "aodv_uu_omnet.h"
 
-
+#include "SpecialDebug.h"
 
 EXECUTE_ON_STARTUP(
     cEnum *e = cEnum::find("ChooseDestAddrMode");
@@ -340,7 +340,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
             int r = intuniform(1,100);
             if ( r <= mStability  )
             {
-                cout << "MODULE GOING DOWN: " << this->getParentModule()->getFullName() << endl;
+                COUT << "MODULE GOING DOWN: " << this->getParentModule()->getFullName() << "\n";
                 //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
 
                 mPhyModule->disableModule();
@@ -358,7 +358,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         }
         else
         {
-            cout << "MODULE COMING UP: " << this->getParentModule()->getFullName() << endl;
+            COUT << "MODULE COMING UP: " << this->getParentModule()->getFullName() << "\n";
 
             mPhyModule->enableModule();
             //StabilityVector.record(0.0);
@@ -479,7 +479,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          *
          */
         //currentPktCreationTime = simTime();
-        //cout << endl << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << endl;
+        //COUT << "\n" << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << "\n";
         //SendDataWithLongestContext(appPkt);
 
         theData.resize(appPkt->getPktData().size(), 0);
@@ -490,7 +490,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         getLongestContextTrie(rd->top_context, temp, temp, x);
         //context = x;
 
-        std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << std::endl;
+        COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
         generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
         mNetMan->addPendingDataPkt();
         break;
@@ -577,7 +577,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
-            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << std::endl;
+            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << "\n";
             generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
             //IPv4Address pending = myAddr.get4();
             mNetMan->addPendingRegistration(myAddr.get4().getInt());
@@ -839,7 +839,7 @@ void UDPBurstAndBroadcast::sendDownTheNIC()
     {
         if ( mPhyModule->isEnabled() )
         {
-            //cout << "MODULE GOING DOWN: " << fName << endl;
+            //COUT << "MODULE GOING DOWN: " << fName << "\n";
             //TraversInterfaceNodes(rd->interfaceTree, 0, cb_printNeighbour);
 
             mPhyModule->disableModule();
@@ -1171,8 +1171,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
     switch ( acm->getCntrlType() )
     {
         case REGISTER_AS_SINK_CONFIRMATION:
-            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                    << ", Received reg conf from: " << origAddr.get4() << std::endl;
+            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                    << ", Received reg conf from: " << origAddr.get4() << "\n";
             break;
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
@@ -1201,16 +1201,16 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             //IPv4Address pending(origAddr.get4());
             mNetMan->removePendingRegistration(origAddr.get4().getInt());
 
-            std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                    << ", Adding reg for: " << origAddr.get4() << std::endl;
+            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                    << ", Adding reg for: " << origAddr.get4() << "\n";
 
             // Send a confirmation to show success, but mainly to get a route
             // during a manual action so known to probably be separated from
             // other traffic.
             if ( par("confirmRegistration").boolValue() )
             {
-                std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                        << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << std::endl;
+                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                        << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << "\n";
                 generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
             }
             break;
@@ -1242,8 +1242,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                                 // THINK THE ABOVE IS OLD AND SHOULD HAVE BEEN REMOVED
                                 mNetMan->addPendingDataPkt();
                                 sendPacket(acm->dup(), i->first);
-                                std::cout << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                                        << ", Forwarding to: " << i->first.get4() << std::endl;
+                                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                                        << ", Forwarding to: " << i->first.get4() << "\n";
                                 //numSent++;
                             }
                         }
