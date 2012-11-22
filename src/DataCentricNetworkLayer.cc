@@ -1184,8 +1184,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             break;
     }
 
-    // is this right?
-    currentModule->mNetMan->updateControlPacketData(*_msg, true);
+    currentModule->mNetMan->recordOnePacket(*_msg);
     /*
     switch ( *_msg )
     {
@@ -1316,17 +1315,7 @@ static void cb_bcast_message(unsigned char* _msg)
     //controlPackets
 
 
-    currentModule->mNetMan->updateControlPacketData(*_msg, false);
-    /*
-    switch ( *_msg )
-    {
-        case DATA:
-            break;
-        default:
-            currentModule->mNetMan->updateControlPacketData(*_msg);
-            break;
-    }
-    */
+    currentModule->mNetMan->recordOnePacket(*_msg);
 
 
 

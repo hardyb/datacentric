@@ -68,6 +68,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         std::string fName = this->getFullPath();
         std::string fName2 = this->getFullPath();
         numControlPackets = 0;
+        totControlPacketsThisRun = 0;
 
         mExpectedDataArrivals = par("expectedDataArrivals");
 
@@ -122,7 +123,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         AODVDataPacketFrequency.setName("AODVDataPacketFrequency");
         AODVDataLineBreakVector.setName("AODVDataLineBreakVector");
         AODVAllLineBreakVector.setName("AODVAllLineBreakVector");
-        AODVDataArrivalVector.setName("AODVDataArrivalVector");
+        DataArrivalsVector.setName("DataArrivalsVector");
         PendingDataPacketsVector.setName("PendingDataPacketsVector");
 
 
@@ -470,6 +471,10 @@ void DataCentricNetworkMan::finish()
     recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
 
 
+    recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see
+
+
+
 
     //recordScalar("total bytes received", totalByteRecv);
     //recordScalar("total time", simTime() - FirstPacketTime());
@@ -661,10 +666,51 @@ signed int DataCentricNetworkMan::getDemand()
 }
 
 
-// This is now used to record a variety of things - so remove Control from name
-void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool ucast)
+/*
+ * This method is called from:
+ *      - inetmanet (indirectly - and for the AODV/Zigbee model  -
+ *                      AODV_DATA_STAT, RERR_STAT, AODV_DATA_LINEBREAK, AODV_ALL_LINEBREAK)
+ *      - UDPBurstAndBroadcast (Used by AODV/Zigbee model)
+ *      - DataCentricNetworkLayer (Used by data centric model)
+ *
+ *
+ */
+void DataCentricNetworkMan::recordOnePacket(unsigned char type)
 {
-    Enter_Method("updateControlPacketData(unsigned char type, bool ucast)");
+    Enter_Method("recordOnePacket(unsigned char type)");
+
+
+    recordOneDataCentricPacketForTotalInRun(type);
+    recordOneDataCentricPacketForFrequencyStats(type);
+
+    recordOneAODVZIGBEEPacketForTotalInRun(type);
+    recordOneAODVZIGBEEPacketForFrequencyStats(type);
+
+    // what we need to record in common to both models at end of a run
+    /*
+     * ACCURACY
+     * mean e2e delay
+     * num succ delivery
+     * num succ delivery (redfined with delay)
+     * num fail delivery
+     *
+     * OVERHEAD
+     * num control packets
+     * bandwidth
+     * energy used
+     *
+     * PERFORMANCE
+     * delay
+     * scalability
+     *
+     */
+
+
+
+
+
+
+
 
     // probably only do this for the frequency type stats
     if ( !mpControlPacketFrequencyMessage->isScheduled() )
@@ -672,80 +718,163 @@ void DataCentricNetworkMan::updateControlPacketData(unsigned char type, bool uca
         scheduleAt(simTime() + 0.005, mpControlPacketFrequencyMessage);
     }
 
-    switch ( type )
-    {
-    case ADVERT:
-        numAdvertPackets++;
-        break;
-    case INTEREST:
-        if ( ucast )
-        {
-            ucastNumInterestPackets++;
-        }
-        else
-        {
-            bcastNumInterestPackets++;
-        }
-        break;
-    case REINFORCE:
-    case REINFORCE_INTEREST:
-        numReinforcementPackets++;
-        break;
-    case NEIGHBOR_UCAST:
-        numHelloBackPackets++;
-        break;
-    case NEIGHBOR_BCAST:
-        numHelloPackets++;
-        break;
-    case BREAKAGE:
-        numBreakagePackets++;
-        break;
-    case RREQ_STAT:
-        numRREQPackets++;
-        break;
-    case DISCOVERY_STAT:
-        numDiscoveryPackets++;
-        break;
-    case REGISTER_STAT:
-        numRegisterPackets++;
-        break;
-    case RREPLY_STAT:
-        numRReplyPackets++;
-        break;
-    case AODV_DATA_STAT:
-        numAODVDataPackets++;
-        break;
-    case AODV_DATA_LINEBREAK:
-        numAODVDataLineBreaks++;
-        AODVDataLineBreakVector.record(numAODVDataLineBreaks);
-        break;
-    case AODV_ALL_LINEBREAK:
-        numAODVAllLineBreaks++;
-        AODVAllLineBreakVector.record(numAODVAllLineBreaks);
-        break;
-    case AODV_DATA_ARRIVAL:
-        numAODVDataArrival++;
-        AODVDataArrivalVector.record(numAODVDataArrival);
-        break;
-    case RERR_STAT:
-        numRERRPackets++;
-        break;
-    }
-
-
-
-
-    switch ( type )
-    {
-        case DATA:
-            break;
-        default:
-            numControlPackets++;
-            controlPackets.record(numControlPackets);
-            break;
-    }
 
 }
 
 
 
+
+
+
+
+
+
+
+void DataCentricNetworkMan::recordOneDataCentricPacketForTotalInRun(unsigned char type)
+{
+
+
+    switch ( type )
+    {
+        case ADVERT: // generate or forward advert
+        case INTEREST: // generate or forward interest
+        case REINFORCE:  // generate or forward reinforce advert
+        case REINFORCE_INTEREST:  // generate or forward reinforce interest
+        case NEIGHBOR_UCAST: // generate unicast hello (DISCONTINUED?)
+        case NEIGHBOR_BCAST: // generate broadcast hello
+        case BREAKAGE: // generate breakage message (DISCONTINUED?)
+            totControlPacketsThisRun++;  // Total data centric control packets in the run
+            controlPackets.record(totControlPacketsThisRun);  // packets over time
+            break;
+    }
+
+
+}
+
+
+
+
+void DataCentricNetworkMan::recordOneDataCentricPacketForFrequencyStats(unsigned char type)
+{
+    // Frequency statistics - DATACENTRIC Model
+    // values in header -
+    switch ( type )
+    {
+    case ADVERT: // generate or forward advert
+        numAdvertPackets++; // packets over a frequency interval
+        break;
+    case INTEREST: // generate or forward interest
+        bcastNumInterestPackets++; // packets over a frequency interval
+        break;
+    case REINFORCE:  // generate or forward reinforce advert
+    case REINFORCE_INTEREST:  // generate or forward reinforce interest
+        numReinforcementPackets++; // packets over a frequency interval
+        break;
+    case NEIGHBOR_UCAST: // generate unicast hello (DISCONTINUED?)
+        numHelloBackPackets++; // packets over a frequency interval
+        break;
+    case NEIGHBOR_BCAST: // generate broadcast hello
+        numHelloPackets++; // packets over a frequency interval
+        break;
+    case BREAKAGE: // generate breakage message (DISCONTINUED?)
+        numBreakagePackets++; // packets over a frequency interval
+        break;
+    }
+
+
+
+
+    switch ( type )
+    {
+        case ADVERT: // generate or forward advert
+        case INTEREST: // generate or forward interest
+        case REINFORCE:  // generate or forward reinforce advert
+        case REINFORCE_INTEREST:  // generate or forward reinforce interest
+        case NEIGHBOR_UCAST: // generate unicast hello (DISCONTINUED?)
+        case NEIGHBOR_BCAST: // generate broadcast hello
+        case BREAKAGE: // generate breakage message (DISCONTINUED?)
+            numControlPackets++; // packets over a frequency interval
+            break;
+    }
+
+
+
+
+
+
+}
+
+void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForTotalInRun(unsigned char type)
+{
+    // Total over a run - AODV/Zigbee Model
+    switch ( type )
+    {
+    case AODV_DATA_LINEBREAK: // One AODV data packet only line break occurred
+        numAODVDataLineBreaks++; // Total aodv data only packet line breaks in the run
+        AODVDataLineBreakVector.record(numAODVDataLineBreaks); // packets over time
+        break;
+    case AODV_ALL_LINEBREAK: // One AODV packet line break occurred
+        numAODVAllLineBreaks++; // Total aodv packet line breaks in the run
+        AODVAllLineBreakVector.record(numAODVAllLineBreaks); // packets over time
+        break;
+
+    // ALL MODELS?
+    case AODV_DATA_ARRIVAL: // A data packet arrival
+        numDataArrivals++; // Total data arrivals in the run
+        DataArrivalsVector.record(numDataArrivals); // packets over time
+        break;
+    }
+
+
+
+
+    switch ( type )
+    {
+    case DISCOVERY_STAT: // A Zigbee discover packet generated or forwarded
+    case REGISTER_STAT: // A Zigbee registration packet generated
+    case RREQ_STAT: // An AODV RREQ generated or forwarded
+    case RREPLY_STAT: // An AODV RREP generated or forwarded
+    case RERR_STAT: // An AODV RERR generated or forwarded
+            totControlPacketsThisRun++;  // Total data centric control packets in the run
+            controlPackets.record(totControlPacketsThisRun);  // packets over time
+            break;
+    }
+
+
+
+
+
+
+
+
+
+}
+
+
+void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForFrequencyStats(unsigned char type)
+{
+    // Frequency statistics - AODV/ZIGBEE Model
+    // values in header -
+    switch ( type )
+    {
+    case DISCOVERY_STAT: // A Zigbee discover packet generated or forwarded
+        numDiscoveryPackets++; // packets over a frequency interval
+        break;
+    case REGISTER_STAT: // A Zigbee registration packet generated
+        numRegisterPackets++; // packets over a frequency interval
+        break;
+    case RREQ_STAT: // An AODV RREQ generated or forwarded
+        numRREQPackets++; // packets over a frequency interval
+        break;
+    case RREPLY_STAT: // An AODV RREP generated or forwarded
+        numRReplyPackets++; // packets over a frequency interval
+        break;
+    case AODV_DATA_STAT: // An AODV Data packet generated or fowarded
+        numAODVDataPackets++; // packets over a frequency interval
+        break;
+    case RERR_STAT: // An AODV RERR generated or forwarded
+        numRERRPackets++; // packets over a frequency interval
+        break;
+    }
+
+}

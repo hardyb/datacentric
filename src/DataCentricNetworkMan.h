@@ -38,7 +38,7 @@ class DataCentricNetworkMan : public cSimpleModule
     virtual void initialize(int);
     virtual int numInitStages() const  {return 3;}
     virtual void finish();
-    void updateControlPacketData(unsigned char type, bool ucast);
+    void recordOnePacket(unsigned char type);
     void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
     void addDemand(signed int _demand);
@@ -94,6 +94,7 @@ class DataCentricNetworkMan : public cSimpleModule
     void handleMessage(cMessage*);
 
     double numControlPackets;
+    double totControlPacketsThisRun;
 
     double numHelloPackets;
     double numHelloBackPackets;
@@ -113,7 +114,7 @@ class DataCentricNetworkMan : public cSimpleModule
     double numAODVDataPackets;
     double numAODVDataLineBreaks;
     double numAODVAllLineBreaks;
-    double numAODVDataArrival;
+    double numDataArrival;
     double numPendingDataPackets;
 
     unsigned int mExpectedDataArrivals;
@@ -178,7 +179,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector AODVDataPacketFrequency;
     cOutVector AODVDataLineBreakVector;
     cOutVector AODVAllLineBreakVector;
-    cOutVector AODVDataArrivalVector;
+    cOutVector DataArrivalsVector;
     cOutVector PendingDataPacketsVector;
     cOutVector demandVector;
     cOutVector pendingRREQVector;
@@ -219,6 +220,10 @@ class DataCentricNetworkMan : public cSimpleModule
     //cOutVector meanE2EDelayVec;
     //cMessage *mpStartMessage;
 
+    void recordOneDataCentricPacketForTotalInRun(unsigned char type);
+    void recordOneDataCentricPacketForFrequencyStats(unsigned char type);
+    void recordOneAODVZIGBEEPacketForTotalInRun(unsigned char type);
+    void recordOneAODVZIGBEEPacketForFrequencyStats(unsigned char type);
 
 };
 

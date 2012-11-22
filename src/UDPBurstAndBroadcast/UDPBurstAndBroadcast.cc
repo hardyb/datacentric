@@ -59,17 +59,16 @@ DataCentricNetworkMan* netMan;
 
 void cb_record_RREQstats(double stat)
 {
-    netMan->updateControlPacketData(RREQ_STAT, false);
+    netMan->recordOnePacket(RREQ_STAT);
 }
 
 void cb_record_RReplystats(double stat)
 {
-    netMan->updateControlPacketData(RREPLY_STAT, false);
+    netMan->recordOnePacket(RREPLY_STAT);
 }
 
 void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
 {
-    //netMan->updateControlPacketData(RREPLY_STAT, false);
     netMan->removePendingRREQ(_originator, _destination);
 
 }
@@ -77,7 +76,6 @@ void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
 
 void cb_record_RREQInitiation(uint32 _originator, uint32 _destination)
 {
-    //netMan->updateControlPacketData(RREPLY_STAT, false);
     netMan->addPendingRREQ(_originator, _destination);
 
 }
@@ -102,7 +100,7 @@ void cb_record_ProactiveRoute(uint32 _originator)
 
 void cb_record_Datastats(unsigned char type, double stat)
 {
-    netMan->updateControlPacketData(type, false);
+    netMan->recordOnePacket(type);
 
 
 }
@@ -506,7 +504,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //StartUpModule();
         mPhyModule->enableModule();
         //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
-        //mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+        //mNetMan->recordOnePacket(DISCOVERY_STAT);
         break;
     case CONTEXT_MESSAGE:
         /*
@@ -534,13 +532,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         if ( mServerAddr.isUnspecified() )
         {
             generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
-            mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+            mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
         //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
         //generatePacket(mServerAddr, REGISTER_AS_SOURCE, "", sourceData.c_str());
-        //mNetMan->updateControlPacketData(REGISTER_STAT, false);
+        //mNetMan->recordOnePacket(REGISTER_STAT);
         break;
     case SINK_MESSAGE:
         /*
@@ -556,7 +554,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         if ( mServerAddr.isUnspecified() )
         {
             generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
-            mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+            mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
 
         sinkData.resize(appPkt->getPktData().size(), 0);
@@ -581,7 +579,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
             //IPv4Address pending = myAddr.get4();
             mNetMan->addPendingRegistration(myAddr.get4().getInt());
-            mNetMan->updateControlPacketData(REGISTER_STAT, false);
+            mNetMan->recordOnePacket(REGISTER_STAT);
         }
         break;
     default:
@@ -1127,7 +1125,7 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
     //socket.sendTo(payload, destAddr, destPort,outputInterface);
     //socket.sendTo(payload, mBcastAddr, destPort,outputInterface);
     sendPacket(payload, mBcastAddr);
-    mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+    mNetMan->recordOnePacket(DISCOVERY_STAT);
 
 }
 
@@ -1140,7 +1138,7 @@ void UDPBurstAndBroadcast::DataReceived(cPacket *pk)
     simtime_t e2eDelay = simTime() - pk->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     mNetMan->addADataPacketE2EDelay(e2eDelay);
-    mNetMan->updateControlPacketData(AODV_DATA_ARRIVAL, false);
+    mNetMan->recordOnePacket(AODV_DATA_ARRIVAL);
 
     this->getParentModule()->bubble("Received data packet");
 
@@ -1178,7 +1176,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             if ( mIsControlUnit )
             {
                 generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", "", 0.2);
-                mNetMan->updateControlPacketData(DISCOVERY_STAT, false);
+                mNetMan->recordOnePacket(DISCOVERY_STAT);
             }
             break;
         case CONTROL_UNIT_DETAILS:

@@ -5,7 +5,7 @@
     <inputs name="/datacentric/csma802154/results/AODVScenario_1f-*.sca"/>
   </inputs>
   <datasets>
-    <datasets name="Dataset1">
+    <datasets name="Dataset1a">
       <items xsi:type="scave:Add" filterPattern="numNodes"/>
       <items xsi:type="scave:Add" filterPattern="FailedRegistrations"/>
       <items xsi:type="scave:Add" filterPattern="LinkFailures"/>
@@ -14,15 +14,17 @@
       <items xsi:type="scave:Add" filterPattern="ProactiveRREQs"/>
       <items xsi:type="scave:Add" filterPattern="DataFailures"/>
       <items xsi:type="scave:Add" filterPattern="ProactiveRREQFailures"/>
-      <items xsi:type="scave:ScatterChart" name="test" xDataPattern="module(.) AND name(numNodes)">
+      <items xsi:type="scave:ScatterChart" name="Link Failures 1" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="X.Axis.Title" value="Number of nodes in Network"/>
+        <properties name="Y.Axis.Title" value="Number of Link Failures"/>
         <properties name="Y.Axis.Min" value="0.0"/>
-        <properties name="Y.Axis.Max" value="120.0"/>
+        <properties name="Y.Axis.Max" value="250.0"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRREQs - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataArrivals - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan ProactiveRREQs - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan ProactiveRREQFailures - configname=AODVScenario_1f" value="false"/>
         <properties name="Line.Display/csma802154net.dataCentricNetworkMan FailedRegistrations - configname=AODVScenario_1f" value="false"/>
-        <properties name="Line.Display/csma802154net.dataCentricNetworkMan LinkFailures - configname=AODVScenario_1f" value="false"/>
+        <properties name="Line.Display/csma802154net.dataCentricNetworkMan DataFailures - configname=AODVScenario_1f" value="false"/>
         <isoDataPattern>attr:configname(*)</isoDataPattern>
       </items>
     </datasets>

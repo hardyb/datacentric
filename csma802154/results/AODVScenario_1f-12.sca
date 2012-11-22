@@ -1,7 +1,7 @@
 version 2
-run AODVScenario_1f-12-20121119-16:01:28-3608
+run AODVScenario_1f-12-20121121-11:39:37-1136
 attr configname AODVScenario_1f
-attr datetime 20121119-16:01:28
+attr datetime 20121121-11:39:37
 attr experiment AODVScenario_1f
 attr inifile AODV.ini
 attr iterationvars $numNodes=62
@@ -9,7 +9,7 @@ attr iterationvars2 "$numNodes=62, $repetition=0"
 attr measurement $numNodes=62
 attr network csma802154net
 attr numNodes 62
-attr processid 3608
+attr processid 1136
 attr repetition 0
 attr replication #0
 attr resultdir results
