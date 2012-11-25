@@ -12,6 +12,9 @@
 
 
 
+#include "aodv_uu_omnet.h"
+#include "IPv4.h"
+#include "UDPBurstAndBroadcast.h"
 
 
 
@@ -470,8 +473,13 @@ void DataCentricNetworkMan::finish()
     unsigned int numFixHosts = getParentModule()->par("numFixHosts");
     recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
 
-
     recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see
+
+    recordScalar("MeanE2EDelay", E2EDelayStats.getMean());
+    recordScalar("StdDevE2EDelay", E2EDelayStats.getStddev());
+    recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
+    recordScalar("MinE2EDelay", E2EDelayStats.getMin());
+
 
 
 
@@ -485,8 +493,15 @@ void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
 {
     Enter_Method("addADataPacketE2EDelay(simtime_t delay)");
 
+    if ( true ) // Add a condition to the definition of successful delivery
+    {
+        numDataArrivals++; // Total data arrivals in the run
+        DataArrivalsVector.record(numDataArrivals); // packets over time
+    }
+
     dataPacketE2EDelay.record(delay);
-    numDataArrivals++;
+
+    E2EDelayStats.collect(delay);
 
 }
 
@@ -669,7 +684,7 @@ signed int DataCentricNetworkMan::getDemand()
 /*
  * This method is called from:
  *      - inetmanet (indirectly - and for the AODV/Zigbee model  -
- *                      AODV_DATA_STAT, RERR_STAT, AODV_DATA_LINEBREAK, AODV_ALL_LINEBREAK)
+ *                      IPV4_DATA_STAT, RERR_STAT, AODV_DATA_LINEBREAK, AODV_ALL_LINEBREAK)
  *      - UDPBurstAndBroadcast (Used by AODV/Zigbee model)
  *      - DataCentricNetworkLayer (Used by data centric model)
  *
@@ -730,10 +745,13 @@ void DataCentricNetworkMan::recordOnePacket(unsigned char type)
 
 
 
+/*
+ * Statistic types taken from the following headers:
+ *      - RoutingAndAggregation.h (data centric packets)
+ */
 void DataCentricNetworkMan::recordOneDataCentricPacketForTotalInRun(unsigned char type)
 {
-
-
+    // Total over a run - DATACENTRIC Model
     switch ( type )
     {
         case ADVERT: // generate or forward advert
@@ -747,17 +765,18 @@ void DataCentricNetworkMan::recordOneDataCentricPacketForTotalInRun(unsigned cha
             controlPackets.record(totControlPacketsThisRun);  // packets over time
             break;
     }
-
-
 }
 
 
 
 
+/*
+ * Statistic types taken from the following headers:
+ *      - RoutingAndAggregation.h (data centric packets)
+ */
 void DataCentricNetworkMan::recordOneDataCentricPacketForFrequencyStats(unsigned char type)
 {
     // Frequency statistics - DATACENTRIC Model
-    // values in header -
     switch ( type )
     {
     case ADVERT: // generate or forward advert
@@ -781,9 +800,6 @@ void DataCentricNetworkMan::recordOneDataCentricPacketForFrequencyStats(unsigned
         break;
     }
 
-
-
-
     switch ( type )
     {
         case ADVERT: // generate or forward advert
@@ -796,14 +812,16 @@ void DataCentricNetworkMan::recordOneDataCentricPacketForFrequencyStats(unsigned
             numControlPackets++; // packets over a frequency interval
             break;
     }
-
-
-
-
-
-
 }
 
+
+
+/*
+ * Statistic types taken from the following headers:
+ *      - aodv_uu_omnet.h (AODV control packets)
+ *      - IPv4.h (data packets)
+ *      - UDPBurstAndBroadcast.h (Zigbee discovery, binding etc control packets)
+ */
 void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForTotalInRun(unsigned char type)
 {
     // Total over a run - AODV/Zigbee Model
@@ -817,17 +835,9 @@ void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForTotalInRun(unsigned char
         numAODVAllLineBreaks++; // Total aodv packet line breaks in the run
         AODVAllLineBreakVector.record(numAODVAllLineBreaks); // packets over time
         break;
-
-    // ALL MODELS?
-    case AODV_DATA_ARRIVAL: // A data packet arrival
-        numDataArrivals++; // Total data arrivals in the run
-        DataArrivalsVector.record(numDataArrivals); // packets over time
-        break;
     }
 
-
-
-
+    // Total over a run - AODV/Zigbee Model
     switch ( type )
     {
     case DISCOVERY_STAT: // A Zigbee discover packet generated or forwarded
@@ -835,26 +845,23 @@ void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForTotalInRun(unsigned char
     case RREQ_STAT: // An AODV RREQ generated or forwarded
     case RREPLY_STAT: // An AODV RREP generated or forwarded
     case RERR_STAT: // An AODV RERR generated or forwarded
-            totControlPacketsThisRun++;  // Total data centric control packets in the run
+            totControlPacketsThisRun++;  // Total control packets in the run
             controlPackets.record(totControlPacketsThisRun);  // packets over time
             break;
     }
-
-
-
-
-
-
-
-
-
 }
 
 
+
+/*
+ * Statistic types taken from the following headers:
+ *      - aodv_uu_omnet.h (AODV control packets)
+ *      - IPv4.h (data packets)
+ *      - UDPBurstAndBroadcast.h (Zigbee discovery, binding etc control packets)
+ */
 void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForFrequencyStats(unsigned char type)
 {
-    // Frequency statistics - AODV/ZIGBEE Model
-    // values in header -
+    // Frequency statistics - AODV/ZIGBEE Model only
     switch ( type )
     {
     case DISCOVERY_STAT: // A Zigbee discover packet generated or forwarded
@@ -869,7 +876,7 @@ void DataCentricNetworkMan::recordOneAODVZIGBEEPacketForFrequencyStats(unsigned 
     case RREPLY_STAT: // An AODV RREP generated or forwarded
         numRReplyPackets++; // packets over a frequency interval
         break;
-    case AODV_DATA_STAT: // An AODV Data packet generated or fowarded
+    case IPV4_DATA_STAT: // An AODV Data packet generated or fowarded
         numAODVDataPackets++; // packets over a frequency interval
         break;
     case RERR_STAT: // An AODV RERR generated or forwarded

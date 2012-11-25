@@ -14,15 +14,6 @@
 
 class DataCentricTestApp;
 
-#define RREQ_STAT 12
-#define DISCOVERY_STAT 13
-#define REGISTER_STAT 14
-#define RREPLY_STAT 15
-#define AODV_DATA_STAT 16
-#define AODV_DATA_LINEBREAK 17
-#define RERR_STAT 18
-#define AODV_ALL_LINEBREAK 19
-#define AODV_DATA_ARRIVAL 20
 
 
 
@@ -169,6 +160,8 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector advertPacketFrequency;
     cOutVector reinforcementPacketFrequency;
     cOutVector dataPacketE2EDelay;
+    cStdDev E2EDelayStats;
+
     cOutVector breakagePacketFrequency;
     cOutVector modulesDownVector;
     cOutVector RREQPacketFrequency;

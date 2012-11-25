@@ -48,15 +48,15 @@ simsignal_t UDPBurstAndBroadcast::rcvdPkSignal = SIMSIGNAL_NULL;
 simsignal_t UDPBurstAndBroadcast::outOfOrderPkSignal = SIMSIGNAL_NULL;
 simsignal_t UDPBurstAndBroadcast::dropPkSignal = SIMSIGNAL_NULL;
 
-static void cb_record_RREQstats(double stat);
-static void cb_record_RReplystats(double stat);
+//static void cb_record_RREQstats(double stat);
+//static void cb_record_RReplystats(double stat);
 static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
 static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
 static void cb_record_ProactiveRoute(uint32 _originator);
 static void cb_record_Datastats(unsigned char type, double stat);
 DataCentricNetworkMan* netMan;
 
-
+/*
 void cb_record_RREQstats(double stat)
 {
     netMan->recordOnePacket(RREQ_STAT);
@@ -66,6 +66,8 @@ void cb_record_RReplystats(double stat)
 {
     netMan->recordOnePacket(RREPLY_STAT);
 }
+*/
+
 
 void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
 {
@@ -180,8 +182,8 @@ void UDPBurstAndBroadcast::initialize(int stage)
     nextPkt = startTime;
     e2eDelayVec.setName("End-to-end delay");
 
-    setRecordRREQStatsCallBack(cb_record_RREQstats);
-    setRecordRReplyStatsCallBack(cb_record_RReplystats);
+    //setRecordRREQStatsCallBack(cb_record_RREQstats);
+    //setRecordRReplyStatsCallBack(cb_record_RReplystats);
     setRecordRReplyCompletionCallBack(cb_record_RReplyCompletion);
     setRecordRREQInitiationCallBack(cb_record_RREQInitiation);
     setRecordProactiveRouteCallBack(cb_record_ProactiveRoute);
@@ -1138,7 +1140,7 @@ void UDPBurstAndBroadcast::DataReceived(cPacket *pk)
     simtime_t e2eDelay = simTime() - pk->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     mNetMan->addADataPacketE2EDelay(e2eDelay);
-    mNetMan->recordOnePacket(AODV_DATA_ARRIVAL);
+    //mNetMan->recordOnePacket(AODV_DATA_ARRIVAL);
 
     this->getParentModule()->bubble("Received data packet");
 
