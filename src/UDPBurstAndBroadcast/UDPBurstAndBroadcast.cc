@@ -28,6 +28,7 @@
 #include "BroadcastMessage_m.h"
 #include "DataCentricNetworkLayer.h"
 #include "aodv_uu_omnet.h"
+#include "ChannelControl.h"
 
 #include "SpecialDebug.h"
 
@@ -54,6 +55,8 @@ static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
 static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
 static void cb_record_ProactiveRoute(uint32 _originator);
 static void cb_record_Datastats(unsigned char type, double stat);
+void cb_collect_AirFrame(cPacket* p);
+
 DataCentricNetworkMan* netMan;
 
 /*
@@ -67,6 +70,17 @@ void cb_record_RReplystats(double stat)
     netMan->recordOnePacket(RREPLY_STAT);
 }
 */
+
+
+void cb_collect_AirFrame(cPacket* p)
+{
+    string name = p->getName();
+    unsigned int bitLen = p->getBitLength();
+
+    netMan->collectMsgBits(p->getBitLength(), p);
+
+
+}
 
 
 void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
@@ -188,6 +202,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     setRecordRREQInitiationCallBack(cb_record_RREQInitiation);
     setRecordProactiveRouteCallBack(cb_record_ProactiveRoute);
     setRecordDataStatsCallBack(cb_record_Datastats);
+    setCollectAirFrameCallBack(cb_collect_AirFrame);
 
     cSimulation* sim =  cSimulation::getActiveSimulation();
     mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));
@@ -311,12 +326,13 @@ cPacket *UDPBurstAndBroadcast::createPacket()
 
 
 
-AppControlMessage *UDPBurstAndBroadcast::createPacket2()
+AppControlMessage *UDPBurstAndBroadcast::createPacket2(const char *name)
 {
-    char msgName[32];
-    sprintf(msgName, "UDPBroadcast-%d", counter++);
+    //char msgName[32];
+    //sprintf(msgName, "UDPBroadcast-%d", counter++);
     //long msgByteLength = messageLengthPar->longValue();
-    AppControlMessage *payload = new AppControlMessage(msgName);
+    //AppControlMessage *payload = new AppControlMessage(msgName);
+    AppControlMessage *payload = new AppControlMessage(name);
     payload->setCntrlType(FIND_CONTROL_UNIT);
     //std::string interests = "\x83\x2\x0";
     //payload->setInterests(interests.c_str());
@@ -491,7 +507,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //context = x;
 
         COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-        generatePacket(mServerAddr, HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+        generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
         mNetMan->addPendingDataPkt();
         break;
     case STARTUP_MESSAGE:
@@ -505,7 +521,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          */
         //StartUpModule();
         mPhyModule->enableModule();
-        //generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "");
+        //generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "");
         //mNetMan->recordOnePacket(DISCOVERY_STAT);
         break;
     case CONTEXT_MESSAGE:
@@ -533,13 +549,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         if ( mServerAddr.isUnspecified() )
         {
-            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
+            generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
             mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
         //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
-        //generatePacket(mServerAddr, REGISTER_AS_SOURCE, "", sourceData.c_str());
+        //generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SOURCE, "", sourceData.c_str());
         //mNetMan->recordOnePacket(REGISTER_STAT);
         break;
     case SINK_MESSAGE:
@@ -555,7 +571,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         // TEMP COMMENT OUT
         if ( mServerAddr.isUnspecified() )
         {
-            generatePacket(mBcastAddr, FIND_CONTROL_UNIT, "", "", "", 0);
+            generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
             mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
 
@@ -578,7 +594,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         else
         {
             COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << "\n";
-            generatePacket(mServerAddr, REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
+            generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
             //IPv4Address pending = myAddr.get4();
             mNetMan->addPendingRegistration(myAddr.get4().getInt());
             mNetMan->recordOnePacket(REGISTER_STAT);
@@ -915,9 +931,9 @@ void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_dest
 
 
 
-void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
+void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
 {
-    AppControlMessage *payload = createPacket2();
+    AppControlMessage *payload = createPacket2(name);
     payload->setTimestamp();
     payload->setCntrlType(_cntrlType);
     payload->setInterests(_interests);
@@ -1177,7 +1193,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
             {
-                generatePacket(origAddr, CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", "", 0.2);
+                generatePacket(origAddr, "ServiceDiscoveryResponse", CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", "", 0.2);
                 mNetMan->recordOnePacket(DISCOVERY_STAT);
             }
             break;
@@ -1211,7 +1227,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             {
                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                         << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << "\n";
-                generatePacket(origAddr, REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+                generatePacket(origAddr, "BindResponse", REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
             }
             break;
         case HOME_ENERGY_DATA:

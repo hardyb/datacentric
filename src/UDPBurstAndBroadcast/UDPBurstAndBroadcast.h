@@ -158,10 +158,10 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     // chooses random destination address
     virtual IPvXAddress chooseDestAddr();
     virtual cPacket *createPacket();
-    virtual AppControlMessage *createPacket2();
+    virtual AppControlMessage *createPacket2(const char *name);
     virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
-    void generatePacket(IPvXAddress &_destAddr, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
+    void generatePacket(IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
     void sendDownTheNIC();
     void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 

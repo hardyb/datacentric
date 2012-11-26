@@ -49,11 +49,13 @@ class DataCentricNetworkMan : public cSimpleModule
     void removePendingRegistration(uint32 _originator);
     unsigned int numPendingRegistrations();
     unsigned int numAODVAllLineBreaksValue();
-    unsigned int numAODVDataArrivalValue();
+    unsigned int numDataArrivalsValue();
     void removePendingDataPkt();
     void addProactiveRREQ(uint32 _originator);
     void clearProactiveRREQ();
     unsigned int numProactiveRREQ();
+    void collectBits(unsigned int bits);
+    void collectMsgBits(unsigned int bits, cPacket* p);
 
 
 
@@ -105,7 +107,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numAODVDataPackets;
     double numAODVDataLineBreaks;
     double numAODVAllLineBreaks;
-    double numDataArrival;
+    //double numDataArrival;
+    unsigned int numDataArrivals;
     double numPendingDataPackets;
 
     unsigned int mExpectedDataArrivals;
@@ -149,6 +152,9 @@ class DataCentricNetworkMan : public cSimpleModule
     typedef std::set<uint32> ProactiveRREQSet;
     ProactiveRREQSet mProactiveRREQSet;
 
+    std::set<std::string> mAirFrameNames;
+
+
 
 
     cOutVector controlPackets;
@@ -161,6 +167,7 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector reinforcementPacketFrequency;
     cOutVector dataPacketE2EDelay;
     cStdDev E2EDelayStats;
+    cStdDev bpsStats;
 
     cOutVector breakagePacketFrequency;
     cOutVector modulesDownVector;
@@ -179,7 +186,6 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector pendingRegistrationVector;
 
 
-    unsigned int numDataArrivals;
 
 
     cMessage *mpControlPacketFrequencyMessage;

@@ -93,7 +93,6 @@ void DataCentricNetworkMan::initialize(int aStage)
         numAODVDataPackets = 0;
         numAODVDataLineBreaks = 0;
         numAODVAllLineBreaks = 0;
-        numAODVDataArrival = 0;
         numPendingDataPackets = 0;
         mDemand = 0;
 
@@ -460,25 +459,81 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
 
 void DataCentricNetworkMan::finish()
 {
-    //recordScalar("numDataArrivals", numDataArrivals);
-
-    // Additional scalar recording for scatter charts in multi simulation runs
-    recordScalar("FailedRREQs", (double)numPendingRREQs());
-    recordScalar("FailedRegistrations", (double)numPendingRegistrations());
-    recordScalar("LinkFailures", (double)numAODVAllLineBreaksValue());
-    recordScalar("DataArrivals", (double)numAODVDataArrivalValue());
-    recordScalar("ProactiveRREQs", (double)numProactiveRREQ());
-    recordScalar("DataFailures", (double)(mExpectedDataArrivals-numAODVDataArrivalValue()));
-
-    unsigned int numFixHosts = getParentModule()->par("numFixHosts");
-    recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
-
-    recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see
-
+    // ACCURACY
+    recordScalar("DataArrivals", (double)numDataArrivals);
+    double percentageDataArrivals = ((double)numDataArrivals)/mExpectedDataArrivals * 100.0;
+    recordScalar("PercentageArrivals", percentageDataArrivals);
+    unsigned int failures = mExpectedDataArrivals-numDataArrivals;
+    recordScalar("DataFailures", (double)(failures));
+    double percentageFailures = ((double)failures)/mExpectedDataArrivals * 100.0;
+    recordScalar("PercentageArrivals", percentageFailures);
     recordScalar("MeanE2EDelay", E2EDelayStats.getMean());
     recordScalar("StdDevE2EDelay", E2EDelayStats.getStddev());
     recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
     recordScalar("MinE2EDelay", E2EDelayStats.getMin());
+
+    // OVERHEAD
+    recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see
+    recordScalar("MeanBPS", bpsStats.getMean());
+    recordScalar("StdDevBPS", bpsStats.getStddev());
+    recordScalar("MaxBPS", bpsStats.getMax());
+    recordScalar("MinBPS", bpsStats.getMin());
+
+    // PERFORMANCE
+
+
+
+
+
+
+
+    // ADDITIONAL ANALYSIS, EG CONNECTIONS / CONVERGENCE
+    // Additional scalar recording for scatter charts in multi simulation runs
+    recordScalar("FailedRREQs", (double)numPendingRREQs());
+    recordScalar("FailedRegistrations", (double)numPendingRegistrations());
+    recordScalar("LinkFailures", (double)numAODVAllLineBreaksValue());
+    recordScalar("ProactiveRREQs", (double)numProactiveRREQ());
+    unsigned int numFixHosts = getParentModule()->par("numFixHosts");
+    recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
+
+
+
+    // what we need to record in common to both models at end of a run
+    /*
+     * ACCURACY
+     * mean e2e delay
+     * num succ delivery
+     * num succ delivery (redfined with delay)
+     * num fail delivery
+     *
+     * OVERHEAD
+     * num control packets
+     * bandwidth
+     * energy used
+     *
+     * PERFORMANCE
+     * delay
+     * scalability
+     *
+     */
+
+
+
+    std::cout << "##########################" << std::endl;
+    for (std::set<std::string>::iterator i = mAirFrameNames.begin();
+            i != mAirFrameNames.end(); i++)
+    {
+        std::cout << *i << std::endl;
+    }
+    std::cout << "##########################" << std::endl;
+
+
+
+
+
+
+
+
 
 
 
@@ -496,12 +551,12 @@ void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
     if ( true ) // Add a condition to the definition of successful delivery
     {
         numDataArrivals++; // Total data arrivals in the run
-        DataArrivalsVector.record(numDataArrivals); // packets over time
+        DataArrivalsVector.record(numDataArrivals); // num packets over time
     }
 
-    dataPacketE2EDelay.record(delay);
+    dataPacketE2EDelay.record(delay); // occurrence of delay over time
 
-    E2EDelayStats.collect(delay);
+    E2EDelayStats.collect(delay); // delay stats
 
 }
 
@@ -649,11 +704,11 @@ unsigned int DataCentricNetworkMan::numAODVAllLineBreaksValue()
 
 
 
-unsigned int DataCentricNetworkMan::numAODVDataArrivalValue()
+unsigned int DataCentricNetworkMan::numDataArrivalsValue()
 {
-    Enter_Method("numAODVDataArrivalValue()");
+    Enter_Method("numDataArrivalsValue()");
 
-    return numAODVDataArrival;
+    return numDataArrivals;
 
 }
 
@@ -679,6 +734,49 @@ signed int DataCentricNetworkMan::getDemand()
 
     // possibly discontinueds
 }
+
+
+
+
+void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
+{
+    std::string name = p->getName();
+    mAirFrameNames.insert(name);
+    collectBits(bits);
+
+}
+
+
+
+
+
+void DataCentricNetworkMan::collectBits(unsigned int bits)
+{
+    static unsigned int currentTotalBits = 0;
+    static double nextCheckTime = 1;
+
+    if ( simTime().dbl() >= nextCheckTime )
+    {
+        bpsStats.collect((double)currentTotalBits);
+
+        double dblTimeOver = (simTime().dbl() - nextCheckTime);
+        int intTimeOver = (int)floor(dblTimeOver);
+        for ( int i = intTimeOver; i > 0; i-- )
+        {
+            bpsStats.collect(0.0);
+        }
+        currentTotalBits = bits;
+        nextCheckTime = nextCheckTime + (double)(intTimeOver+1);
+    }
+    else
+    {
+        currentTotalBits += bits;
+    }
+}
+
+
+
+
 
 
 /*
