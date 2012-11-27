@@ -21,6 +21,8 @@ simple DataCentricTestApp extends TrafGenPar
         // bool   - false
         // string - ""
         //
+        // Also if we set setParametersDirectly true then
+        // the host referene model will ignore this node
          
         bool debug = default(flase);
         string sinkFor = default("");
@@ -38,7 +40,6 @@ simple DataCentricTestApp extends TrafGenPar
         double nodeStartTime = default(0.0);
         double scheduleStartTime = default(0.0);
         
-        // soon not to be used
         bool setParametersDirectly = default(false);
         
         double timeSinkRegisterWithControlUnit = default(0.0);

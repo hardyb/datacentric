@@ -143,6 +143,7 @@ void DataCentricTestApp::initialize(int aStage)
 
         mBeenSetDirect = false;
 
+        mBeenSetDirect = !mBeenSetDirect ? par("setParametersDirectly").boolValue() : true;
         mBeenSetDirect = !mBeenSetDirect ? par("isAppliance").boolValue() : true;
         //mBeenSetDirect = !mBeenSetDirect ? par("debug").boolValue() : true;
         mBeenSetDirect = !mBeenSetDirect ? strcmp(par("actionThreads").stringValue(), "") : true;
