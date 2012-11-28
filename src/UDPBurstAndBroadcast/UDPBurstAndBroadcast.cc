@@ -28,7 +28,7 @@
 #include "BroadcastMessage_m.h"
 #include "DataCentricNetworkLayer.h"
 #include "aodv_uu_omnet.h"
-#include "ChannelControl.h"
+//#include "ChannelControl.h"
 
 #include "SpecialDebug.h"
 
@@ -55,7 +55,7 @@ static void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination);
 static void cb_record_RREQInitiation(uint32 _originator, uint32 _destination);
 static void cb_record_ProactiveRoute(uint32 _originator);
 static void cb_record_Datastats(unsigned char type, double stat);
-void cb_collect_AirFrame(cPacket* p);
+//void cb_collect_AirFrame(cPacket* p);
 
 DataCentricNetworkMan* netMan;
 
@@ -69,7 +69,6 @@ void cb_record_RReplystats(double stat)
 {
     netMan->recordOnePacket(RREPLY_STAT);
 }
-*/
 
 
 void cb_collect_AirFrame(cPacket* p)
@@ -81,6 +80,7 @@ void cb_collect_AirFrame(cPacket* p)
 
 
 }
+*/
 
 
 void cb_record_RReplyCompletion(uint32 _originator, uint32 _destination)
@@ -202,7 +202,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     setRecordRREQInitiationCallBack(cb_record_RREQInitiation);
     setRecordProactiveRouteCallBack(cb_record_ProactiveRoute);
     setRecordDataStatsCallBack(cb_record_Datastats);
-    setCollectAirFrameCallBack(cb_collect_AirFrame);
+    //setCollectAirFrameCallBack(cb_collect_AirFrame);
 
     cSimulation* sim =  cSimulation::getActiveSimulation();
     mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("csma802154net.dataCentricNetworkMan"));

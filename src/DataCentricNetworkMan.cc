@@ -15,6 +15,7 @@
 #include "aodv_uu_omnet.h"
 #include "IPv4.h"
 #include "UDPBurstAndBroadcast.h"
+#include "ChannelControl.h"
 
 
 
@@ -38,6 +39,7 @@ Here, the value of argv[0] is read using the typecast operator that maps to long
 
 
 
+DataCentricNetworkMan* netWkMan; // change name
 
 
 
@@ -45,17 +47,20 @@ Here, the value of argv[0] is read using the typecast operator that maps to long
 
 
 
+void cb_collect_AirFrame(cPacket* p);
 
 
 
 
+void cb_collect_AirFrame(cPacket* p)
+{
+    string name = p->getName();
+    unsigned int bitLen = p->getBitLength();
+
+    netMan->collectMsgBits(p->getBitLength(), p);
 
 
-
-
-
-
-
+}
 
 
 
@@ -74,6 +79,9 @@ void DataCentricNetworkMan::initialize(int aStage)
         totControlPacketsThisRun = 0;
 
         mExpectedDataArrivals = par("expectedDataArrivals");
+
+        netWkMan = this;
+        setCollectAirFrameCallBack(cb_collect_AirFrame);
 
         numHelloPackets = 0;
         numHelloBackPackets = 0;
@@ -466,7 +474,7 @@ void DataCentricNetworkMan::finish()
     unsigned int failures = mExpectedDataArrivals-numDataArrivals;
     recordScalar("DataFailures", (double)(failures));
     double percentageFailures = ((double)failures)/mExpectedDataArrivals * 100.0;
-    recordScalar("PercentageArrivals", percentageFailures);
+    recordScalar("PercentageFailures", percentageFailures);
     recordScalar("MeanE2EDelay", E2EDelayStats.getMean());
     recordScalar("StdDevE2EDelay", E2EDelayStats.getStddev());
     recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
@@ -474,6 +482,8 @@ void DataCentricNetworkMan::finish()
 
     // OVERHEAD
     recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see
+
+
     recordScalar("MeanBPS", bpsStats.getMean());
     recordScalar("StdDevBPS", bpsStats.getStddev());
     recordScalar("MaxBPS", bpsStats.getMax());
