@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/datacentric/simulations/results/DataCentric_Experiment_1-*.vec"/>
+    <inputs name="/datacentric/simulations/results/DataCentric_Experiment_1-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="ds1">
+      <items xsi:type="scave:Add" filterPattern="MeanE2EDelay"/>
+      <items xsi:type="scave:Add" filterPattern="numNodes"/>
+      <items xsi:type="scave:ScatterChart" name="Mean end-to-end delay" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="X.Axis.Title" value="Number of nodes"/>
+        <properties name="Y.Axis.Title" value="Mean delay"/>
+        <isoDataPattern>attr:configname(*)</isoDataPattern>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="DataArrivals"/>
+      <items xsi:type="scave:Add" filterPattern="PercentageArrivals"/>
+      <items xsi:type="scave:ScatterChart" name="Arrivals" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="X.Axis.Title" value="Number of nodes"/>
+        <properties name="Y.Axis.Title" value="Number of arrivals"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan MeanE2EDelay - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan PercentageArrivals - configname=DataCentric_Experiment_1" value="false"/>
+        <isoDataPattern>attr:configname(*)</isoDataPattern>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.5"/>
+  </chartSheets>
+</scave:Analysis>

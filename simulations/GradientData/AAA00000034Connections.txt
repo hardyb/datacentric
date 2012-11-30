@@ -2,25 +2,51 @@ CONNECTION
 AAA00000034
 8302FF0604
 3
-AAA00000045
+AAA0000002C
 seqno: 0
 true
 65535
-287
+361
 false
 false
 true
-true
+false
 CONNECTION
 AAA00000034
 8302FF0604
 3
-AAA00000002
+AAA00000026
 seqno: 0
 true
 65535
+409
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+8302FF0604
+3
+AAA0000001C
+seqno: 0
+true
 65535
+529
+false
+false
+false
+false
+CONNECTION
+AAA00000034
+8302FF0604
+3
+AAA00000015
+seqno: 0
 true
-true
+65535
+472
+false
+false
 false
 false

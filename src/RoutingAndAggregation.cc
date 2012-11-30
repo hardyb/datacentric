@@ -3733,20 +3733,38 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
             //    return;
 
             //}
-            if ( lqi < 85 )
+
+            if ( !FindInterfaceNode(rd->interfaceTree, inf) )
             {
-                rd->pkts_ignored++;
-                return;
+                unsigned int numNeighbours = CountInterfaceNodes(rd->interfaceTree);
+                if ( numNeighbours > 9 )
+                {
+                    rd->pkts_ignored++;
+                    return;
+                }
+                else
+                {
+                    unsigned char lqiThreshold = numNeighbours > 4 ? 100 : numNeighbours * 20;
+                    if ( lqi < lqiThreshold )
+                    {
+                        rd->pkts_ignored++;
+                        return;
+                    }
+                }
             }
+
+
+
 
             // THOUGHT THIS WAS NOT OK (Due to seqno idea)  -    BUT NOW THINK ITS OK
             // Because it checks whether we have already accepted the if (OFCOURSE)
-            if ( !FindInterfaceNode(rd->interfaceTree, inf) &&
-                    CountInterfaceNodes(rd->interfaceTree) > 9 )
-            {
-                rd->pkts_ignored++;
-                return;
-            }
+
+            //if ( !FindInterfaceNode(rd->interfaceTree, inf) &&
+            //        numNeighbours > 9 )
+            //{
+            //    rd->pkts_ignored++;
+            //    return;
+            //}
             break;
     }
     DBTYPETHROUGH(std::cout << "type: " << (unsigned int)incoming_packet.message_type << " is through" << std::endl;)
