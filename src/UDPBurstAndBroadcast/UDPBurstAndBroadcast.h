@@ -34,7 +34,7 @@
 #include "DropTailQueue.h"
 
 
-
+// packet control types
 #define FIND_CONTROL_UNIT 0
 #define CONTROL_UNIT_DETAILS 1
 #define REGISTER_AS_SOURCE 2
@@ -43,9 +43,7 @@
 #define REGISTER_AS_SINK_CONFIRMATION 10
 
 
-#define DISCOVERY_STAT 13
-#define REGISTER_STAT 14
-
+#include "aodv_zigbee_defs.h"
 
 
 /**

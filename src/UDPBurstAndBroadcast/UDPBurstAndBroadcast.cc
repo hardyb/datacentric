@@ -1228,6 +1228,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                         << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << "\n";
                 generatePacket(origAddr, "BindResponse", REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+                mNetMan->recordOnePacket(REGISTER_STAT);
             }
             break;
         case HOME_ENERGY_DATA:

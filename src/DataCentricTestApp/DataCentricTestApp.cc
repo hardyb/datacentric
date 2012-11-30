@@ -628,7 +628,7 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
     for (std::vector<std::string>::iterator i = actionThreads.begin();
             i != actionThreads.end(); ++i)
     {
-        string actionsFolder(".\\Actions\\");
+        string actionsFolder("..\\Common\\Actions\\");
         string actionFile = actionsFolder + *(i);
         ifstream* actionStream = new ifstream();
         actionStream->open(actionFile.c_str());

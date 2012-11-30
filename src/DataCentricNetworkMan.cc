@@ -57,7 +57,7 @@ void cb_collect_AirFrame(cPacket* p)
     string name = p->getName();
     unsigned int bitLen = p->getBitLength();
 
-    netMan->collectMsgBits(p->getBitLength(), p);
+    netWkMan->collectMsgBits(p->getBitLength(), p);
 
 
 }
@@ -503,8 +503,19 @@ void DataCentricNetworkMan::finish()
     recordScalar("FailedRegistrations", (double)numPendingRegistrations());
     recordScalar("LinkFailures", (double)numAODVAllLineBreaksValue());
     recordScalar("ProactiveRREQs", (double)numProactiveRREQ());
-    unsigned int numFixHosts = getParentModule()->par("numFixHosts");
-    recordScalar("ProactiveRREQFailures", (double)(numFixHosts-numProactiveRREQ()));
+
+
+    unsigned int numHosts;
+    cSimulation* sim =  cSimulation::getActiveSimulation();
+    if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
+    {
+        numHosts = getParentModule()->par("numHosts");
+    }
+    if ( sim->getModuleByPath("csma802154net.dataCentricNetworkMan") )
+    {
+        numHosts = getParentModule()->par("numFixHosts");
+    }
+    recordScalar("ProactiveRREQFailures", (double)(numHosts-numProactiveRREQ()));
 
 
 
