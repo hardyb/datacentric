@@ -77,7 +77,7 @@ void HostReference::initialize(int aStage)
                 ev << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
                 for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
                 {
-                    char cval1 =  (*i);
+                    //char cval1 =  (*i);
                     unsigned char cval2 =  (*i);
                     unsigned int val = (unsigned int)cval2;
                     ev << std::hex << std::uppercase << "\\" << val;

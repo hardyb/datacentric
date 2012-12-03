@@ -15,24 +15,11 @@ CONNECTION
 AAA00000002
 8302FF0603
 2
-AAA00000030
+AAA00000050
 seqno: 0
 true
 65535
-82
-true
-true
-false
-false
-CONNECTION
-AAA00000002
-8302FF0603
-2
-AAA00000013
-seqno: 0
-true
-65535
-119
+342
 false
 false
 false
@@ -41,12 +28,38 @@ CONNECTION
 AAA00000002
 8302FF0603
 2
-AAA00000022
+AAA0000003D
 seqno: 0
 true
 65535
-194
+270
 false
+false
+false
+false
+CONNECTION
+AAA00000002
+8302FF0603
+2
+AAA00000039
+seqno: 0
+true
+65535
+230
+false
+false
+false
+false
+CONNECTION
+AAA00000002
+8302FF0603
+2
+AAA00000044
+seqno: 0
+true
+65535
+160
+true
 true
 false
 false

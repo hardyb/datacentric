@@ -73,7 +73,7 @@ NameNode* SourceNames = NULL;
 char queue[100];
 
 
-static int dataRate = 0;
+//static int dataRate = 0;
 
 
 void (*sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
@@ -145,6 +145,7 @@ struct new_packet
 
 // CODE FOR SIMULATION ONLY AND BASED ON COMMON 32BIT TYPE SIZES
 // =============================================================
+/*
 unsigned int getPacketSize(char messageType, unsigned int _dataSize)
 {
     unsigned int messageTypeSize       = 1;
@@ -173,6 +174,7 @@ unsigned int getPacketSize(char messageType, unsigned int _dataSize)
     }
 
 }
+*/
 
 
 
@@ -263,7 +265,7 @@ void read_broken_packet(unsigned char* pkt, double creationTime)
 void path_value_into_buf(signed short _var, unsigned char* _buf)
 {
 
-    for (int i=0; i < sizeof(_var); i++)
+    for (unsigned int i=0; i < sizeof(_var); i++)
     {
         _buf[i] = _var & 0xFF;
         _var >>= 8;
@@ -277,7 +279,7 @@ void path_value_into_buf(signed short _var, unsigned char* _buf)
 void neighbour_addr_into_buf(NEIGHBOUR_ADDR _var, unsigned char* _buf)
 {
 
-    for (int i=0; i < sizeof(_var); i++)
+    for (unsigned int i=0; i < sizeof(_var); i++)
     {
         _buf[i] = _var & 0xFF;
         _var >>= 8;
@@ -1317,11 +1319,13 @@ void handle_interest_correction(control_data cd)
  }
 
 
+/*
  unsigned int AverageNeighborLqi(InterfaceNode* tree)
  {
      //return (TotalNeighborLqi(tree) / CountInterfaceNodes(tree));
 
  }
+*/
 
 
  unsigned int TotalNeighborLqi(InterfaceNode* tree)
@@ -1556,10 +1560,11 @@ int GetStateStr(trie *t, State* _s, unsigned char* str)
            if ( t->keyelem )
            {
                *(str) = t->keyelem;
-               if ( t->keyelem == '\b' )
-               {
-                   int x = 0;
-               }
+               //if ( t->keyelem == '\b' )
+               //{
+               //    int x = 0;
+               //    std::cout << "x: " << x << "\n";
+               //}
                *(str+1) = 0;
                str++;
            }
@@ -2726,7 +2731,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     // but it's the query SOURCE data we need to send not the
     bool query_based = ( (*(sending_packet->data)&MSB2) == RECORD );
     bool event_based = ( (*(sending_packet->data)&MSB2) == PUBLICATION );
-    bool collaberation_based = ( (*(sending_packet->data)&MSB2) == COLLABORATIONBASED );
+    //bool collaberation_based = ( (*(sending_packet->data)&MSB2) == COLLABORATIONBASED );
 
 
     // Not all collaborators have delivery grads to self
@@ -3185,8 +3190,8 @@ bool moveOnFSM(int theRole)
 			//unsigned short v1 = *p1;
 			void* p2 = (void*)(raw_data+FSM[i].param2);
 			//unsigned short v2 = *p2;
-			printf("State %d - Action %s ", *currentState, a[FSM[i].type]);
-			if ( a[FSM[i].type](p1, p2) )
+			//printf("State %d - Action %s ", *currentState, a[FSM[i].type]);
+			if ( a[  (int)(FSM[i].type)  ](p1, p2) )
 			{
 				printf("Succeeded\n");
 				printf("Moving to state number:    %d\n", FSM[i].dest);
@@ -3629,11 +3634,11 @@ static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
         myfile.fill('0');
         myfile << std::hex << std::uppercase << (unsigned int)_name[i];
     }
-    if ( strlen((const char*)_name) == 8 )
-    {
-        int x = 0;
-
-    }
+    //if ( strlen((const char*)_name) == 8 )
+    //{
+    //    int x = 0;
+    //    std::cout << "x: " << x << "\n";
+    //}
     myfile << std::endl;
     myfile << std::dec << g->key1->action << std::endl;
     myfile << std::hex << std::uppercase << g->key2->iName << std::endl;
@@ -4892,13 +4897,14 @@ void handle_collaborationOLDOLDOLD(control_data cd)
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
-    static rpacket p;
+    //static rpacket p;
     trie* t;
-    static struct KDGradientNode* k;
+    //static struct KDGradientNode* k;
 
     t = trie_add(rd->top_state, incoming_packet.data, STATE);
     int inserted;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    //Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
+    InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
     //setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value);
     setDeliverGradient(incoming_packet.data, _interface, incoming_packet.path_value+(unsigned short)cd.incoming_lqi, incoming_packet.seqno);
 
@@ -5044,7 +5050,7 @@ void delete_queued_data(void* relevantObject)
 {
     //new_packet* pkt = (new_packet*)relevantObject;
 
-    QueueDeletion* qd = (QueueDeletion*)relevantObject;
+    //QueueDeletion* qd = (QueueDeletion*)relevantObject;
     //new_packet* pkt = qd->pktToDelete;
 
 
@@ -5698,7 +5704,7 @@ void handle_data(control_data cd)
 void handle_neighbor_bcast(control_data cd)
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
-    int inserted;
+    //int inserted;
     //InterfaceNode* in = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
     InterfaceNode* in = FindInterfaceNode(rd->interfaceTree, _interface);
 
@@ -5727,7 +5733,8 @@ void handle_neighbor_bcast(control_data cd)
 	//bcastAMessage(write_packet());
 	//printf("using NEIGHBOR_UCAST\n");
 
-	int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
+    //int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
+    UcastAllBestGradients(rd->top_state, _interface);
 	//printf("Forwarded our adverts\n");
 
 }
@@ -5742,7 +5749,8 @@ void handle_neighbor_ucast(control_data cd)
 	DBRETAFTERUCAST(return;)
 
     printf("About to forward our adverts\n");
-	int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
+    //int advertsFound = UcastAllBestGradients(rd->top_state, _interface);
+    UcastAllBestGradients(rd->top_state, _interface);
 }
 
 
@@ -5754,7 +5762,8 @@ void StartUp()
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
 	memset(&outgoing_packet, 0, sizeof(outgoing_packet));
 
-    int advertsFound = UcastAllBestGradients(rd->top_state, 0);
+    //int advertsFound = UcastAllBestGradients(rd->top_state, 0);
+    UcastAllBestGradients(rd->top_state, 0);
 
 	outgoing_packet.message_type = NEIGHBOR_BCAST;
 	outgoing_packet.data = 0;
@@ -5855,7 +5864,7 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
       else
       {
           *(buf) = c;
-          //*(buf+1) = '\0';
+          //  *(buf+1) = '\0';
 
           action_all_prefixes(t, i+1, n, str, buf+1, _if, process);
           for ( i++; i < n && str[i] != DOT; i++ );
@@ -5974,7 +5983,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 // not used any more
 void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
-	int temp = dataRate;
+	//int temp = dataRate;
 
     if ( ((*_data) & MSB2) == PUBLICATION )
     {

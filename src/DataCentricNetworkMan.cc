@@ -54,8 +54,8 @@ void cb_collect_AirFrame(cPacket* p);
 
 void cb_collect_AirFrame(cPacket* p)
 {
-    string name = p->getName();
-    unsigned int bitLen = p->getBitLength();
+    //string name = p->getName();
+    //unsigned int bitLen = p->getBitLength();
 
     netWkMan->collectMsgBits(p->getBitLength(), p);
 
@@ -269,7 +269,7 @@ void DataCentricNetworkMan::initialize(int aStage)
 void DataCentricNetworkMan::setSinkOrSources(string &sinksString, bool isSources)
 {
     std::vector<std::string> sinks = cStringTokenizer(sinksString.c_str(), ",").asVector();
-    int numItems = sinks.size();
+    //int numItems = sinks.size();
 
     //if ( sinks.size() != 5 )
     if ( (sinks.size() % 5) )
@@ -278,7 +278,7 @@ void DataCentricNetworkMan::setSinkOrSources(string &sinksString, bool isSources
         throw cRuntimeError("items in sinks or sources must be 5");
     }
 
-    for ( int i = 0; i < sinks.size(); i += 5)
+    for ( unsigned int i = 0; i < sinks.size(); i += 5)
     {
         string _context = sinks[i+0];
         int _from = atoi(sinks[i+1].c_str());
@@ -745,7 +745,7 @@ void DataCentricNetworkMan::removePendingDataPkt()
 }
 
 
-
+/*
 signed int DataCentricNetworkMan::getDemand()
 {
     Enter_Method("getDemand()");
@@ -755,6 +755,7 @@ signed int DataCentricNetworkMan::getDemand()
 
     // possibly discontinueds
 }
+*/
 
 
 
@@ -773,7 +774,8 @@ void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
     else
     {
         int x = 0;
-    }
+        NullStream() << "x: " << x << "\n";
+}
 
 
 }

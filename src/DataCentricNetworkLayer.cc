@@ -38,12 +38,13 @@ double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
 char testSeqNo;
 
-static std::ofstream myfile;
+//static std::ofstream myfile;
 
 
 bool DataCentricNetworkLayer::justStartedInitialising = true;
 static int currentModuleId;
 
+/*
 static char messageName[9][24] =
 {
 "ADVERT                 ",
@@ -56,6 +57,7 @@ static char messageName[9][24] =
 "COLLABORATION          ",
 "REINFORCE_COLLABORATION"
 };
+*/
 
 
 
@@ -64,9 +66,9 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
 static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg, double _creationTime);
-static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
+//static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 static void cb_recordNeighbourLqi(Interface* i, State* s);
-static void cb_printNeighbour(Interface* i, State* s);
+//static void cb_printNeighbour(Interface* i, State* s);
 
 
 
@@ -324,13 +326,14 @@ void DataCentricNetworkLayer::finish()
 }
 
 
-
+/*
 static void cb_printNeighbour(Interface* i, State* s)
 {
     COUT << "Neighbour: " << hex<< i->iName << "\n";
 
 
 }
+*/
 
 
 
@@ -370,6 +373,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 
     std::string fName = this->getParentModule()->getFullName();
     double currentTime = simTime().dbl();
+    NullStream() << "Current Time: " << currentTime << "\n";
 
     Ieee802154Frame * f;
     switch (category)
@@ -472,6 +476,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     std::string fName = this->getParentModule()->getFullName();
     double currentTime = simTime().dbl();
+    NullStream() << "Current Time: " << currentTime << "\n";
 
     if ( msg->isName("FrameworkTimeout") )
     {
@@ -614,6 +619,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
     if ( !strcmp(this->getParentModule()->getFullName(), "host[5]") )
     {
         int x = 5;
+        NullStream() << "x: " << x << "\n";
+
     }
 
 
@@ -825,8 +832,8 @@ void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* app
     string sourceData;
     sourceData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
-    int size = appPkt->getPktData().size();
-    size = sourceData.size();
+    //int size = appPkt->getPktData().size();
+    //size = sourceData.size();
     std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str()).asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
@@ -850,8 +857,8 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
     string sinkData;
     sinkData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
-    int size = appPkt->getPktData().size();
-    size = sinkData.size();
+    //int size = appPkt->getPktData().size();
+    //size = sinkData.size();
     std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sinksData.begin();
@@ -877,8 +884,8 @@ void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCe
     string collabData;
     collabData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
-    int size = appPkt->getPktData().size();
-    size = collabData.size();
+    //int size = appPkt->getPktData().size();
+    //size = collabData.size();
     std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = collabsData.begin();
@@ -905,8 +912,8 @@ void DataCentricNetworkLayer::SetCollaboratorWithShortestContext(DataCentricAppP
     string collabData;
     collabData.resize(appPkt->getPktData().size(), 0);
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
-    int size = appPkt->getPktData().size();
-    size = collabData.size();
+    //int size = appPkt->getPktData().size();
+    //size = collabData.size();
     std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = collabsData.begin();
@@ -1033,6 +1040,7 @@ static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
 */
 
 
+/*
 static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
 
@@ -1070,6 +1078,7 @@ static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR 
     }
 
 }
+*/
 
 
 
@@ -1090,6 +1099,7 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
     DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
 
     double currentTime = simTime().dbl();
+    NullStream() << "Current Time: " << currentTime << "\n";
 
     for (DataCentricNetworkLayer::TimeoutMessages2Iterator i = currentModule->mTimeoutMessages2.begin();
             i != currentModule->mTimeoutMessages2.end(); ++i)
@@ -1246,7 +1256,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
     unsigned int len = _msg[1];
     char dataText[40];
     char* dataTextPtr = dataText;
-    for ( int i = 0; i < len; i++ )
+    for ( unsigned int i = 0; i < len; i++ )
     {
         int numChar = std::sprintf(dataTextPtr, "%d-", (unsigned int)*data);
         dataTextPtr += numChar;

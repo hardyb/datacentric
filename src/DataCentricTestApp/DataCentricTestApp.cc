@@ -12,7 +12,7 @@
 #define SENSOR_READING 1
 #define SET_PROGRAM 2
 #define WATTS 3
-#define FILE_END 4
+#define ACTION_FILE_END 4
 #define OCCUPANCY_READING 5
 #define TEMP_READING 6
 
@@ -477,7 +477,7 @@ void DataCentricTestApp::processSinkFor(string &temp2)
         ev << "SinksFor: " << getFullPath() << ": ";
         for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
         {
-            char cval1 =  (*i);
+            //char cval1 =  (*i);
             unsigned char cval2 =  (*i);
             unsigned int val = (unsigned int)cval2;
             ev << std::hex << std::uppercase << "\\" << val;
@@ -517,7 +517,7 @@ void DataCentricTestApp::processCollaboratorInitiatorFor(string &temp2)
         ev << "collaboratorInitiatorFor: " << getFullPath() << ": ";
         for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
         {
-            char cval1 =  (*i);
+            //char cval1 =  (*i);
             unsigned char cval2 =  (*i);
             unsigned int val = (unsigned int)cval2;
             ev << std::hex << std::uppercase << "\\" << val;
@@ -553,7 +553,7 @@ void DataCentricTestApp::processCollaboratorFor(string &temp2)
         ev << "collaboratorFor: " << getFullPath() << ": ";
         for ( string::iterator i = temp2.begin(); i != temp2.end(); i++ )
         {
-            char cval1 =  (*i);
+            //char cval1 =  (*i);
             unsigned char cval2 =  (*i);
             unsigned int val = (unsigned int)cval2;
             ev << std::hex << std::uppercase << "\\" << val;
@@ -589,7 +589,7 @@ void DataCentricTestApp::processSourceFor(string &temp1)
         ev << "SourcesFor: " << getFullPath() << ": ";
         for ( string::iterator i = temp1.begin(); i != temp1.end(); i++ )
         {
-            char cval1 =  (*i);
+            //char cval1 =  (*i);
             unsigned char cval2 =  (*i);
             unsigned int val = (unsigned int)cval2;
             ev << std::hex << std::uppercase << "\\" << val;
@@ -699,7 +699,7 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
         pkt[_size] = 0;
 
-        for (int i = 0; i < _size; i++ )
+        for (unsigned int i = 0; i < _size; i++ )
         {
             int i = 0;
             switch ( pkt[i] )
@@ -797,7 +797,7 @@ union unSignedShortData
 
 void DataCentricTestApp::processWattsData(unsigned char* pkt)
 {
-    signed short d;
+    //signed short d;
     signedShortData w;
     unsigned char out[4];
     *(strchr((char*)pkt, 0xFF)) = 0;
@@ -816,7 +816,7 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 
     w.theBytes[0] = out[0];
     w.theBytes[1] = out[1];
-    d = w.theSignedShort;
+    //d = w.theSignedShort;
 }
 
 
@@ -863,6 +863,7 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
     unsigned short myAddr = netModule->mAddress & 0xFFFF;
     double finishTime = simTime().dbl() + _bid;
 
+    NullStream() << "Current Time: " << currentTime << "\n";
 
     /*
      * If we remove an entry then...
@@ -992,6 +993,7 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
     if (i != mActionThreads.end() )
     {
         double t = simTime().dbl();
+        NullStream() << "Current Time: " << t << "\n";
 
         switch ( getNextAction(i) )
         {
@@ -1010,7 +1012,7 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
             case WATTS:
                 processWatts(i);
                 break;
-            case FILE_END:
+            case ACTION_FILE_END:
                 FileEnd(i);
                 break;
             case UNKNOWN_ACTIVITY:
@@ -1057,7 +1059,7 @@ int DataCentricTestApp::getNextAction(ActionThreadsIterator& i)
     }
     else
     {
-        return FILE_END;
+        return ACTION_FILE_END;
     }
 }
 
@@ -1153,12 +1155,13 @@ void DataCentricTestApp::sendActualDemandPkt()
     signedShortData d;
     d.theSignedShort = actualDemand;
     unsigned char escapedData[8];
-    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    //unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    escapeBuffer(d.theBytes, 2, escapedData);
     ss << escapedData;
 
     ss << "\x0";
     std::string s(ss.str());
-    unsigned int a = s.size();
+    //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
     send(appPkt, mLowerLayerOut);
@@ -1177,17 +1180,19 @@ void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor)
     unSignedShortData d;
     d.theUnSignedShort = myAddr;
     unsigned char escapedData[8];
-    unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    //unsigned int len = escapeBuffer(d.theBytes, 2, escapedData);
+    escapeBuffer(d.theBytes, 2, escapedData);
     ss << escapedData;
 
     d.theUnSignedShort = lengthToBidFor;
-    len = escapeBuffer(d.theBytes, 2, escapedData);
+    //len = escapeBuffer(d.theBytes, 2, escapedData);
+    escapeBuffer(d.theBytes, 2, escapedData);
     ss << escapedData;
     ss << "\x0";
     std::string s(ss.str());
 
     // check size, follow size and content
-    unsigned int a = s.size();
+    //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
     send(appPkt, mLowerLayerOut);
@@ -1219,7 +1224,7 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sen
     ifstream* ifs = i->second->back();
 
     unsigned short reading;
-    double period;
+    //double period;
     *ifs >> reading;
     //*ifs >> period;
 

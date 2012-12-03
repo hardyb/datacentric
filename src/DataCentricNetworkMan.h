@@ -33,7 +33,7 @@ class DataCentricNetworkMan : public cSimpleModule
     void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
     void addDemand(signed int _demand);
-    signed int getDemand();
+    //signed int getDemand();
     void setSinkOrSources(std::string &sinksString, bool isSources);
     void traverseModule(const cModule& m);
     void addAppliance(DataCentricTestApp* _appliance);

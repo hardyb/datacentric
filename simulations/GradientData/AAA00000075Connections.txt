@@ -15,11 +15,37 @@ CONNECTION
 AAA00000075
 8302FF0602
 3
+AAA00000048
+seqno: 0
+true
+65535
+220
+false
+false
+false
+false
+CONNECTION
+AAA00000075
+8302FF0602
+3
+AAA00000065
+seqno: 0
+true
+65535
+340
+false
+false
+false
+false
+CONNECTION
+AAA00000075
+8302FF0602
+3
 AAA0000002B
 seqno: 0
 true
 65535
-372
+343
 false
 false
 false
@@ -32,7 +58,20 @@ AAA00000025
 seqno: 0
 true
 65535
-203
+174
+false
+false
+false
+false
+CONNECTION
+AAA00000075
+8302FF0602
+3
+AAA00000012
+seqno: 0
+true
+65535
+251
 false
 false
 false
@@ -67,45 +106,6 @@ CONNECTION
 AAA00000075
 8302FF0602
 3
-AAA0000003C
-seqno: 0
-true
-65535
-309
-false
-false
-false
-false
-CONNECTION
-AAA00000075
-8302FF0602
-3
-AAA0000003E
-seqno: 0
-true
-65535
-226
-false
-false
-false
-false
-CONNECTION
-AAA00000075
-8302FF0602
-3
-AAA00000030
-seqno: 0
-true
-65535
-389
-false
-false
-false
-false
-CONNECTION
-AAA00000075
-8302FF0602
-3
 AAA00000016
 seqno: 0
 true
@@ -119,11 +119,11 @@ CONNECTION
 AAA00000075
 8302FF0602
 3
-AAA00000012
+AAA00000030
 seqno: 0
 true
 65535
-254
+356
 false
 false
 false

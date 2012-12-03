@@ -479,7 +479,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     string theData;
     unsigned char temp[30];
     unsigned char x[20];
-    unsigned char* index = x;
+    //unsigned char* index = x;
 
     rd = &(moduleRD);
     switch ( appPkt->getKind() )
@@ -1171,6 +1171,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         return;
 
     double currentTime = simTime().dbl();
+    NullStream() << "Current Time: " << currentTime << "\n";
 
     UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
     IPvXAddress destAddr = udpCtrl->getDestAddr();
@@ -1203,7 +1204,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                     i != mPktsForServer.end(); ++i)
             {
                 //socket.sendTo(*i, mServerAddr, destPort, outputInterface);
-                int ctrlT = (*i)->getCntrlType();
+                //int ctrlT = (*i)->getCntrlType();
                 sendPacket(*i, mServerAddr);
                 //numSent++;
             }

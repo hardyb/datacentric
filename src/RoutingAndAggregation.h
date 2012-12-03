@@ -268,7 +268,7 @@ extern NEIGHBOUR_ADDR thisAddress;
 #define _null_action	0
 #define _assign1		1
 #define _assign2		2
-#define _messageIn		3
+//#define _messageIn		3
 #define _deliver		4
 #define _messageIn		5
 #define _gtr			6
@@ -759,7 +759,7 @@ bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface
 unsigned int CountInterfaceNodes(InterfaceNode* tree);
 unsigned int TotalNeighborLqi(InterfaceNode* tree);
 void MinMaxNeighborLqi(InterfaceNode* tree, unsigned int* maxlqi, unsigned int* minlqi);
-unsigned int AverageNeighborLqi(InterfaceNode* tree);
+//unsigned int AverageNeighborLqi(InterfaceNode* tree);
 bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
 bool deliverReinforced(KDGradientNode* g);
 bool obtainReinforced(KDGradientNode* g);

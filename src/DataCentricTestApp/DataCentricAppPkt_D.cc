@@ -12,7 +12,7 @@
 Register_Class(DataCentricAppPkt);
 
 
-
+/*
 const char *DataCentricAppPkt::getDisplayString() const
 {
     char msgType = *(getPktData().begin());
@@ -46,3 +46,4 @@ const char *DataCentricAppPkt::getDisplayString() const
     }
     //return "b=20,20,rect";
 }
+*/

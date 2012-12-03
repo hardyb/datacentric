@@ -17,7 +17,7 @@ public:
     virtual DataCentricAppPkt *dup() const {return new DataCentricAppPkt(*this);}
 
     // ADD CODE HERE to redefine and implement pure virtual functions from DataCentricAppPkt_Base
-    const char *getDisplayString() const;
+    //const char *getDisplayString() const;
 };
 
 
