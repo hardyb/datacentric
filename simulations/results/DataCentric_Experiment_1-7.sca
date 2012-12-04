@@ -1,7 +1,7 @@
 version 2
-run DataCentric_Experiment_1-7-20121202-23:17:41-2568
+run DataCentric_Experiment_1-7-20121204-14:18:21-3976
 attr configname DataCentric_Experiment_1
-attr datetime 20121202-23:17:41
+attr datetime 20121204-14:18:21
 attr experiment DataCentric_Experiment_1
 attr inifile DataCentric_2.ini
 attr iterationvars $numNodes=57
@@ -9,7 +9,7 @@ attr iterationvars2 "$numNodes=57, $repetition=0"
 attr measurement $numNodes=57
 attr network DataCentricNet
 attr numNodes 57
-attr processid 2568
+attr processid 3976
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -18,8 +18,8 @@ attr seedset 7
 
 scalar . 	numNodes 	57
 scalar DataCentricNet.host[0].net 	NumberOfNeighbours 	6
-scalar DataCentricNet.host[0].net 	TotalNeighborLqi 	480
-scalar DataCentricNet.host[0].net 	AverageNeighborLqi 	80
+scalar DataCentricNet.host[0].net 	TotalNeighborLqi 	616
+scalar DataCentricNet.host[0].net 	AverageNeighborLqi 	102.66666666667
 scalar DataCentricNet.host[0].net 	MaxNeighborLqi 	192
 scalar DataCentricNet.host[0].net 	MinNeighborLqi 	0
 scalar DataCentricNet.host[0].net 	TEST_LengthLatestInterestArrivalPeriod 	0

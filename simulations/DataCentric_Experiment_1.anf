@@ -19,12 +19,27 @@
         <properties name="X.Axis.Title" value="Number of nodes"/>
         <properties name="Y.Axis.Title" value="Number of arrivals"/>
         <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan MeanE2EDelay - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan DataArrivals - configname=DataCentric_Experiment_1" value="false"/>
+        <isoDataPattern>attr:configname(*)</isoDataPattern>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="numControlPackets"/>
+      <items xsi:type="scave:ScatterChart" name="numControlPackets" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan DataArrivals - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan MeanE2EDelay - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan PercentageArrivals - configname=DataCentric_Experiment_1" value="false"/>
+        <isoDataPattern>attr:configname(*)</isoDataPattern>
+      </items>
+      <items xsi:type="scave:Add" filterPattern="MeanBPS"/>
+      <items xsi:type="scave:ScatterChart" name="MeanBPS" xDataPattern="module(.) AND name(numNodes)">
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan DataArrivals - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan MeanE2EDelay - configname=DataCentric_Experiment_1" value="false"/>
+        <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan numControlPackets - configname=DataCentric_Experiment_1" value="false"/>
         <properties name="Line.Display/DataCentricNet.dataCentricNetworkMan PercentageArrivals - configname=DataCentric_Experiment_1" value="false"/>
         <isoDataPattern>attr:configname(*)</isoDataPattern>
       </items>
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.5 //@datasets/@datasets.0/@items.7 //@datasets/@datasets.0/@items.9"/>
   </chartSheets>
 </scave:Analysis>

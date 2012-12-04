@@ -1,7 +1,7 @@
 version 2
-run DataCentric_Experiment_1-32-20121202-23:36:02-2964
+run DataCentric_Experiment_1-32-20121204-14:26:11-1508
 attr configname DataCentric_Experiment_1
-attr datetime 20121202-23:36:02
+attr datetime 20121204-14:26:11
 attr experiment DataCentric_Experiment_1
 attr inifile DataCentric_2.ini
 attr iterationvars $numNodes=82
@@ -9,7 +9,7 @@ attr iterationvars2 "$numNodes=82, $repetition=0"
 attr measurement $numNodes=82
 attr network DataCentricNet
 attr numNodes 82
-attr processid 2964
+attr processid 1508
 attr repetition 0
 attr replication #0
 attr resultdir results

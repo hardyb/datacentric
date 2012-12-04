@@ -41,19 +41,6 @@ CONNECTION
 AAA00000073
 8302FF0601
 3
-AAA0000003D
-seqno: 0
-true
-65535
-105
-false
-false
-false
-false
-CONNECTION
-AAA00000073
-8302FF0601
-3
 AAA0000006D
 seqno: 0
 true
@@ -72,6 +59,19 @@ seqno: 0
 true
 65535
 347
+false
+false
+false
+false
+CONNECTION
+AAA00000073
+8302FF0601
+3
+AAA0000003D
+seqno: 0
+true
+65535
+105
 false
 false
 false

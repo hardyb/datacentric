@@ -14,9 +14,22 @@ unsigned char current_prefix_name[100];
 #include <string.h>
 
 
+
+#ifdef ROUTING_DEBUG
+#define RD(x) std::cout << x
+#else
+#define RD(x)
+#endif
+
+
+
+
+
+
+
 //#define USE_NODE_STABILITY_COST 1
 
-#define MAKE_LOCAL_VARIABLES_FOR_DEBUGGER 1
+//#define MAKE_LOCAL_VARIABLES_FOR_DEBUGGER 1
 
 
 
@@ -115,12 +128,15 @@ struct new_packet* sending_packet;
 
 // Framework call
 //rpacket p;
+
+// CHECK MEMCPY IS MEMORY SOUND IF UNCOMMENTINBELOW
 //memcpy(p.packet_bytes, rMessage, MESSAGE_SIZE);
 //EV << "Received: " << messageName[p.the_message.message_type] << "\n";
 //handle_message(rMessage, inf);
 
 //void handle_message_breakup(unsigned char* _msg, NEIGHBOUR_ADDR inf)
 //{
+// CHECK MEMCPY IS MEMORY SOUND IF UNCOMMENTINBELOW
 //	memcpy(incoming_packet.packet_bytes, _msg, MESSAGE_SIZE);
 //	(*h[incoming_packet.the_message.message_type]) (inf);
 //
@@ -446,7 +462,7 @@ unsigned char* write_packet(new_packet* the_packet)
 
 	if ( (the_packet->message_type == 1) && !the_packet->length )
 	{
-	    std::cout << "zero packet data length" << std::endl;
+	    RD( << "zero packet data length" << std::endl );
 	}
 
 	pkt[pkt_index] = the_packet->length;
@@ -496,7 +512,7 @@ unsigned char* write_packet_old()
 
     if ( (outgoing_packet.message_type == 1) && !outgoing_packet.length )
     {
-        std::cout << "zero packet data length" << std::endl;
+        RD( "zero packet data length" << std::endl );
     }
 
     pkt[pkt_index] = outgoing_packet.length;
@@ -593,7 +609,7 @@ void freeInterfaceNode(InterfaceNode* n)
 	 {
 		*treeNode = newStateNode(stateDataname);
 #ifdef DEBUG
-		std::cout << "Inserted state: " << stateDataname << " = true" << std::endl;
+		RD( "Inserted state: " << stateDataname << " = true" << std::endl );
 #endif
 		return *treeNode;
 	 }
@@ -601,7 +617,7 @@ void freeInterfaceNode(InterfaceNode* n)
 	 if (stateDataname == (*treeNode)->s->dataName._dataname_struct1.the_dataname )
 	 {
 #ifdef DEBUG
-		 std::cout << "Inserted state: " << stateDataname << " = FALSE" << std::endl;
+		 RD( "Inserted state: " << stateDataname << " = FALSE" << std::endl );
 #endif
 		 return *treeNode;
 	 }
@@ -636,7 +652,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 	 {
 		*treeNode = newInterfaceNode(interfaceName);
 #ifdef DEBUG
-		std::cout << "Inserted interface: " << interfaceName << " = true" << std::endl;
+		RD( "Inserted interface: " << interfaceName << " = true" << std::endl );
 #endif
 		*inserted = 1;
 		return *treeNode;
@@ -645,7 +661,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 	 if (interfaceName == (*treeNode)->i->iName )
 	 {
 #ifdef DEBUG
-		 std::cout << "Inserted interface: " << interfaceName << " = FALSE" << std::endl;
+		 RD( "Inserted interface: " << interfaceName << " = FALSE" << std::endl );
 #endif
         *inserted = 0;
 		 return *treeNode;
@@ -851,7 +867,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         outgoing_packet.down_interface = UNKNOWN_INTERFACE;
         outgoing_packet.seqno = s->seqno;
 
- 		std::cout << "Sending interest packet to: " << _if << std::endl;
+ 		RD( "Sending interest packet to: " << _if << std::endl );
         //sendAMessage(_if, write_packet());
         bcastAMessage(write_packet(&outgoing_packet));
  	}
@@ -1402,17 +1418,17 @@ void handle_interest_correction(control_data cd)
 {
     struct StateNode *next = tree;
 #ifdef DEBUG
-	std::cout << "Searching for: " << val << std::endl;
+	RD( "Searching for: " << val << std::endl );
 #endif
 
     int i = 0;
 	while (next != NULL) {
 #ifdef DEBUG
-		std::cout << "Reached node: " << next->s->dataName << std::endl;
+		RD( "Reached node: " << next->s->dataName << std::endl );
 #endif
 		if (val == next->s->dataName._dataname_struct1.the_dataname) {
 #ifdef DEBUG
-			std::cout << "Found = true" << std::endl << std::endl;
+			RD( "Found = true" << std::endl << std::endl );
 #endif
             return next;
 		} else if (val < next->s->dataName._dataname_struct1.the_dataname) {
@@ -1425,7 +1441,7 @@ void handle_interest_correction(control_data cd)
 
     //not found
 #ifdef DEBUG
-	std::cout << "Found = false" << std::endl << std::endl;
+	RD( "Found = false" << std::endl << std::endl );
 #endif
     return NULL;
 }
@@ -1444,17 +1460,17 @@ struct InterfaceNode* FindInterfaceNode(struct InterfaceNode* tree, NEIGHBOUR_AD
 {
     struct InterfaceNode *next = tree;
 #ifdef DEBUG
-	std::cout << "Searching for: " << val << std::endl;
+	RD( "Searching for: " << val << std::endl );
 #endif
 
     int i = 0;
 	while (next != NULL) {
 #ifdef DEBUG
-		std::cout << "Reached node: " << next->i->iName << std::endl;
+		RD( "Reached node: " << next->i->iName << std::endl );
 #endif
 		if (val == next->i->iName) {
 #ifdef DEBUG
-			std::cout << "Found = true" << std::endl << std::endl;
+			RD( "Found = true" << std::endl << std::endl );
 #endif
             return next;
 		} else if (val < next->i->iName) {
@@ -1467,7 +1483,7 @@ struct InterfaceNode* FindInterfaceNode(struct InterfaceNode* tree, NEIGHBOUR_AD
 
     //not found
 #ifdef DEBUG
-	std::cout << "Found = false" << std::endl << std::endl;
+	RD( "Found = false" << std::endl << std::endl );
 #endif
     return NULL;
 }
@@ -1563,7 +1579,7 @@ int GetStateStr(trie *t, State* _s, unsigned char* str)
                //if ( t->keyelem == '\b' )
                //{
                //    int x = 0;
-               //    std::cout << "x: " << x << "\n";
+               //    RD( "x: " << x << "\n" );
                //}
                *(str+1) = 0;
                str++;
@@ -1726,7 +1742,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
             break;
     }
 
-    std::cout << "insert grad type: " << costType << " Cost: " << pCost << " State: " << s << std::endl;
+    RD( "insert grad type: " << costType << " Cost: " << pCost << " State: " << s << std::endl );
 	if ( treeNode == NULL )
 	{
 		switch ( costType )
@@ -1771,7 +1787,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 				case OBTAIN:
                     if ( seqno > treeNode->seqno )
                     {
-                        std::cout << "New seqno: " << seqno << ", first obt cost: " << pCost << std::endl;
+                        RD( "New seqno: " << seqno << ", first obt cost: " << pCost << std::endl );
                         treeNode->costToObtain = pCost;
                         treeNode->seqno = seqno;
                     }
@@ -1797,7 +1813,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
                 case DELIVER:
                     if ( seqno > treeNode->seqno )
                     {
-                        std::cout << "New seqno: " << seqno << ", first deliv cost: " << pCost << std::endl;
+                        RD( "New seqno: " << seqno << ", first deliv cost: " << pCost << std::endl );
                         treeNode->costToDeliver = pCost;
                         treeNode->seqno = seqno;
                     }
@@ -1807,7 +1823,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
                         {
                             if ( pCost < treeNode->costToDeliver )
                             {
-                                std::cout << "better deliver cost on this if, now: " << pCost << std::endl;
+                                RD( "better deliver cost on this if, now: " << pCost << std::endl );
                                 treeNode->costToDeliver = pCost;
                                 if ( treeNode == treeNode->key1->bestGradientToDeliver )
                                 {
@@ -1892,7 +1908,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
 			if ( !treeNode->key1->bestGradientToDeliver
 				|| treeNode->costToDeliver < treeNode->key1->bestGradientToDeliver->costToDeliver )
 			{
-			    std::cout << "first or better best deliver cost, now: " << treeNode->costToDeliver << std::endl;
+			    RD( "first or better best deliver cost, now: " << treeNode->costToDeliver << std::endl );
 				treeNode->key1->bestGradientToDeliver = treeNode;
 				treeNode->key1->bestGradientToDeliverUpdated = TRUE;
 			}
@@ -2218,8 +2234,8 @@ struct KDGradientNode* SearchForKDGradientNode( int sName, int iName, struct KDG
 			&& iName == treeNode->key2->iName )
 		{
 #ifdef DEBUG
-			std::cout << "Found:     " << "(" << treeNode->keys[0]->dataName << ","
-				<< treeNode->keys[1]->dataName << "," << treeNode->newState->dataName << ")" << std::endl;
+			RD( "Found:     " << "[" << treeNode->keys[0]->dataName << ","
+				<< treeNode->keys[1]->dataName << "," << treeNode->newState->dataName << "]" << std::endl );
 #endif
 			return treeNode;
 		}
@@ -2249,8 +2265,8 @@ struct KDGradientNode* SearchForKDGradientNode( int sName, int iName, struct KDG
 		}
 	}
 #ifdef DEBUG
-	std::cout << "NOT Found: " << "(" << stateDataname[0] << ","
-		<< stateDataname[1] << ")" << std::endl;
+	RD( "NOT Found: " << "[" << stateDataname[0] << ","
+		<< stateDataname[1] << "]" << std::endl );
 #endif
 	return treeNode; // now NULL
 }
@@ -2274,8 +2290,8 @@ struct KDNode* SearchForKDNode( int stateDataname[], struct KDNode* treeNode )
 		if ( i==K )
 		{
 #ifdef DEBUG
-			std::cout << "Found:     " << "(" << treeNode->keys[0]->dataName << ","
-				<< treeNode->keys[1]->dataName << "," << treeNode->newState->dataName << ")" << std::endl;
+			RD( "Found:     " << "[" << treeNode->keys[0]->dataName << ","
+				<< treeNode->keys[1]->dataName << "," << treeNode->newState->dataName << "]" << std::endl );
 #endif
 			return treeNode;
 		}
@@ -2290,8 +2306,8 @@ struct KDNode* SearchForKDNode( int stateDataname[], struct KDNode* treeNode )
 		}
 	}
 #ifdef DEBUG
-	std::cout << "NOT Found: " << "(" << stateDataname[0] << ","
-		<< stateDataname[1] << ")" << std::endl;
+	RD( "NOT Found: " << "[" << stateDataname[0] << ","
+		<< stateDataname[1] << "]" << std::endl );
 #endif
 	return treeNode; // now NULL
 }
@@ -2339,7 +2355,7 @@ int SearchForKDNodeTransition(int input)
 		if ( i==K )
 		{
 #ifdef DEBUG
-			std::cout << "(" << currentState << ")     " << input << "  --->  " << treeNode->newState->dataName << std::endl;
+			RD( "[" << currentState << "]     " << input << "  --->  " << treeNode->newState->dataName << std::endl );
 #endif
 			return (currentState = treeNode->newState->dataName);
 		}
@@ -2354,7 +2370,7 @@ int SearchForKDNodeTransition(int input)
 		}
 	}
 #ifdef DEBUG
-	std::cout << "(" << currentState << ")     " << input << "  --->  " << input << std::endl;
+	RD( "[" << currentState << "]     " << input << "  --->  " << input << std::endl );
 #endif
 	return input; // now NULL
 }
@@ -2763,11 +2779,11 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             if (       (s->bestGradientToObtain && s->obtainInterfaces)
                     && (s->bestGradientToObtain->key2 == s->obtainInterfaces->i)    )
             {
-                std::cout << "Reinforced obtain is still the ...SAME... as best" << std::endl;
+                RD( "Reinforced obtain is still the ...SAME... as best" << std::endl );
             }
             else
             {
-                std::cout << "Reinforced obtain is ...NO LONGER THE SAME... as best" << std::endl;
+                RD( "Reinforced obtain is ...NO LONGER THE SAME... as best" << std::endl );
             }
         }
 
@@ -2810,11 +2826,11 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                     //
                     if ( s->bestGradientToDeliver->key2 == temp->i )
                     {
-                        std::cout << "Reinforced is still the ...SAME... as best" << std::endl;
+                        RD( "Reinforced is still the ...SAME... as best" << std::endl );
                     }
                     else
                     {
-                        std::cout << "Reinforced is ...NO LONGER THE SAME... as best" << std::endl;
+                        RD( "Reinforced is ...NO LONGER THE SAME... as best" << std::endl );
                     }
                     break;
                 }
@@ -2972,8 +2988,8 @@ void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned cha
       {
            if ( current->s )
            {
-               //cout << "\t- Found ";
-               //cout << current->s->full_name << endl;
+               //RD( "\t- Found " );
+               //RD( current->s->full_name << endl );
                //void f4(State* s, char* _buf, NEIGHBOUR_ADDR _if)
                *(buf) = '\0';
                process(current->s, current_prefix_name, _if);
@@ -2987,7 +3003,7 @@ void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned cha
       if(t == NULL)
       {
            for ( i++; i < n && str[i] != DOT; i++ );
-           //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+           //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
            i--;
            t = current;
            action_all_prefixes(t, i+1, n, str, buf, _if, process);
@@ -2999,7 +3015,7 @@ void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned cha
 
           action_all_prefixes(t, i+1, n, str, buf+1, _if, process);
           for ( i++; i < n && str[i] != DOT; i++ );
-          //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+          //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
           i--;
           t = current;
           action_all_prefixes(t, i+1, n, str, buf, _if, process);
@@ -3637,7 +3653,7 @@ static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
     //if ( strlen((const char*)_name) == 8 )
     //{
     //    int x = 0;
-    //    std::cout << "x: " << x << "\n";
+    //    RD( "x: " << x << "\n" );
     //}
     myfile << std::endl;
     myfile << std::dec << g->key1->action << std::endl;
@@ -3721,7 +3737,8 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 
     rd->pkts_received++;
 
-    DBTYPERECV(std::cout << "received msg type: " << (unsigned int)incoming_packet.message_type << std::endl;)
+    unsigned int mt1 = (unsigned int)incoming_packet.message_type;
+    DBTYPERECV(RD( "received msg type: " << mt1 << std::endl);)
     switch ( incoming_packet.message_type )
     {
         //case NEIGHBOR_UCAST:
@@ -3772,11 +3789,13 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
             //}
             break;
     }
-    DBTYPETHROUGH(std::cout << "type: " << (unsigned int)incoming_packet.message_type << " is through" << std::endl;)
+    unsigned int mt2 = (unsigned int)incoming_packet.message_type;
+    DBTYPETHROUGH(RD( "type: " << mt2 << " is through" << std::endl );)
 
 	//unsigned int mylqi = 7 * (lqi/255);
-    //std::cout << "LQI: " << std::dec << (unsigned int)lqi << std::endl;
-    //std::cout << "MYLQI: " << mylqi << std::endl;
+    //unsigned int coutLqi = (unsigned int)lqi;
+    //RD( "LQI: " << std::dec << coutLqi << std::endl );
+    //RD( "MYLQI: " << mylqi << std::endl );
 	//incoming_packet.path_value += mylqi;
 
 	control_data cd;
@@ -4043,13 +4062,13 @@ void setAllPrefixStatus(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 }
 
 /*
-std::cout << "FOUND UNREINFORCED ADVERT" << std::endl;
+RD( "FOUND UNREINFORCED ADVERT" << std::endl );
 numSinks = 0;
 action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
         current_prefix_name, _if, count_sink);
 if ( numSinks )
 {
-    std::cout << "TRY REINFORCING ADVERT" << std::endl;
+    RD( "TRY REINFORCING ADVERT" << std::endl );
     // second parameter no longer used, pos pass s in future to save
     // unnecessary work in the function
     start_reinforce(_data, 0, s->seqno);
@@ -4073,7 +4092,7 @@ if ( numSinks )
 
 void handle_interest_dummy(control_data cd)
 {
-    std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
@@ -4131,7 +4150,7 @@ void handle_interest_dummy(control_data cd)
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
-            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            RD( "Resending initiating interest packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -4194,7 +4213,7 @@ void handle_interest_dummy(control_data cd)
 // probably not thread safe
 void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
 {
-    std::cout << "ABOUT to ADV Reinforce" << std::endl;
+    RD( "ABOUT to ADV Reinforce" << std::endl );
     // did we already do this at start up when we made us a sink for this name?
     // NO!!! I think we did set best grad but did not REINFORCE
 
@@ -4237,7 +4256,7 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
         outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
         outgoing_packet.seqno = seqno;
-        std::cout << "FIRST ADV Reinforce to " << std::hex << interface << std::endl;
+        RD( "FIRST ADV Reinforce to " << std::hex << interface << std::endl );
         sendAMessage(interface, write_packet(&outgoing_packet), 0);
     }
 
@@ -4296,7 +4315,7 @@ void advert_convergence_timeout(void* relevantObject)
 
 void handle_advert(control_data cd)
 {
-    std::cout << "Advert received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Advert received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
     trie* t;
@@ -4366,7 +4385,7 @@ void handle_advert(control_data cd)
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
-            std::cout << "Resending initiating advert packet (new seqno)" << std::endl;
+            RD( "Resending initiating advert packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -4428,7 +4447,7 @@ void handle_advert(control_data cd)
 
 void handle_advert_almost_same_as_old(control_data cd)
 {
-    std::cout << "Advert received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Advert received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
@@ -4534,7 +4553,7 @@ void handle_advert_almost_same_as_old(control_data cd)
     if ( !t->s->reinforcement_initiation_requirement_checked )
     {
 
-        cout << "using:   xyz.ab.cd" << endl;
+        RD( "using:   xyz.ab.cd" << endl );
         new_one(rd->top_state, (const char*)_data);
 
         trie* r = rd->top_state;
@@ -4544,7 +4563,7 @@ void handle_advert_almost_same_as_old(control_data cd)
             {
                 start_reinforce_interest((char*)_data, _if);
             }
-            //cout << "Listing: " << r->s->full_name << endl;
+            //RD( "Listing: " << r->s->full_name << endl );
 
         }
 
@@ -4610,7 +4629,7 @@ void handle_advert_almost_same_as_old(control_data cd)
 
 void handle_interestTODELETETODELETE(control_data cd)
 {
-    std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
@@ -4673,7 +4692,7 @@ void handle_interestTODELETETODELETE(control_data cd)
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
-            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            RD( "Resending initiating interest packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -4748,7 +4767,7 @@ void handle_interestTODELETETODELETE(control_data cd)
 
 void handle_collaboration(control_data cd)
 {
-    std::cout << "Collaboration received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Collaboration received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
@@ -4802,7 +4821,7 @@ void handle_collaboration(control_data cd)
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
-            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            RD( "Resending initiating interest packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -5128,7 +5147,7 @@ void send_queued_data(void* relevantObject)
 
 void handle_interest(control_data cd)
 {
-    std::cout << "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl;
+    RD( "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     if ( incoming_packet.excepted_interface == thisAddress )
@@ -5191,7 +5210,7 @@ void handle_interest(control_data cd)
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.seqno = s->seqno;
 
-            std::cout << "Resending initiating interest packet (new seqno)" << std::endl;
+            RD( "Resending initiating interest packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
         }
     }
@@ -5295,6 +5314,8 @@ void handle_interest(control_data cd)
 
                 // Alternative longer method?
                 //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
+
+                // CHECK MEMCPY IS MEMORY SOUND IF UNCOMMENTINBELOW
                 //memcpy(x, incoming_packet.data, incoming_packet.length);
                 //x[incoming_packet.length] = 0;
             //}
@@ -5330,7 +5351,7 @@ void handle_interest(control_data cd)
 void handle_reinforce(control_data cd)
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
-    std::cout << "ADV Reinforce received from " << std::hex << _interface << std::endl;
+    RD( "ADV Reinforce received from " << std::hex << _interface << std::endl );
 
     // reinforce the the preceding interface in the direction of sink
 	// CHANGE_
@@ -5383,7 +5404,7 @@ void handle_reinforce(control_data cd)
 		outgoing_packet.path_value = 0;
         outgoing_packet.down_interface = incoming_packet.down_interface;
         outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
-        std::cout << "Forwarding ADV Reinforce to " << std::hex << interface << std::endl;
+        RD( "Forwarding ADV Reinforce to " << std::hex << interface << std::endl );
 		sendAMessage(interface, write_packet(&outgoing_packet), 0);
 
 	}
@@ -5841,8 +5862,8 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
       {
            if ( current->s )
            {
-               //cout << "\t- Found ";
-               //cout << current->s->full_name << endl;
+               //RD( "\t- Found " );
+               //RD( current->s->full_name << endl );
                //void f4(State* s, char* _buf, NEIGHBOUR_ADDR _if)
                *(buf) = '\0';
                process(current->s, current_prefix_name, _if);
@@ -5856,7 +5877,7 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
       if(t == NULL)
       {
            for ( i++; i < n && str[i] != DOT; i++ );
-           //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+           //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
            i--;
            t = current;
            action_all_prefixes(t, i+1, n, str, buf, _if, process);
@@ -5868,7 +5889,7 @@ void action_all_prefixes(trie *t, int i, int n, const char *str, char* buf, NEIG
 
           action_all_prefixes(t, i+1, n, str, buf+1, _if, process);
           for ( i++; i < n && str[i] != DOT; i++ );
-          //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+          //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
           i--;
           t = current;
           action_all_prefixes(t, i+1, n, str, buf, _if, process);
@@ -5989,13 +6010,13 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
     {
         if ( s->bestGradientToObtain && !s->obtainInterfaces )
         {
-            std::cout << "FOUND UNREINFORCED ADVERT" << std::endl;
+            RD( "FOUND UNREINFORCED ADVERT" << std::endl );
             numSinks = 0;
             action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
                     current_prefix_name, _if, count_sink);
             if ( numSinks )
             {
-                std::cout << "TRY REINFORCING ADVERT" << std::endl;
+                RD( "TRY REINFORCING ADVERT" << std::endl );
                 // second parameter no longer used, pos pass s in future to save
                 // unnecessary work in the function
                 start_reinforce(_data, 0, s->seqno);
@@ -6129,7 +6150,9 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
         //incoming_packet.length = strlen((char*)_data);
         //free(incoming_packet.data);
         //incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
-        //memcpy(incoming_packet.data, _data, incoming_packet.length);
+
+        // CHECK MEMCPY IS MEMORY SOUND IF UNCOMMENTINBELOW
+		//memcpy(incoming_packet.data, _data, incoming_packet.length);
         //incoming_packet.data[incoming_packet.length] = 0;
         //incoming_packet.path_value = 0;
         //handle_data(SELF_INTERFACE);
@@ -6333,7 +6356,7 @@ trie* trie_at_level(trie *t, unsigned char c)
    {
       if(t->keyelem == c)
       {
-		 //cout << "-" << c;
+		 //RD( "-" << c );
          return t;
       }
       t = t->next_sibling;
@@ -6358,11 +6381,11 @@ trie* trie_add(trie *t, unsigned char *str, int object)
    const int n = strlen((const char*)str);
    int i;
    //trie* found;
-   //cout << "Adding: ";
+   //RD( "Adding: " );
 
    if ( !n )
    {
-       std::cout << "null state name!" << std::endl;
+       RD( "null state name!" << std::endl );
    }
 
    for(i=0; i<n; i++)
@@ -6379,7 +6402,7 @@ trie* trie_add(trie *t, unsigned char *str, int object)
          t = trie_new();
          t->keyelem = c;
          //t->substr[1] = '\0';
-         //cout << c;
+         //RD( c );
          t->next_sibling = parent->first_child;
          parent->first_child = t;
       }
@@ -6407,7 +6430,7 @@ trie* trie_add(trie *t, unsigned char *str, int object)
     t->c = context_new();
    }
 
-   //cout << endl;
+   //RD( endl );
    return t;
 }
 
@@ -6425,8 +6448,8 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
    const int n = strlen((const char*)str);
    int i;
    trie *current = t;
-   //cout << "Matching: " << str << endl;
-   //cout << "Prefix: ";
+   //RD( "Matching: " << str << endl );
+   //RD( "Prefix: " );
 
    for(i=0; i<n; i++, current = t)
    {
@@ -6435,9 +6458,9 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
       t = trie_at_level(t,c);
       if(t == NULL)
 	  {
-		   //cout << "\t- Found";
+		   //RD( "\t- Found" );
 		   for ( i++; i < n && str[i] != DOT; i++ );
-		   //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl << "Prefix: ";
+		   //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl << "Prefix: ");
 		   i--;
 		   t = current;
 	  }
@@ -6445,12 +6468,12 @@ trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str)
 
    if ( current->s )
    {
-	   //cout << "\t- Found" << endl;
+	   //RD( "\t- Found" << endl );
 	   return current;
    }
    else
    {
-	   //cout << "\t- Not Found" << endl;
+	   //RD( "\t- Not Found" << endl );
 	   return NULL;
    }
 }
@@ -6489,15 +6512,15 @@ trie* f(trie *t, int i, int n, unsigned char *str, trie *rec)
 	  {
 		   if ( current->s )
 		   {
-			   //cout << "\t- Found ";
+			   //RD( "\t- Found " );
 			   // add to list
-			   //cout << current->s->full_name << endl;
+			   //RD( current->s->full_name << endl );
 			   rec->rec = current;
 			   return current;
 		   }
 		   else
 		   {
-			   //cout << "\t- Not Found" << endl;
+			   //RD( "\t- Not Found" << endl );
 			   rec->rec = NULL;
 			   return rec;
 		   }
@@ -6510,7 +6533,7 @@ trie* f(trie *t, int i, int n, unsigned char *str, trie *rec)
       if(t == NULL)
 	  {
 		   for ( i++; i < n && str[i] != DOT; i++ );
-		   //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+		   //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
 		   i--;
 		   t = current;
 		   rec = f(t, i+1, n, str, rec);
@@ -6519,7 +6542,7 @@ trie* f(trie *t, int i, int n, unsigned char *str, trie *rec)
 	  {
 		  rec = f(t, i+1, n, str, rec);
 		  for ( i++; i < n && str[i] != DOT; i++ );
-		  //if ( str[i] == '.' ) cout << "\t- Moving to next section " << endl;
+		  //if ( str[i] == '.' ) RD( "\t- Moving to next section " << endl );
 		  i--;
 		  t = current;
 		  rec = f(t, i+1, n, str, rec);

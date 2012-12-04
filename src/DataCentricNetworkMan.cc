@@ -768,11 +768,13 @@ void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
 
     if ( controlPktNames.find(name) != std::string::npos )
     {
+        std::cout << "controlPktNames - found " << name << std::endl;
         // found
         collectBits(bits);
     }
     else
     {
+        std::cout << "controlPktNames - NOT found " << name << std::endl;
         int x = 0;
         NullStream() << "x: " << x << "\n";
 }
