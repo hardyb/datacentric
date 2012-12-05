@@ -762,7 +762,7 @@ signed int DataCentricNetworkMan::getDemand()
 
 void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
 {
-    static std::string controlPktNames = "ServiceDiscovery BindRequest ServiceDiscoveryResponse BindResponse RREQAodvMsg RREPAodvMsg RouteReply RERRAodvMsg RouteError AodvHello";
+    static std::string controlPktNames = "DataCentricControlPkt ServiceDiscovery BindRequest ServiceDiscoveryResponse BindResponse RREQAodvMsg RREPAodvMsg RouteReply RERRAodvMsg RouteError AodvHello";
     std::string name = p->getName();
     mAirFrameNames.insert(name);
 

@@ -1194,6 +1194,24 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             break;
     }
 
+    switch ( *_msg )
+    {
+        case NEIGHBOR_BCAST:
+        case NEIGHBOR_UCAST:
+        case INTEREST:
+        case ADVERT:
+        case REINFORCE:
+        case REINFORCE_INTEREST:
+        case COLLABORATION:
+        case REINFORCE_COLLABORATION:
+            appPkt->setName("DataCentricControlPkt");
+            break;
+        default:
+            appPkt->setName("DataCentricAppPkt");
+            break;
+    }
+
+
     currentModule->mNetMan->recordOnePacket(*_msg);
     /*
     switch ( *_msg )
@@ -1262,7 +1280,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
         dataTextPtr += numChar;
         data++;
     }
-    appPkt->setName((const char*)dataText);
+    //appPkt->setName((const char*)dataText);
 
 
     //appPkt->setSendingMAC(currentModule->mAddressString); // awaiting msg compilation
@@ -1338,6 +1356,32 @@ static void cb_bcast_message(unsigned char* _msg)
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
     unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
     appPkt->setByteLength(pktSize);
+
+
+    switch ( *_msg )
+    {
+        case NEIGHBOR_BCAST:
+        case NEIGHBOR_UCAST:
+        case INTEREST:
+        case ADVERT:
+        case REINFORCE:
+        case REINFORCE_INTEREST:
+        case COLLABORATION:
+        case REINFORCE_COLLABORATION:
+            appPkt->setName("DataCentricControlPkt");
+            break;
+        default:
+            appPkt->setName("DataCentricAppPkt");
+            break;
+    }
+
+
+
+
+
+
+
+
 
     switch ( *_msg )
     {
