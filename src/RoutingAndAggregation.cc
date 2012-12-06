@@ -2945,7 +2945,9 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             if( s->converged )
             {
                 start_reinforce_interest(_buf, excludedInterface, s->seqno); // excludedInterface is incoming interface
+#ifdef GRAD_FILES
                 UpdateGradientFile();
+#endif
 
                 // send data straight away?
 
@@ -3887,7 +3889,9 @@ void interest_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce_interest(data, SELF_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
     if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
@@ -3899,7 +3903,9 @@ void interest_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce_interest(data, UNKNOWN_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
     /*
@@ -3940,7 +3946,9 @@ void collaboration_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce_collaboration(data, SELF_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
     if ( s->prefix != FORWARD_AND_COLLABORATIONPREFIX && s->pktQ
@@ -3952,7 +3960,9 @@ void collaboration_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce_collaboration(data, UNKNOWN_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
 
@@ -4281,7 +4291,9 @@ void advert_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce(data, SELF_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
     if ( s->prefix != FORWARD_AND_SINK_SUFFIX && s->pktQ
@@ -4293,7 +4305,9 @@ void advert_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce(data, UNKNOWN_INTERFACE, s->seqno);
+#ifdef GRAD_FILES
         UpdateGradientFile();
+#endif
     }
 
     /*
@@ -4972,7 +4986,9 @@ if ( s->action == SOURCE_ACTION )
     {
             action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
                    current_prefix_name, _if, consider_reinforce_interest);
+#ifdef GRAD_FILES
             UpdateGradientFile();
+#endif
     }
 }
 
@@ -6126,7 +6142,9 @@ void processState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 		        // TEMP REMOVAL
 		        action_all_prefixes(rd->top_state, 0, strlen((const char*)_data), _data,
 		               current_prefix_name, _if, consider_reinforce_interest);
+#ifdef GRAD_FILES
 		        UpdateGradientFile();
+#endif
 
 
 	             //incoming_packet.message_type = DATA;

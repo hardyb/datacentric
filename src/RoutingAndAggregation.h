@@ -1,9 +1,9 @@
 #ifndef RoutingAndAggregation_h
 #define RoutingAndAggregation_h
 
-#define MY_C_PLUSPLUS 1
+#include "userHeader.h"
 
-#define GRAD_FILES 1
+
 
 #ifdef MY_C_PLUSPLUS
 #include<iostream>
@@ -12,7 +12,6 @@
 #endif
 
 
-#include "userHeader.h"
 
 
 
