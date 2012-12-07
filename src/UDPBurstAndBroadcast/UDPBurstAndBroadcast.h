@@ -43,6 +43,15 @@
 #define REGISTER_AS_SINK_CONFIRMATION 10
 
 
+
+#define SERVICE_DISCOVERY_REQUEST 21
+#define SERVICE_DISCOVERY_CONFIRMATION 22
+#define BINDING_REQUEST 23
+#define BINDING_CONFIRMATION 24
+
+
+
+
 #include "aodv_zigbee_defs.h"
 
 
@@ -75,13 +84,31 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
         std::vector<cMessage*> DataQueue;
     };
 
-    struct AData
+    typedef struct
     {
         std::string data;
         std::string context;
+    } AData;
+
+    struct Compare {
+        bool operator() (AData const &lhs, AData const &rhs) const
+        {
+            if ( lhs.data < rhs.data )
+            {
+                return true;
+            }
+
+            if ( lhs.data == rhs.data
+                    && lhs.context < rhs.context )
+            {
+                return true;
+            }
+
+            return false;
+        }
     };
 
-    std::map<AData, ABinding> mBindingList;
+    std::map<AData, ABinding, Compare> mBindingList;
     std::map<AData, std::vector<IPvXAddress>> mServiceList;
 
     std::map<cMessage*, int> mBindingTries;

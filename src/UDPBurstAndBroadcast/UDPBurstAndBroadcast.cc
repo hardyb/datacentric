@@ -392,6 +392,13 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         return;
     }
 
+
+    //HERE
+    ////////////// NEW CODE
+    // Check if message is in mDiscoveryTries or mBindingTries
+    ///////////////////////
+
+
     SendLaterMessageMapIterator laterIt = mSendLaterMessageMap.find(msg);
     if (laterIt != mSendLaterMessageMap.end() )
     {
@@ -558,9 +565,17 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
 
-        // NEW CODE
+        ////////////// NEW CODE
         sourceData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+        getLongestContextTrie(rd->top_context, temp, temp, x);
+        AData d;
+        ABinding b;
+        d.data = sourceData;
+        d.context = (const char*)x;
+        mBindingList[d] = b;
+        ////////////////////////////////////
+
 
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
@@ -609,6 +624,30 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             mNetMan->addPendingRegistration(myAddr.get4().getInt());
             mNetMan->recordOnePacket(REGISTER_STAT);
         }
+
+
+
+
+
+        ////////////// NEW CODE
+        generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
+        cMessage* m = new cMessage("DiscoveryRetry");
+        m->addPar("Data") = sinkData.c_str();
+        m->addPar("Context") = (const char*)x;
+        mDiscoveryTries[m] = 1;
+        scheduleAt(simTime()+mServiceDisoveryTimeOut, m);
+        ////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
         break;
     default:
         break;
