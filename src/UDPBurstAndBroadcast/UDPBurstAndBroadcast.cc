@@ -149,6 +149,11 @@ void UDPBurstAndBroadcast::initialize(int stage)
     if (stage != 3)
         return;
 
+    mServiceDisoveryTimeOut = par("ServiceDisoveryTimeOut");
+    mServiceDisoveryNumTries = par("ServiceDisoveryNumTries");
+    mBindingTimeOut = par("BindingTimeOut");
+    mBindingTimeOut = par("BindingTimeOut");
+
     moduleRD.top_context = trie_new();
     mpUpDownMessage = new cMessage("UpDownMessage");
     scheduleAt(simTime() + 1800.0, mpUpDownMessage); // first check in half an hour
@@ -552,6 +557,11 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
             mNetMan->recordOnePacket(DISCOVERY_STAT);
         }
+
+        // NEW CODE
+        sourceData.resize(appPkt->getPktData().size(), 0);
+        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+
 
         //sourceData.resize(appPkt->getPktData().size(), 0);
         //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());

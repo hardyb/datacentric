@@ -33,7 +33,7 @@ unsigned char current_prefix_name[100];
 
 
 
-#define RETAFTERUCAST 0 // return after handle ucast
+//#define RETAFTERUCAST 0
 #define TYPETHROUGH 0 //
 #define TYPERECV 0 //
 #define TEST3 0 //
@@ -46,7 +46,7 @@ unsigned char current_prefix_name[100];
 
 
 
-#define DBRETAFTERUCAST(thecode) if ( RETAFTERUCAST ) { thecode }
+//#define DBRETAFTERUCAST(thecode) if ( RETAFTERUCAST ) { thecode }
 #define DBTYPETHROUGH(thecode) if ( TYPETHROUGH ) { thecode }
 #define DBTYPERECV(thecode) if ( TYPERECV ) { thecode }
 #define DB3(thecode) if ( TEST3 ) { thecode }
@@ -5783,7 +5783,7 @@ void handle_neighbor_ucast(control_data cd)
     int inserted;
 	InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted);
 	//printf("Inserted interface\n");
-	DBRETAFTERUCAST(return;)
+	//DBRETAFTERUCAST(return;)
 
     printf("About to forward our adverts\n");
     //int advertsFound = UcastAllBestGradients(rd->top_state, _interface);

@@ -69,6 +69,30 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     int              mStability;
     //double              mStability;
 
+    struct ABinding
+    {
+        std::vector<IPvXAddress> AddressList;
+        std::vector<cMessage*> DataQueue;
+    };
+
+    struct AData
+    {
+        std::string data;
+        std::string context;
+    };
+
+    std::map<AData, ABinding> mBindingList;
+    std::map<AData, std::vector<IPvXAddress>> mServiceList;
+
+    std::map<cMessage*, int> mBindingTries;
+    std::map<cMessage*, int> mDiscoveryTries;
+
+    double mServiceDisoveryTimeOut;
+    int mServiceDisoveryNumTries;
+    double mBindingTimeOut;
+    int mBindingNumTries;
+
+
     // NOT implementing ucast retransmission
     // So use one bool for any neighbours
     struct BTR

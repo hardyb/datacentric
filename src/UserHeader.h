@@ -2,8 +2,8 @@
 #define UserHeader_h
 
 
-//#define THE_OMNET_SIMULATION
-#define THE_WASPMOTE
+#define THE_OMNET_SIMULATION
+//#define THE_WASPMOTE
 
 
 #ifdef THE_WASPMOTE
@@ -51,5 +51,9 @@
 #endif
 
 //do a list of commented out debug type defs
+//#define MY_C_PLUSPLUS
+//#define GRAD_FILES
+//#define ROUTING_DEBUG
+//#define DEBUG
 
 #endif
