@@ -338,11 +338,11 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2(const char *name)
     //long msgByteLength = messageLengthPar->longValue();
     //AppControlMessage *payload = new AppControlMessage(msgName);
     AppControlMessage *payload = new AppControlMessage(name);
-    payload->setCntrlType(FIND_CONTROL_UNIT);
+    //payload->setCntrlType(FIND_CONTROL_UNIT);
     //std::string interests = "\x83\x2\x0";
     //payload->setInterests(interests.c_str());
-    payload->setInterests("\x83\x2\x0");
-    payload->setSourceData("");
+    //payload->setInterests("\x83\x2\x0");
+    //payload->setSourceData("");
     payload->setByteLength(3);
     payload->addPar("sourceId") = getId();
     payload->addPar("msgId") = numSent++;
@@ -393,9 +393,49 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     }
 
 
-    //HERE
     ////////////// NEW CODE
     // Check if message is in mDiscoveryTries or mBindingTries
+
+    if ( msg->isName("BindingRetry") )
+    {
+        // MORE WORK
+        TriesIter bindIt = mBindingTries.find(msg);
+        if (bindIt != mBindingTries.end() )
+        {
+
+            return;
+
+
+        }
+
+    }
+
+
+    if ( msg->isName("DiscoveryRetry") )
+    {
+        AData d;
+        d.data = msg->par("Data");
+        d.context = msg->par("Context");
+        TriesIter discoverIt = mDiscoveryTries.find(d);
+        if (discoverIt != mDiscoveryTries.end() )
+        {
+            generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            discoverIt->second++;
+            if ( discoverIt->second < mServiceDisoveryNumTries )
+            {
+                scheduleAt(simTime()+mServiceDisoveryTimeOut, msg);
+                return;
+            }
+        }
+        delete msg;
+        return;
+    }
+
+
+
+
+
+
     ///////////////////////
 
 
@@ -469,6 +509,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         }
 
     }
+
+    // delete msg?????????????????????
 
     if (ev.isGUI())
     {
@@ -566,6 +608,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
 
         ////////////// NEW CODE
+        // MORE WORK OR DONE?????????????
         sourceData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
         getLongestContextTrie(rd->top_context, temp, temp, x);
@@ -631,11 +674,17 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         ////////////// NEW CODE
         generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
-        cMessage* m = new cMessage("DiscoveryRetry");
-        m->addPar("Data") = sinkData.c_str();
-        m->addPar("Context") = (const char*)x;
-        mDiscoveryTries[m] = 1;
-        scheduleAt(simTime()+mServiceDisoveryTimeOut, m);
+        if ( mServiceDisoveryNumTries > 1 )
+        {
+            AData d;
+            d.data = sinkData.c_str();
+            d.context = (const char*)x;
+            mDiscoveryTries[d] = 1;
+            cMessage* m = new cMessage("DiscoveryRetry");
+            m->addPar("Data") = sinkData.c_str();
+            m->addPar("Context") = (const char*)x;
+            scheduleAt(simTime()+mServiceDisoveryTimeOut, m);
+        }
         ////////////////////////////////////////////////////////////////
 
 
@@ -1233,6 +1282,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
 
     AppControlMessage* acm = dynamic_cast<AppControlMessage*>(pk);
     std::string sd;
+    std::string intr;
     std::string con;
     switch ( acm->getCntrlType() )
     {
@@ -1257,6 +1307,88 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 sendPacket(*i, mServerAddr);
                 //numSent++;
             }
+            break;
+        case SERVICE_DISCOVERY_REQUEST:
+            ////////////// NEW CODE
+            intr = acm->getInterests();
+            con = acm->getContext();
+            for (BindingListIter i = mBindingList.begin();
+                    i != mBindingList.end(); ++i)
+            {
+                pair<std::string::iterator,std::string::iterator> res;
+                res = std::mismatch(i->first.data.begin(), i->first.data.end(), intr.begin());
+                if (res.first == i->first.data.end())
+                {
+                    res = std::mismatch(i->first.context.begin(), i->first.context.end(), con.begin());
+                    if (res.first == i->first.context.end())
+                    {
+                        // both interest and context of incoming service discovery are prefix
+                        // for at least one binding entry, so reply to discovery and finish
+                        generatePacket(origAddr, "ServiceDiscoveryResponse", SERVICE_DISCOVERY_CONFIRMATION,
+                                intr.c_str(), getParentModule()->getFullPath().c_str(), con.c_str(), 0);
+                        break;
+                    }
+                }
+            }
+            ////////////////////////////////////
+            break;
+        case SERVICE_DISCOVERY_CONFIRMATION:
+            ////////////// NEW CODE
+            AData d;
+            d.data = acm->getInterests();
+            d.context = acm->getContext();
+            mDiscoveryTries.erase(d);
+            IPvXAddress addr = IPvXAddressResolver().resolve(acm->getSourceData());
+            mServiceList[d].push_back(addr);
+            // Or this method?
+            //mServiceList[d].push_back(origAddr);
+            generatePacket(origAddr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            if ( mBindingNumTries > 1 )
+            {
+                mBindingTries[d] = 1;
+                cMessage* m = new cMessage("BindingRetry");
+                m->addPar("Data") = d.data;
+                m->addPar("Context") = d.context;
+                scheduleAt(simTime()+mBindingTimeOut, m);
+            }
+            ////////////////////////////////////
+            break;
+        case BINDING_REQUEST:
+            ////////////// NEW CODE
+            intr = acm->getInterests();
+            con = acm->getContext();
+            bool atLeastOneMatch = false;
+            for (BindingListIter i = mBindingList.begin();
+                    i != mBindingList.end(); ++i)
+            {
+                pair<std::string::iterator,std::string::iterator> res;
+                res = std::mismatch(i->first.data.begin(), i->first.data.end(), intr.begin());
+                if (res.first == i->first.data.end())
+                {
+                    res = std::mismatch(i->first.context.begin(), i->first.context.end(), con.begin());
+                    if (res.first == i->first.context.end())
+                    {
+                        // both interest and context of incoming bind request are prefix
+                        // of this entry
+                        i->second.AddressList.push_back(origAddr);
+                        atLeastOneMatch = true;
+                    }
+                }
+            }
+            if ( atLeastOneMatch )
+            {
+                generatePacket(origAddr, "BindResponse", BINDING_CONFIRMATION,
+                        intr.c_str(), getParentModule()->getFullPath().c_str(), con.c_str(), 0);
+            }
+            ////////////////////////////////////
+            break;
+        case BINDING_CONFIRMATION:
+            ////////////// NEW CODE
+            AData d;
+            d.data = acm->getInterests();
+            d.context = acm->getContext();
+            mBindingTries.erase(d);
+            ////////////////////////////////////
             break;
         case REGISTER_AS_SOURCE:
             break;
