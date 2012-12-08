@@ -395,21 +395,27 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 
     ////////////// NEW CODE
     // Check if message is in mDiscoveryTries or mBindingTries
-
     if ( msg->isName("BindingRetry") )
     {
-        // MORE WORK
-        TriesIter bindIt = mBindingTries.find(msg);
+        AData d;
+        d.data = msg->par("Data");
+        d.context = msg->par("Context");
+        IPvXAddress addr = msg->par("Address");
+        //addr.set(msg->par("Address"));
+        TriesIter bindIt = mBindingTries.find(d);
         if (bindIt != mBindingTries.end() )
         {
-
-            return;
-
-
+            generatePacket(addr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            bindIt->second++;
+            if ( bindIt->second < mBindingNumTries )
+            {
+                scheduleAt(simTime()+mBindingTimeOut, msg);
+                return;
+            }
         }
-
+        delete msg;
+        return;
     }
-
 
     if ( msg->isName("DiscoveryRetry") )
     {
@@ -430,12 +436,6 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         delete msg;
         return;
     }
-
-
-
-
-
-
     ///////////////////////
 
 
@@ -559,6 +559,22 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //getLongestContextTrie(rd->top_context, temp, temp, index);
         getLongestContextTrie(rd->top_context, temp, temp, x);
         //context = x;
+
+        // MORE WORK - Mechanism to decide whether server based or direct to src binding based
+        bool useServer = false;
+        if ( !useServer )
+        {
+            // find binding
+            AData d;
+            d.data = theData;
+            d.context = (const char*)x;
+            for (std::vector<IPvXAddress>::iterator i = mBindingList[d].AddressList.begin();
+                    i != mBindingList[d].AddressList.end(); ++i)
+            {
+                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*i).get4() << "\n";
+                generatePacket(*i, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+            }
+        }
 
         COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
         generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
@@ -1349,6 +1365,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 cMessage* m = new cMessage("BindingRetry");
                 m->addPar("Data") = d.data;
                 m->addPar("Context") = d.context;
+                m->addPar("Address") = origAddr.str();
                 scheduleAt(simTime()+mBindingTimeOut, m);
             }
             ////////////////////////////////////
