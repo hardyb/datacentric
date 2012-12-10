@@ -153,6 +153,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     mServiceDisoveryNumTries = par("ServiceDisoveryNumTries");
     mBindingTimeOut = par("BindingTimeOut");
     mBindingTimeOut = par("BindingTimeOut");
+    mBindWithSource = par("bindWithSource");
 
     moduleRD.top_context = trie_new();
     mpUpDownMessage = new cMessage("UpDownMessage");
@@ -561,24 +562,35 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //context = x;
 
         // MORE WORK - Mechanism to decide whether server based or direct to src binding based
-        bool useServer = false;
-        if ( !useServer )
+        if ( mBindWithSource )
         {
+            ////////////// NEW CODE
+            // HERE
             // find binding
             AData d;
             d.data = theData;
             d.context = (const char*)x;
-            for (std::vector<IPvXAddress>::iterator i = mBindingList[d].AddressList.begin();
-                    i != mBindingList[d].AddressList.end(); ++i)
+            if ( mBindingList[d].AddressList.empty() )
             {
-                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*i).get4() << "\n";
-                generatePacket(*i, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+                mBindingList[d].DataQueue.push_back(appPkt);
             }
+            else
+            {
+                for (std::vector<IPvXAddress>::iterator i = mBindingList[d].AddressList.begin();
+                        i != mBindingList[d].AddressList.end(); ++i)
+                {
+                    COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*i).get4() << "\n";
+                    generatePacket(*i, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+                }
+            }
+            /////////////////////////////////
         }
-
-        COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-        generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
-        mNetMan->addPendingDataPkt();
+        else
+        {
+            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+            mNetMan->addPendingDataPkt();
+        }
         break;
     case STARTUP_MESSAGE:
         /*
@@ -617,23 +629,29 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 
         // TEMP COMMENT OUT
 
-        if ( mServerAddr.isUnspecified() )
+        if ( mBindWithSource )
         {
-            generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
-            mNetMan->recordOnePacket(DISCOVERY_STAT);
+            ////////////// NEW CODE
+            // MORE WORK OR DONE?????????????
+            sourceData.resize(appPkt->getPktData().size(), 0);
+            std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
+            getLongestContextTrie(rd->top_context, temp, temp, x);
+            AData d;
+            ABinding b;
+            d.data = sourceData;
+            d.context = (const char*)x;
+            mBindingList[d] = b;
+            ////////////////////////////////////
+        }
+        else
+        {
+            if ( mServerAddr.isUnspecified() )
+            {
+                generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
+                mNetMan->recordOnePacket(DISCOVERY_STAT);
+            }
         }
 
-        ////////////// NEW CODE
-        // MORE WORK OR DONE?????????????
-        sourceData.resize(appPkt->getPktData().size(), 0);
-        std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
-        getLongestContextTrie(rd->top_context, temp, temp, x);
-        AData d;
-        ABinding b;
-        d.data = sourceData;
-        d.context = (const char*)x;
-        mBindingList[d] = b;
-        ////////////////////////////////////
 
 
 
@@ -643,65 +661,58 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //mNetMan->recordOnePacket(REGISTER_STAT);
         break;
     case SINK_MESSAGE:
-        /*
-         * If sink for PUB
-         *      Find server
-         *      Register for the particular events
-         *
-         *
-         */
-        //SetSinkWithShortestContext(appPkt);
-
-        // TEMP COMMENT OUT
-        if ( mServerAddr.isUnspecified() )
-        {
-            generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
-            mNetMan->recordOnePacket(DISCOVERY_STAT);
-        }
-
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
-
-        // MOVE THIS BIT INTO FRAMEWORK
-        //getLongestContextTrie(rd->top_context, temp, temp, index);
         getLongestContextTrie(rd->top_context, temp, temp, x);
-        //context = x;
 
-
-
-
-        if ( mIsControlUnit )
+        if ( mBindWithSource )
         {
-            mInterestedNodes[myAddr].interest = sinkData;
-            mInterestedNodes[myAddr].context = (const char*)x;
+            ////////////// NEW CODE
+            generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
+            if ( mServiceDisoveryNumTries > 1 )
+            {
+                AData d;
+                d.data = sinkData.c_str();
+                d.context = (const char*)x;
+                mDiscoveryTries[d] = 1;
+                cMessage* m = new cMessage("DiscoveryRetry");
+                m->addPar("Data") = sinkData.c_str();
+                m->addPar("Context") = (const char*)x;
+                scheduleAt(simTime()+mServiceDisoveryTimeOut, m);
+            }
+            ////////////////////////////////////////////////////////////////
         }
         else
         {
-            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << "\n";
-            generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
-            //IPv4Address pending = myAddr.get4();
-            mNetMan->addPendingRegistration(myAddr.get4().getInt());
-            mNetMan->recordOnePacket(REGISTER_STAT);
+            if ( mIsControlUnit )
+            {
+                mInterestedNodes[myAddr].interest = sinkData;
+                mInterestedNodes[myAddr].context = (const char*)x;
+            }
+            else
+            {
+                if ( mServerAddr.isUnspecified() )
+                {
+                    generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "", "", 0);
+                    mNetMan->recordOnePacket(DISCOVERY_STAT);
+                }
+                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << "\n";
+                generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
+                mNetMan->addPendingRegistration(myAddr.get4().getInt());
+                mNetMan->recordOnePacket(REGISTER_STAT);
+            }
         }
 
 
 
 
 
-        ////////////// NEW CODE
-        generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
-        if ( mServiceDisoveryNumTries > 1 )
-        {
-            AData d;
-            d.data = sinkData.c_str();
-            d.context = (const char*)x;
-            mDiscoveryTries[d] = 1;
-            cMessage* m = new cMessage("DiscoveryRetry");
-            m->addPar("Data") = sinkData.c_str();
-            m->addPar("Context") = (const char*)x;
-            scheduleAt(simTime()+mServiceDisoveryTimeOut, m);
-        }
-        ////////////////////////////////////////////////////////////////
+
+
+
+
+
+
 
 
 
@@ -1388,6 +1399,16 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                         // both interest and context of incoming bind request are prefix
                         // of this entry
                         i->second.AddressList.push_back(origAddr);
+                        // send out any waiting data pkts
+                        // HERE
+                        // MORE WORK
+                        for (std::vector<cMessage*>::iterator it = i->second.DataQueue.begin();
+                                it != i->second.DataQueue.end(); ++it)
+                        {
+                            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*i).get4() << "\n";
+                            generatePacket(*i, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+                        }
+
                         atLeastOneMatch = true;
                     }
                 }

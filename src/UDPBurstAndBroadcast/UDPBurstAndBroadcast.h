@@ -158,6 +158,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     IPvXAddress mServerAddr;
     IPvXAddress myAddr;
     bool mIsControlUnit;
+    bool mBindWithSource;
     std::vector<AppControlMessage*> mPktsForServer;
 
     int destAddrRNG;
