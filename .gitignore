@@ -34,3 +34,9 @@ xxx
 /tmp/
 /src/.tmp*
 /src/sta*
+
+# ignore results and analysis files
+*.vci
+*.sca
+*.vec
+*.anf
