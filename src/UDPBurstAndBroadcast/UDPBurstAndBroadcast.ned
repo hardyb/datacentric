@@ -123,8 +123,15 @@ simple UDPBurstAndBroadcast like IUDPApp
         bool setBroadcast = default(false); // Configure the socket for receive broadcast packets
         bool isControlUnit = default(false); // Whether this app/node is the server control unit
         string controlUnit = default(""); // tell this node the path of its control unit
-        bool bindWithSource = default(false); // bind with source or with control unit? 
+        
+        bool bindWithSource = default(false); // bind with source or with control unit?
+        double ServiceDiscoveryTimeOut = default(0.5);
+        int ServiceDiscoveryNumTries = default(1);
+        double BindingTimeOut = default(0.5);
+        int BindingNumTries = default(1);
+         
         bool confirmRegistration = default(false); // Whether the control unti acknowledges registrations
+		volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
         
         double nwkNetworkBroadcastDeliveryTime @unit(s) = default(0);
         double nwkPassiveAckTimeout @unit(s) = default(0);

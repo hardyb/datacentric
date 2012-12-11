@@ -78,28 +78,28 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     int              mStability;
     //double              mStability;
 
-    struct ABinding
-    {
-        std::vector<IPvXAddress> AddressList;
-        std::vector<cMessage*> DataQueue;
-    };
-
     typedef struct
     {
         std::string data;
         std::string context;
     } AData;
 
+    struct ABinding
+    {
+        std::vector<IPvXAddress> AddressList;
+        std::vector<AData> DataQueue;
+    };
+
     struct Compare {
-        bool operator() (AData const &lhs, AData const &rhs) const
+        bool operator() (const AData &lhs, const AData &rhs) const
         {
-            if ( lhs.data < rhs.data )
+            if ( lhs.data.compare(rhs.data) < 0 ) // lhs.data < rhs.data )
             {
                 return true;
             }
 
             if ( lhs.data == rhs.data
-                    && lhs.context < rhs.context )
+                    && lhs.context.compare(rhs.context) < 0 ) // lhs.context < rhs.context )
             {
                 return true;
             }
@@ -111,15 +111,15 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     std::map<AData, ABinding, Compare> mBindingList;
     typedef std::map<AData, ABinding, Compare>::iterator BindingListIter;
 
-    std::map<AData, std::vector<IPvXAddress>> mServiceList;
-    typedef std::map<AData, std::vector<IPvXAddress>>::iterator ServiceListIter;
+    std::map<AData, std::vector<IPvXAddress>, Compare> mServiceList;
+    typedef std::map< AData, std::vector<IPvXAddress>, Compare>::iterator ServiceListIter;
 
     std::map<AData, int, Compare> mBindingTries;
     std::map<AData, int, Compare> mDiscoveryTries;
     typedef std::map<AData, int, Compare>::iterator TriesIter;
 
-    double mServiceDisoveryTimeOut;
-    int mServiceDisoveryNumTries;
+    double mServiceDiscoveryTimeOut;
+    int mServiceDiscoveryNumTries;
     double mBindingTimeOut;
     int mBindingNumTries;
 

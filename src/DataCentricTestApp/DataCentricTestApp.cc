@@ -132,6 +132,8 @@ void DataCentricTestApp::initialize(int aStage)
         mOriginalNextDemandActionTime = 0;
         mDemandActionMessage = 0;
         appState = APPSTATE_IDLE;
+        mLowerLayerIn        = findGate("lowerLayerIn");
+        mLowerLayerOut       = findGate("lowerLayerOut");
 
 
         // TODO
@@ -169,26 +171,9 @@ void DataCentricTestApp::initialize(int aStage)
             COUT << "We are here!" << "\n";
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt3->setKind(STARTUP_MESSAGE);
+        sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
 
         /*
         if ( par("nodeStartTime").isSet() )
@@ -236,8 +221,6 @@ void DataCentricTestApp::initialize(int aStage)
         //std::string temp2 = par("sinkFor").stringValue();
         //sinksData = cStringTokenizer(temp2.c_str()).asVector();
 
-        mLowerLayerIn        = findGate("lowerLayerIn");
-        mLowerLayerOut       = findGate("lowerLayerOut");
         m_moduleName        = getParentModule()->getFullName();
         sumE2EDelay         = 0;
         numReceived         = 0;
@@ -431,9 +414,6 @@ void DataCentricTestApp::initialize(int aStage)
             mNetMan->addAppliance(this);
         }
 
-        string actionThreadsString = par("actionThreads").stringValue();
-        processActionsFor(actionThreadsString);
-
         std::string temp1 = par("sourceFor").stringValue();
         processSourceFor(temp1);
 
@@ -446,15 +426,8 @@ void DataCentricTestApp::initialize(int aStage)
         std::string temp4 = par("collaboratorFor").stringValue();
         processCollaboratorFor(temp4);
 
-
-
-
-
-
-        DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
-        appPkt3->setKind(STARTUP_MESSAGE);
-        sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
-
+        string actionThreadsString = par("actionThreads").stringValue();
+        processActionsFor(actionThreadsString);
     }
 
 

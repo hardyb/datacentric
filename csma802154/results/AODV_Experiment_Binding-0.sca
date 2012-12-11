@@ -1,0 +1,33 @@
+version 2
+run AODV_Experiment_Binding-0-20121211-00:41:08-948
+attr configname AODV_Experiment_Binding
+attr datetime 20121211-00:41:08
+attr experiment AODV_Experiment_Binding
+attr inifile AODV_2.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network csma802154net
+attr processid 948
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar csma802154net.dataCentricNetworkMan 	DataArrivals 	1
+scalar csma802154net.dataCentricNetworkMan 	PercentageArrivals 	100
+scalar csma802154net.dataCentricNetworkMan 	DataFailures 	0
+scalar csma802154net.dataCentricNetworkMan 	PercentageFailures 	0
+scalar csma802154net.dataCentricNetworkMan 	MeanE2EDelay 	0.012440007518
+scalar csma802154net.dataCentricNetworkMan 	StdDevE2EDelay 	-1.#IND
+scalar csma802154net.dataCentricNetworkMan 	MaxE2EDelay 	0.012440007518
+scalar csma802154net.dataCentricNetworkMan 	MinE2EDelay 	0.012440007518
+scalar csma802154net.dataCentricNetworkMan 	numControlPackets 	3289
+scalar csma802154net.dataCentricNetworkMan 	MeanBPS 	0
+scalar csma802154net.dataCentricNetworkMan 	StdDevBPS 	-1.#IND
+scalar csma802154net.dataCentricNetworkMan 	MaxBPS 	0
+scalar csma802154net.dataCentricNetworkMan 	MinBPS 	0
+scalar csma802154net.dataCentricNetworkMan 	FailedRREQs 	0
+scalar csma802154net.dataCentricNetworkMan 	FailedRegistrations 	0
+scalar csma802154net.dataCentricNetworkMan 	LinkFailures 	0
