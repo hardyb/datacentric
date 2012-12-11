@@ -40,3 +40,6 @@ xxx
 *.sca
 *.vec
 *.anf
+
+# extensions with personal meaning
+*.old
