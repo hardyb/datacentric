@@ -139,6 +139,8 @@ UDPBurstAndBroadcast::UDPBurstAndBroadcast()
 UDPBurstAndBroadcast::~UDPBurstAndBroadcast()
 {
     cancelAndDelete(timerNext);
+    cancelAndDelete(mpUpDownMessage);
+
     delete pktDelay;
 }
 
@@ -156,6 +158,9 @@ void UDPBurstAndBroadcast::initialize(int stage)
     mBindWithSource = par("bindWithSource");
 
     moduleRD.top_context = trie_new();
+    mpUpDownMessage = 0;
+
+    // comment out if not needed
     mpUpDownMessage = new cMessage("UpDownMessage");
     scheduleAt(simTime() + 1800.0, mpUpDownMessage); // first check in half an hour
 
@@ -486,7 +491,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     if (msg->getArrivalGateId() == mUpperLayerIn)
     {
         DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(msg);
-        handleUpperLayerMessage(appPkt);
+        handleUpperLayerMessage(appPkt); // message deleted in this method
     }
     else
     {
@@ -502,7 +507,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         else if (msg->getKind() == UDP_I_DATA)
         {
             // process incoming packet
-            handlePacket(PK(msg));
+            handlePacket(PK(msg)); // PK(msg) deleted in this method or its callees
         }
         else if (msg->getKind() == UDP_I_ERROR)
         {
@@ -512,11 +517,10 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         else
         {
             error("Unrecognized message (%s)%s", msg->getClassName(), msg->getName());
+            delete msg;
         }
 
     }
-
-    // delete msg?????????????????????
 
     if (ev.isGUI())
     {
@@ -733,35 +737,12 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                 mNetMan->recordOnePacket(REGISTER_STAT);
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         break;
     default:
         break;
     }
 
-
-
+    delete appPkt;
 }
 
 
@@ -805,10 +786,11 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
     }
     else
     {
+        delete pk;
         return;
     }
 
-    // If broadcast consider forwarding
+    // If broadcast consider noting, forwarding or handling if for us
     UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
     IPvXAddress destAddr = udpCtrl->getDestAddr();
     if ( destAddr.get4().isLimitedBroadcastAddress() )
@@ -822,6 +804,7 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
             // What does Zigbee broadcast mechanism do if we never discover
             // that the broadcast was relayed successfully ?????????????
             mBTT[bcast].relayed = true;
+            delete pk;
         }
         else
         {
@@ -833,7 +816,7 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
             btr.retries = 0;
             mBTT[bcast] = btr;
             this->getParentModule()->bubble("Forwarding broadcast");
-            forwardBroadcast(pk);
+            forwardBroadcast(pk); // forwards a copy
 
             m = new cMessage("");
             mBroadcastRetries[m] = bcast;
@@ -843,15 +826,15 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
             mBroadcastExpiries[m] = bcast;
             scheduleAt(btr.expiry, m);
 
-            ProcessPacket(dynamic_cast<AppControlMessage*>(pk));
+            ProcessPacket(dynamic_cast<AppControlMessage*>(pk)); // pk deleted by function
         }
         return;
     }
 
-    // now deal with packet itself
+    // Actual unicast packet so handle if for us
     if ( dynamic_cast<AppControlMessage*>(pk) )
     {
-        ProcessPacket(dynamic_cast<AppControlMessage*>(pk));
+        ProcessPacket(dynamic_cast<AppControlMessage*>(pk)); // pk deleted by function
     }
 
     // STILL ISSUES WITH DELETING PK  -  POORLY STRUCTURED CODE!!
@@ -1252,6 +1235,7 @@ void UDPBurstAndBroadcast::finish()
 
 
 
+
 }
 
 
@@ -1551,7 +1535,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             break;
     }
 
-    delete pk;
+    //delete pk;
+    delete acm; //???
 
     // ignore duplicates for the moment
     //if ( !duplicate(moduleId, msgId, pk) )

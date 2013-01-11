@@ -319,7 +319,15 @@ void DataCentricNetworkLayer::finish()
     double ignoreRatio = pkts_ignored / pkts_received;
     recordScalar("ignoreRatio", ignoreRatio);
 
+    cancelAndDelete(mpUpDownMessage);
+    cancelAndDelete(mMessageForTesting_1);
+    cancelAndDelete(mRegularCheckMessage);
 
+    for (TimeoutMessages2Iterator i = mTimeoutMessages2.begin();
+            i != mTimeoutMessages2.end(); ++i)
+    {
+        cancelAndDelete((*i));
+    }
 
 
 
@@ -490,13 +498,14 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         if ( i2 != mTimeoutMessages2.end() )
         {
             mTimeoutMessages2.erase(msg);
-            delete msg;
         }
 
+        delete msg;
         return;
 
 
 
+        /*
         TimeoutMessagesIterator i = mTimeoutMessages.find(relevantObject);
         if ( i != mTimeoutMessages.end() )
         {
@@ -505,6 +514,8 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         }
 
         return;
+        */
+
     }
 
 
@@ -595,6 +606,9 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
 
         //scheduleAt(simTime() + 1.0, mpUpDownMessage);
+        // Single fixed message, do not delete,
+        // module taken down on occasion then this msg rescheduled by sendDownTheNIC()
+        // module brought back up again on delivery in this section
         return;
     }
 
@@ -609,7 +623,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         ss << ".\\" << hex << uppercase << thisAddress << "Connections.txt";
 
 
-        scheduleAt(simTime()+2.0, mRegularCheckMessage);
+        scheduleAt(simTime()+2.0, mRegularCheckMessage); // Ownership PASSED on
         return;
     }
 
@@ -626,12 +640,12 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if (msg->getArrivalGateId() == mUpperLayerIn)
     {
-        handleUpperLayerMessage(appPkt);
+        handleUpperLayerMessage(appPkt); // Ownership PASSED on
     }
 
     if (msg->getArrivalGateId() == mLowerLayerIn)
     {
-        handleLowerLayerMessage(appPkt);
+        handleLowerLayerMessage(appPkt); // Ownership PASSED on
     }
 
 }
@@ -729,6 +743,7 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     double creationTime = appPkt->getCreationTime().dbl();
     handle_message(pkt, previousAddress, lqi, creationTime);
     free(pkt);
+    delete appPkt;
 }
 
 
@@ -739,33 +754,31 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         case DATA_PACKET:
             currentPktCreationTime = simTime();
             COUT << "\n" << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << "\n";
-            SendDataWithLongestContext(appPkt);
+            SendDataWithLongestContext(appPkt); // ownership NOT passed on
             break;
         case STARTUP_MESSAGE:
             StartUpModule();
             break;
         case CONTEXT_MESSAGE:
-            SetContext(appPkt);
+            SetContext(appPkt); // ownership not passed on
             break;
         case SOURCE_MESSAGE:
-            SetSourceWithLongestContext(appPkt);
+            SetSourceWithLongestContext(appPkt); // ownership NOT passed on
             break;
         case SINK_MESSAGE:
-            SetSinkWithShortestContext(appPkt);
+            SetSinkWithShortestContext(appPkt); // ownership NOT passed on
             break;
         case COLLABORATOR_INITITOR_MESSAGE:
-            SetCollaboratorInitiatorWithShortestContext(appPkt);
+            SetCollaboratorInitiatorWithShortestContext(appPkt); // ownership NOT passed on
             break;
         case COLLABORATOR_MESSAGE:
-            SetCollaboratorWithShortestContext(appPkt);
+            SetCollaboratorWithShortestContext(appPkt); // ownership NOT passed on
             break;
         default:
             break;
     }
 
-
-
-
+    delete appPkt;
 }
 
 
@@ -1125,6 +1138,7 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 
 
 
+    /*
     DataCentricNetworkLayer::TimeoutMessagesIterator i = currentModule->mTimeoutMessages.find(relevantObject);
     if ( i == currentModule->mTimeoutMessages.end() )
     {
@@ -1144,6 +1158,8 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
         currentModule->cancelEvent(i->second);
         currentModule->scheduleAt(simTime() + timeout, i->second);
     }
+    */
+
 
 
 
