@@ -1321,6 +1321,8 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
     //currentModule->send(appPkt, currentModule->mLowerLayerOut);
     ev << "UCAST   to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
+
+    free(_msg);
 }
 
 
@@ -1498,6 +1500,8 @@ static void cb_bcast_message(unsigned char* _msg)
     //currentModule->send(appPkt, currentModule->mLowerLayerOut);
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
+
+    free(_msg);
 }
 
 
