@@ -654,6 +654,24 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
 
 void DataCentricTestApp::finish()
 {
+    TrafGenPar::finish();  // to free sendmessage and onoffswitch
+
+    // Hopefully the actions during this iteration should
+    // not corrupt the iterator since it is the memory pointed
+    // to by the pointer pointed to by the iterator that is
+    // deleted.  We do not call erase on the actual iterator
+    for (ActionThreadsIterator i = mActionThreads.begin(); // free file name messages
+            i != mActionThreads.end(); ++i)
+    {
+        delete i->first;
+        for ( list<ifstream*>::iterator j = i->second->begin();
+                j != i->second->end(); j++ )
+        {
+            (*j)->close();
+            delete (*j);
+        }
+    }
+
     recordScalar("trafficSent", mNumTrafficMsgs);
     recordScalar("total bytes received", totalByteRecv);
     //recordScalar("total time", simTime() - FirstPacketTime());
