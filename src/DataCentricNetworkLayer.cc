@@ -957,11 +957,11 @@ void DataCentricNetworkLayer::WriteModuleListFile()
 {
     if ( justStartedInitialising )
     {
-        std::remove(".\\ModuleList.txt");
+        std::remove("C:\\GradientData\\ModuleList.txt");
         justStartedInitialising = false;
     }
     std::ofstream myfile;
-    myfile.open (".\\ModuleList.txt", std::ios::app);
+    myfile.open ("C:\\GradientData\\ModuleList.txt", std::ios::app);
     myfile << "NODE" << std::endl;
     //std::string fp = getFullPath();
     //std::string fp = this->mAddress;

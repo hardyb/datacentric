@@ -3679,7 +3679,7 @@ void UpdateGradientFile()
     std::ostringstream ss;
     ss.clear();
     ss.str(s);
-    ss << ".\\GradientData\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+    ss << "C:\\GradientData\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
 
     //int remove_failure = std::remove(ss.str().c_str());
     //if ( remove_failure )
