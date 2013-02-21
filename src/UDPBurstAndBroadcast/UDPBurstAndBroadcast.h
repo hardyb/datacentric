@@ -82,6 +82,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     {
         std::string data;
         std::string context;
+        simtime_t t;
     } AData;
 
     struct ABinding
@@ -216,6 +217,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     virtual void handlePacket(cPacket *msg);
     virtual void generateBurst();
     void generatePacket(IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
+    void generatePacket(simtime_t t, IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay);
     void sendDownTheNIC();
     void sendPacket(cPacket *payload, const IPvXAddress &_destAddr);
 

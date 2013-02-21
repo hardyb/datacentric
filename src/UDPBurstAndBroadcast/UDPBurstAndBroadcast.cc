@@ -578,6 +578,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             AData d;
             d.data = theData;
             d.context = (const char*)x;
+            d.t = simulation.getSimTime();
 
             for (BindingListIter i = mBindingList.begin();
                     i != mBindingList.end(); ++i)
@@ -1068,12 +1069,23 @@ void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_dest
 
 }
 
-
-
 void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
 {
+    generatePacket(simulation.getSimTime(),
+                                _destAddr,
+                                name,
+                                _cntrlType,
+                                _interests,
+                                _sourceData,
+                                _context,
+                                _delay);
+}
+
+void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
+{
     AppControlMessage *payload = createPacket2(name);
-    payload->setTimestamp();
+    payload->setTimestamp(t);
+    //payload->setTimestamp();
     payload->setCntrlType(_cntrlType);
     payload->setInterests(_interests);
     payload->setSourceData(_sourceData);
@@ -1437,7 +1449,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                                 it != i->second.DataQueue.end(); ++it)
                         {
                             COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << origAddr.get4() << "\n";
-                            generatePacket(origAddr, "EnergyData", HOME_ENERGY_DATA, "", it->data.c_str(), it->context.c_str(), 0);
+                            generatePacket(it->t, origAddr, "EnergyData", HOME_ENERGY_DATA, "", it->data.c_str(), it->context.c_str(), 0);
                         }
                         atLeastOneMatch = true;
                     }
