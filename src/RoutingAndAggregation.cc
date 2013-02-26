@@ -2624,6 +2624,55 @@ void add(struct InterfaceList** l, struct Interface* _i)
 
 
 
+
+
+
+
+
+// If new_packet* _i is already in the state's queue the does nothing
+// else creates copy, adds to queue and sets delete timer
+void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
+{
+    struct PacketQueue** l = &(s->pktQ);
+    struct PacketQueue *temp,*r;
+    temp = *l;
+    if( *l == NULL )
+    {
+        temp = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        temp->i = packetCopy(_i);
+        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        qd->pktToDelete = temp->i;
+        qd->associatedState = s;
+        setTimer(2.00, qd, delete_queued_data);
+        temp->link = NULL;
+        *l = temp;
+    }
+    else
+    {
+        temp = *l;
+        while( temp->link !=NULL )
+        {
+            if ( temp->i == _i )
+                return;
+            temp = temp->link;
+        }
+        if ( temp->i == _i )
+            return;
+
+        r = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        r->i = packetCopy(_i);
+        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        qd->pktToDelete = r->i;
+        qd->associatedState = s;
+        setTimer(2.00, qd, delete_queued_data);
+        r->link = NULL;
+        temp->link = r;
+    }
+}
+
+
+
+
 // adds at back
 void addPkt(struct PacketQueue** l, struct new_packet* _i)
 {
@@ -2841,7 +2890,47 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     }
     else
     {
-        if ( query_based && s->bestGradientToDeliver )
+        // New code below - old code falsed out - can switch between using true/false
+        bool newCode = true;
+
+        if ( newCode )
+        {
+            // If sending data and there are no delivery interfaces then
+            // always queue the pkt, will be deleted or send as soon as node is converged
+            new_packet* savePkt = packetCopy(sending_packet);
+            addPkt(&(s->pktQ), savePkt);
+            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            qd->pktToDelete = savePkt;
+            qd->associatedState = s;
+            setTimer(2.00, qd, delete_queued_data);
+
+            // If data arrives at a converged node with no reinforcement then initiate
+            // reinforcement from here.  This can occur following a breakage
+            if( s->converged )
+            {
+                if ( query_based && s->bestGradientToDeliver )
+                {
+                    start_reinforce_interest(_buf, excludedInterface, s->seqno); // excludedInterface is incoming interface
+#ifdef GRAD_FILES
+                    UpdateGradientFile();
+#endif
+                }
+                if ( query_based && s->bestGradientToDeliver )
+                {
+                    start_reinforce(_buf, excludedInterface, s->seqno); // excludedInterface is incoming interface
+#ifdef GRAD_FILES
+                    UpdateGradientFile();
+#endif
+                }
+            }
+        }
+
+
+
+
+
+
+        if ( !newCode && (query_based && s->bestGradientToDeliver) )
         {
             // place in queue for sending later
 
@@ -3302,6 +3391,10 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
             new_packet* savePkt = packetCopy(&broken_packet);
             addPkt(&(s->pktQ), savePkt);
+            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            qd->pktToDelete = savePkt;
+            qd->associatedState = s;
+            setTimer(2.00, qd, delete_queued_data);
 
             outgoing_packet.message_type = BREAKAGE;
             outgoing_packet.data = _buf;
@@ -3894,6 +3987,13 @@ void interest_convergence_timeout(void* relevantObject)
 #endif
     }
 
+
+/*
+ * This applies to intervening nodes (not sources) which have a newly
+ * converged best grad to the sink and have queued data waiting
+ * they can reinforce to the sink and get that data sent sooner
+ * than waiting for / depending on a source to reinforce from behind them
+ */
     if ( s->prefix != FORWARD_AND_SOURCEPREFIX && s->pktQ
             && s->bestGradientToDeliver
             && !s->deliveryInterfaces )
@@ -4253,7 +4353,7 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
         // even if it is self
         reinforceObtainGradient(fullyqualifiedname, interface, seqno);
         // INCLUDE THIS?
-        //setTimer(0.01, t->s, send_queued_data);
+        setTimer(0.01, t->s, send_queued_data);
 
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )
@@ -4296,6 +4396,12 @@ void advert_convergence_timeout(void* relevantObject)
 #endif
     }
 
+
+/*
+ * This code doesn't really help - except may be as a way to get
+ * data back for re-sending, and also it may create delivery interfaces
+ * from the src to tthis node which may be a dead end.  Look at this more
+ * when finishing off work for event based data breakages
     if ( s->prefix != FORWARD_AND_SINK_SUFFIX && s->pktQ
             && s->bestGradientToObtain
             && !s->obtainInterfaces )
@@ -4309,6 +4415,7 @@ void advert_convergence_timeout(void* relevantObject)
         UpdateGradientFile();
 #endif
     }
+*/
 
     /*
      * I think we may also need to reinforce interest when
@@ -5078,23 +5185,56 @@ void removePktFromQueue(struct PacketQueue** l, struct new_packet* _i)
 
 
 
+bool in_queued_data(State* s, new_packet* pktToCheck)
+{
+
+    PacketQueue** l = &(s->pktQ);
+    PacketQueue* temp = *l;
+    while( temp !=NULL )
+    {
+        if ( temp->i == pktToCheck )
+        {
+            return true;
+        }
+        else
+        {
+            l = &(temp->link);
+            temp = temp->link;
+        }
+    }
+
+    return false;
+}
+
 
 
 
 void delete_queued_data(void* relevantObject)
 {
-    //new_packet* pkt = (new_packet*)relevantObject;
+    QueueDeletion* qd = (QueueDeletion*)relevantObject;
 
-    //QueueDeletion* qd = (QueueDeletion*)relevantObject;
-    //new_packet* pkt = qd->pktToDelete;
+    PacketQueue** l = &(qd->associatedState->pktQ);
+    PacketQueue* temp = *l;
+    while( temp !=NULL )
+    {
+        if ( temp->i == qd->pktToDelete )
+        {
+            *l = temp->link;
+            free(temp->i->data);
+            free(temp->i);
+            free(temp);
+            temp = *l; // don't break, iterate entire list just in case duplicates
+        }
+        else
+        {
+            l = &(temp->link);
+            temp = temp->link;
+        }
+    }
 
+    free(qd);
 
-    //removePktFromQueue(&(qd->associatedState->pktQ), qd->pktToDelete);
-
-
-
-
-
+    return;
 }
 
 
@@ -5373,6 +5513,8 @@ void handle_reinforce(control_data cd)
 	// CHANGE_
 	//reinforceDeliverGradient(incoming_packet.data    .the_message.data_value, _interface);
 	reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
+
+
 	//StateNode* sn = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value);
 
 	// not sure whether we want this or an add to obtain the trie node
@@ -5385,6 +5527,7 @@ void handle_reinforce(control_data cd)
 	//trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, outgoing_packet.data);
 	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
+    setTimer(0.01, t->s, send_queued_data);
 
 
     // a reinforced obtain gradient to self indicates this is the source, so stop
@@ -5522,6 +5665,7 @@ void handle_reinforce_collaboration(control_data cd)
             // just reinforce also DELIVER back to collaboration reinforcement originator
             // because it wants to receive as well, then finish
             reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
+            setTimer(0.01, t->s, send_queued_data);
             return;
         }
 
@@ -5532,6 +5676,7 @@ void handle_reinforce_collaboration(control_data cd)
         // now find the forward interface and reinforce that for delivery
         NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
         reinforceDeliverGradient(incoming_packet.data, interface, incoming_packet.seqno);
+        setTimer(0.01, t->s, send_queued_data);
 
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )

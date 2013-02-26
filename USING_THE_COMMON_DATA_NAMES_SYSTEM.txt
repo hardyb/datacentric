@@ -1,0 +1,53 @@
+
+
+
+
+Using the common data names system for Data centric or AODV
+==============================================================
+
+
+Data Centric
+=============
+
+
+
+
+AODV - Binding based
+=========================
+
+
+if we set wearesource 
+======================
+then a data binding without address
+is created by the source at start up
+this data binding has the data hierachy from the ini
+and the longest context
+
+if we are sink
+===============
+then a service discover packet is sent
+this pkt has the data hierachy from the ini
+and the longest context (currently at least - is this right?)
+
+process
+========
+if the source receives a service discovery that is a prefix
+of both its own data and its own context then service discover confirmation
+is sent
+
+if the source receives a binding request that is a prefix
+of both its own data and its own context then binding confirmation
+is sent and any matching queued data and future data
+
+
+NB: AODV Does not restrict any control packets within regions
+
+AODV - Control Unit based
+==========================
+
+
+
+
+
+
+

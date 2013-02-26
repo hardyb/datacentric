@@ -814,6 +814,7 @@ void handle_data(NEIGHBOUR_ADDR _interface);
 void handle_neighbor_bcast(NEIGHBOUR_ADDR _interface);
 void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 */
+void send_queued_data(void* relevantObject);
 
 void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime));
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
@@ -833,6 +834,7 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
 void handle_advert(control_data cd);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
+void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void handle_reinforce_interest(control_data cd);

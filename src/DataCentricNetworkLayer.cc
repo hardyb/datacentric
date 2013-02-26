@@ -484,6 +484,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     std::string fName = this->getParentModule()->getFullName();
     double currentTime = simTime().dbl();
+
     NullStream() << "Current Time: " << currentTime << "\n";
 
     if ( msg->isName("FrameworkTimeout") )
@@ -1111,7 +1112,13 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 {
     DataCentricNetworkLayer* currentModule = check_and_cast<DataCentricNetworkLayer *>(cSimulation::getActiveSimulation()->getModule(currentModuleId));
 
+    std::string fName = currentModule->getParentModule()->getFullName();
     double currentTime = simTime().dbl();
+    if ( fName == "host[1]" )
+    {
+        currentTime = simTime().dbl();
+    }
+
     NullStream() << "Current Time: " << currentTime << "\n";
 
     for (DataCentricNetworkLayer::TimeoutMessages2Iterator i = currentModule->mTimeoutMessages2.begin();
@@ -1526,6 +1533,10 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
     //COUT << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
     COUT << "\n" << "DATA RECEIVED ORIG CREATE TIME: " << _creationTime << "\n";
     //simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
+    double now = simTime().dbl();
+    double pktTime = _creationTime;
+
+
     simtime_t endToEndDelay = simTime() - _creationTime;
     COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
     currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);

@@ -1307,6 +1307,9 @@ void UDPBurstAndBroadcast::DataReceived(cPacket *pk)
     pktDelay->collect(simTime() - pk->getTimestamp());
     numReceived++;
 
+    double now = simTime().dbl();
+    double pktTime = pk->getTimestamp().dbl();
+
     simtime_t e2eDelay = simTime() - pk->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     mNetMan->addADataPacketE2EDelay(e2eDelay);

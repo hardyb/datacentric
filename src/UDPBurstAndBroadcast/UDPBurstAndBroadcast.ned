@@ -125,8 +125,8 @@ simple UDPBurstAndBroadcast like IUDPApp
         string controlUnit = default(""); // tell this node the path of its control unit
         
         bool bindWithSource = default(false); // bind with source or with control unit?
-        double ServiceDiscoveryTimeOut = default(0.5);
-        int ServiceDiscoveryNumTries = default(1);
+        double ServiceDiscoveryTimeOut = default(0.8);
+        int ServiceDiscoveryNumTries = default(3);
         double BindingTimeOut = default(0.5);
         int BindingNumTries = default(1);
          

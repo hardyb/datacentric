@@ -1,0 +1,34 @@
+
+
+
+
+
+
+
+
+
+
+
+send data from one node to another
+
+
+what is the overhead
+how long does it take
+
+
+AODV/Zigbee
+1) binding
+2) through a control unit
+
+
+
+
+
+
+
+
+
+
+
+For data centric need to check that data pkt is put in queue and not discarded
+because it needs to send as soon as convergence and reinforcement has taken place

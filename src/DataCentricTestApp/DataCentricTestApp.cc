@@ -28,7 +28,8 @@ Define_Module(DataCentricTestApp);
 
 
 
-
+// NB This version adds a null terminator so it can be used as a string
+// thus ss << theEscapedBuffer;
 int escapeBuffer(unsigned char* pkt, unsigned int len, unsigned char* out)
 {
 int i = 0;
@@ -1214,7 +1215,7 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sen
 {
     ifstream* ifs = i->second->back();
 
-    unsigned short reading;
+    short reading;
     //double period;
     *ifs >> reading;
     //*ifs >> period;
@@ -1234,8 +1235,12 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sen
     ss.clear();
     //ss << "\x83\x1";
     ss << sensorDataName;
-    ss << (unsigned char)(reading & 0xff);
-    ss << (unsigned char)((reading >>8) & 0xff);
+
+    signedShortData d;
+    d.theSignedShort = reading;
+    unsigned char escapedData[8];
+    escapeBuffer(d.theBytes, 2, escapedData);
+    ss << escapedData;
     ss << "\x0";
     std::string s(ss.str());
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());

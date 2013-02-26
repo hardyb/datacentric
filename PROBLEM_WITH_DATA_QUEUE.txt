@@ -1,0 +1,39 @@
+
+
+
+
+NB
+
+The multiple calls that we have seen to send_queued_data
+may be calls at each node that is converging, but why would 
+every node have data?
+
+
+BUT the following may still be a problem
+
+we put data in the queue when there is no reinforcement
+
+when the queue times out we iterate the queue
+attempting for each to pkt to send it again
+
+we only remove it from the queue if we successfully send it
+but if we don't successfully send it then in consider_sending_data()
+we are putting it in again so we end up with multiple copies
+
+perhaps we should remove from queue before attempting to send
+then if we cannot send we put it back into the queue again
+
+alternatively we only add to the queue what is not already in it
+
+
+if we are adding to the queue from inside a queue traversal
+how will this impact things?
+
+when we add we change only the link field of the last item
+and then point it to the new item
+
+
+perhaps we should have a timeout for a specific pkt not just the state
+and its whole queue
+
+
