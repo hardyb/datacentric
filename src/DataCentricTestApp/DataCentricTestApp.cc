@@ -683,9 +683,11 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 {
     simtime_t e2eDelay;
     DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(apMsg);
+    static bool firstDataPacket = false;
 
     if ( appPkt->getKind() == DATA_PACKET )
     {
+        firstDataPacket = true;
         unsigned int _size = appPkt->getPktData().size();
         unsigned char* pkt = (unsigned char*)malloc(_size+1);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
@@ -734,6 +736,16 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
     //EV << "[APP]: a message sent by " << tmpPkt->getDataName() << " arrived at application with delay " << e2eDelay << " s" << std::endl;
     //this->getParentModule()->bubble("Data received!");
     delete apMsg;
+
+    if ( firstDataPacket )
+    {
+        cSimulation* sim =  cSimulation::getActiveSimulation();
+        sim->callFinish();
+        sim->endRun();
+        //sim->deleteNetwork();
+        //cSimulation::setActiveSimulation(NULL);
+        //delete sim;
+    }
 }
 
 

@@ -112,7 +112,9 @@ class DataCentricNetworkMan : public cSimpleModule
     double numPendingDataPackets;
 
     unsigned int mExpectedDataArrivals;
-
+    unsigned int currentTotalBits;
+    double bpsInterval;
+    double nextCheckTime;
 
     signed int mDemand;
 

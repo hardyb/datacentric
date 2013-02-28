@@ -18,6 +18,7 @@
 #include "ChannelControl.h"
 
 
+#define BPS_INTERVAL_NOT_ONE
 
 
 /*
@@ -72,6 +73,16 @@ void DataCentricNetworkMan::initialize(int aStage)
 
     if (0 == aStage)
     {
+        currentTotalBits = 0;
+
+        bpsInterval = par("bpsInterval");
+
+#ifdef BPS_INTERVAL_NOT_ONE
+        nextCheckTime = bpsInterval; //  originally 1
+#else
+        nextCheckTime = 1;
+#endif
+
         numDataArrivals = 0;
         std::string fName = this->getFullPath();
         std::string fName2 = this->getFullPath();
@@ -467,6 +478,24 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
 
 void DataCentricNetworkMan::finish()
 {
+    this->cancelAndDelete(mpControlPacketFrequencyMessage);
+    this->cancelAndDelete(mpDemandMessage);
+
+#ifdef BPS_INTERVAL_NOT_ONE
+    double lastCheckTime = nextCheckTime - bpsInterval;
+    double now = simTime().dbl();
+    double finalShortBpsInterval = simTime().dbl() - lastCheckTime;
+    double dblCurrentTotalBits = (double)currentTotalBits;
+    double bps = dblCurrentTotalBits / finalShortBpsInterval;
+    bpsStats.collect(bps);
+#else
+    double lastCheckTime = nextCheckTime - 1;
+    double finalShortBpsInterval = simTime().dbl() - lastCheckTime;
+    double dblCurrentTotalBits = (double)currentTotalBits;
+    double bps = dblCurrentTotalBits / finalShortBpsInterval;
+    bpsStats.collect(bps); // collect remaining bits
+#endif
+
     // ACCURACY
     recordScalar("DataArrivals", (double)numDataArrivals);
     double percentageDataArrivals = ((double)numDataArrivals)/mExpectedDataArrivals * 100.0;
@@ -785,24 +814,39 @@ void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
 
 
 
-
 void DataCentricNetworkMan::collectBits(unsigned int bits)
 {
-    static unsigned int currentTotalBits = 0;
-    static double nextCheckTime = 1;
+    //static unsigned int currentTotalBits = 0;
 
     if ( simTime().dbl() >= nextCheckTime )
     {
+#ifdef BPS_INTERVAL_NOT_ONE
+        double dblCurrentTotalBits = (double)currentTotalBits;
+        double bps = dblCurrentTotalBits / bpsInterval;
+        bpsStats.collect(bps);
+#else
         bpsStats.collect((double)currentTotalBits);
+#endif
 
         double dblTimeOver = (simTime().dbl() - nextCheckTime);
-        int intTimeOver = (int)floor(dblTimeOver);
-        for ( int i = intTimeOver; i > 0; i-- )
+
+#ifdef BPS_INTERVAL_NOT_ONE
+        double dblIntervalsOver = dblTimeOver / bpsInterval;
+        int intIntervalsOver = (int)floor(dblIntervalsOver);
+#else
+        int intIntervalsOver = (int)floor(dblTimeOver);
+#endif
+        for ( int i = intIntervalsOver; i > 0; i-- )
         {
             bpsStats.collect(0.0);
         }
         currentTotalBits = bits;
-        nextCheckTime = nextCheckTime + (double)(intTimeOver+1);
+
+#ifdef BPS_INTERVAL_NOT_ONE
+        nextCheckTime = nextCheckTime + (double)((intIntervalsOver*bpsInterval)+bpsInterval);
+#else
+        nextCheckTime = nextCheckTime + (double)(intIntervalsOver+1);
+#endif
     }
     else
     {

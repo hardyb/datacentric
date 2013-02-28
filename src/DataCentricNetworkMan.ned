@@ -23,6 +23,7 @@ simple DataCentricNetworkMan
         string sinks = default("");
         string sources = default("");
         int expectedDataArrivals = default(0);
+        double bpsInterval = default(0.1);
         
     gates:
         input upperLayerIn; 			// from the upper layer
