@@ -517,6 +517,7 @@ void DataCentricNetworkMan::finish()
     recordScalar("StdDevBPS", bpsStats.getStddev());
     recordScalar("MaxBPS", bpsStats.getMax());
     recordScalar("MinBPS", bpsStats.getMin());
+    recordScalar("BPSCollectionCount", bpsStats.getCount());
 
     // PERFORMANCE
 

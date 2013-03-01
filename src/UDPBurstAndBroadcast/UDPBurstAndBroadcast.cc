@@ -20,6 +20,7 @@
 
 
 #include "UDPBurstAndBroadcast.h"
+#include "DataCentricNetworkLayer.h"
 
 #include "UDPControlInfo_m.h"
 #include "IPvXAddressResolver.h"
@@ -1302,23 +1303,50 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
 }
 
 
-void UDPBurstAndBroadcast::DataReceived(cPacket *pk)
+void UDPBurstAndBroadcast::DataReceived(AppControlMessage* acm)
 {
-    pktDelay->collect(simTime() - pk->getTimestamp());
+    pktDelay->collect(simTime() - acm->getTimestamp());
     numReceived++;
 
     double now = simTime().dbl();
-    double pktTime = pk->getTimestamp().dbl();
+    double pktTime = acm->getTimestamp().dbl();
 
-    simtime_t e2eDelay = simTime() - pk->getTimestamp();
+    simtime_t e2eDelay = simTime() - acm->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
     mNetMan->addADataPacketE2EDelay(e2eDelay);
     //mNetMan->recordOnePacket(AODV_DATA_ARRIVAL);
 
     this->getParentModule()->bubble("Received data packet");
 
-    EV << "Received data packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
-    emit(rcvdPkSignal, pk);
+    EV << "Received data packet: " << UDPSocket::getReceivedPacketInfo(acm) << endl;
+    emit(rcvdPkSignal, acm);
+
+    string sd = acm->getSourceData();
+    string con = acm->getContext();
+
+    //char delim = 0xFF;
+    //string delim = "\xFF";
+    //acm->getso
+    //sd.be
+    //char theData[50];
+    //memcpy(theData, sd.c_str(), sd.size());
+    //theData+=sd.size();
+    //memcpy(theData, sd.c_str(), sd.size());
+
+    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
+    appPkt->setKind(DATA_PACKET);
+
+    //appPkt->getPktData().insert(appPkt->getPktData().end(), sd.size(), sd.c_str()[0]);
+    //appPkt->getPktData().insert(appPkt->getPktData().end(), 1, 0xFF);
+    //appPkt->getPktData().insert(appPkt->getPktData().end(), con.size(), con.c_str()[0]);
+
+    appPkt->getPktData().insert(appPkt->getPktData().end(), sd.begin(), sd.end());
+    appPkt->getPktData().insert(appPkt->getPktData().end(), 1, 0xFF);
+    appPkt->getPktData().insert(appPkt->getPktData().end(), con.begin(), con.end());
+
+    send(appPkt, mUpperLayerOut);
+
+
 }
 
 
@@ -1516,7 +1544,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                             // of the incoming data pkt's data and context fields - CHECKED
                             if ( i->first == myAddr)
                             {
-                                DataReceived(pk);
+                                DataReceived(acm);
                             }
                             else
                             {
@@ -1535,7 +1563,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             }
             else
             {
-                DataReceived(pk);
+                DataReceived(acm);
             }
 
             //std::string foo("foo");

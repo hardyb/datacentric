@@ -225,7 +225,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     //virtual void forwardBroadcast(int moduleId, int msgId);
     virtual void forwardBroadcast(cPacket* payload);
     void ProcessPacket(cPacket* payload);
-    void DataReceived(cPacket *pk);
+    void DataReceived(AppControlMessage* acm);
 
   protected:
     virtual int numInitStages() const {return 4;}

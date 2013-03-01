@@ -18,6 +18,10 @@ package datacentric;
 module Region
 {
     parameters:
+        int none = 0;
+        int firstPacket = 1;
+        int other = 2;
+        
         int numRegionHosts = default(125);
         double x = default(0); // x, y, z coordinates of starting corner of the region/room
         double y = default(0);

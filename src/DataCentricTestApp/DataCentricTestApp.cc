@@ -7,6 +7,13 @@
 
 #include "SpecialDebug.h"
 
+#include <sys/types.h>
+#include <signal.h>
+#include <csignal>
+
+#include "SimulationTerminator.h"
+
+
 
 #define UNKNOWN_ACTIVITY 0
 #define SENSOR_READING 1
@@ -116,8 +123,6 @@ return i;
 
 
 
-
-
 void DataCentricTestApp::initialize(int aStage)
 {
     TrafGenPar::initialize(aStage); //DO NOT DELETE!!
@@ -136,13 +141,15 @@ void DataCentricTestApp::initialize(int aStage)
         mLowerLayerIn        = findGate("lowerLayerIn");
         mLowerLayerOut       = findGate("lowerLayerOut");
 
-
         // TODO
         string fn = this->getParentModule()->getFullName();
-        if ( !strcmp(this->getParentModule()->getFullName(), "fixhost[115]") )
+        if ( !strcmp(this->getParentModule()->getFullName(), "host[4]") )
         {
             COUT << "We are here!" << "\n";
         }
+
+        //setTerminateReason(par("simAppTerminationReason").longValue());
+
 
         mBeenSetDirect = false;
 
@@ -687,7 +694,9 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
 
     if ( appPkt->getKind() == DATA_PACKET )
     {
-        firstDataPacket = true;
+        setTerminate("Stopping simulation after first data packet",
+                par("firstPacket").longValue());
+
         unsigned int _size = appPkt->getPktData().size();
         unsigned char* pkt = (unsigned char*)malloc(_size+1);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
@@ -737,15 +746,22 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
     //this->getParentModule()->bubble("Data received!");
     delete apMsg;
 
-    if ( firstDataPacket )
-    {
-        cSimulation* sim =  cSimulation::getActiveSimulation();
-        sim->callFinish();
-        sim->endRun();
+    //if ( firstDataPacket )
+    //{
+        //kill(getppid(),SIGINT);
+        //kill(123,SIGINT);
+        //TerminateProcess(GetCurrentProcess(),SIGINT);
+        //throw cTerminationException("SIGINT or SIGTERM received, exiting");
+        //cSimulation* sim =  cSimulation::getActiveSimulation();
+        //sim->callFinish();
+        //sim->endRun();
         //sim->deleteNetwork();
         //cSimulation::setActiveSimulation(NULL);
         //delete sim;
-    }
+    //}
+
+
+    considerTerminateTheSimulation();
 }
 
 

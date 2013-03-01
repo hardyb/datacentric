@@ -38,6 +38,14 @@ module DataCentricNode
         //int ss;
         string mobilityType;
         volatile double numHosts;
+        
+        int none = 0;
+        int firstPacket = 1;
+        int other = 2;
+        
+        
+        
+        
     gates:
         input radioIn;
     submodules:
