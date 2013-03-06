@@ -12,7 +12,11 @@ simple DataCentricNetworkLayer
         int nodeConstraint = default(0); // NOT USED?
         double Stability;
         //double startTime;
-		volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
+		
+		// volatile double routingDelay @unit("s") = default(uniform(0s,0.005s)); 
+		// if we are using replicas we don't want volatile        
+		double routingDelay @unit("s") = default(uniform(0s,0.005s));        
+        
         int meanDownTimeInterval = default(0); // NOT USED? Frequency with which down time occurs in seonds
         double meanDownTime = default(0); // NOT USED? Proportion of the time the nodes is down as a fraction
     gates:

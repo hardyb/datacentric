@@ -127,6 +127,8 @@ void DataCentricTestApp::initialize(int aStage)
 {
     TrafGenPar::initialize(aStage); //DO NOT DELETE!!
 
+    //int mInd = getParentModule()->getIndex();
+
 
     EV << getParentModule()->getFullName() << ": initializing DataCentricTestApp, stage=" << aStage << std::endl;
     if (0 == aStage)

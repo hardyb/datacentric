@@ -149,6 +149,14 @@ void UDPBurstAndBroadcast::initialize(int stage)
 {
     // because of IPvXAddressResolver, we need to wait until interfaces are registered,
     // address auto-assignment takes place etc.
+
+    //cModule* mr = this->getParentModule()->getSubmodule("manetrouting");
+    //int ind = this->getParentModule()->getIndex();
+    //double bcD1 = mr->par("broadcastDelay").doubleValue();
+    //double bcD2 = mr->par("broadcastDelay").doubleValue();
+    //double bcD3 = mr->par("broadcastDelay").doubleValue();
+
+
     if (stage != 3)
         return;
 

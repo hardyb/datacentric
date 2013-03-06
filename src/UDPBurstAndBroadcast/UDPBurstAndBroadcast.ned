@@ -131,7 +131,10 @@ simple UDPBurstAndBroadcast like IUDPApp
         int BindingNumTries = default(1);
          
         bool confirmRegistration = default(false); // Whether the control unti acknowledges registrations
-		volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
+		
+		//volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
+		// if weare using a significant number of replicas we don't want volatile
+		double routingDelay @unit("s") = default(uniform(0s,0.005s));        
         
         double nwkNetworkBroadcastDeliveryTime @unit(s) = default(0);
         double nwkPassiveAckTimeout @unit(s) = default(0);

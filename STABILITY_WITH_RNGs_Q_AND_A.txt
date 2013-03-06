@@ -1,0 +1,19 @@
+Q&As:
+
+
+
+
+Q.  when is non volatile function called, on first par call or when owning module is constructed or what?
+
+A.  When module is constructed before any initialisation and the value is then set as a constant from ned or from ini if overrides
+
+Q.  Are there any other volatile parameters or in program random based calls (so effectively volatile) which may affect a differencebetween equal replicas with incr numNodes?
+
+A.   Yes, routingDelay in bcast and ucast udp and data centric packets.  Can't find any others which seem significant though
+
+
+Q.  Do we think it is (from time to time) just caused by the additional node?
+
+A.  Possibly caused by the volatile routingDelay in the question above.  Try that first then address this question.
+
+

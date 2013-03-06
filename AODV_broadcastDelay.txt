@@ -1,0 +1,28 @@
+AODV broadcastDelay
+
+ned has default(uniform(0s,0.005s))
+but ini later has uniform(0s,0.01s)
+
+and after module creation before initialisation we already have the following
+
+run 533 rep 3
+
+0	0.008928601467050613
+1	0.003319798044394702
+2	0.0082122912490740427
+
+
+
+run 534 rep 4
+0	0.0087342940340749929
+1	0.0096854066499508923
+2	0.008691945385653526
+
+
+run 543 rep 3
+0	0.008928601467050613
+1	0.003319798044394702
+2	0.0082122912490740427
+
+run 544 rep 4
+0	
