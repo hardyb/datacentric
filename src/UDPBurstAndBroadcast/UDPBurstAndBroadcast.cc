@@ -422,7 +422,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         TriesIter bindIt = mBindingTries.find(d);
         if (bindIt != mBindingTries.end() )
         {
-            generatePacket(addr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            generatePacket(addr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "",
+                    d.context.c_str(), 0);
             bindIt->second++;
             if ( bindIt->second < mBindingNumTries )
             {
@@ -443,7 +444,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         TriesIter discoverIt = mDiscoveryTries.find(d);
         if (discoverIt != mDiscoveryTries.end() )
         {
-            generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST,
+                    d.data.c_str(), "", d.context.c_str(), 0);
             discoverIt->second++;
             if ( discoverIt->second < mServiceDiscoveryNumTries )
             {
@@ -613,7 +615,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                                     it != i->second.AddressList.end(); ++it)
                             {
                                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
-                                generatePacket(*it, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+                                generatePacket(*it, "EnergyData", HOME_ENERGY_DATA, "",
+                                        theData.c_str(), (const char*)x, 0);
                             }
                         }
                         break;
@@ -633,7 +636,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         else
         {
             COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "", theData.c_str(), (const char*)x, 0);
+            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+                    theData.c_str(), (const char*)x, 0);
             mNetMan->addPendingDataPkt();
         }
         break;
@@ -713,7 +717,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         if ( mBindWithSource )
         {
             ////////////// NEW CODE
-            generatePacket(mBcastAddr, "ServiceDiscovery", SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
+            generatePacket(mBcastAddr, "ServiceDiscovery",
+                    SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
             if ( mServiceDiscoveryNumTries > 1 )
             {
                 AData d;
@@ -742,7 +747,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                     mNetMan->recordOnePacket(DISCOVERY_STAT);
                 }
                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending REGISTER_AS_SINK to: " << mServerAddr.get4() << "\n";
-                generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SINK, sinkData.c_str(), "", (const char*)x, 0);
+                generatePacket(mServerAddr, "BindRequest", REGISTER_AS_SINK,
+                        sinkData.c_str(), "", (const char*)x, 0);
                 mNetMan->addPendingRegistration(myAddr.get4().getInt());
                 mNetMan->recordOnePacket(REGISTER_STAT);
             }
@@ -1141,7 +1147,7 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
         sendLater.pkt = payload;
         cMessage* m = new cMessage("");
         mSendLaterMessageMap[m] = sendLater;
-        scheduleAt(simTime()+_delay, m);
+        scheduleAt(simTime()+_delay+routingDelay, m);
     }
     else
     {
@@ -1395,7 +1401,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
             {
-                generatePacket(origAddr, "ServiceDiscoveryResponse", CONTROL_UNIT_DETAILS, getParentModule()->getFullPath().c_str(), "", "", 0.2);
+                generatePacket(origAddr, "ServiceDiscoveryResponse", CONTROL_UNIT_DETAILS,
+                        getParentModule()->getFullPath().c_str(), "", "", 0);
                 mNetMan->recordOnePacket(DISCOVERY_STAT);
             }
             break;
@@ -1446,7 +1453,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             //mServiceList[d].push_back(addr);
             // Or this method?
             mServiceList[d].push_back(origAddr);
-            generatePacket(origAddr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "", d.context.c_str(), 0);
+            generatePacket(origAddr, "BindRequest", BINDING_REQUEST,
+                    d.data.c_str(), "", d.context.c_str(), 0);
             if ( mBindingNumTries > 1 )
             {
                 mBindingTries[d] = 1;
@@ -1488,7 +1496,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                                 it != i->second.DataQueue.end(); ++it)
                         {
                             COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << origAddr.get4() << "\n";
-                            generatePacket(it->t, origAddr, "EnergyData", HOME_ENERGY_DATA, "", it->data.c_str(), it->context.c_str(), 0);
+                            generatePacket(it->t, origAddr, "EnergyData", HOME_ENERGY_DATA, "",
+                                    it->data.c_str(), it->context.c_str(), 0);
                         }
                         atLeastOneMatch = true;
                     }
@@ -1528,7 +1537,8 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             {
                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                         << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << "\n";
-                generatePacket(origAddr, "BindResponse", REGISTER_AS_SINK_CONFIRMATION, acm->getInterests(), "", "", 0);
+                generatePacket(origAddr, "BindResponse", REGISTER_AS_SINK_CONFIRMATION,
+                        acm->getInterests(), "", "", 0);
                 mNetMan->recordOnePacket(REGISTER_STAT);
             }
             break;
