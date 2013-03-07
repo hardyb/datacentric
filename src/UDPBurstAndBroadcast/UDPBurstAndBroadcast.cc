@@ -1096,7 +1096,7 @@ void UDPBurstAndBroadcast::generatePacket(IPvXAddress &_destAddr, const char *na
                                 _delay);
 }
 
-void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _delay)
+void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, const char *name, int _cntrlType, const char * _interests, const char * _sourceData, const char * _context, double _userdelay)
 {
     AppControlMessage *payload = createPacket2(name);
     payload->setTimestamp(t);
@@ -1112,8 +1112,11 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
         return;
     }
 
+    // prepare broadcast case
+    double broadcastJitter = 0;
     if ( _destAddr.get4().isLimitedBroadcastAddress() )
     {
+        broadcastJitter = par("broadcastJitter");
         uint64 moduleId64 = (int)payload->par("sourceId");
         uint64 msgId64 = (int)payload->par("msgId");
         uint64 bcast = (moduleId64 << 32) | msgId64;
@@ -1121,7 +1124,7 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
         {
             cMessage* m;
             BTR btr;
-            btr.expiry = simTime()+_delay+1.5;
+            btr.expiry = simTime()+_userdelay+1.5;
             btr.relayed = false;
             btr.pkt = payload->dup();
             btr.retries = 0;
@@ -1129,25 +1132,26 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
 
             m = new cMessage("");
             mBroadcastRetries[m] = bcast;
-            scheduleAt(simTime()+_delay+0.25, m);
+            scheduleAt(simTime()+_userdelay+0.25, m);
 
             m = new cMessage("");
             mBroadcastExpiries[m] = bcast;
             scheduleAt(btr.expiry, m);
         }
-
     }
 
-    double routingDelay = par("routingDelay");
+    // calculate overall sending delay
+    double overallDelay = _userdelay + broadcastJitter;
 
-    if ( routingDelay )
+    // send now or later
+    if ( overallDelay )
     {
         SendLater sendLater;
         sendLater.destAddr = _destAddr;
         sendLater.pkt = payload;
         cMessage* m = new cMessage("");
         mSendLaterMessageMap[m] = sendLater;
-        scheduleAt(simTime()+_delay+routingDelay, m);
+        scheduleAt(simTime()+overallDelay, m);
     }
     else
     {

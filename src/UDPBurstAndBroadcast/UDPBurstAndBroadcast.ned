@@ -135,6 +135,7 @@ simple UDPBurstAndBroadcast like IUDPApp
 		//volatile double routingDelay @unit("s") = default(uniform(0s,0.005s));        
 		// if weare using a significant number of replicas we don't want volatile
 		double routingDelay @unit("s") = default(uniform(0s,0.005s));        
+		double broadcastJitter @unit("s") = default(uniform(0s,0.064s));// Zigbee 0x40 ms        
         
         double nwkNetworkBroadcastDeliveryTime @unit(s) = default(0);
         double nwkPassiveAckTimeout @unit(s) = default(0);
