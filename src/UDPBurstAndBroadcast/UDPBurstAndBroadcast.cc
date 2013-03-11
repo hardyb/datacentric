@@ -1315,8 +1315,22 @@ void UDPBurstAndBroadcast::forwardBroadcast(cPacket* _payload)
 
     //socket.sendTo(payload, destAddr, destPort,outputInterface);
     //socket.sendTo(payload, mBcastAddr, destPort,outputInterface);
-    sendPacket(payload, mBcastAddr);
-    mNetMan->recordOnePacket(DISCOVERY_STAT);
+
+
+    // cannot use senddelayed as with udp delay only available a number of programming layers below
+    // forward broadcast with jitter
+    double broadcastJitter = par("broadcastJitter");
+    SendLater sendLater;
+    sendLater.destAddr = mBcastAddr;
+    sendLater.pkt = payload;
+    cMessage* m = new cMessage("");
+    mSendLaterMessageMap[m] = sendLater;
+    scheduleAt(simTime()+broadcastJitter, m);
+
+
+
+    //sendPacket(payload, mBcastAddr);
+    mNetMan->recordOnePacket(DISCOVERY_STAT);  // keep this here jitter is short, essentially it's gone!
 
 }
 

@@ -1,0 +1,30 @@
+without and with udp lever bcast jitter respectively
+time send discovery confirmation
+
+0.04010098946
+0.04609005696
+
+without and with udp bcast jitter respectively
+time receive discovery confirmation
+
+0.28044526413999998
+0.182620076405
+
+without and with udp bcast jitter respectively
+time taken for RREQ, RREP & send discover confirmation data ucast
+
+0.2403
+0.136530019445
+touch and go without udp bcast jitter
+still 0.12 lee-way for retry WITH udp lever bcast jitter
+
+
+
+Decimal broadcast address
+4294967295
+FFFFFFFF
+
+
+
+
+
