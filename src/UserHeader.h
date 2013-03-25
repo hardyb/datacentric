@@ -20,6 +20,12 @@
 #define NEIGHBOUR_ADDR unsigned long
 #define TIME_TYPE double
 
+#define CANCEL_TIMER 0
+
+#define REINFORCE_TIMEOUT 400
+#define ADVERT_TIMEOUT 1200
+
+
 // Special address values
 #define SELF_INTERFACE    0x00000001
 #define UNKNOWN_INTERFACE 0x00000000
@@ -40,6 +46,12 @@
 // tailored types
 #define NEIGHBOUR_ADDR uint64_t
 #define TIME_TYPE double
+
+#define CANCEL_TIMER -1
+
+
+#define REINFORCE_TIMEOUT 0.4
+#define ADVERT_TIMEOUT 1.2
 
 // Special address values
 #define SELF_INTERFACE 0x20000000001

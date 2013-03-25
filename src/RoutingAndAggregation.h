@@ -13,7 +13,7 @@
 
 
 
-
+#define XXXXXX
 
 
 
@@ -835,6 +835,9 @@ void handle_advert(control_data cd);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
 void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
+#ifdef XXXXXX
+void start_reinforce_retry(void* relevantObject);
+#endif
 void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);
 void handle_reinforce_interest(control_data cd);

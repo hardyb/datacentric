@@ -492,9 +492,11 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
         void* relevantObject = msg->par("relevantObject").pointerValue();
         void (*timerCB) (void*) = (void (*) (void*))msg->par("callBack").pointerValue();
-        timerCB(relevantObject);
 
-
+        // Remove the timer before executing the call back in case
+        // the call back tries to add another one.
+        // if we remove after then the call back may reschedule this
+        // message and we will try to delete a currently scheduled message
         TimeoutMessages2Iterator i2 = mTimeoutMessages2.find(msg);
         if ( i2 != mTimeoutMessages2.end() )
         {
@@ -502,6 +504,9 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         }
 
         delete msg;
+
+        timerCB(relevantObject);
+
         return;
 
 
@@ -1130,10 +1135,18 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
                 && timerCB == timeout_callback )
         {
             currentModule->cancelEvent((*i));
-            currentModule->scheduleAt(simTime() + timeout, (*i));
+#ifdef XXXXXX
+            if ( timeout > 0 )
+#endif
+                currentModule->scheduleAt(simTime() + timeout, (*i));
             return;
         }
     }
+
+#ifdef XXXXXX
+    if ( timeout <= 0 )
+        return;
+#endif
 
     cMessage* m = new cMessage("FrameworkTimeout");
     m->addPar("relevantObject").setPointerValue(relevantObject);

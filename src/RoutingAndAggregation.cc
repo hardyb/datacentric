@@ -5,7 +5,8 @@
 
 unsigned char current_prefix_name[100];
 
-
+char advertRetries;  // needs improving
+char advertReinforceRetries; // needs improving
 
 
 #include "RoutingAndAggregation.h"
@@ -2612,7 +2613,11 @@ void add(struct InterfaceList** l, struct Interface* _i)
 		temp = *l;
 		while( temp->link !=NULL )
 		{
-			temp = temp->link;
+#ifdef XXXXXX
+		    if ( temp->link->i == _i )
+		        return; // interface is already in list
+#endif
+		    temp = temp->link;
 		}
 		r = (struct InterfaceList *)malloc(sizeof(struct InterfaceList));
 		r->i = _i;
@@ -2847,6 +2852,10 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                     // is length, path value etc etc needed?
                     handleApplicationData(sending_packet->data, sending_packet->creation_time);
                     sent = 1;
+
+#ifdef XXXXXX
+                    setTimer(CANCEL_TIMER, s, start_reinforce_retry); // is s the right object?
+#endif
                     // think we remove sending_packet from queue here
                     // but may be different for advert cases which have multiple
                     // deliver interfaces
@@ -3619,19 +3628,33 @@ void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject
 
 
 
-
 void weAreSourceFor(unsigned char* _data, char seqno)
 {
-	if ( ((*_data) & MSB2) == PUBLICATION )
+#ifdef XXXXXX
+    trie* t = trie_add(rd->top_state, _data, STATE);
+#endif
+
+    if ( ((*_data) & MSB2) == PUBLICATION )
 	{
 	    // reboot not properly supported for now, first seqno always zero
 		setObtainGradient(_data, SELF_INTERFACE, 0, seqno);
+#ifdef XXXXXX
+		if ( advertRetries < 2 ) // needs improving
+		    // if 1 then we are about to retry first time
+		    // if 2 then we are about to retry second time so don't reset timer
+		{
+	        setTimer(ADVERT_TIMEOUT, t->s, initiate_new_advert);
+	        advertRetries++;
+		}
+#endif
 	}
 
 	//StateNode* sn = FindStateNode(rd->stateTree, _data._dataname_struct1.the_dataname);
 	//struct StateNode* sn = InsertStateNode(&(rd->stateTree), _data._dataname_struct1.the_dataname);
 
+#ifndef XXXXXX
 	trie* t = trie_add(rd->top_state, _data, STATE);
+#endif
 
 	if ( t )
 	{
@@ -4343,8 +4366,10 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
     if ( t && t->s->bestGradientToObtain )
     {
         // next hop already reinforced so stop here
+#ifndef XXXXXX // if XXXXXX the reinforce all the way through
         if ( t->s->obtainInterface )
             return;
+#endif
 
         // find the next interface to reinforce
         NEIGHBOUR_ADDR interface = t->s->bestGradientToObtain->key2->iName;
@@ -4373,6 +4398,33 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
 }
 
 
+#ifdef XXXXXX
+void advert_retry(void* relevantObject)
+{
+}
+#endif
+
+
+
+#ifdef XXXXXX
+void start_reinforce_retry(void* relevantObject)
+{
+    State* s = (State*)relevantObject;
+    static unsigned char data[20];
+    GetStateStr(rd->top_state, s, data);
+#ifdef XXXXXX
+    if ( advertReinforceRetries < 2 ) // needs improving
+        // if 1 then we are about to retry first time
+        // if 2 then we are about to retry second time so don't reset timer
+    {
+        setTimer(REINFORCE_TIMEOUT, s, start_reinforce_retry);
+        advertReinforceRetries++;
+    }
+#endif
+    start_reinforce(data, SELF_INTERFACE, s->seqno);
+}
+#endif
+
 void advert_convergence_timeout(void* relevantObject)
 {
     //unsigned char* data = (unsigned char*)relevantObject;
@@ -4391,6 +4443,11 @@ void advert_convergence_timeout(void* relevantObject)
         // second parameter no longer used, pos pass s in future to save
         // unnecessary work in the function
         start_reinforce(data, SELF_INTERFACE, s->seqno);
+#ifdef XXXXXX
+        setTimer(REINFORCE_TIMEOUT, s, start_reinforce_retry);
+        advertReinforceRetries++;
+#endif
+
 #ifdef GRAD_FILES
         UpdateGradientFile();
 #endif
@@ -5541,10 +5598,14 @@ void handle_reinforce(control_data cd)
 
 	if ( t && t->s->bestGradientToObtain )
 	{
-		// next hop already reinforced so stop here
 		//if ( g->key1->bestGradientToObtain->obtainReinforcement ) // NEED TO CHECK LIST NOW
-		if ( t->s->obtainInterfaces )//obtainReinforcement ) // NEED TO CHECK LIST NOW
+
+
+#ifndef XXXXXX // if XXXXXX send reinforcement right through
+	    // next hop already reinforced so stop here
+	    if ( t->s->obtainInterfaces )//obtainReinforcement ) // NEED TO CHECK LIST NOW
 			return;
+#endif
 
 		// find the next interface to reinforce
 		NEIGHBOUR_ADDR interface = t->s->bestGradientToObtain->key2->iName;
@@ -5555,7 +5616,14 @@ void handle_reinforce(control_data cd)
 
 		// If interface is self do not send message on
 		if ( interface == SELF_INTERFACE )
+#ifndef XXXXXX
 			return;
+#else
+		{
+	        setTimer(CANCEL_TIMER, t->s, initiate_new_advert);
+            return;
+		}
+#endif
 
 		outgoing_packet.message_type = REINFORCE;
         outgoing_packet.data = incoming_packet.data;
@@ -5940,6 +6008,9 @@ void handle_neighbor_ucast(control_data cd)
 
 void StartUp()
 {
+    advertRetries = 0;  // needs improving
+    advertReinforceRetries = 0;  // needs improving
+
 	// not sure if this is necessary for ansii c
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
 	memset(&outgoing_packet, 0, sizeof(outgoing_packet));

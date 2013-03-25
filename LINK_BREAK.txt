@@ -1,0 +1,83 @@
+2448162824
+
+
+
+2448162817
+
+2448162817
+
+2448162817
+
+
+
+Dest:  91EC0002
+============================
+
+Next Hops
+
+91EC0008
+
+91EC0008
+
+91EC0001
+
+91EC0001
+
+91EC0001
+
+
+
+
+
+
+
+
+Local repair false?
+
+
+
+find out if link is failing
+
+find code which captures link failure
+
+see if local repair if switched on would be done
+for ALL packets not just data packets
+
+
+do I remember right about local repair where if off then hellos are used?
+
+I thought I had found a way to turn hellos off.
+
+So...
+
+
+
+
+
+TODO
+find create hello (?) add break point
+find handle link failur add break point
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
