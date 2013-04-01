@@ -29,6 +29,7 @@ simple DataCentricTestApp extends TrafGenPar
         string collaboratorInitiatorFor = default("");
         string collaboratorFor = default("");
         string sourceFor = default("");// = "\x48\x49\x54";
+        bool participate = default(true);
         string nodeContext = default("");
         string appMode = default("");
         bool mains = default(false); // TO BE DISCONTINUED?

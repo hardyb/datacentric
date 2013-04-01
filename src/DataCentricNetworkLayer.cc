@@ -34,6 +34,8 @@ static unsigned char forwardingRole[14] = {14, 4, 4, 8, 2, 3, 0, 0, 0, 0, 9, 4, 
 unsigned char nodeConstraint;
 NEIGHBOUR_ADDR thisAddress;
 
+extern NEIGHBOUR_ADDR excludedInterface; // used as the incoming i/f for debug
+
 double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
 char testSeqNo;
@@ -1340,6 +1342,12 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
     currentModule->mRoutingDelay = currentModule->par("routingDelay");
     //currentModule->send(appPkt, currentModule->mLowerLayerOut);
     ev << "UCAST   to " << currentModule->getParentModule()->getFullName() << endl;
+    int mtype = *_msg;
+    string fn = currentModule->getFullName();
+
+    cout << "## sending: " << mtype << " from:  " <<
+            hex << currentModule->mAddress << " (" << fn << ") to: " << hex << _interface << endl;
+
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
     free(_msg);
@@ -1562,6 +1570,14 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
     appPkt->setKind(DATA_PACKET);
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+strlen((const char*)_msg));
+
+    string fn = currentModule->getFullName();
+
+    cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
+            hex << excludedInterface << endl;
+
+
+
     currentModule->send(appPkt, currentModule->mUpperLayerOut);
 
 

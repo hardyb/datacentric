@@ -2611,13 +2611,17 @@ void add(struct InterfaceList** l, struct Interface* _i)
 	else
 	{
 		temp = *l;
+#ifdef XXXXXX
+            if ( temp->i->iName == _i->iName )
+                return; // interface is already in list
+#endif
 		while( temp->link !=NULL )
 		{
-#ifdef XXXXXX
-		    if ( temp->link->i == _i )
-		        return; // interface is already in list
-#endif
 		    temp = temp->link;
+#ifdef XXXXXX
+            if ( temp->i->iName == _i->iName )
+                return; // interface is already in list
+#endif
 		}
 		r = (struct InterfaceList *)malloc(sizeof(struct InterfaceList));
 		r->i = _i;

@@ -142,6 +142,19 @@ void DataCentricTestApp::initialize(int aStage)
         appState = APPSTATE_IDLE;
         mLowerLayerIn        = findGate("lowerLayerIn");
         mLowerLayerOut       = findGate("lowerLayerOut");
+        cSimulation* sim =  cSimulation::getActiveSimulation();
+        hostIndex = this->getParentModule()->getIndex();
+        cModule* ntwkBasePtr;
+        if ( sim->getModuleByPath("DataCentricNet") )
+        {
+            ntwkBasePtr = sim->getModuleByPath("DataCentricNet");
+        }
+        else
+        {
+            ntwkBasePtr = sim->getModuleByPath("csma802154net");
+        }
+
+
 
         // TODO
         string fn = this->getParentModule()->getFullName();
@@ -151,6 +164,33 @@ void DataCentricTestApp::initialize(int aStage)
         }
 
         //setTerminateReason(par("simAppTerminationReason").longValue());
+
+        /*
+         * This feature makes it possible to configure a range of various distinct
+         * sinks and sources, but use or not use them at will.
+         *
+         * Ini files do not support looping or conditional parameter assignment
+         * but this feature would allow, for example, the use of an ever increasing
+         * subset of unique source/sink pairs as runs are repeated.
+         */
+        //if ( !par("participate").boolValue() )
+        //{
+        //    par("sourceFor").setStringValue("");
+        //    par("sinkFor").setStringValue("");
+        //}
+
+
+        cStringTokenizer tokenizer(ntwkBasePtr->par("nodeParsUsed").stringValue());
+        while (tokenizer.hasMoreTokens())
+        {
+            const char *parName = tokenizer.nextToken();
+            int firstNode = atoi(tokenizer.nextToken());
+            int lastNode = firstNode + atoi(tokenizer.nextToken()) - 1;
+            if ( hostIndex < firstNode || hostIndex > lastNode )
+            {
+                resetParamToDefault(parName);
+            }
+        }
 
 
         mBeenSetDirect = false;
@@ -199,7 +239,6 @@ void DataCentricTestApp::initialize(int aStage)
         */
 
 
-        cSimulation* sim =  cSimulation::getActiveSimulation();
         if ( sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan") )
         {
             mNetMan = check_and_cast<DataCentricNetworkMan*>(sim->getModuleByPath("DataCentricNet.dataCentricNetworkMan"));
@@ -444,6 +483,27 @@ void DataCentricTestApp::initialize(int aStage)
 
 
 
+
+}
+
+
+void DataCentricTestApp::resetParamToDefault(const char* parName)
+{
+    switch (this->par(parName).getType())
+    {
+        case 'B': //BOOL:
+            this->par(parName).setBoolValue(false); // less likely to be default
+            break;
+        case 'D': //DOUBLE:
+            this->par(parName).setDoubleValue(0.0);
+            break;
+        case 'L': //LONG:
+            this->par(parName).setLongValue(0);
+            break;
+        case 'S': //STRING:
+            this->par(parName).setStringValue("");
+            break;
+    }
 
 }
 
@@ -1038,6 +1098,7 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
                 FileEnd(i);
                 break;
             case UNKNOWN_ACTIVITY:
+                SensorReading(i, currentActionData);
                 break;
             default:
                 break;
@@ -1055,28 +1116,43 @@ int DataCentricTestApp::getNextAction(ActionThreadsIterator& i)
     ifstream* ifs = i->second->back();
     if ( !ifs->eof() )
     {
-        string action;
-        *ifs >> action;
-        if ( action == "SENSOR_READING" )
+        *ifs >> currentAction;
+        if ( currentAction == "SENSOR_READING" )
         {
             return SENSOR_READING;
         }
-        if ( action == "OCCUPANCY_READING" )
+        if ( currentAction == "OCCUPANCY_READING" )
         {
             return OCCUPANCY_READING;
         }
-        if ( action == "TEMP_READING" )
+        if ( currentAction == "TEMP_READING" )
         {
             return TEMP_READING;
         }
-        if ( action == "SET_PROGRAM" )
+        if ( currentAction == "SET_PROGRAM" )
         {
             return SET_PROGRAM;
         }
-        if ( action == "WATTS" )
+        if ( currentAction == "WATTS" )
         {
             return WATTS;
         }
+
+        std::istringstream ss(currentAction);
+        unsigned int currentByte;
+        char delim = 1;
+        int i = 0;
+
+        while ( delim )
+        {
+            ss >> std::hex >> currentByte;
+            currentActionData[i] = (unsigned char)currentByte;
+            i++;
+            delim = 0;
+            ss >> delim;
+        }
+        currentActionData[i] = 0;
+
         return UNKNOWN_ACTIVITY;
     }
     else

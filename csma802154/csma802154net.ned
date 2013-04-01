@@ -55,6 +55,10 @@ network csma802154net
                 netmask = "255.255.0.0";
                 @display("p=140,50;i=block/cogwheel_s");
         }
+        //for i=0..numFixHosts {
+        //    fixhost[i].app.sinkFor = "xx";
+        //}
+        
     connections allowunconnected:
 }
 

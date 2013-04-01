@@ -77,6 +77,7 @@ class DataCentricTestApp : public TrafGenPar
     void processActionsFor(string &actionThreadsString);
     void processCollaboratorInitiatorFor(string &temp2);
     void processCollaboratorFor(string &temp2);
+    void resetParamToDefault(const char* parName);
 
 
 
@@ -172,7 +173,9 @@ class DataCentricTestApp : public TrafGenPar
     cMessage *mpStartMessage;
     //ifstream mActivityFile;
     //ifstream mProgramFile;
-
+    int hostIndex;
+    string currentAction;
+    char currentActionData[20];
 
 
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;

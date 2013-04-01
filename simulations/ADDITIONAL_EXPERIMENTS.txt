@@ -1,0 +1,36 @@
+
+
+
+
+
+
+whole property
+===============
+
+
+** multiple distinct bindings in paralell
+2 Floors
+250 nodes
+DC & AODV
+increment the number of pairs trying to send data in paralell
+
+** multiple distinct bindings at intervals
+2 Floors
+250 nodes
+DC & AODV
+choose a set number of pairs (e.g. the maximum from above)
+increment the interval between each trying to send data
+
+
+individual rooms
+=================
+
+
+
+
+
+
+
+
+
+

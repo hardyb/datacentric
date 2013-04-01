@@ -1,0 +1,524 @@
+
+
+Best Guess for this bug so far with out more debug and without
+detailed examination of the prefix algorith, the reinforce mechanism
+and the delivery interface link list:
+
+The reinforce timesout too early and the subsequent reinforce is
+some how adding additional identical delivery interfaces into the linked list
+some how there may also be additional self interfaces in the list
+so it doubles up all the way through
+
+send two then each of the pkts is sent twice by the receiving node (so four)
+and so on.
+
+Even after fix, we need to consider the possibility that a reinforce may timeout
+early and send a second 'confirmation' data pkt (if we have implemented those yet)
+but that these should not be counted by an experiment only the 'actual' data pkt
+
+
+
+OMNeT++ Discrete Event Simulation  (C) 1992-2011 Andras Varga, OpenSim Ltd.
+Version: 4.2.2, build: 120327-7947143, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+Setting up Cmdenv...
+Loading NED files from ../csma802154: 1
+Loading NED files from .: 1
+Loading NED files from ../src: 11
+Loading NED files from ../../inetmanet_a/examples: 179
+Loading NED files from ../../inetmanet_a/src: 365
+Preparing for running configuration DataC__Parallel_121_BindingEq, run #25...
+Scenario: $itVar1=3, $itVar3=2, $itVar2=13, $itVar4=12, $repetition=0
+Assigned runID=DataC__Parallel_121_BindingEq-25-20130330-01:36:07-1864
+Setting up network `DataCentricNet'...
+Initializing...
+Running simulation...
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 4512   present: 4512   in FES: 1260
+: No change
+: No change
+: No change
+: No change
+     Speed:     ev/sec=41.2726   simsec/sec=0   ev/simsec=0
+     Messages:  created: 5022   present: 4264   in FES: 760
+: No change
+: No change
+     Speed:     ev/sec=19555.6   simsec/sec=0.00397537   ev/simsec=4.91918e+006
+     Messages:  created: 62997   present: 8407   in FES: 2055
+     Speed:     ev/sec=16135   simsec/sec=0.00293532   ev/simsec=5.49685e+006
+     Messages:  created: 107993   present: 5289   in FES: 925
+     Speed:     ev/sec=19047.6   simsec/sec=0.00744416   ev/simsec=2.55873e+006
+     Messages:  created: 162530   present: 7194   in FES: 1526
+     Speed:     ev/sec=14621.4   simsec/sec=0.00540611   ev/simsec=2.7046e+006
+     Messages:  created: 205891   present: 10997   in FES: 2769
+     Speed:     ev/sec=14483.4   simsec/sec=0.0037984   ev/simsec=3.81302e+006
+     Messages:  created: 246269   present: 9406   in FES: 2228
+     Speed:     ev/sec=16888.9   simsec/sec=0.00515217   ev/simsec=3.27801e+006
+     Messages:  created: 294224   present: 9871   in FES: 2298
+     Speed:     ev/sec=10417.9   simsec/sec=0.00358732   ev/simsec=2.90408e+006
+     Messages:  created: 324718   present: 11415   in FES: 2847
+     Speed:     ev/sec=14349.2   simsec/sec=0.00490993   ev/simsec=2.92248e+006
+     Messages:  created: 364712   present: 10777   in FES: 2464
+     Speed:     ev/sec=12988.1   simsec/sec=0.00454296   ev/simsec=2.85896e+006
+     Messages:  created: 403292   present: 10323   in FES: 2338
+     Speed:     ev/sec=13079.4   simsec/sec=0.00418914   ev/simsec=3.12221e+006
+     Messages:  created: 440043   present: 9922   in FES: 2076
+     Speed:     ev/sec=12663.4   simsec/sec=0.00478063   ev/simsec=2.64891e+006
+     Messages:  created: 477387   present: 11695   in FES: 2537
+     Speed:     ev/sec=13968.3   simsec/sec=0.00495537   ev/simsec=2.81881e+006
+     Messages:  created: 517122   present: 12076   in FES: 2606
+     Speed:     ev/sec=11053.1   simsec/sec=0.00396624   ev/simsec=2.78679e+006
+     Messages:  created: 547353   present: 10324   in FES: 1918
+     Speed:     ev/sec=13631.7   simsec/sec=0.00505716   ev/simsec=2.69551e+006
+     Messages:  created: 586478   present: 10692   in FES: 1865
+     Speed:     ev/sec=12856.7   simsec/sec=0.00530492   ev/simsec=2.42355e+006
+     Messages:  created: 623356   present: 11746   in FES: 2081
+     Speed:     ev/sec=12317.5   simsec/sec=0.00453694   ev/simsec=2.71492e+006
+     Messages:  created: 657977   present: 11111   in FES: 1873
+     Speed:     ev/sec=12704.7   simsec/sec=0.00565362   ev/simsec=2.24718e+006
+     Messages:  created: 695289   present: 14224   in FES: 2872
+     Speed:     ev/sec=12698.4   simsec/sec=0.00458197   ev/simsec=2.77139e+006
+     Messages:  created: 728861   present: 9981   in FES: 1381
+     Speed:     ev/sec=12259.8   simsec/sec=0.00463474   ev/simsec=2.64521e+006
+     Messages:  created: 765242   present: 10815   in FES: 1572
+     Speed:     ev/sec=13756.7   simsec/sec=0.00448681   ev/simsec=3.06604e+006
+     Messages:  created: 805761   present: 12274   in FES: 2031
+     Speed:     ev/sec=12958.8   simsec/sec=0.00519273   ev/simsec=2.49557e+006
+     Messages:  created: 842310   present: 12696   in FES: 2116
+     Speed:     ev/sec=13587.3   simsec/sec=0.00490292   ev/simsec=2.77127e+006
+     Messages:  created: 880138   present: 11379   in FES: 1660
+     Speed:     ev/sec=13212.9   simsec/sec=0.00557747   ev/simsec=2.36898e+006
+     Messages:  created: 917626   present: 12181   in FES: 1853
+     Speed:     ev/sec=12952.4   simsec/sec=0.00552208   ev/simsec=2.34556e+006
+     Messages:  created: 953707   present: 11562   in FES: 1604
+     Speed:     ev/sec=11794.4   simsec/sec=0.00378198   ev/simsec=3.11857e+006
+     Messages:  created: 990842   present: 16646   in FES: 3312
+     Speed:     ev/sec=11380.6   simsec/sec=0.00385756   ev/simsec=2.9502e+006
+     Messages:  created: 1022412   present: 14617   in FES: 2525
+     Speed:     ev/sec=13234.9   simsec/sec=0.00485278   ev/simsec=2.72728e+006
+     Messages:  created: 1059500   present: 13704   in FES: 2170
+     Speed:     ev/sec=14222.2   simsec/sec=0.00514047   ev/simsec=2.76672e+006
+     Messages:  created: 1099590   present: 13181   in FES: 1958
+     Speed:     ev/sec=11722.3   simsec/sec=0.00376429   ev/simsec=3.11408e+006
+     Messages:  created: 1132190   present: 11087   in FES: 1255
+     Speed:     ev/sec=12577.7   simsec/sec=0.00521321   ev/simsec=2.41265e+006
+     Messages:  created: 1168342   present: 12631   in FES: 1740
+## sending: 2 from:  aaa0000000d (net) to: aaa000000f1
+     Speed:     ev/sec=420.862   simsec/sec=0.000160643   ev/simsec=2.61986e+006
+     Messages:  created: 1178641   present: 12535   in FES: 1727
+     Speed:     ev/sec=13206.3   simsec/sec=0.00491336   ev/simsec=2.68784e+006
+     Messages:  created: 1216323   present: 13674   in FES: 2001
+     Speed:     ev/sec=11815.4   simsec/sec=0.00505622   ev/simsec=2.3368e+006
+     Messages:  created: 1247902   present: 10667   in FES: 963
+     Speed:     ev/sec=12571.4   simsec/sec=0.00512825   ev/simsec=2.4514e+006
+     Messages:  created: 1285018   present: 13488   in FES: 1940
+     Speed:     ev/sec=11561.3   simsec/sec=0.00496294   ev/simsec=2.32952e+006
+     Messages:  created: 1317112   present: 13408   in FES: 1815
+     Speed:     ev/sec=12571.4   simsec/sec=0.00451275   ev/simsec=2.78576e+006
+     Messages:  created: 1353721   present: 15312   in FES: 2433
+     Speed:     ev/sec=10417.9   simsec/sec=0.00460205   ev/simsec=2.26375e+006
+     Messages:  created: 1382370   present: 14352   in FES: 2069
+     Speed:     ev/sec=11936.5   simsec/sec=0.0048756   ev/simsec=2.44821e+006
+     Messages:  created: 1414786   present: 12021   in FES: 1252
+## sending: 2 from:  aaa000000f1 (net) to: aaa00000003
+     Speed:     ev/sec=12069.5   simsec/sec=0.00447765   ev/simsec=2.6955e+006
+     Messages:  created: 1449752   present: 13750   in FES: 1788
+     Speed:     ev/sec=11047.6   simsec/sec=0.00457073   ev/simsec=2.41704e+006
+     Messages:  created: 1481611   present: 14717   in FES: 2137
+## sending: 3 from:  aaa00000003 (net) to: aaa000000f1
+     Speed:     ev/sec=1617.46   simsec/sec=0.000809186   ev/simsec=1.99888e+006
+     Messages:  created: 1508804   present: 14728   in FES: 2055
+## sending: 3 from:  aaa000000f1 (net) to: aaa0000000d
+: No change
+     Speed:     ev/sec=12226.5   simsec/sec=0.00544813   ev/simsec=2.24416e+006
+     Messages:  created: 1543205   present: 14071   in FES: 1864
+     Speed:     ev/sec=9978.83   simsec/sec=0.0052726   ev/simsec=1.89258e+006
+     Messages:  created: 1570785   present: 12462   in FES: 1218
+     Speed:     ev/sec=10544.9   simsec/sec=0.0046273   ev/simsec=2.27885e+006
+     Messages:  created: 1600833   present: 13331   in FES: 1484
+     Speed:     ev/sec=10225.2   simsec/sec=0.00486491   ev/simsec=2.10183e+006
+     Messages:  created: 1630778   present: 14224   in FES: 1757
+     Speed:     ev/sec=11174.6   simsec/sec=0.00528957   ev/simsec=2.11257e+006
+     Messages:  created: 1661661   present: 13475   in FES: 1472
+## aaa0000000d (net) received data from:  aaa000000f1
+: No change
+     Speed:     ev/sec=298.502   simsec/sec=0.000123033   ev/simsec=2.4262e+006
+     Messages:  created: 1688247   present: 14310   in FES: 1732
+## sending: 2 from:  aaa0000000c (net) to: aaa00000032
+     Speed:     ev/sec=11670.2   simsec/sec=0.00490682   ev/simsec=2.37837e+006
+     Messages:  created: 1723457   present: 17552   in FES: 2790
+     Speed:     ev/sec=12063.5   simsec/sec=0.00597044   ev/simsec=2.02054e+006
+     Messages:  created: 1755274   present: 13768   in FES: 1531
+     Speed:     ev/sec=10544.9   simsec/sec=0.0052425   ev/simsec=2.01143e+006
+     Messages:  created: 1783869   present: 12207   in FES: 1024
+     Speed:     ev/sec=10539.7   simsec/sec=0.00476005   ev/simsec=2.2142e+006
+     Messages:  created: 1814153   present: 13946   in FES: 1516
+     Speed:     ev/sec=8766.25   simsec/sec=0.00495029   ev/simsec=1.77086e+006
+     Messages:  created: 1838177   present: 13267   in FES: 1258
+     Speed:     ev/sec=9396.83   simsec/sec=0.00554884   ev/simsec=1.69348e+006
+     Messages:  created: 1863971   present: 12849   in FES: 1088
+     Speed:     ev/sec=9579.52   simsec/sec=0.00527091   ev/simsec=1.81743e+006
+     Messages:  created: 1891089   present: 13927   in FES: 1428
+     Speed:     ev/sec=9754.76   simsec/sec=0.00525632   ev/simsec=1.85582e+006
+     Messages:  created: 1918927   present: 14334   in FES: 1541
+     Speed:     ev/sec=8639.21   simsec/sec=0.00520666   ev/simsec=1.65926e+006
+     Messages:  created: 1942347   present: 13423   in FES: 1215
+     Speed:     ev/sec=9396.83   simsec/sec=0.00535736   ev/simsec=1.754e+006
+     Messages:  created: 1968034   present: 12643   in FES: 929
+     Speed:     ev/sec=9658.07   simsec/sec=0.00577604   ev/simsec=1.67209e+006
+     Messages:  created: 1996706   present: 13869   in FES: 1312
+     Speed:     ev/sec=9201.38   simsec/sec=0.00506487   ev/simsec=1.81671e+006
+     Messages:  created: 2022293   present: 13160   in FES: 1063
+     Speed:     ev/sec=9435.5   simsec/sec=0.00639052   ev/simsec=1.47648e+006
+     Messages:  created: 2049116   present: 13259   in FES: 1070
+     Speed:     ev/sec=9269.84   simsec/sec=0.00624236   ev/simsec=1.48499e+006
+     Messages:  created: 2075054   present: 13398   in FES: 1161
+     Speed:     ev/sec=8823.24   simsec/sec=0.00672479   ev/simsec=1.31205e+006
+     Messages:  created: 2099085   present: 12744   in FES: 911
+     Speed:     ev/sec=10417.9   simsec/sec=0.00712064   ev/simsec=1.46305e+006
+     Messages:  created: 2127938   present: 12760   in FES: 895
+     Speed:     ev/sec=9777.78   simsec/sec=0.00668667   ev/simsec=1.46228e+006
+     Messages:  created: 2154775   present: 12823   in FES: 831
+     Speed:     ev/sec=8949.29   simsec/sec=0.00777755   ev/simsec=1.15066e+006
+     Messages:  created: 2180211   present: 13708   in FES: 1104
+     Speed:     ev/sec=6753.3   simsec/sec=0.00727265   ev/simsec=928589
+     Messages:  created: 2198884   present: 13639   in FES: 1060
+     Speed:     ev/sec=8385.11   simsec/sec=0.00787246   ev/simsec=1.06512e+006
+     Messages:  created: 2221394   present: 12846   in FES: 779
+## sending: 2 from:  aaa00000032 (net) to: aaa00000084
+     Speed:     ev/sec=8253.97   simsec/sec=0.0114334   ev/simsec=721920
+     Messages:  created: 2243973   present: 12967   in FES: 826
+     Speed:     ev/sec=8823.24   simsec/sec=0.00963746   ev/simsec=915515
+     Messages:  created: 2268478   present: 12992   in FES: 820
+## sending: 2 from:  aaa00000084 (net) to: aaa000000c3
+     Speed:     ev/sec=7946.51   simsec/sec=0.00943064   ev/simsec=842627
+     Messages:  created: 2290923   present: 12922   in FES: 745
+     Speed:     ev/sec=6680.45   simsec/sec=0.00996402   ev/simsec=670458
+     Messages:  created: 2309761   present: 12950   in FES: 798
+     Speed:     ev/sec=8003.97   simsec/sec=0.0205693   ev/simsec=389122
+     Messages:  created: 2331073   present: 12553   in FES: 581
+## sending: 2 from:  aaa000000c3 (net) to: aaa000000b1
+## sending: 2 from:  aaa000000b1 (net) to: aaa000000fa
+## sending: 2 from:  aaa000000fa (net) to: aaa00000002
+     Speed:     ev/sec=9269.84   simsec/sec=0.0171967   ev/simsec=539049
+     Messages:  created: 2356672   present: 13131   in FES: 771
+## sending: 2 from:  aaa0000000c (net) to: aaa00000032
+## sending: 2 from:  aaa00000032 (net) to: aaa00000084
+## sending: 3 from:  aaa00000002 (net) to: aaa000000fa
+     Speed:     ev/sec=38.2657   simsec/sec=0.000102642   ev/simsec=372809
+     Messages:  created: 2361870   present: 13023   in FES: 712
+## sending: 2 from:  aaa00000084 (net) to: aaa000000c3
+## sending: 3 from:  aaa000000fa (net) to: aaa000000b1
+: No change
+## sending: 2 from:  aaa000000c3 (net) to: aaa000000b1
+## sending: 3 from:  aaa000000b1 (net) to: aaa000000c3
+: No change
+## sending: 2 from:  aaa000000b1 (net) to: aaa000000fa
+## sending: 3 from:  aaa000000c3 (net) to: aaa00000084
+## sending: 3 from:  aaa000000c3 (net) to: aaa00000084
+: No change
+## sending: 3 from:  aaa00000084 (net) to: aaa00000032
+## sending: 3 from:  aaa00000084 (net) to: aaa00000032
+: No change
+## sending: 2 from:  aaa000000fa (net) to: aaa00000002
+## sending: 3 from:  aaa00000084 (net) to: aaa00000032
+## sending: 3 from:  aaa00000084 (net) to: aaa00000032
+: No change
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+: No change
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+: No change
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+## sending: 3 from:  aaa00000032 (net) to: aaa0000000c
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+     Speed:     ev/sec=15365.1   simsec/sec=0.0517332   ev/simsec=297006
+     Messages:  created: 2401868   present: 13301   in FES: 755
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+## aaa0000000c (net) received data from:  aaa00000032
+## aaa0000000c (net) received data from:  aaa00000032
+: No change
+     Speed:     ev/sec=20966.1   simsec/sec=54.6829   ev/simsec=383.413
+     Messages:  created: 2405682   present: 12558   in FES: 501
+<!> Simulation time limit reached -- simulation stopped at event #1732990, t=30.
+Calling finish() at end of Run #25...
+residual capacity = 899555
+residual capacity = 899572
+residual capacity = 899561
+residual capacity = 899542
+residual capacity = 899535
+residual capacity = 899544
+residual capacity = 899544
+residual capacity = 899537
+residual capacity = 899538
+residual capacity = 899545
+residual capacity = 899549
+residual capacity = 899533
+residual capacity = 899561
+residual capacity = 899549
+residual capacity = 899556
+residual capacity = 899546
+residual capacity = 899557
+residual capacity = 899560
+residual capacity = 899548
+residual capacity = 899559
+residual capacity = 899542
+residual capacity = 899552
+residual capacity = 899538
+residual capacity = 899539
+residual capacity = 899547
+residual capacity = 899557
+residual capacity = 899552
+residual capacity = 899545
+residual capacity = 899535
+residual capacity = 899551
+residual capacity = 899537
+residual capacity = 899543
+residual capacity = 899546
+residual capacity = 899557
+residual capacity = 899553
+residual capacity = 899558
+residual capacity = 899544
+residual capacity = 899535
+residual capacity = 899559
+residual capacity = 899543
+residual capacity = 899540
+residual capacity = 899552
+residual capacity = 899543
+residual capacity = 899553
+residual capacity = 899544
+residual capacity = 899562
+residual capacity = 899552
+residual capacity = 899540
+residual capacity = 899559
+residual capacity = 899531
+residual capacity = 899546
+residual capacity = 899531
+residual capacity = 899543
+residual capacity = 899557
+residual capacity = 899540
+residual capacity = 899534
+residual capacity = 899538
+residual capacity = 899545
+residual capacity = 899570
+residual capacity = 899544
+residual capacity = 899558
+residual capacity = 899541
+residual capacity = 899549
+residual capacity = 899536
+residual capacity = 899552
+residual capacity = 899549
+residual capacity = 899544
+residual capacity = 899549
+residual capacity = 899551
+residual capacity = 899548
+residual capacity = 899550
+residual capacity = 899556
+residual capacity = 899547
+residual capacity = 899542
+residual capacity = 899554
+residual capacity = 899541
+residual capacity = 899542
+residual capacity = 899545
+residual capacity = 899568
+residual capacity = 899546
+residual capacity = 899552
+residual capacity = 899549
+residual capacity = 899546
+residual capacity = 899539
+residual capacity = 899555
+residual capacity = 899543
+residual capacity = 899541
+residual capacity = 899551
+residual capacity = 899548
+residual capacity = 899551
+residual capacity = 899544
+residual capacity = 899535
+residual capacity = 899551
+residual capacity = 899533
+residual capacity = 899545
+residual capacity = 899550
+residual capacity = 899566
+residual capacity = 899548
+residual capacity = 899553
+residual capacity = 899559
+residual capacity = 899546
+residual capacity = 899536
+residual capacity = 899546
+residual capacity = 899551
+residual capacity = 899556
+residual capacity = 899560
+residual capacity = 899552
+residual capacity = 899538
+residual capacity = 899556
+residual capacity = 899559
+residual capacity = 899555
+residual capacity = 899543
+residual capacity = 899541
+residual capacity = 899531
+residual capacity = 899567
+residual capacity = 899534
+residual capacity = 899539
+residual capacity = 899550
+residual capacity = 899549
+residual capacity = 899547
+residual capacity = 899552
+residual capacity = 899553
+residual capacity = 899542
+residual capacity = 899556
+residual capacity = 899556
+residual capacity = 899539
+residual capacity = 899552
+residual capacity = 899543
+residual capacity = 899542
+residual capacity = 899555
+residual capacity = 899562
+residual capacity = 899536
+residual capacity = 899548
+residual capacity = 899557
+residual capacity = 899545
+residual capacity = 899555
+residual capacity = 899531
+residual capacity = 899550
+residual capacity = 899540
+residual capacity = 899554
+residual capacity = 899540
+residual capacity = 899545
+residual capacity = 899553
+residual capacity = 899553
+residual capacity = 899549
+residual capacity = 899556
+residual capacity = 899547
+residual capacity = 899536
+residual capacity = 899559
+residual capacity = 899536
+residual capacity = 899552
+residual capacity = 899558
+residual capacity = 899566
+residual capacity = 899554
+residual capacity = 899537
+residual capacity = 899544
+residual capacity = 899549
+residual capacity = 899554
+residual capacity = 899537
+residual capacity = 899550
+residual capacity = 899541
+residual capacity = 899543
+residual capacity = 899541
+residual capacity = 899547
+residual capacity = 899553
+residual capacity = 899548
+residual capacity = 899561
+residual capacity = 899559
+residual capacity = 899543
+residual capacity = 899548
+residual capacity = 899552
+residual capacity = 899535
+residual capacity = 899539
+residual capacity = 899552
+residual capacity = 899564
+residual capacity = 899550
+residual capacity = 899567
+residual capacity = 899537
+residual capacity = 899531
+residual capacity = 899544
+residual capacity = 899534
+residual capacity = 899540
+residual capacity = 899546
+residual capacity = 899537
+residual capacity = 899535
+residual capacity = 899546
+residual capacity = 899561
+residual capacity = 899558
+residual capacity = 899540
+residual capacity = 899546
+residual capacity = 899545
+residual capacity = 899555
+residual capacity = 899545
+residual capacity = 899542
+residual capacity = 899558
+residual capacity = 899541
+residual capacity = 899545
+residual capacity = 899543
+residual capacity = 899549
+residual capacity = 899546
+residual capacity = 899556
+residual capacity = 899547
+residual capacity = 899545
+residual capacity = 899539
+residual capacity = 899536
+residual capacity = 899550
+residual capacity = 899545
+residual capacity = 899547
+residual capacity = 899544
+residual capacity = 899534
+residual capacity = 899535
+residual capacity = 899543
+residual capacity = 899542
+residual capacity = 899545
+residual capacity = 899542
+residual capacity = 899546
+residual capacity = 899540
+residual capacity = 899544
+residual capacity = 899538
+residual capacity = 899540
+residual capacity = 899562
+residual capacity = 899549
+residual capacity = 899549
+residual capacity = 899557
+residual capacity = 899537
+residual capacity = 899555
+residual capacity = 899554
+residual capacity = 899555
+residual capacity = 899550
+residual capacity = 899550
+residual capacity = 899542
+residual capacity = 899542
+residual capacity = 899556
+residual capacity = 899548
+residual capacity = 899545
+residual capacity = 899537
+residual capacity = 899540
+residual capacity = 899549
+residual capacity = 899536
+residual capacity = 899564
+residual capacity = 899558
+residual capacity = 899549
+residual capacity = 899542
+residual capacity = 899556
+residual capacity = 899562
+residual capacity = 899540
+residual capacity = 899537
+residual capacity = 899567
+residual capacity = 899538
+residual capacity = 899569
+##########################
+CSMA-Ack
+DataCentricAppPkt
+DataCentricControlPkt
+##########################
+End.
