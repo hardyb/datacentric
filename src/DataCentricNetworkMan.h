@@ -50,6 +50,7 @@ class DataCentricNetworkMan : public cSimpleModule
     unsigned int numPendingRegistrations();
     unsigned int numAODVAllLineBreaksValue();
     unsigned int numDataArrivalsValue();
+    bool allDataArrived();
     void removePendingDataPkt();
     void addProactiveRREQ(uint32 _originator);
     void clearProactiveRREQ();

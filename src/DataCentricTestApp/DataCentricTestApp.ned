@@ -37,8 +37,9 @@ simple DataCentricTestApp extends TrafGenPar
         string actionThreads = default("");
         int none = 0;
         int firstPacket = 1;
-        int other = 2;
-        int simAppTerminationReason @enum(none,firstPacket,other) = default(none);
+        int allPackets = 2;
+        int other = 3;
+        int simAppTerminationReason @enum(none,firstPacket,allPackets,other) = default(none);
         
         //sourceFor[5]: string;
         //int x[5];

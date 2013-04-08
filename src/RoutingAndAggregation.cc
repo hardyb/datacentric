@@ -4403,9 +4403,10 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
 
 
 #ifdef XXXXXX
-void advert_retry(void* relevantObject)
-{
-}
+// using initiate_new_advert instead
+//void advert_retry(void* relevantObject)
+//{
+//}
 #endif
 
 

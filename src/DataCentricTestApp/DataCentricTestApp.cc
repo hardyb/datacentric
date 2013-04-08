@@ -759,6 +759,12 @@ void DataCentricTestApp::handleLowerMsg(cMessage* apMsg)
         setTerminate("Stopping simulation after first data packet",
                 par("firstPacket").longValue());
 
+        if ( mNetMan->allDataArrived() )
+        {
+            setTerminate("Stopping simulation after all expected packets received",
+                    par("allPackets").longValue());
+        }
+
         unsigned int _size = appPkt->getPktData().size();
         unsigned char* pkt = (unsigned char*)malloc(_size+1);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);

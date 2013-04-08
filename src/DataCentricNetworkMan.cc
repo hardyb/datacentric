@@ -753,6 +753,15 @@ unsigned int DataCentricNetworkMan::numAODVAllLineBreaksValue()
 }
 
 
+bool DataCentricNetworkMan::allDataArrived()
+{
+    Enter_Method("allDataArrived()");
+
+    return (numDataArrivals >= mExpectedDataArrivals);
+
+}
+
+
 
 
 unsigned int DataCentricNetworkMan::numDataArrivalsValue()
