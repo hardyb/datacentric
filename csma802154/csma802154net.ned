@@ -32,6 +32,8 @@ network csma802154net
     parameters:
         int numRegions = default(4);
         int numFixHosts;
+        int iVar3;
+        string nodeParsUsed;
         double nodeSeparation @unit("m")=default (3m); // 3m for home network
     submodules:
         region[numRegions]: Region;
