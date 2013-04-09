@@ -4382,7 +4382,12 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
         // even if it is self
         reinforceObtainGradient(fullyqualifiedname, interface, seqno);
         // INCLUDE THIS?
-        setTimer(0.01, t->s, send_queued_data);
+
+        if ( t->s->pktQ && t->s->deliveryInterfaces )
+        {
+            // we have queued data and reinforced delivery addres(es)
+            setTimer(0.01, t->s, send_queued_data); // PP
+        }
 
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )
@@ -4532,6 +4537,8 @@ void handle_advert(control_data cd)
     if ( incoming_packet.seqno > s->seqno )
     {
         /*
+         * CORRECT THIS COMMENT - ITS FOR PUB & SOURCE
+         *
          * IF: this is a rec and we are the sink for it
          * i.e. we have a best grad already set that is this data rec
          * interface to self and cost zero (and most likely grad and state seqno zero).
@@ -4570,6 +4577,8 @@ void handle_advert(control_data cd)
 
             RD( "Resending initiating advert packet [new seqno]" << std::endl );
             bcastAMessage(write_packet(&outgoing_packet));
+
+            // should we return from here?
         }
     }
 
@@ -5310,29 +5319,33 @@ void send_queued_data(void* relevantObject)
 
     State* s = (State*)relevantObject;
 
-    PacketQueue** l = &(s->pktQ);
-    PacketQueue* temp = *l;
-    while( temp !=NULL )
+    if ( s->pktQ && s->deliveryInterfaces )
     {
-        sending_packet = temp->i;
-        static unsigned char data[20];
-        GetStateStr(rd->top_state, s, data);
-        if ( consider_sending_data(s, data, 0) )
+        PacketQueue** l = &(s->pktQ);
+        PacketQueue* temp = *l;
+        while( temp !=NULL )
         {
-            *l = temp->link;
-            free(temp->i->data);
-            free(temp->i);
-            free(temp);
-            temp = *l;
+            sending_packet = temp->i;
+            static unsigned char data[20];
+            GetStateStr(rd->top_state, s, data);
+            if ( consider_sending_data(s, data, 0) )
+            {
+                *l = temp->link;
+                free(temp->i->data);
+                free(temp->i);
+                free(temp);
+                temp = *l;
+            }
+            else
+            {
+                l = &(temp->link);
+                temp = temp->link;
+            }
         }
-        else
-        {
-            l = &(temp->link);
-            temp = temp->link;
-        }
+
+        return;
     }
 
-    return;
 
 
 
@@ -5566,15 +5579,10 @@ void handle_interest(control_data cd)
 
 
 // probably not thread safe
-void handle_reinforce(control_data cd)
+void handle_reinforce(control_data cd) // I.E. REINFORCE ADVERT
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
     RD( "ADV Reinforce received from " << std::hex << _interface << std::endl );
-
-    // reinforce the the preceding interface in the direction of sink
-	// CHANGE_
-	//reinforceDeliverGradient(incoming_packet.data    .the_message.data_value, _interface);
-	reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
 
 
 	//StateNode* sn = FindStateNode(rd->stateTree, incoming_packet.the_message.data_value);
@@ -5589,7 +5597,26 @@ void handle_reinforce(control_data cd)
 	//trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, outgoing_packet.data);
 	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
-    setTimer(0.01, t->s, send_queued_data);
+	if ( incoming_packet.seqno < t->s->seqno )
+	{
+	    // the data name has been re-advertised under a new seqno, this is an old
+	    // reinforcement - no point continuing.
+	    return;
+	}
+
+
+	// MOVED BELOW t =
+	// reinforce the the preceding interface in the direction of sink
+    // CHANGE_
+    //reinforceDeliverGradient(incoming_packet.data    .the_message.data_value, _interface);
+    reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
+
+
+	if ( t->s->pktQ && t->s->deliveryInterfaces )
+	{
+	    // we have queued data and reinforced delivery addres(es)
+	    setTimer(0.01, t->s, send_queued_data); // PP
+	}
 
 
     // a reinforced obtain gradient to self indicates this is the source, so stop
@@ -5650,9 +5677,16 @@ void handle_reinforce_interest(control_data cd)
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
-	reinforceObtainGradient(incoming_packet.data, _interface, incoming_packet.seqno);
-
 	trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    if ( incoming_packet.seqno < t->s->seqno )
+    {
+        // interest in the data name has been re-issued under a new seqno, this is an old
+        // reinforcement - no point continuing.
+        return;
+    }
+
+    reinforceObtainGradient(incoming_packet.data, _interface, incoming_packet.seqno);
 
 
 	if ( t && t->s->bestGradientToDeliver )
@@ -5695,7 +5729,11 @@ void handle_reinforce_interest(control_data cd)
             //reinforceDeliverGradient((char*)incoming_packet.data, interface); //???
             add(&(t->s->deliveryInterfaces), selectedGradientToDeliver->key2); //maybe
 
-            setTimer(0.01, t->s, send_queued_data);
+            if ( t->s->pktQ && t->s->deliveryInterfaces )
+            {
+                // we have queued data and reinforced delivery addres(es)
+                setTimer(0.01, t->s, send_queued_data); // NN
+            }
 
             if ( interface == SELF_INTERFACE )
                 return;
@@ -5724,11 +5762,20 @@ void handle_reinforce_collaboration(control_data cd)
 {
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
+    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
+
+    if ( incoming_packet.seqno < t->s->seqno )
+    {
+        // interest in the data name has been re-issued under a new seqno, this is an old
+        // reinforcement - no point continuing.
+        return;
+    }
+
+    // MOVED DOWN
     // reinforce obtain back to collaboration reinforcement originator
     // because it is the sender
     reinforceObtainGradient(incoming_packet.data, _interface, incoming_packet.seqno);
 
-    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
     if ( t && t->s->bestGradientToDeliver )
     {
@@ -5738,7 +5785,11 @@ void handle_reinforce_collaboration(control_data cd)
             // just reinforce also DELIVER back to collaboration reinforcement originator
             // because it wants to receive as well, then finish
             reinforceDeliverGradient(incoming_packet.data, _interface, incoming_packet.seqno);
-            setTimer(0.01, t->s, send_queued_data);
+            if ( t->s->pktQ && t->s->deliveryInterfaces )
+            {
+                // we have queued data and reinforced delivery addres(es)
+                setTimer(0.01, t->s, send_queued_data); // NN
+            }
             return;
         }
 
@@ -5749,7 +5800,11 @@ void handle_reinforce_collaboration(control_data cd)
         // now find the forward interface and reinforce that for delivery
         NEIGHBOUR_ADDR interface = t->s->bestGradientToDeliver->key2->iName;
         reinforceDeliverGradient(incoming_packet.data, interface, incoming_packet.seqno);
-        setTimer(0.01, t->s, send_queued_data);
+        if ( t->s->pktQ && t->s->deliveryInterfaces )
+        {
+            // we have queued data and reinforced delivery addres(es)
+            setTimer(0.01, t->s, send_queued_data); // NN
+        }
 
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )
@@ -5821,7 +5876,11 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         // also reinforce the path to the source for breakage messages
 		// even if it is self
 		reinforceDeliverGradient(fullyqualifiedname, interface, seqno);
-        setTimer(0.01, t->s, send_queued_data);
+        if ( t->s->pktQ && t->s->deliveryInterfaces )
+        {
+            // we have queued data and reinforced delivery addres(es)
+            setTimer(0.01, t->s, send_queued_data); // NN
+        }
 
 		// If interface is self do not send message on
 		if ( interface == SELF_INTERFACE )
@@ -5890,7 +5949,11 @@ void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_
 
 
         //?????????
-        setTimer(0.01, t->s, send_queued_data);
+        if ( t->s->pktQ && t->s->deliveryInterfaces )
+        {
+            // we have queued data and reinforced delivery addres(es)
+            setTimer(0.01, t->s, send_queued_data); // NN
+        }
 
 
 
