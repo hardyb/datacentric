@@ -331,7 +331,7 @@ IPvXAddress UDPBurstAndBroadcast::chooseDestAddr()
 }
 
 
-cPacket *UDPBurstAndBroadcast::createPacket()
+cPacket *UDPBurstAndBroadcast::createPacket() // NOT USED
 {
     char msgName[32];
     sprintf(msgName, "UDPAppData-%d", counter++);
@@ -806,7 +806,7 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
         return;
     }
 
-    // If broadcast consider noting, forwarding or handling if for us
+    // Broadcast - consider noting, forwarding or handling
     UDPDataIndication *udpCtrl = check_and_cast<UDPDataIndication*>(pk->getControlInfo());
     IPvXAddress destAddr = udpCtrl->getDestAddr();
     if ( destAddr.get4().isLimitedBroadcastAddress() )
@@ -847,10 +847,13 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
         return;
     }
 
-    // Actual unicast packet so handle if for us
+    // Unicast packet for us so handle if not already handled
     if ( dynamic_cast<AppControlMessage*>(pk) )
     {
-        ProcessPacket(dynamic_cast<AppControlMessage*>(pk)); // pk deleted by function
+        if ( !duplicate(moduleId, msgId, pk) )
+        {
+            ProcessPacket(dynamic_cast<AppControlMessage*>(pk)); // pk deleted by function
+        }
     }
 
     // STILL ISSUES WITH DELETING PK  -  POORLY STRUCTURED CODE!!
@@ -941,8 +944,8 @@ bool UDPBurstAndBroadcast::duplicate(int moduleId, int msgId, cPacket *pk)
     {
         if (it->second >= msgId)
         {
-            EV << "Out of order packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
-            emit(outOfOrderPkSignal, pk);
+            //EV << "Out of order packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
+            //emit(outOfOrderPkSignal, pk);
             delete pk;
             numDuplicated++;
             return true;
@@ -1166,7 +1169,7 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
 
 
 
-void UDPBurstAndBroadcast::generateBurst()
+void UDPBurstAndBroadcast::generateBurst() // NOT USED
 {
     simtime_t now = simTime();
 
@@ -1435,7 +1438,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 //numSent++;
             }
             break;
-        case SERVICE_DISCOVERY_REQUEST:
+        case SERVICE_DISCOVERY_REQUEST: // comes by bcast
             ////////////// NEW CODE
             intr = acm->getInterests();
             con = acm->getContext();
@@ -1462,7 +1465,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
 
             ////////////////////////////////////
             break;
-        case SERVICE_DISCOVERY_CONFIRMATION:
+        case SERVICE_DISCOVERY_CONFIRMATION: // comes by ucast
             ////////////// NEW CODE
             d.data = acm->getInterests();
             d.context = acm->getContext();
@@ -1470,7 +1473,11 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             //addr = IPvXAddressResolver().resolve(acm->getSourceData());
             //mServiceList[d].push_back(addr);
             // Or this method?
-            mServiceList[d].push_back(origAddr);
+
+            if ( !mServiceList[d].insert(origAddr).second )
+                break; // duplicate service response
+
+            // if we get a duplicate service response dont send another bind request
             generatePacket(origAddr, "BindRequest", BINDING_REQUEST,
                     d.data.c_str(), "", d.context.c_str(), 0);
             if ( mBindingNumTries > 1 )

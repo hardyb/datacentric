@@ -112,7 +112,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     std::map<AData, ABinding, Compare> mBindingList;
     typedef std::map<AData, ABinding, Compare>::iterator BindingListIter;
 
-    std::map<AData, std::vector<IPvXAddress>, Compare> mServiceList;
+    std::map<AData, std::set<IPvXAddress>, Compare> mServiceList;
     typedef std::map< AData, std::vector<IPvXAddress>, Compare>::iterator ServiceListIter;
 
     std::map<AData, int, Compare> mBindingTries;

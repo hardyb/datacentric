@@ -1,0 +1,170 @@
+
+
+
+serv discov conf sent once only to 91EC000C
+from 0x06360278
+@ 0.056638492988999999
+
+data always:  orig: 145.236.0.2 dest: 145.236.0.12
+
+==================================
+
+
+possible scenario
+
+1st data gets back as far as 120
+link fails
+issues new rreq from 120
+
+12 gets rreq and issues rreply
+
+
+
+
+1st rrep  -  0.12  -  0.29
+
+12
+120
+171
+177
+2
+
+
+
+2nd rrep  -  0.50  -  0.64
+
+
+12
+58
+153
+177
+?      -    177 already has a route?
+
+
+
+
+
+1st Data  -  0.29  -  0.47
+
+
+2
+177
+171
+120
+12 (but maybe line break local repair??)
+
+
+
+2nd Data  -  0.65  -  0.70
+
+2
+?
+153
+58
+12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+====================================
+two receipts!
+
+1st serv discov conf - at 0x063af8e0  @  0.47628822716300001 s
+
+origin: 91EC0002
+dest:   91EC000C
+
+
+
+2nd data route
+
+153
+58
+12
+
+
+2nd RREP route
+
+12
+58
+153
+177
+
+2nd serv discov conf - at 0x063af8e0  @  0.77128797420899997 s
+
+origin: 91EC0002
+dest:   91EC000C
+
+
+
+
+then at 0x063af8e0
+
+received DATA @ 0.78212800486299994
+
+and terminates since 1 of 1 pkts received
+
+BUT if further pairs waiting to complete then will not terminate
+and the additional unnecessary bind requests due to duplicate servdiscovery_conf
+may clog up the traffic
+
+
+
+
+
+
+
+
+
+
+The default seek timer timeout in ms is NET_TRAVERSAL_TIME
+
+#define NET_DIAMETER            35
+#define NET_TRAVERSAL_TIME      2 * NODE_TRAVERSAL_TIME * NET_DIAMETER
+#define NODE_TRAVERSAL_TIME     40
+
+So, 2 * 40 * 35 = 2800
+
+But we are using a zigbee one 254 ms
+
+
+
+
+Is there a bug in AODV or in our adaptation that allows the retry seek to
+go ahead even if a route has been found and data sent?
+
+so waht might be the scenarios?
+
+
+1
+queue data
+send rreq
+get rrep
+send data
+retry rreq
+not clear queue
+
+
+
+
+
+
+
+
+
+
+
