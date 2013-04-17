@@ -366,7 +366,7 @@ void DataCentricTestApp::initialize(int aStage)
                             && y < (_y + _h)
                             && z < (_z + _d)      )
                     {
-                        contextData = contextData + _c + " ";
+                        contextData = contextData + _c + "\xFE";
                         if ( mBeenSetDirect )
                         {
                             // In this app one or more relevent parameters have been set directly
@@ -443,7 +443,7 @@ void DataCentricTestApp::initialize(int aStage)
 
         // should we do the tokenization here
         // or in datacentricnetworklayer like for sources and sinks?
-        std::vector<std::string> contextDataSet = cStringTokenizer(contextData.c_str()).asVector();
+        std::vector<std::string> contextDataSet = cStringTokenizer(contextData.c_str(), "\xFE").asVector();
         for (std::vector<std::string>::iterator i = contextDataSet.begin();
                 i != contextDataSet.end(); ++i)
         {

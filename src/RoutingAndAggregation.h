@@ -196,7 +196,8 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define REINFORCE_COLLABORATION 8
 #define INTEREST_CORRECTION 9
 #define BREAKAGE 10
-#define REINFORCE_INTEREST_CANCEL 11
+#define PUBBREAKAGE 11
+#define REINFORCE_INTEREST_CANCEL 12
 
 
 
@@ -823,6 +824,7 @@ void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject
 void weAreSourceFor(unsigned char* _data, char seqno);
 void weAreSinkFor(unsigned char* _data, char seqno);
 int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
+void initiate_new_advert(void* relevantObject);
 void weAreCollaboratorFor(unsigned char* _data, char seqno);
 void weAreCollaboratorInitiatorFor(unsigned char* _data, char seqno);
 void send_data(int len, unsigned char* _data, double _creationTime);
@@ -849,6 +851,7 @@ void handle_reinforce_collaboration(control_data cd);
 void handle_interest_correction(control_data cd);
 void handle_breakage(control_data cd);
 void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime);
+void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);
@@ -884,7 +887,7 @@ the hierarchical data name followed by the hierarchical context name
 the match is true if every name found in the record is a prefix of
 every name in the incoming message
 */
-trie* trie_lookup_longest_prefix_extra2(trie *t, const char *str);
+trie* trie_lookup_longest_prefix_extra2(trie *t, unsigned char *str);
 
 
 void action_all_prefixes(trie *t, int i, int n, unsigned char *str, unsigned char* buf, NEIGHBOUR_ADDR _if, int process(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if));

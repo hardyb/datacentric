@@ -402,22 +402,15 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             switch ( *pkt )
             {
                 case DATA:
-                //case REINFORCE:
-                //case REINFORCE_INTEREST:
-                    //int x = 0;
-                    //InterfaceDown(pkt, destIF);
-
-                    /*
-                     * It may be important to schedule a new event here
-                     * instead of diving in asynchronously
-                     *
-                     * Or may be move shared data like output_pkt into
-                     * rd an set rd so no conflict occurrs
-                     *
-                     * Also may be important to write this aspect into
-                     * the requirements of the framework
-                     */
-                    interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+                    switch ( (pkt[2] & MSB2) )
+                    {
+                        case PUBLICATION:
+                            advert_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+                            break;
+                        case RECORD:
+                            interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+                            break;
+                    }
                     break;
             }
         }
@@ -429,6 +422,24 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
     }
 
 }
+
+// OLD COMMENT FROM ABOVE
+//case REINFORCE:
+//case REINFORCE_INTEREST:
+    //int x = 0;
+    //InterfaceDown(pkt, destIF);
+
+    /*
+     * It may be important to schedule a new event here
+     * instead of diving in asynchronously
+     *
+     * Or may be move shared data like output_pkt into
+     * rd an set rd so no conflict occurrs
+     *
+     * Also may be important to write this aspect into
+     * the requirements of the framework
+     */
+
 
 
 void DataCentricNetworkLayer::sendDownTheNIC()
@@ -622,6 +633,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
     if ( msg == mRegularCheckMessage )
     {
+        /*
         regular_checks();
 
         string s;
@@ -633,6 +645,7 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
 
         scheduleAt(simTime()+2.0, mRegularCheckMessage); // Ownership PASSED on
         return;
+        */
     }
 
     DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(msg);
@@ -855,7 +868,7 @@ void DataCentricNetworkLayer::SetSourceWithLongestContext(DataCentricAppPkt* app
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sourceData.begin());
     //int size = appPkt->getPktData().size();
     //size = sourceData.size();
-    std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str()).asVector();
+    std::vector<std::string> sourcesData = cStringTokenizer(sourceData.c_str(), "\xFE").asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sourcesData.begin();
             i != sourcesData.end(); ++i)
@@ -880,7 +893,7 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
     //int size = appPkt->getPktData().size();
     //size = sinkData.size();
-    std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str()).asVector();
+    std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str(), "\xFE").asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = sinksData.begin();
             i != sinksData.end(); ++i)
@@ -907,7 +920,7 @@ void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCe
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
     //int size = appPkt->getPktData().size();
     //size = collabData.size();
-    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str(), "\xFE").asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = collabsData.begin();
             i != collabsData.end(); ++i)
@@ -935,7 +948,7 @@ void DataCentricNetworkLayer::SetCollaboratorWithShortestContext(DataCentricAppP
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
     //int size = appPkt->getPktData().size();
     //size = collabData.size();
-    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str()).asVector();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str(), "\xFE").asVector();
     unsigned char temp[30];
     for (std::vector<std::string>::iterator i = collabsData.begin();
             i != collabsData.end(); ++i)
