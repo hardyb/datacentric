@@ -32,11 +32,11 @@ network DataCentricNet
         int numRegions = default(4);
         double numHosts;
         double nodeSeparation @unit("m")=default (3m);
-        int iVar1;
-        int iVar2;
-        int iVar3;
-        int iVar4;
-        string nodeParsUsed;
+        int iVar1 = default(0);
+        int iVar2 = default(0);
+        int iVar3 = default(0);
+        int iVar4 = default(0);
+        string nodeParsUsed = default("");
     submodules:
         region[numRegions]: Region;
         host[numHosts]: DataCentricNode {
