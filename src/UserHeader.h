@@ -51,7 +51,7 @@
 
 
 #define REINFORCE_TIMEOUT 0.4
-#define ADVERT_TIMEOUT 1.2
+#define ADVERT_TIMEOUT 5 //1.2
 
 // Special address values
 #define SELF_INTERFACE 0x20000000001

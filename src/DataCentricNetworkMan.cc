@@ -20,6 +20,11 @@
 
 #define BPS_INTERVAL_NOT_ONE
 
+#define ESTIMATION_UNKNOWN 0
+#define NO_ESTIMATION 1
+#define ESTIMATION_EXPERIMENT 2
+#define ESTIMATION_MAXIMUM 3
+#define ESTIMATION_MAXIMUM_LIKELIHOOD 4
 
 /*
 static cNEDValue ned_choose(cComponent *context, cNEDValue argv[], int argc)
@@ -73,6 +78,32 @@ void DataCentricNetworkMan::initialize(int aStage)
 
     if (0 == aStage)
     {
+        string tempPar = par("estimationMethod");//.str();
+
+        estimationMethod = ESTIMATION_UNKNOWN;
+        if ( !strcmp(par("estimationMethod").stringValue(), "experiment") )
+        {
+            estimationMethod  = ESTIMATION_EXPERIMENT;
+        }
+        if ( !strcmp(par("estimationMethod").stringValue(), "maximum") )
+        {
+            estimationMethod  = ESTIMATION_MAXIMUM;
+        }
+        if ( !strcmp(par("estimationMethod").stringValue(), "maximumlikelihood") )
+        {
+            estimationMethod  = ESTIMATION_MAXIMUM_LIKELIHOOD;
+        }
+        if ( !strcmp(par("estimationMethod").stringValue(), "") )
+        {
+            estimationMethod  = NO_ESTIMATION;
+        }
+        if ( estimationMethod  == ESTIMATION_UNKNOWN )
+        {
+            throw cRuntimeError("estimationMethod must be \"experiment\", \"maximum\","
+                    " \"maximumlikelihood\" or \"\"");
+        }
+
+
         currentTotalBits = 0;
 
         bpsInterval = par("bpsInterval");
@@ -481,9 +512,35 @@ void DataCentricNetworkMan::finish()
     this->cancelAndDelete(mpControlPacketFrequencyMessage);
     this->cancelAndDelete(mpDemandMessage);
 
-#ifdef BPS_INTERVAL_NOT_ONE
-    double lastCheckTime = nextCheckTime - bpsInterval;
     double now = simTime().dbl();
+    /*
+     * Would like to estimate this right-censored data using maximum likelyhood
+     * but so far cannot find / manage to implement the right algorythms
+     */
+    unsigned int numCensoredData = mExpectedDataArrivals - E2EDelayStats.getCount();
+    for ( int i = 0; i < numCensoredData; i++ )
+    {
+        switch ( estimationMethod )
+        {
+            case NO_ESTIMATION:
+                break;
+            case ESTIMATION_EXPERIMENT:
+                E2EDelayStats.collect(now);
+                break;
+            case ESTIMATION_MAXIMUM:
+                E2EDelayStats.collect(E2EDelayStats.getMax());
+                break;
+            case ESTIMATION_MAXIMUM_LIKELIHOOD:
+                throw cRuntimeError("maximumliklihood estimation method not implemented yet");
+                break;
+            default:
+                throw cRuntimeError("Unknown estimation method");
+                break;
+        }
+    }
+
+    #ifdef BPS_INTERVAL_NOT_ONE
+    double lastCheckTime = nextCheckTime - bpsInterval;
     double finalShortBpsInterval = simTime().dbl() - lastCheckTime;
     double dblCurrentTotalBits = (double)currentTotalBits;
     double bps = dblCurrentTotalBits / finalShortBpsInterval;
@@ -508,6 +565,9 @@ void DataCentricNetworkMan::finish()
     recordScalar("StdDevE2EDelay", E2EDelayStats.getStddev());
     recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
     recordScalar("MinE2EDelay", E2EDelayStats.getMin());
+
+
+
 
     // OVERHEAD
     recordScalar("numControlPackets", totControlPacketsThisRun);// pos change text tot for run you see

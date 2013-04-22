@@ -622,16 +622,19 @@ typedef struct State
 	struct KDGradientNode* bestGradientToObtain;
 	int bestGradientToObtainUpdated; /* used as a bool */
 	struct InterfaceList* obtainInterfaces;
-	struct Interface* obtainInterface;
+	//struct Interface* obtainInterface; // not usedany more??
 	struct KDGradientNode* bestGradientToDeliver;
 	int bestGradientToDeliverUpdated; /* used as a bool */
 	struct InterfaceList* deliveryInterfaces;
     struct PacketQueue* pktQ;
 	char seqno;
-	char converged;
-	char broken;
-	int action;
-	int prefix;
+	char rrqRetries;
+	char reinforcementRetries;
+
+	char converged; // as bool
+	char broken; // as bool
+	int action; // as enum pos reduce mem takeup
+	int prefix; // as enum pos reduce mem takeup
 	// consider putting some of this stuff into bit flags
 	// pos some how combine updated flags and converged flags
 	// save space variously

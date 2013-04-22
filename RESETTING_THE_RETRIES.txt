@@ -1,0 +1,59 @@
+
+
+
+
+
+
+What about interests in all of this reinforce retry stuff?
+
+so say we send an interest the srcs receive interest and 
+send reinforcement AND first data (here reinf only necessary for 
+completeness) repeat not required if data fails then breakage sent and
+new interest
+
+
+
+SO... we DO NOT do retries of reinforcements for interests
+
+
+
+
+
+
+
+
+
+
+when do we reset the retries to zero?
+
+
+advert/interest retry
+newly up
+
+
+reinforce retry
+we are reinforcing ONE PARTICULAR intr/adv
+so, if there is a new instance of the same intr/adv
+e.g. after a break, then we need to do fresh
+reinforce (new route?) and give it a number of tries if
+necessary
+SO..
+we know this by the fresh seqno, so if there is a new seqno then
+reset the retry count
+AND...
+When newly up?
+
+
+
+
+
+==================================
+
+we send out an advert
+1
+
+we send reinf 1
+no data
+send anotherreinf 2
+
+

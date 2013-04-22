@@ -118,6 +118,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double nextCheckTime;
 
     signed int mDemand;
+    int estimationMethod;
+
 
     std::vector<DataCentricTestApp*> mNodeArray;
 

@@ -5,8 +5,6 @@
 
 unsigned char current_prefix_name[100];
 
-char advertRetries;  // needs improving
-char advertReinforceRetries; // needs improving
 
 
 #include "RoutingAndAggregation.h"
@@ -1732,6 +1730,7 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
             if ( seqno > s->seqno )
             {
                 s->seqno = seqno;
+                s->reinforcementRetries = 0;
                 s->broken = 0;
                 s->bestGradientToDeliver = NULL;
                 s->bestGradientToObtain = NULL;
@@ -3452,7 +3451,7 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
 
     if ( t && (t->s->action == SOURCE_ACTION || t->s->obtainInterfaces->i->iName == SELF_INTERFACE) )
     {
-        new_packet* savePkt = packetCopy(&incoming_packet);
+        new_packet* savePkt = packetCopy(&broken_packet);
         addPkt(&(t->s->pktQ), savePkt);
         QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
@@ -3513,6 +3512,7 @@ void initiate_new_advert(void* relevantObject)
     weAreSourceFor(data, s->seqno+1);
     s->converged = 1; // SHOULD THIS ALWAYS BE '1' FOR STABLE SINK OF REC ???
     // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
+    s->reinforcementRetries = 0; // possibly begnine and unnecessary
     UcastAllBestGradients(rd->top_state, 0);
 
 }
@@ -3536,6 +3536,8 @@ void initiate_new_interest(void* relevantObject)
     weAreSinkFor(data, s->seqno+1);
     s->converged = 1; // SHOULD THIS ALWAYS BE '1' FOR STABLE SINK OF REC ???
     // NBNBNBNB  -  NOT YET CODED the roll over after 255 seqnos
+    s->reinforcementRetries = 0; // possibly begnine and unnecessary
+
     UcastAllBestGradients(rd->top_state, 0);
 
 }
@@ -3714,12 +3716,12 @@ void weAreSourceFor(unsigned char* _data, char seqno)
 	    // reboot not properly supported for now, first seqno always zero
 		setObtainGradient(_data, SELF_INTERFACE, 0, seqno);
 #ifdef XXXXXX
-		if ( advertRetries < 2 ) // needs improving
+		if ( t && t->s->rrqRetries < 2 ) // needs improving
 		    // if 1 then we are about to retry first time
 		    // if 2 then we are about to retry second time so don't reset timer
 		{
 	        setTimer(ADVERT_TIMEOUT, t->s, initiate_new_advert);
-	        advertRetries++;
+	        t->s->rrqRetries++;
 		}
 #endif
 	}
@@ -4298,117 +4300,7 @@ if ( numSinks )
 
 
 
-void handle_interest_dummy(control_data cd)
-{
-    RD( "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
 
-    NEIGHBOUR_ADDR _interface = cd.incoming_if;
-    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
-
-    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
-    State* s = t->s;
-
-    if ( incoming_packet.seqno < s->seqno )
-    {
-        return; // I think this is right, i.e. ignore any old seq ints/advs
-        // CHECK THIS
-    }
-
-    if ( (incoming_packet.seqno == s->seqno) && s->converged )
-    {
-        return;
-    }
-
-    if ( incoming_packet.seqno > s->seqno )
-    {
-        /*
-         * IF: this is a rec and we are the sink for it
-         * i.e. we have a best grad already set that is this data rec
-         * interface to self and cost zero (and most likely grad and state seqno zero).
-         *
-         * THEN:  we must leave the best grad to self in place, set its seqno to this
-         * incoming seqno value +1 and the same for the state object.
-         *
-         * ACTUALLY we JUST want to send out the initiating interest again with the
-         * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
-         *
-         *
-         */
-        if ( s->bestGradientToDeliver &&
-                s->bestGradientToDeliver->key2->iName == SELF_INTERFACE &&
-                s->bestGradientToDeliver->costToDeliver == 0 &&
-                s->bestGradientToDeliver->seqno == 0 &&
-                s->seqno == 0) // pos improve condition
-        {
-            s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
-            s->seqno = incoming_packet.seqno+1;
-            //s->bestGradientToDeliverUpdated = 0;
-
-            outgoing_packet.message_type = INTEREST;
-
-            outgoing_packet.length = incoming_packet.length;
-            outgoing_packet.data = incoming_packet.data;
-
-            //outgoing_packet.length = strlen(queue); // strlen ok in this case
-            //outgoing_packet.data = (unsigned char*)queue; // cannot get
-
-            outgoing_packet.path_value = 0;
-            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
-            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
-            outgoing_packet.seqno = s->seqno;
-
-            RD( "Resending initiating interest packet [new seqno]" << std::endl );
-            bcastAMessage(write_packet(&outgoing_packet));
-        }
-    }
-
-    int inserted;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    i->lqi = cd.incoming_lqi;
-
-    setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
-
-    // check this out!!
-    if ( incoming_packet.down_interface == thisAddress )
-        return;
-
-    if ( t )
-    {
-        if ( t->s->bestGradientToDeliverUpdated )
-        {
-            // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
-
-            // this is a once only on first sight for all the (interest) states
-            // we have ever seen, to say whether or not it is a prefix of one
-            // that was previously set as SOURCE_ACTION
-            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->prefix != PREFIX_CHECKED )
-            {
-                traverse(rd->top_state, queue, 0, setAllPrefixStatus);
-                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
-                {
-                    t->s->prefix = PREFIX_CHECKED;
-                }
-            }
-
-            // try doing timeout for ALL nodes
-            t->s->converged = 0;
-            setTimer(0.2, t->s, interest_convergence_timeout);
-
-            t->s->bestGradientToDeliverUpdated = false;
-            outgoing_packet.message_type = INTEREST;
-            outgoing_packet.data = incoming_packet.data;
-            outgoing_packet.length = incoming_packet.length;
-            outgoing_packet.path_value = outgoingLinkCost(cd);
-            outgoing_packet.excepted_interface = _interface;
-            outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-            outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
-            bcastAMessage(write_packet(&outgoing_packet));
-        }
-    }
-
-}
 
 
 //HEREAGAIN
@@ -4419,7 +4311,7 @@ void handle_interest_dummy(control_data cd)
  * only treat as arrived from SELF?
  */
 // probably not thread safe
-void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)
+void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno)// Reinforce adv
 {
     RD( "ABOUT to ADV Reinforce" << std::endl );
     // did we already do this at start up when we made us a sink for this name?
@@ -4494,12 +4386,12 @@ void start_reinforce_retry(void* relevantObject)
     static unsigned char data[20];
     GetStateStr(rd->top_state, s, data);
 #ifdef XXXXXX
-    if ( advertReinforceRetries < 2 ) // needs improving
+    if ( s->reinforcementRetries < 3 ) // needs improving
         // if 1 then we are about to retry first time
         // if 2 then we are about to retry second time so don't reset timer
     {
         setTimer(REINFORCE_TIMEOUT, s, start_reinforce_retry);
-        advertReinforceRetries++;
+        s->reinforcementRetries++;
     }
 #endif
     start_reinforce(data, SELF_INTERFACE, s->seqno);
@@ -4526,7 +4418,7 @@ void advert_convergence_timeout(void* relevantObject)
         start_reinforce(data, SELF_INTERFACE, s->seqno);
 #ifdef XXXXXX
         setTimer(REINFORCE_TIMEOUT, s, start_reinforce_retry);
-        advertReinforceRetries++;
+        s->reinforcementRetries++;
 #endif
 
 #ifdef GRAD_FILES
@@ -4630,6 +4522,9 @@ void handle_advert(control_data cd)
         {
             s->bestGradientToObtain->seqno = incoming_packet.seqno+1;
             s->seqno = incoming_packet.seqno+1;
+            s->reinforcementRetries = 0;
+            s->rrqRetries = 0;
+
             //s->bestGradientToDeliverUpdated = 0;
 
             outgoing_packet.message_type = ADVERT;
@@ -4890,124 +4785,6 @@ void handle_advert_almost_same_as_old(control_data cd)
 
 
 
-void handle_interestTODELETETODELETE(control_data cd)
-{
-    RD( "Interest received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
-
-    NEIGHBOUR_ADDR _interface = cd.incoming_if;
-    if ( incoming_packet.excepted_interface == thisAddress )
-    {
-        //return;
-    }
-
-    trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
-
-    // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
-    State* s = t->s;
-
-    if ( incoming_packet.seqno < s->seqno )
-    {
-        return; // I think this is right, i.e. ignore any old seq ints/advs
-        // CHECK THIS
-    }
-
-    if ( (incoming_packet.seqno == s->seqno) && s->converged )
-    {
-        return;
-    }
-
-    if ( incoming_packet.seqno > s->seqno )
-    {
-        /*
-         * IF: this is a rec and we are the sink for it
-         * i.e. we have a best grad already set that is this data rec
-         * interface to self and cost zero (and most likely grad and state seqno zero).
-         *
-         * THEN:  we must leave the best grad to self in place, set its seqno to this
-         * incoming seqno value +1 and the same for the state object.
-         *
-         * ACTUALLY we JUST want to send out the initiating interest again with the
-         * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
-         *
-         *
-         */
-        if ( s->bestGradientToDeliver &&
-                s->bestGradientToDeliver->key2->iName == SELF_INTERFACE &&
-                s->bestGradientToDeliver->costToDeliver == 0 &&
-                s->bestGradientToDeliver->seqno == 0 &&
-                s->seqno == 0) // pos improve condition
-        {
-            s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
-            s->seqno = incoming_packet.seqno+1;
-            //s->bestGradientToDeliverUpdated = 0;
-
-            outgoing_packet.message_type = INTEREST;
-
-            outgoing_packet.length = incoming_packet.length;
-            outgoing_packet.data = incoming_packet.data;
-
-            //outgoing_packet.length = strlen(queue); // strlen ok in this case
-            //outgoing_packet.data = (unsigned char*)queue; // cannot get
-
-            outgoing_packet.path_value = 0;
-            //outgoing_packet.excepted_interface = s->bestGradientToDeliver->key2->iName;
-            outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
-            outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
-            outgoing_packet.seqno = s->seqno;
-
-            RD( "Resending initiating interest packet [new seqno]" << std::endl );
-            bcastAMessage(write_packet(&outgoing_packet));
-        }
-    }
-
-    int inserted;
-    Interface* i = InsertInterfaceNode(&(rd->interfaceTree), _interface, &inserted)->i;
-    i->lqi = cd.incoming_lqi;
-
-    setDeliverGradient(incoming_packet.data, _interface, incomingLinkCost(cd), incoming_packet.seqno);
-
-    // check this out!!
-    if ( incoming_packet.down_interface == thisAddress )
-        return;
-
-    if ( t )
-    {
-        if ( t->s->bestGradientToDeliverUpdated )
-        {
-            // THIS MECHANISM FOR NOW BUT MAY NEED A SUFFIX FUNCTION
-
-            // this is a once only on first sight for all the (interest) states
-            // we have ever seen, to say whether or not it is a prefix of one
-            // that was previously set as SOURCE_ACTION
-            if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX &&
-                    t->s->prefix != PREFIX_CHECKED )
-            {
-                traverse(rd->top_state, queue, 0, setAllPrefixStatus);
-                if ( t->s->prefix != FORWARD_AND_SOURCEPREFIX )
-                {
-                    t->s->prefix = PREFIX_CHECKED;
-                }
-            }
-
-            // try doing timeout for ALL nodes
-            t->s->converged = 0;
-            setTimer(0.2, t->s, interest_convergence_timeout);
-
-            t->s->bestGradientToDeliverUpdated = false;
-            outgoing_packet.message_type = INTEREST;
-            outgoing_packet.data = incoming_packet.data;
-            outgoing_packet.length = incoming_packet.length;
-            outgoing_packet.path_value = outgoingLinkCost(cd);
-            outgoing_packet.excepted_interface = _interface;
-            outgoing_packet.down_interface = UNKNOWN_INTERFACE;
-            outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
-            bcastAMessage(write_packet(&outgoing_packet));
-        }
-    }
-
-}
-
-
 
 
 
@@ -5074,6 +4851,8 @@ void handle_collaboration(control_data cd)
         {
             s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
             s->seqno = incoming_packet.seqno+1;
+            s->reinforcementRetries = 0;
+            s->rrqRetries = 0;
 
             outgoing_packet.message_type = COLLABORATION;
 
@@ -5394,6 +5173,9 @@ void handle_interest(control_data cd)
         {
             s->bestGradientToDeliver->seqno = incoming_packet.seqno+1;
             s->seqno = incoming_packet.seqno+1;
+            s->reinforcementRetries = 0;
+            s->rrqRetries = 0;
+
             //s->bestGradientToDeliverUpdated = 0;
 
             outgoing_packet.message_type = INTEREST;
@@ -6045,8 +5827,6 @@ void handle_neighbor_ucast(control_data cd)
 
 void StartUp()
 {
-    advertRetries = 0;  // needs improving
-    advertReinforceRetries = 0;  // needs improving
 
 	// not sure if this is necessary for ansii c
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
@@ -6299,13 +6079,16 @@ struct State* newStateObject()
 	s->bestGradientToObtain = NULL;
 	s->bestGradientToDeliver = NULL;
 	s->deliveryInterfaces = NULL;
-	s->obtainInterface = NULL;
+	//s->obtainInterface = NULL;
 	s->obtainInterfaces = NULL;
 	s->pktQ = NULL;
 	s->bestGradientToObtainUpdated = FALSE;
 	s->bestGradientToDeliverUpdated = FALSE;
 	s->action = FORWARD_ACTION;
 	s->seqno = 0;
+	s->reinforcementRetries = 0;
+	s->rrqRetries = 0;
+
 	s->broken = 0;
 	s->converged = 0;
 	s->prefix = 0;

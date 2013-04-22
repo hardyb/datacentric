@@ -24,6 +24,7 @@ simple DataCentricNetworkMan
         string sources = default("");
         int expectedDataArrivals = default(0);
         double bpsInterval = default(0.1);
+        string estimationMethod = default("");
         
     gates:
         input upperLayerIn; 			// from the upper layer
