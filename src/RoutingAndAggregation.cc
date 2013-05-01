@@ -22,10 +22,10 @@ unsigned char current_prefix_name[100];
 
 
 // number of nodes that have seen the data
-int tempStat_1[10];
+//int tempStat_1[10];
 
 // number of nodes that have added the data
-int tempStat_2[10];
+//int tempStat_2[10];
 
 
 
@@ -4000,7 +4000,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 #endif
 
     // number of times data is seen (network wide)
-    tempStat_1[incoming_packet.data[1]]++;
+    //tempStat_1[incoming_packet.data[1]]++;
 
     rd->pkts_received++;
 
@@ -4115,7 +4115,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 
 
     // number of times data is processed (network wide)
-	tempStat_2[incoming_packet.data[1]]++;
+	//tempStat_2[incoming_packet.data[1]]++;
 
 
 	(*h[incoming_packet.message_type]) (cd);

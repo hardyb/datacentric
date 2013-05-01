@@ -49,8 +49,8 @@ DataCentricNetworkMan* netWkMan; // change name
 
 
 
-extern int tempStat_1[10];
-extern int tempStat_2[10];
+//extern int tempStat_1[10];
+//extern int tempStat_2[10];
 
 
 
@@ -82,11 +82,11 @@ void DataCentricNetworkMan::initialize(int aStage)
     {
         string tempPar = par("estimationMethod");//.str();
 
-        for (int i = 0; i < 10; i++)
-        {
-            tempStat_1[i] = 0;
-            tempStat_2[i] = 0;
-        }
+        //for (int i = 0; i < 10; i++)
+        //{
+        //    tempStat_1[i] = 0;
+        //    tempStat_2[i] = 0;
+        //}
 
         estimationMethod = ESTIMATION_UNKNOWN;
         if ( !strcmp(par("estimationMethod").stringValue(), "experiment") )
@@ -598,11 +598,11 @@ void DataCentricNetworkMan::finish()
     */
 
 
-    for (int i = 0; i < 10; i++)
-    {
-        t1.recordWithTimestamp(i, (double)tempStat_1[i]);
-        t2.recordWithTimestamp(i, (double)tempStat_2[i]);
-    }
+    //for (int i = 0; i < 10; i++)
+    //{
+    //    t1.recordWithTimestamp(i, (double)tempStat_1[i]);
+    //    t2.recordWithTimestamp(i, (double)tempStat_2[i]);
+    //}
 
 
 
