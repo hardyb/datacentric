@@ -58,7 +58,7 @@
 #define UNKNOWN_INTERFACE 0x20000000000
 
 #define MY_C_PLUSPLUS 1
-#define GRAD_FILES 1
+//#define GRAD_FILES 1
 
 #endif
 

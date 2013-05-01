@@ -35,6 +35,9 @@ unsigned char nodeConstraint;
 NEIGHBOUR_ADDR thisAddress;
 
 extern NEIGHBOUR_ADDR excludedInterface; // used as the incoming i/f for debug
+extern int stateCount;
+extern char queue[100];
+
 
 double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
@@ -65,9 +68,9 @@ static char messageName[9][24] =
 
 
 static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
-static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID);
 static void cb_bcast_message(unsigned char* _msg);
-static void cb_handle_application_data(unsigned char* _msg, double _creationTime);
+static void cb_handle_application_data(unsigned char* _msg, double _creationTime, uint64_t ID);
 //static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 static void cb_recordNeighbourLqi(Interface* i, State* s);
 //static void cb_printNeighbour(Interface* i, State* s);
@@ -87,6 +90,8 @@ void DataCentricNetworkLayer::initialize(int aStage)
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
     if (0 == aStage)
     {
+        numSent = 0;
+
         //mpStartMessage = new cMessage("StartMessage");
         mpUpDownMessage = new cMessage("UpDownMessage");
         mMessageForTesting_1 = new cMessage("mMessageForTesting_1");
@@ -105,6 +110,11 @@ void DataCentricNetworkLayer::initialize(int aStage)
         InterestInterDepartureTimesVector.setName("InterestInterDepartureTimesVector");
         AdvertInterDepartureTimesVector.setName("AdvertInterDepartureTimesVector");
         StabilityVector.setName("StabilityVector");
+
+        ostringstream os;
+        os << "seenLqisInTime_" << this->getIndex();
+        string vectorName = os.str();
+        seenLqisInTime.setName(vectorName.c_str());
 
 
         mTotalInterestArrivals = 0.0;
@@ -282,6 +292,10 @@ void DataCentricNetworkLayer::finish()
         unsigned int minlqi = (unsigned int)rd->interfaceTree->i->lqi;
         MinMaxNeighborLqi(rd->interfaceTree, &maxlqi, &minlqi);
 
+        stateCount = 0; // no semantic error, but don't we need an extern
+        traverse(rd->top_state, queue, 0, countState);
+        recordScalar("NumberOfStates", stateCount);
+
         double averageLqi = (totalLqi / totNeighbors);
         recordScalar("TotalNeighborLqi", totalLqi);
         recordScalar("AverageNeighborLqi", averageLqi);
@@ -320,6 +334,10 @@ void DataCentricNetworkLayer::finish()
     double pkts_received = (double)rd->pkts_received;
     double ignoreRatio = pkts_ignored / pkts_received;
     recordScalar("ignoreRatio", ignoreRatio);
+
+    recordScalar("numSeenLqis", seenLqis.getCount());
+    recordScalar("meanSeenLqis", seenLqis.getMean());
+    recordScalar("stdevSeenLqis", seenLqis.getStddev());
 
     cancelAndDelete(mpUpDownMessage);
     cancelAndDelete(mMessageForTesting_1);
@@ -396,6 +414,9 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
             destMac.convert48();
             NEIGHBOUR_ADDR destIF = destMac.getInt();
             DataCentricAppPkt* appPkt = check_and_cast<DataCentricAppPkt *>(f->decapsulate());
+            uint64_t moduleId64 = (int)appPkt->par("sourceId");
+            uint64_t msgId64 = (int)appPkt->par("msgId");
+            uint64_t ID = (moduleId64 << 32) | msgId64;
 
             unsigned char* pkt = (unsigned char*)malloc(appPkt->getPktData().size());
             std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), pkt);
@@ -405,10 +426,10 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                     switch ( (pkt[2] & MSB2) )
                     {
                         case PUBLICATION:
-                            advert_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+                            advert_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl(), ID);
                             break;
                         case RECORD:
-                            interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+                            interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl(), ID);
                             break;
                     }
                     break;
@@ -762,7 +783,20 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
             break;
     }
     double creationTime = appPkt->getCreationTime().dbl();
-    handle_message(pkt, previousAddress, lqi, creationTime);
+
+    uint64_t ID = 0; // only ucasts have these parameters and only data packets use it
+    if ( appPkt->hasPar("sourceId") && appPkt->hasPar("msgId") )
+    {
+        uint64_t moduleId64 = (int)appPkt->par("sourceId");
+        uint64_t msgId64 = (int)appPkt->par("msgId");
+        ID = (moduleId64 << 32) | msgId64;
+    }
+
+    bool success = mNetMan->lqiVec.record((double)lqi);
+    seenLqis.collect((double)lqi);
+    seenLqisInTime.record((double)lqi);
+
+    handle_message(pkt, previousAddress, lqi, creationTime, ID);
     free(pkt);
     delete appPkt;
 }
@@ -773,6 +807,8 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     switch ( appPkt->getKind() )
     {
         case DATA_PACKET:
+            appPkt->addPar("sourceId") = getId();
+            appPkt->addPar("msgId") = numSent++;
             currentPktCreationTime = simTime();
             COUT << "\n" << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << "\n";
             SendDataWithLongestContext(appPkt); // ownership NOT passed on
@@ -807,7 +843,11 @@ void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
 {
     unsigned char* data = (unsigned char*)malloc(appPkt->getPktData().size());
     std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), data);
-    send_data(appPkt->getPktData().size(), data, simTime().dbl());
+    uint64_t moduleId64 = (int)appPkt->par("sourceId");
+    uint64_t msgId64 = (int)appPkt->par("msgId");
+    uint64_t ID = (moduleId64 << 32) | msgId64;
+
+    send_data(appPkt->getPktData().size(), data, simTime().dbl(), ID);
     free(data);
 }
 
@@ -829,7 +869,11 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
     stateLen += strlen((const char*)index);
     unsigned char* data = (unsigned char*)malloc(stateLen);
     memcpy(data, x, stateLen);
-    send_data(stateLen, data, simTime().dbl());
+    uint64_t moduleId64 = (int)appPkt->par("sourceId");
+    uint64_t msgId64 = (int)appPkt->par("msgId");
+    uint64_t ID = (moduleId64 << 32) | msgId64;
+
+    send_data(stateLen, data, simTime().dbl(), ID);
     free(data);
 }
 
@@ -1047,6 +1091,32 @@ bool DataCentricNetworkLayer::FindNode(const string& addressToFind, string& matc
 
 
 
+bool DataCentricNetworkLayer::duplicate(int moduleId, int msgId) //, DataCentricAppPkt* pk)
+{
+    SourceSequence::iterator it = sourceSequence.find(moduleId);
+    if (it != sourceSequence.end())
+    {
+        if (it->second >= msgId)
+        {
+            //delete pk;
+            return true;
+        }
+        else
+        {
+            it->second = msgId;
+        }
+    }
+    else
+    {
+        sourceSequence[moduleId] = msgId;
+    }
+
+    return false;
+
+}
+
+
+
 /*
 static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
 {
@@ -1206,7 +1276,7 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 
 
 
-static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime)
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID)
 {
     /*
      * This is a generic call back for the data centric routing framework
@@ -1244,6 +1314,9 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             appPkt = new DataCentricAppPkt("DataCentricAppPkt");
             break;
     }
+
+    appPkt->addPar("sourceId").setLongValue((int)(ID >> 32));
+    appPkt->addPar("msgId").setLongValue((int)(ID & 0xFFFFFFFF));
 
     switch ( *_msg )
     {
@@ -1547,7 +1620,7 @@ static void cb_bcast_message(unsigned char* _msg)
 
 
 
-static void cb_handle_application_data(unsigned char* _msg, double _creationTime)
+static void cb_handle_application_data(unsigned char* _msg, double _creationTime, uint64_t ID)
 {
     // work still to do here
     // packetbuf_copyto(_msg, MESSAGE_SIZE);
@@ -1564,35 +1637,38 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
         index++;
     }
 
-    //COUT << endl << "DATA RECEIVED ORIG CREATE TIME: " << currentModule->currentPktCreationTime << endl;
-    COUT << "\n" << "DATA RECEIVED ORIG CREATE TIME: " << _creationTime << "\n";
-    //simtime_t endToEndDelay = simTime() - currentModule->currentPktCreationTime;
+    COUT << "\n" << "SOME KIND OF DATA PKT RECEIVED, ORIG CREATE TIME: " << _creationTime << "\n";
+    string fn = currentModule->getFullName();
     double now = simTime().dbl();
     double pktTime = _creationTime;
 
+    int moduleId = (int)(ID >> 32);
+    int msgId = (int)(ID & 0xFFFFFFFF);
 
-    simtime_t endToEndDelay = simTime() - _creationTime;
-    COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
-    currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
+    if ( !currentModule->duplicate(moduleId, msgId) )//, appPkt) )
+    {
+        currentModule->getParentModule()->bubble(bubbleText);
+        cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
+                hex << excludedInterface << endl;
 
+        simtime_t endToEndDelay = simTime() - _creationTime;
+        COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
+        currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
 
-    currentModule->getParentModule()->bubble(bubbleText);
-    //currentModule->bubble(bubbleText);
-    //currentModule->bubble("Data received");
+        DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
+        appPkt->setKind(DATA_PACKET);
+        appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+strlen((const char*)_msg));
+        appPkt->addPar("sourceId").setLongValue(moduleId);
+        appPkt->addPar("msgId").setLongValue(msgId);
 
-    DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
-    appPkt->setKind(DATA_PACKET);
-    appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+strlen((const char*)_msg));
+        currentModule->send(appPkt, currentModule->mUpperLayerOut);
+    }
+    else
+    {
+        cout << "## " << hex << currentModule->mAddress << " (" << fn << ") discarded duplicate data from:  " <<
+                hex << excludedInterface << endl;
 
-    string fn = currentModule->getFullName();
-
-    cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
-            hex << excludedInterface << endl;
-
-
-
-    currentModule->send(appPkt, currentModule->mUpperLayerOut);
-
+    }
 
 }
 

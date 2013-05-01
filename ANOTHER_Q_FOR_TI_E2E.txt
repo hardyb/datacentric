@@ -1,0 +1,13 @@
+
+
+
+
+Also need to ask
+
+how can a node know thatb it is in at least one other node's neighbor table
+if they are only added on receipt of beacons?
+
+Or does the parent add the child to the neighbopr table when the child
+picks it from its scan (beacons)
+
+do nodes still join in mesh network

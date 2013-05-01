@@ -437,7 +437,8 @@ struct new_packet
     NEIGHBOUR_ADDR excepted_interface;
     NEIGHBOUR_ADDR down_interface;
     char seqno;
-    double creation_time;
+    double creation_time; // for simulation/experiment purposes only
+    uint64_t id; // for simulation/experiment purposes only
 };
 
 
@@ -760,10 +761,12 @@ InterfaceNode* InsertInterfaceNode(InterfaceNode** treeNode, NEIGHBOUR_ADDR inte
 bool TraversStateNodes(StateNode* tree, void process(State* s));
 bool TraversInterfaceNodes(InterfaceNode* tree, State* s, void process(Interface* i, State* s));
 unsigned int CountInterfaceNodes(InterfaceNode* tree);
+void countState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 unsigned int TotalNeighborLqi(InterfaceNode* tree);
 void MinMaxNeighborLqi(InterfaceNode* tree, unsigned int* maxlqi, unsigned int* minlqi);
 //unsigned int AverageNeighborLqi(InterfaceNode* tree);
 bool TraversGradientNodes(struct KDGradientNode* tree, void process(KDGradientNode* g, unsigned char* _name));
+void traverse(trie *t, char* str, NEIGHBOUR_ADDR inf, void process(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if));
 bool deliverReinforced(KDGradientNode* g);
 bool obtainReinforced(KDGradientNode* g);
 StateNode* FindStateNode(StateNode* tree, int val);
@@ -820,9 +823,9 @@ void handle_neighbor_ucast(NEIGHBOUR_ADDR _interface);
 */
 void send_queued_data(void* relevantObject);
 
-void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime));
+void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID));
 void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg));
-void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime));
+void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime, uint64_t ID));
 void setTimerCallBack(void (*_setTimer) (TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject)));
 void weAreSourceFor(unsigned char* _data, char seqno);
 void weAreSinkFor(unsigned char* _data, char seqno);
@@ -830,8 +833,8 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf);
 void initiate_new_advert(void* relevantObject);
 void weAreCollaboratorFor(unsigned char* _data, char seqno);
 void weAreCollaboratorInitiatorFor(unsigned char* _data, char seqno);
-void send_data(int len, unsigned char* _data, double _creationTime);
-void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime);
+void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID);
+void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime, uint64_t ID);
 void read_packet(unsigned char* pkt);
 unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
@@ -853,8 +856,8 @@ void handle_collaboration(control_data cd);
 void handle_reinforce_collaboration(control_data cd);
 void handle_interest_correction(control_data cd);
 void handle_breakage(control_data cd);
-void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime);
-void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime);
+void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime, uint64_t ID);
+void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime, uint64_t ID);
 void StartUp();
 void self_message(void * msg);
 void regular_checks(void);
@@ -864,7 +867,8 @@ void getShortestContextTrie(trie *t, unsigned char* str, unsigned char* i, unsig
 
 void UpdateBestGradient(Interface* i, State* s);
 
-void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf);
+// not used?
+//void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf);
 
 
 

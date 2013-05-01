@@ -1268,6 +1268,9 @@ void DataCentricTestApp::sendActualDemandPkt()
     //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    //appPkt->addPar("sourceId") = getId();
+    //appPkt->addPar("msgId") = numSent++;
+
     send(appPkt, mLowerLayerOut);
 }
 
@@ -1299,6 +1302,9 @@ void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor)
     //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    //appPkt->addPar("sourceId") = getId();
+    //appPkt->addPar("msgId") = numSent++;
+
     send(appPkt, mLowerLayerOut);
 }
 
@@ -1357,6 +1363,9 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sen
     std::string s(ss.str());
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    //appPkt->addPar("sourceId") = getId();
+    //appPkt->addPar("msgId") = numSent++;
+
     send(appPkt, mLowerLayerOut);
 
     //scheduleAt(simTime() + period, i->first);

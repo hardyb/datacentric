@@ -1,0 +1,142 @@
+
+General format:
+
+opp_runall -j2 ./aloha -u Cmdenv -c PureAlohaExperiment -r 0..23
+
+
+You can use the -x ConfigName -g command line options with your simulation to check the
+number of available runs.
+
+
+Using the --export filename option only generates the makefile, but does not start it. You
+can run your batch later by invoking the generated makefile.
+
+
+
+-f is the ini file 
+to do all just leave -r out
+working directory from IDE is current directory
+
+so need to cd to ./my_workspace/datacentric/simulations first
+after starting mingwenv
+
+
+
+
+
+
+On Novatech
+===============
+
+cd to ~/my_workspace/datacentric/src
+
+opp_runall -j1 ./datacentric -u Cmdenv -c DataC__Parallel_121_BindingEq -r *
+
+
+opp_runall -j1 ./datacentric -u Cmdenv -c DataC__Parallel_121_BindingEq -r 202
+
+
+
+cd ./my_workspace/datacentric/simulations
+opp_runall -j1 ../src/datacentric -u Cmdenv -f DataCentric_2.ini -c DataC__Parallel_121_BindingEq -r 202
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+AS SEEN IN THE CONSOLE WHEN RUNNING FROM IDE
+==============================================
+
+$ cd C:/omnetpp-4.2.2/my_workspace/datacentric/simulations
+$ ../src/datacentric.exe -r 202 -u Cmdenv -c DataC__Parallel_121_BindingEq -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/inet DataCentric_2.ini
+
+compare with:
+
+$ cd ./my_workspace/datacentric/simulations
+$ opp_runall -j1 ../src/datacentric.exe -u Cmdenv -f DataCentric_2.ini -c DataC__Parallel_121_BindingEq -r 202 -n 
+
+
+
+So from the perspective of ./my_workspace/datacentric/simulations using my initial cmd line text
+
+$ cd ./my_workspace/datacentric/simulations
+
+$ opp_runall -j1 ../src/datacentric.exe -u Cmdenv -f DataCentric_2.ini -c DataC__Parallel_121_BindingEq -r 202 -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/inet
+
+OR
+
+$ opp_runall -j1 ../src/datacentric.exe -u Cmdenv -c DataC__Parallel_121_BindingEq -r 202 -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/inet DataCentric_2.ini
+
+Now try...
+
+$ opp_runall ../src/datacentric.exe -r 202 -u Cmdenv -c DataC__Parallel_121_BindingEq -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/inet DataCentric_2.ini
+
+OR
+
+out\gcc-debug\src
+
+$ opp_runall ../src/datacentric.exe -r 202 -u Cmdenv -c DataC__Parallel_121_BindingEq -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/out/gcc-debug/src/libinet.dll DataCentric_2.ini
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+HELP
+========
+
+$ opp_runall -h
+opp_runall: Generate a makefile that executes several simulation runs, and
+optionally invokes "make" as well.
+
+Usage: opp_runall [options] <simprog> [simprog-options]
+
+Should be called with the full command (simulation program with args)
+to be executed, and the output is a Makefile that contains one target
+per run. This program basically expands the -r option; for example, a
+simulation command line containing -r 0..2,8,10 will generate 5 commands
+with the -r 0, -r 1, -r 2, -r 8 and -r 10 options, respectively. It is possible
+to take advantage of multiple CPUs or cores by using the -j make option
+(GNU Make specific).
+
+Options:
+    -h, --help            This help text
+    -V                    Verbose
+    --export <filename>   Write a makefile but do not run it; recommended
+                          name is Runfile
+    -j<number>            Make use of multiple CPUs; this options gets passed
+                          to the "make" program without being looked at
+    --                    Denotes end of options (everything after that is
+                          treated as part of the simulation command line)
+
+
+
+
+
+

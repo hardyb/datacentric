@@ -49,6 +49,8 @@ DataCentricNetworkMan* netWkMan; // change name
 
 
 
+extern int tempStat_1[10];
+extern int tempStat_2[10];
 
 
 
@@ -79,6 +81,12 @@ void DataCentricNetworkMan::initialize(int aStage)
     if (0 == aStage)
     {
         string tempPar = par("estimationMethod");//.str();
+
+        for (int i = 0; i < 10; i++)
+        {
+            tempStat_1[i] = 0;
+            tempStat_2[i] = 0;
+        }
 
         estimationMethod = ESTIMATION_UNKNOWN;
         if ( !strcmp(par("estimationMethod").stringValue(), "experiment") )
@@ -183,6 +191,13 @@ void DataCentricNetworkMan::initialize(int aStage)
         demandVector.setName("demandVector");
         pendingRREQVector.setName("pendingRREQVector");
         pendingRegistrationVector.setName("pendingRegistrationVector");
+
+        t1.setName("t1");
+        t2.setName("t2");
+        lqiVec.setName("lqiVec");
+
+
+
 
 
 
@@ -565,6 +580,31 @@ void DataCentricNetworkMan::finish()
     recordScalar("StdDevE2EDelay", E2EDelayStats.getStddev());
     recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
     recordScalar("MinE2EDelay", E2EDelayStats.getMin());
+
+
+
+    /*
+    for (int i = 0; i < 10; i++)
+    {
+        ostringstream os;
+        os << "tempStat_1_" << i;
+        string scalarName = os.str();
+        recordScalar(scalarName.c_str(), tempStat_1[i]);
+        ostringstream os2;
+        os2 << "tempStat_2_" << i;
+        string scalarName2 = os2.str();
+        recordScalar(scalarName2.c_str(), tempStat_2[i]);
+    }
+    */
+
+
+    for (int i = 0; i < 10; i++)
+    {
+        t1.recordWithTimestamp(i, (double)tempStat_1[i]);
+        t2.recordWithTimestamp(i, (double)tempStat_2[i]);
+    }
+
+
 
 
 

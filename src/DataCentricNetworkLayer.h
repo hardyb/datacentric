@@ -42,6 +42,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     void WriteModuleListFile();
     bool FindNode(const string& addressToFind, string& matchingNodeName);
     void sendDownTheNIC();
+    bool duplicate(int moduleId, int msgId);//, DataCentricAppPkt* pk);
 
     double StartTime();
 
@@ -69,6 +70,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
 
 
 
+    cStdDev seenLqis;
+    cOutVector seenLqisInTime;
 
 
 
@@ -136,6 +139,10 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     cMessage *mpUpDownMessage;
     cMessage *mMessageForTesting_1;
     cMessage *mRegularCheckMessage;
+
+    int numSent;
+    typedef std::map<int,int> SourceSequence;
+    SourceSequence sourceSequence;
 
 };
 

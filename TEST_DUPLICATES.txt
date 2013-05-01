@@ -1,0 +1,112 @@
+So to test out the recent duplicates code
+
+
+
+
+
+run 202 again.
+just have break points in datacentricnetworklayer.cc
+where packet is sent and id added and
+where packet is received and seen as duplicate or not
+
+nb it may be that data sends are initiated
+in datacentricnetworklayer.cc but not sent due to not
+being a source in this experiment
+
+on receipt (excluding A in the case of 0-9)
+check that the ID is the same
+and check that duplicates are recognised
+I think'2' will be a duplicate in run 202
+
+Finally if duplicate is noticed and discarded
+then as relates to earlier testing
+we should look to see that the experiment does
+NOT terminate (number received 'excluding duplicates' now)
+Only 8 received and advert for '1' sent again at 5s.
+
+Check when 8th packet received and consider reducing 
+the timeout for resending advert.  At least in the
+case of run 202 this may lower the average delay
+and improve the look of DC
+
+AFTER THIS try to replicate the exact same test using the 
+opp_runall tool not used before.
+
+
+
+6, 5, 3, 8, 4, 7, 9, 2, 
+
+
+
+<data>	<moduleId>
+1	395	2nd advert no nodes have it as neighbour due to earlier congestion
+2	405	arrived (2.62) arrived again - duplicate (2.71)
+3	415	arrived
+4	425	arrived
+5	435	arrived
+6	445	arrived
+7	455	arrived
+8	465	arrived
+9	475	arrived
+10	485	(not source for this)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+==============================================================
+
+
+check fix for arrivals - don't include duplicates DONE
+
+
+
+copy graphs for current topology control DONE
+copy file (bps etc) DONE
+
+try the run with opp_runall - TRIED AND TRIED - FAILED
+
+
+
+introduce neighbor table size only topology control
+run
+
+5	0.86
+6	1.04
+2	1.06
+7	1.26
+8	1.37
+9	1.41
+
+1 retry, 3 retry, 4 retry
+
+they do not arrive.
+so what is happening with & without the threshold part of the tc
+
+
+
+
+
+copy graphs again and compare
+copy file (bps etc)
+
+
+introduce original topology control but with data check
+run
+copy graphs again and compare
+copy file (bps etc)
+
+
+compare also bps etc to see impact of this alternative
+

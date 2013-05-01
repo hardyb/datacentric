@@ -83,6 +83,7 @@ class DataCentricNetworkMan : public cSimpleModule
     typedef std::map<IPvXAddress, UDPBurstAndBroadcast*> AppModules;
     typedef std::map<IPvXAddress, UDPBurstAndBroadcast*>::iterator AppModulesIterator;
     AppModules mAppModules;
+    cOutVector lqiVec;
 
   protected:
     void handleMessage(cMessage*);
@@ -190,6 +191,8 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector pendingRREQVector;
     cOutVector pendingRegistrationVector;
 
+    cOutVector t1;
+    cOutVector t2;
 
 
 

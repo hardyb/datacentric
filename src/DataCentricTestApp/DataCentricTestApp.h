@@ -181,6 +181,8 @@ class DataCentricTestApp : public TrafGenPar
     map<cMessage*, ActionStreamHierarchy*> mActionThreads;
     int mAppMode;
 
+    //int numSent;
+
     //typedef NEIGHBOUR_ADDR ApplianceId;
     typedef unsigned short ApplianceId;
     typedef double DemandBid;

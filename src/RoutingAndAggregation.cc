@@ -21,6 +21,11 @@ unsigned char current_prefix_name[100];
 #endif
 
 
+// number of nodes that have seen the data
+int tempStat_1[10];
+
+// number of nodes that have added the data
+int tempStat_2[10];
 
 
 
@@ -88,8 +93,8 @@ char queue[100];
 //static int dataRate = 0;
 
 
-void (*sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
-void (*handleApplicationData) (unsigned char* _msg, double _creationTime);
+void (*sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID);
+void (*handleApplicationData) (unsigned char* _msg, double _creationTime, uint64_t ID);
 void (*bcastAMessage) (unsigned char* _msg);
 
 
@@ -194,9 +199,11 @@ unsigned int getPacketSize(char messageType, unsigned int _dataSize)
 
 
 
-void read_packet(unsigned char* pkt, double creationTime)
+void read_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 {
     incoming_packet.creation_time = creationTime;
+    incoming_packet.id = ID;
+
 	incoming_packet.message_type = pkt[0];
 	incoming_packet.length = pkt[1];
 	free(incoming_packet.data);
@@ -235,9 +242,11 @@ void read_packet(unsigned char* pkt, double creationTime)
 
 
 
-void read_broken_packet(unsigned char* pkt, double creationTime)
+void read_broken_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 {
     broken_packet.creation_time = creationTime;
+    broken_packet.id = ID;
+
     broken_packet.message_type = pkt[0];
     broken_packet.length = pkt[1];
     free(broken_packet.data);
@@ -1168,7 +1177,7 @@ int InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             outgoing_packet.path_value = 0;
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
             outgoing_packet.down_interface = _if;
-            sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet(&outgoing_packet), 0);
+            sendAMessage(alternativeBestGradientToDeliver->key2->iName, write_packet(&outgoing_packet), 0, 0);
         }
     }
 
@@ -1176,17 +1185,11 @@ int InterfaceDownCallBack(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 
 }
 
-
+/*
 // PROBABLY DISCONTINUING THIS FUNCTION
 void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 //void InterfaceDown(Interface* i, State* s)
 {
-    /*
-     * JUST FOR INTERESTS SO FAR
-     *
-     * Initial idea - needs some work
-     *
-     */
     int inserted;
     Interface* i = InsertInterfaceNode(&(rd->interfaceTree), inf, &inserted)->i;
     i->up = 0;
@@ -1201,6 +1204,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 #endif
 
 }
+*/
 
 
 
@@ -2411,6 +2415,13 @@ void displayContext(context* c, unsigned char* _context)
     displayStream << std::endl;
 }
 
+int stateCount;
+void countState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+{
+    stateCount++;
+
+}
+
 void displayState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
     int i = 0;
@@ -2812,7 +2823,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     // needs some thought
     if ( s->action == COLLABORATE_ACTION && excludedInterface != SELF_INTERFACE )
     {
-        handleApplicationData(sending_packet->data, sending_packet->creation_time);
+        handleApplicationData(sending_packet->data, sending_packet->creation_time, sending_packet->id);
         sent = 1;
     }
 
@@ -2853,7 +2864,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                 {
                     // is the data item enough for the application
                     // is length, path value etc etc needed?
-                    handleApplicationData(sending_packet->data, sending_packet->creation_time);
+                    handleApplicationData(sending_packet->data, sending_packet->creation_time, sending_packet->id);
                     sent = 1;
 
 #ifdef XXXXXX
@@ -2867,7 +2878,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                 {
                     // some how we need to know whether this send
                     // from the queue
-                    sendAMessage(temp->i->iName, write_packet(sending_packet), sending_packet->creation_time);
+                    sendAMessage(temp->i->iName, write_packet(sending_packet), sending_packet->creation_time, sending_packet->id);
                     sent = 1;
                     // length taken from incoming/outgoing message not strlen
 
@@ -3210,6 +3221,7 @@ bool forward(void* p1, void* p2)
 	outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
 	outgoing_packet.seqno = incoming_packet.seqno;
 	outgoing_packet.creation_time = incoming_packet.creation_time;
+	outgoing_packet.id = incoming_packet.id;
 
 	sending_packet = &outgoing_packet;
 
@@ -3443,9 +3455,9 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
 
 
-void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime)
+void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime, uint64_t ID)
 {
-    read_broken_packet(pkt, creationTime);
+    read_broken_packet(pkt, creationTime, ID);
 
     trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, broken_packet.data);
 
@@ -3465,7 +3477,7 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
     if( t && t->s->obtainInterfaces && t->s->obtainInterfaces->i->iName != SELF_INTERFACE )
     {
         broken_packet.message_type = PUBBREAKAGE;
-        sendAMessage(t->s->obtainInterfaces->i->iName, write_packet(&broken_packet), 0);
+        sendAMessage(t->s->obtainInterfaces->i->iName, write_packet(&broken_packet), creationTime, ID);
         broken_packet.message_type = DATA;
     }
 
@@ -3473,7 +3485,7 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
 
 
 
-void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime)
+void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double creationTime, uint64_t ID)
 {
     /*
      * A data record (interest/query based) was just sent on the matching
@@ -3486,7 +3498,7 @@ void interest_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, doub
      *
      */
 
-    read_broken_packet(pkt, creationTime);
+    read_broken_packet(pkt, creationTime, ID);
     action_all_prefixes(rd->top_state, 0, broken_packet.length,
             broken_packet.data,
             current_prefix_name, inf, interest_breakage_process_prefix);
@@ -3575,7 +3587,13 @@ void handle_pubbreakage(control_data cd)
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
         outgoing_packet.down_interface = UNKNOWN_INTERFACE; // discontinuing?
         outgoing_packet.seqno = incoming_packet.seqno;
-        sendAMessage(t->s->obtainInterfaces->i->iName, write_packet(&outgoing_packet), 0);
+
+        // PUBBREAKAGE is a data packet going back to the source to get a fresh route and get sent again
+        outgoing_packet.creation_time = incoming_packet.creation_time;
+        outgoing_packet.id = incoming_packet.id;
+
+        sendAMessage(t->s->obtainInterfaces->i->iName, write_packet(&outgoing_packet),
+                outgoing_packet.creation_time, outgoing_packet.id);
         return;
     }
 
@@ -3667,7 +3685,7 @@ handle_pubbreakage
 
 
 
-void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime))
+void setMessageCallBack(void (*_sendAMessage) (NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID))
 {
 	sendAMessage = _sendAMessage;
 }
@@ -3678,7 +3696,7 @@ void setBroadcastCallBack(void (*_bcastAMessage) (unsigned char* _msg))
 }
  
 
-void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime))
+void setApplicationCallBack(void (*_handleApplicationData) (unsigned char* _msg, double _creationTime, uint64_t ID))
 {
 	handleApplicationData = _handleApplicationData;
 }
@@ -3891,7 +3909,7 @@ void UpdateGradientFile()
 #endif
 
 
-void send_data(int len, unsigned char* _data, double _creationTime)
+void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID)
 {
     incoming_packet.message_type = DATA;
     incoming_packet.length = len;
@@ -3903,6 +3921,7 @@ void send_data(int len, unsigned char* _data, double _creationTime)
     incoming_packet.down_interface = UNKNOWN_INTERFACE;
     incoming_packet.excepted_interface = UNKNOWN_INTERFACE;
     incoming_packet.creation_time = _creationTime;
+    incoming_packet.id = ID;
     control_data cd;
     cd.incoming_if = SELF_INTERFACE;
     cd.incoming_lqi = 0;
@@ -3911,7 +3930,60 @@ void send_data(int len, unsigned char* _data, double _creationTime)
 
 
 
-void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime)
+
+// TOPOLOGY CONTROL IDEA
+// store these per node
+// CODE
+//unsigned int minLqi; // start at zero?
+//unsigned int maxLqi; // start at zero?
+//uint64_t numLqiValues;
+
+
+// needs to be for control packets only?
+// CODE
+//maxLqi = lqi > maxLqi ? lqi : maxLqi;
+//minLqi = lqi < minLqi ? lqi : maxLqi;
+
+
+
+
+// on first occasion we will have min = 0, max = first val e.g. 100
+// but we will never get a proper minimum
+// so lets use first one and set both to it
+// how this work with the rule?
+
+
+//node deployment is random, so lets assume what ever kind of
+//distribution it is that for simplicity we will have the top 10 items on average >
+//max(values) - (10/n*range(values))
+//so...  if the values are between 60 and 160 and there are 50 values
+//the top 10 will be (on average) >  140  (160 - (10/50*100))
+
+// CODE
+//double topTen = 10/numLqiValues;
+//unsigned int _range = maxLqi - minLqi;
+//unsigned int _threshold = maxLqi - (_range * topTen);
+
+
+
+
+// so case where num=1 min=120, max=120
+// topTen = 10/1 = 10
+// _range = zero
+// _threshold = 120 - (0*10) = 120
+
+// so case where num=2 min=60, max=120
+// topTen = 10/2 = 5 (this needs to be 1 maybe until
+// _range = 60
+// _threshold = 120 - (60*5) = -180
+
+
+
+
+
+
+
+void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime, uint64_t ID)
 {
 #ifdef MAKE_LOCAL_VARIABLES_FOR_DEBUGGER
     // CODE FOR VIEWING VARIABLES IN DEBUGGER ONLY
@@ -3919,7 +3991,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
     memcpy(_msg_view, _msg, 25);
 #endif
 
-    read_packet(_msg, creationTime);
+    read_packet(_msg, creationTime, ID);
 
 #ifdef MAKE_LOCAL_VARIABLES_FOR_DEBUGGER
     // CODE FOR VIEWING VARIABLES IN DEBUGGER ONLY
@@ -3927,8 +3999,8 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
     incoming_packet_view = incoming_packet;
 #endif
 
-
-
+    // number of times data is seen (network wide)
+    tempStat_1[incoming_packet.data[1]]++;
 
     rd->pkts_received++;
 
@@ -3951,11 +4023,34 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 
             //}
 
+
+            // NEW CODE - BUT ABANDON THIS FOR THE MOMENT
+            /*
+             * We need to consider here whether we have seen this data name before
+             *
+             */
+            //trie* t = trie_lookup2(rd->top_state, incoming_packet.data);
+            //if ( t )
+            //{
+
             if ( !FindInterfaceNode(rd->interfaceTree, inf) )
             {
                 unsigned int numNeighbours = CountInterfaceNodes(rd->interfaceTree);
                 if ( numNeighbours > 9 )
                 {
+                    // NEW CODE - BUT ABANDON THIS FOR THE MOMENT
+                    //trie* t = trie_lookup2(rd->top_state, incoming_packet.data);
+                    //if ( !t )
+                    //{
+                    //    std::cout << "## RREQ for Data " << (int)incoming_packet.data[1] <<
+                    //            ", not present, but table is full" << std::endl;
+                    //    std::cout << "## RREQ for Data " << (int)incoming_packet.data[1] <<
+                    //            ", not present, but table is full" << std::endl;
+                    //}
+                    //if ( _msg[3] == 1 && incoming_packet.message_type == ADVERT )
+                    //{
+                    //    int x = 1;
+                    //}
                     rd->pkts_ignored++;
                     return;
                 }
@@ -3964,8 +4059,19 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
                     unsigned char lqiThreshold = numNeighbours > 4 ? 100 : numNeighbours * 20;
                     if ( lqi < lqiThreshold )
                     {
-                        rd->pkts_ignored++;
+                        if ( _msg[3] == 1 && incoming_packet.message_type == ADVERT )
+                        {
+                            rd->pkts_ignored++;
+                        }
+                        else
+                        {
+                            rd->pkts_ignored++;
+                        }
                         return;
+                    }
+                    if ( _msg[3] == 1 && incoming_packet.message_type == ADVERT )
+                    {
+                        int x = 1;
                     }
                 }
             }
@@ -3973,6 +4079,9 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 
 
 
+
+
+            //}
             // THOUGHT THIS WAS NOT OK (Due to seqno idea)  -    BUT NOW THINK ITS OK
             // Because it checks whether we have already accepted the if (OFCOURSE)
 
@@ -4005,6 +4114,8 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 
 
 
+    // number of times data is processed (network wide)
+	tempStat_2[incoming_packet.data[1]]++;
 
 
 	(*h[incoming_packet.message_type]) (cd);
@@ -4364,7 +4475,7 @@ void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char
         outgoing_packet.path_value = 0; // consider at some point whether this zero is right at start?
         outgoing_packet.seqno = seqno;
         RD( "FIRST ADV Reinforce to " << std::hex << interface << std::endl );
-        sendAMessage(interface, write_packet(&outgoing_packet), 0);
+        sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
     }
 
 }
@@ -4468,6 +4579,12 @@ void handle_advert(control_data cd)
 {
     RD( "Advert received from: " << cd.incoming_if << " lqi: " << cd.incoming_lqi << std::endl );
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
+
+    if ( incoming_packet.data[1] == 1 )
+    {
+        int x = 1;
+    }
+
 
     trie* t;
     char dot = DOT;
@@ -5415,7 +5532,7 @@ void handle_reinforce(control_data cd) // I.E. REINFORCE ADVERT
         outgoing_packet.down_interface = incoming_packet.down_interface;
         outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
         RD( "Forwarding ADV Reinforce to " << std::hex << interface << std::endl );
-		sendAMessage(interface, write_packet(&outgoing_packet), 0);
+		sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
 
 	}
 
@@ -5496,7 +5613,7 @@ void handle_reinforce_interest(control_data cd)
             outgoing_packet.down_interface = incoming_packet.down_interface;
             outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
             outgoing_packet.seqno = incoming_packet.seqno;
-            sendAMessage(interface, write_packet(&outgoing_packet), 0);
+            sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
         }
 	}
 
@@ -5569,7 +5686,7 @@ void handle_reinforce_collaboration(control_data cd)
         outgoing_packet.path_value = 0;
         outgoing_packet.down_interface = incoming_packet.down_interface;
         outgoing_packet.excepted_interface = incoming_packet.excepted_interface;
-        sendAMessage(interface, write_packet(&outgoing_packet), 0);
+        sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
     }
 
 }
@@ -5644,7 +5761,7 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 		outgoing_packet.path_value = 0;
 		outgoing_packet.seqno = seqno;
-		sendAMessage(interface, write_packet(&outgoing_packet), 0);
+		sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
 
 	}
 
@@ -5719,7 +5836,7 @@ void start_reinforce_collaboration(unsigned char* fullyqualifiedname, NEIGHBOUR_
         outgoing_packet.down_interface = UNKNOWN_INTERFACE;
         outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
         outgoing_packet.path_value = 0;
-        sendAMessage(interface, write_packet(&outgoing_packet), 0);
+        sendAMessage(interface, write_packet(&outgoing_packet), 0, 0);
 
     }
 
