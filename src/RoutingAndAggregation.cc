@@ -3461,7 +3461,9 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
 
     trie* t = trie_lookup_longest_prefix_extra2(rd->top_state, broken_packet.data);
 
-    if ( t && (t->s->action == SOURCE_ACTION || t->s->obtainInterfaces->i->iName == SELF_INTERFACE) )
+    if ( t &&  ( t->s->action == SOURCE_ACTION ||
+                  (t->s->obtainInterfaces && t->s->obtainInterfaces->i->iName == SELF_INTERFACE)
+               )                                       )
     {
         new_packet* savePkt = packetCopy(&broken_packet);
         addPkt(&(t->s->pktQ), savePkt);

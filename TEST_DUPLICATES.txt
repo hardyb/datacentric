@@ -41,8 +41,8 @@ opp_runall tool not used before.
 <data>	<moduleId>
 1	395	2nd advert no nodes have it as neighbour due to earlier congestion
 2	405	arrived (2.62) arrived again - duplicate (2.71)
-3	415	arrived
-4	425	arrived
+3	415	arrived (1.9)
+4	425	arrived 
 5	435	arrived
 6	445	arrived
 7	455	arrived
@@ -52,6 +52,14 @@ opp_runall tool not used before.
 
 
 
+
+
+3	1.9
+8	1.95
+4	1.96
+7	1.98
+9	1.98
+2	2.62
 
 
 
