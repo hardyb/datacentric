@@ -95,15 +95,18 @@ $ opp_runall ../src/datacentric.exe -r 202 -u Cmdenv -c DataC__Parallel_121_Bind
 
 
 
+$ opp_runall -j1 -- ../src/datacentric.exe -r 202 -u Cmdenv -c DataC__Parallel_121_BindingEq -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src -f DataCentric_2.ini
 
 
 
 
 
 
+$ opp_runall ../src/datacentric.exe -u Cmdenv -f DataCentric_2.ini -c DataC__Parallel_121_BindingEq -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/libinet -r 202 
 
 
 
+$ opp_runall ../src/datacentric.exe -u Cmdenv -f DataCentric_2.ini -c DataC__Parallel_121_BindingEq -r 202 -l ../../inetmanet_a/src/libinet -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -l ../../inetmanet_a/src/libinet  
 
 
 

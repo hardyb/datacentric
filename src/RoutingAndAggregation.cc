@@ -12,7 +12,7 @@ unsigned char current_prefix_name[100];
 #include <stdio.h>
 #include <string.h>
 
-
+//#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
 
 #ifdef ROUTING_DEBUG
 #define RD(x) std::cout << x
@@ -1893,7 +1893,11 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
             // Given the seqno code above, I am pretty sure this will work
             // correctly without amendment
 		    if ( !treeNode->key1->bestGradientToObtain
+#ifdef FIRST_COME_ONLY
+		        )
+#else
 				|| treeNode->costToObtain < treeNode->key1->bestGradientToObtain->costToObtain )
+#endif
 			{
 				treeNode->key1->bestGradientToObtain = treeNode;
 				treeNode->key1->bestGradientToObtainUpdated = TRUE;
@@ -1910,7 +1914,11 @@ struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costTyp
             // Given the seqno code above, I am pretty sure this will work
             // correctly without amendment
 			if ( !treeNode->key1->bestGradientToDeliver
+#ifdef FIRST_COME_ONLY
+                )
+#else
 				|| treeNode->costToDeliver < treeNode->key1->bestGradientToDeliver->costToDeliver )
+#endif
 			{
 			    RD( "first or better best deliver cost, now: " << treeNode->costToDeliver << std::endl );
 				treeNode->key1->bestGradientToDeliver = treeNode;
