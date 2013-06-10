@@ -618,6 +618,8 @@ void DataCentricNetworkMan::finish()
     recordScalar("MaxBPS", bpsStats.getMax());
     recordScalar("MinBPS", bpsStats.getMin());
     recordScalar("BPSCollectionCount", bpsStats.getCount());
+    //recordScalar("SumBPS", bpsStats.getSum());
+    recordScalar("grandTotalBits", grandTotalBits);
 
     // PERFORMANCE
 
@@ -927,6 +929,8 @@ void DataCentricNetworkMan::collectMsgBits(unsigned int bits, cPacket* p)
 void DataCentricNetworkMan::collectBits(unsigned int bits)
 {
     //static unsigned int currentTotalBits = 0;
+
+    grandTotalBits += bits;
 
     if ( simTime().dbl() >= nextCheckTime )
     {

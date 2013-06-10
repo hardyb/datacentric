@@ -115,6 +115,8 @@ class DataCentricNetworkMan : public cSimpleModule
 
     unsigned int mExpectedDataArrivals;
     unsigned int currentTotalBits;
+    uint64_t grandTotalBits;
+    //unsigned int grandTotalBits;
     double bpsInterval;
     double nextCheckTime;
 
