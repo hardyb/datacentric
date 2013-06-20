@@ -150,6 +150,96 @@ struct new_packet* sending_packet;
 
 
 
+
+
+
+//incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+
+/*
+ * what do we want to do
+ *
+ * see what allocates and deallocates
+ *
+ * so, see what allocations are not deallocated?
+ *
+ * how we id them?  line number?
+ *
+ *
+ * so when do we want information about still allocated memory
+ * may be when memory is reported on in arduino
+ * may be in arduino after a unexpected restart
+ *
+ *
+ */
+
+
+//void addMem(struct MemList** l, void* _m, unsigned int _l);
+//void removeMem(struct MemList** l, void* _m);
+
+
+
+
+
+
+MemList* theMemList = NULL;
+
+
+
+
+
+void* mymalloc(size_t _s, unsigned int _l)
+{
+    void* m = malloc(_s);
+    if ( moduleIndex == 0 )
+    {
+        addMem(&theMemList, m, _l);
+    }
+
+    return m;
+}
+
+
+void myfree(void* _m)
+{
+    removeMem(&theMemList, _m);
+    free(_m);
+}
+
+
+
+
+
+void listMemAlloc()
+{
+    MemList* temp = theMemList;
+    std::cout << std::dec << "Allocated memory: ";
+    while( temp !=NULL )
+    {
+        std::cout << temp->l << ", ";
+        temp = temp->link;
+    }
+    std::cout << std::endl;
+}
+
+
+void listMemAlloc_cb(void* relevantObject)
+{
+    listMemAlloc();
+    setTimer(0.25, 0, listMemAlloc_cb);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
 struct new_packet
 {
@@ -206,8 +296,9 @@ void read_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 
 	incoming_packet.message_type = pkt[0];
 	incoming_packet.length = pkt[1];
-	free(incoming_packet.data);
-	incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+	sfree(incoming_packet.data);
+    incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+    //incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
 	if (!incoming_packet.data)
 	{
 	    memcpy(incoming_packet.data, &(pkt[2]), incoming_packet.length);
@@ -249,8 +340,8 @@ void read_broken_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 
     broken_packet.message_type = pkt[0];
     broken_packet.length = pkt[1];
-    free(broken_packet.data);
-    broken_packet.data = (unsigned char*)malloc(broken_packet.length+1);
+    sfree(broken_packet.data);
+    broken_packet.data = (unsigned char*)smalloc(broken_packet.length+1);
     if (!broken_packet.data)
     {
         memcpy(broken_packet.data, &(pkt[2]), broken_packet.length);
@@ -441,9 +532,9 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt)
 
 new_packet* packetCopy(new_packet* currentPkt)
 {
-    new_packet* savePkt = (new_packet*)malloc(sizeof(new_packet));
+    new_packet* savePkt = (new_packet*)smalloc(sizeof(new_packet));
     *savePkt = *currentPkt;
-    savePkt->data = (unsigned char*)malloc(currentPkt->length+1);
+    savePkt->data = (unsigned char*)smalloc(currentPkt->length+1);
     memcpy(savePkt->data, currentPkt->data, currentPkt->length);
     savePkt->data[currentPkt->length] = 0;
 
@@ -462,7 +553,7 @@ new_packet* packetCopy(new_packet* currentPkt)
 unsigned char* write_packet(new_packet* the_packet)
 {
     unsigned int size = size_needed_for_outgoing_packet(the_packet);
-	unsigned char* pkt = (unsigned char*)malloc(size);
+	unsigned char* pkt = (unsigned char*)smalloc(size);
 	unsigned int pkt_index = 0;
 
 	pkt[pkt_index] = the_packet->message_type;
@@ -512,7 +603,7 @@ unsigned char* write_packet_old()
     //      + outgoing_packet.length +   sizeof(outgoing_packet.path_value)
     //        +  sizeof(outgoing_packet.excepted_interface)
     //        +  sizeof(outgoing_packet.down_interface);
-    unsigned char* pkt = (unsigned char*)malloc(size);
+    unsigned char* pkt = (unsigned char*)smalloc(size);
     unsigned int pkt_index = 0;
 
     pkt[pkt_index] = outgoing_packet.message_type;
@@ -555,8 +646,8 @@ unsigned char* write_packet_old()
 /*
 struct StateNode* newStateNode(int stateDataname)
 {
-	struct StateNode* n = (struct StateNode *)malloc(sizeof(struct StateNode));
-	n->s = (struct State *)malloc(sizeof(struct State));
+	struct StateNode* n = (struct StateNode *)smalloc(sizeof(struct StateNode));
+	n->s = (struct State *)smalloc(sizeof(struct State));
 	n->s->dataName._dataname_struct1.the_dataname = stateDataname;
 	n->s->bestGradientToObtain = NULL;
 	n->s->bestGradientToDeliver = NULL;
@@ -579,8 +670,8 @@ struct StateNode* newStateNode(int stateDataname)
  */
 struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
 {
-	struct InterfaceNode* n = (struct InterfaceNode *)malloc(sizeof(struct InterfaceNode));
-	n->i = (struct Interface *)malloc(sizeof(struct Interface));
+	struct InterfaceNode* n = (struct InterfaceNode *)smalloc(sizeof(struct InterfaceNode));
+	n->i = (struct Interface *)smalloc(sizeof(struct Interface));
 	n->i->iName = interfaceName;
 	n->i->up = TRUE;
 	n->i->type = 0;
@@ -596,10 +687,10 @@ void freeInterfaceNode(InterfaceNode* n)
 {
     if ( n )
     {
-        free(n->i);
+        sfree(n->i);
         freeInterfaceNode(n->left);
         freeInterfaceNode(n->right);
-        free(n);
+        sfree(n);
     }
 }
 
@@ -1134,7 +1225,7 @@ int UcastAllBestGradients(trie* t, NEIGHBOUR_ADDR inf)
 
 
 
-
+// NOT USED COS Functions that use this function not used I think
 void UpdateBestGradient(Interface* i, State* s)
 {
     if ( i->up )
@@ -1503,7 +1594,7 @@ struct InterfaceNode* FindInterfaceNode(struct InterfaceNode* tree, NEIGHBOUR_AD
 NOT USED???
 struct KDGradientNode* newKDGradientNode(char* fullyqualifiedname, NEIGHBOUR_ADDR iName, int obtain, int deliver)
 {
-	struct KDGradientNode* n = (struct KDGradientNode *)malloc(sizeof(struct KDGradientNode));
+	struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
 	// we need to make it so that the same st cannot get created twice
 	// this is enforced in the same tree but not in different trees
 
@@ -1536,18 +1627,30 @@ void freeKDGradientNode(KDGradientNode* g)
         // not removing n->key2 here
         freeKDGradientNode(g->left);
         freeKDGradientNode(g->right);
-        free(g);
+        sfree(g);
     }
 }
 
 
 
 
+struct KDGradientNode* newKDGradientNode3(State* s, Interface* i, int obtain, int deliver, char seqno)
+{
+    struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
+    n->key1 = s;
+    n->key2 = i;
+    n->costToObtain = obtain;
+    n->costToDeliver = deliver;
+    n->seqno = seqno;
+    return n;
+}
+
+
 
 
 struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, int deliver, char seqno)
 {
-	struct KDGradientNode* n = (struct KDGradientNode *)malloc(sizeof(struct KDGradientNode));
+	struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
 	// we need to make it so that the same st cannot get created twice
 	// this is enforced in the same tree but not in different trees
 
@@ -1681,12 +1784,165 @@ void freeInterfaceList(struct InterfaceList* l)
     if (l)
     {
         freeInterfaceList(l->link);
-        free(l);
+        sfree(l);
     }
 }
 
 
 
+struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costType, int pCost, char seqno)
+{
+
+    if ( seqno < s->seqno )
+    {
+        return 0; // I think this is right, i.e. ignore any old ints/advs
+        // CHECK THIS
+        //Let's do it for now
+    }
+
+    switch ( costType )
+    {
+        case REINFORCE_DELIVER:
+        case REINFORCE_OBTAIN:
+            // We think not possible for reinforcement seqno to be greater than current
+            break;
+            /*
+             * case DELIVER:
+             *
+             * if ( seqno > s->seqno )
+             *
+             * IF: this is a rec and we are the sink for it
+             * i.e. we have a best grad already set that is this data rec
+             * interface to self and cost zero (and most likely grad and state seqno zero).
+             *
+             * THEN:  we must leave the best grad to self in place, set its seqno to this
+             * incoming seqno value +1 and the same for the state object.
+             *
+             * Returning from this function with best updated assumes seqno set to the
+             * incoming one at least but not increased and also the forwarded interest
+             * will have an increased cost.
+             *
+             * ACTUALLY we JUST want to send out the initiating interest again with the
+             * 'brand new' seqno.  I.E. the best grad with IF: Self COST: Zero.
+             * Then return (not updated so the incoming interest is not forwarded
+             *
+             * I THINK CANNOT GET DATA STRING FOR SENDING HERE
+             * SO MAYBE MOVE THIS IDEA TO handle_interest
+             *
+             */
+        default:
+            if ( seqno > s->seqno )
+            {
+                s->seqno = seqno;
+                s->reinforcementRetries = 0;
+                s->broken = 0;
+                s->bestGradientToDeliver = NULL;
+                s->bestGradientToObtain = NULL;
+                freeInterfaceList(s->deliveryInterfaces);
+                freeInterfaceList(s->obtainInterfaces);
+                s->deliveryInterfaces = NULL;
+                s->obtainInterfaces = NULL;
+            }
+            break;
+    }
+
+    RD( "insert grad type: " << costType << " Cost: " << pCost << " State: " << s << std::endl );
+
+    switch ( costType )
+    {
+        case OBTAIN:
+            if ( !(s->bestGradientToObtain) )
+            {
+                s->bestGradientToObtain = newKDGradientNode3(s, i, pCost, MAX_COST, seqno);
+                s->bestGradientToObtainUpdated = TRUE;
+            }
+            else
+            {
+                if ( seqno > s->bestGradientToObtain->seqno )
+                {
+                    RD( "New seqno: " << seqno << ", first obt cost: " << pCost << std::endl );
+                    s->bestGradientToObtain->key2 = i;
+                    s->bestGradientToObtain->costToObtain = pCost;
+                    s->bestGradientToObtain->seqno = seqno;
+                }
+                else
+                {
+                    if ( seqno == s->bestGradientToObtain->seqno )
+                    {
+                        if ( pCost < s->bestGradientToObtain->costToObtain )
+                        {
+                            s->bestGradientToObtain->key2 = i;
+                            s->bestGradientToObtain->costToObtain = pCost;
+                            s->bestGradientToObtainUpdated = TRUE;
+                        }
+                    }
+                }
+
+            }
+            break;
+        case DELIVER:
+            if ( !(s->bestGradientToDeliver) )
+            {
+                s->bestGradientToDeliver = newKDGradientNode3(s, i, MAX_COST, pCost, seqno);
+                s->bestGradientToDeliverUpdated = TRUE;
+            }
+            else
+            {
+                if ( seqno > s->bestGradientToDeliver->seqno )
+                {
+                    RD( "New seqno: " << seqno << ", first deliv cost: " << pCost << std::endl );
+                    s->bestGradientToDeliver->key2 = i;
+                    s->bestGradientToDeliver->costToDeliver = pCost;
+                    s->bestGradientToDeliver->seqno = seqno;
+                }
+                else
+                {
+                    if ( seqno == s->bestGradientToDeliver->seqno )
+                    {
+                        if ( pCost < s->bestGradientToDeliver->costToDeliver )
+                        {
+                            RD( "better deliver cost on this if, now: " << pCost << std::endl );
+                            s->bestGradientToDeliver->key2 = i;
+                            s->bestGradientToDeliver->costToDeliver = pCost;
+                            s->bestGradientToDeliverUpdated = TRUE;
+                        }
+                    }
+                }
+
+            }
+            break;
+        case REINFORCE_DELIVER:
+            if ( !(s->bestGradientToDeliver) )
+            {
+                s->bestGradientToDeliver = newKDGradientNode3(s, i, MAX_COST, MAX_COST, seqno);
+                add(&(s->deliveryInterfaces), i);
+            }
+            else
+            {
+                add(&(s->deliveryInterfaces), i);
+            }
+            break;
+        case REINFORCE_OBTAIN:
+            if ( !(s->bestGradientToObtain) )
+            {
+                s->bestGradientToObtain = newKDGradientNode3(s, i, MAX_COST, MAX_COST, seqno);
+                add(&(s->obtainInterfaces), i);
+
+            }
+            else
+            {
+                add(&(s->obtainInterfaces), i);
+            }
+            break;
+        case DELIVER_NOCHANGE:
+            return 0;
+            break;
+    }
+
+
+    return 0;
+
+}
 
 
 struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno)
@@ -1943,6 +2199,8 @@ struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, 
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted)->i;
 
 	return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev, seqno);
+	//return insertKDGradientNode3(s, i, costType, pCost, seqno);
+
 }
 
 
@@ -2103,7 +2361,7 @@ void setDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName,
 /*
 struct KDNode* newKDNode(int keys[], int newStateName, int _action, int _condition)
 {
-	struct KDNode* n = (KDNode *)malloc(sizeof(KDNode));
+	struct KDNode* n = (KDNode *)smalloc(sizeof(KDNode));
 	n->keys[0] = InsertStateNode(&(rd->stateTree), keys[0])->s;
 	n->keys[1] = InsertStateNode(&(rd->stateTree), keys[1])->s;
 	n->newState = InsertStateNode(&(rd->stateTree), newStateName)->s;
@@ -2559,7 +2817,7 @@ void removeIF(struct InterfaceList** l, struct Interface* _i)
             {
                 old->link=temp->link;
             }
-            free(temp);
+            sfree(temp);
             temp = 0;
         }
         else
@@ -2621,7 +2879,7 @@ void add(struct InterfaceList** l, struct Interface* _i)
 	temp = *l;
 	if( *l == NULL )
 	{
-		temp = (struct InterfaceList *)malloc(sizeof(struct InterfaceList));
+		temp = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
 		temp->i = _i;
 		temp->link = NULL;
 		*l = temp;
@@ -2641,12 +2899,86 @@ void add(struct InterfaceList** l, struct Interface* _i)
                 return; // interface is already in list
 #endif
 		}
-		r = (struct InterfaceList *)malloc(sizeof(struct InterfaceList));
+		r = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
 		r->i = _i;
 		r->link = NULL;
 		temp->link = r;
 	}
 }
+
+
+
+
+
+
+
+
+void removeMem(struct MemList** l, void* _m)
+{
+    if(*l==NULL)
+    {
+        return;
+    }
+
+    struct MemList *old,*temp;
+    temp=*l;
+    while( temp != NULL )
+    {
+        if(temp->m  == _m)
+        {
+            if( temp == *l )
+            {
+                *l=temp->link;
+            }
+            else
+            {
+                old->link=temp->link;
+            }
+            sfree(temp);
+            temp = 0;
+        }
+        else
+        {
+            old=temp;
+            temp=temp->link;
+        }
+    }
+}
+
+
+
+
+
+
+void addMem(struct MemList** l, void* _m, unsigned int _l)
+{
+    struct MemList *temp,*r;
+    temp = *l;
+    if( *l == NULL )
+    {
+        temp = (struct MemList *)malloc(sizeof(struct MemList));
+        temp->m = _m;
+        temp->l = _l;
+        temp->link = NULL;
+        *l = temp;
+    }
+    else
+    {
+        temp = *l;
+        while( temp->link !=NULL )
+        {
+            temp = temp->link;
+        }
+        r = (struct MemList *)malloc(sizeof(struct MemList));
+        r->m = _m;
+        r->l = _l;
+        r->link = NULL;
+        temp->link = r;
+    }
+}
+
+
+
 
 
 
@@ -2665,9 +2997,9 @@ void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
     temp = *l;
     if( *l == NULL )
     {
-        temp = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        temp = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
         temp->i = packetCopy(_i);
-        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = temp->i;
         qd->associatedState = s;
         setTimer(2.00, qd, delete_queued_data);
@@ -2686,9 +3018,9 @@ void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
         if ( temp->i == _i )
             return;
 
-        r = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        r = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
         r->i = packetCopy(_i);
-        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = r->i;
         qd->associatedState = s;
         setTimer(2.00, qd, delete_queued_data);
@@ -2707,7 +3039,7 @@ void addPkt(struct PacketQueue** l, struct new_packet* _i)
     temp = *l;
     if( *l == NULL )
     {
-        temp = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        temp = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
         temp->i = _i;
         temp->link = NULL;
         *l = temp;
@@ -2719,7 +3051,7 @@ void addPkt(struct PacketQueue** l, struct new_packet* _i)
         {
             temp = temp->link;
         }
-        r = (struct PacketQueue *)malloc(sizeof(struct PacketQueue));
+        r = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
         r->i = _i;
         r->link = NULL;
         temp->link = r;
@@ -2930,7 +3262,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             // always queue the pkt, will be deleted or send as soon as node is converged
             new_packet* savePkt = packetCopy(sending_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(2.00, qd, delete_queued_data);
@@ -2967,7 +3299,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 
             new_packet* savePkt = packetCopy(sending_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(1.00, qd, delete_queued_data);
@@ -3052,7 +3384,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             //    addPkt(&(s->pktQ), savePkt);
 
 
-            //    QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            //    QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             //    qd->pktToDelete = savePkt;
             //    qd->associatedState = s;
             //    setTimer(1.00, qd, delete_queued_data);
@@ -3423,7 +3755,7 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
             new_packet* savePkt = packetCopy(&broken_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(2.00, qd, delete_queued_data);
@@ -3475,7 +3807,7 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
     {
         new_packet* savePkt = packetCopy(&broken_packet);
         addPkt(&(t->s->pktQ), savePkt);
-        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
         setTimer(2.00, qd, delete_queued_data);
@@ -3577,7 +3909,7 @@ void handle_pubbreakage(control_data cd)
     {
         new_packet* savePkt = packetCopy(&incoming_packet);
         addPkt(&(t->s->pktQ), savePkt);
-        QueueDeletion* qd = (QueueDeletion*)malloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
         setTimer(2.00, qd, delete_queued_data);
@@ -3923,8 +4255,8 @@ void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID)
 {
     incoming_packet.message_type = DATA;
     incoming_packet.length = len;
-    free(incoming_packet.data);
-    incoming_packet.data = (unsigned char*)malloc(incoming_packet.length+1);
+    sfree(incoming_packet.data);
+    incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
     memcpy(incoming_packet.data, _data, incoming_packet.length);
     incoming_packet.data[incoming_packet.length] = 0;
     incoming_packet.path_value = 0;
@@ -5116,9 +5448,9 @@ void removePktFromQueue(struct PacketQueue** l, struct new_packet* _i)
             {
                 old->link=temp->link;
             }
-            free(temp->i->data);
-            free(temp->i);
-            free(temp);
+            sfree(temp->i->data);
+            sfree(temp->i);
+            sfree(temp);
             temp = 0;
         }
         else
@@ -5166,9 +5498,9 @@ void delete_queued_data(void* relevantObject)
         if ( temp->i == qd->pktToDelete )
         {
             *l = temp->link;
-            free(temp->i->data);
-            free(temp->i);
-            free(temp);
+            sfree(temp->i->data);
+            sfree(temp->i);
+            sfree(temp);
             temp = *l; // don't break, iterate entire list just in case duplicates
         }
         else
@@ -5178,7 +5510,7 @@ void delete_queued_data(void* relevantObject)
         }
     }
 
-    free(qd);
+    sfree(qd);
 
     return;
 }
@@ -5206,9 +5538,9 @@ void send_queued_data(void* relevantObject)
             if ( consider_sending_data(s, data, 0) )
             {
                 *l = temp->link;
-                free(temp->i->data);
-                free(temp->i);
-                free(temp);
+                sfree(temp->i->data);
+                sfree(temp->i);
+                sfree(temp);
                 temp = *l;
             }
             else
@@ -5415,14 +5747,14 @@ void handle_interest(control_data cd)
 
             //if ( t->s->prefix == FORWARD_AND_SOURCEPREFIX )
             //{
-                //char* x = (char*)malloc(strlen((const char*)incoming_packet.data)+1);
+                //char* x = (char*)smalloc(strlen((const char*)incoming_packet.data)+1);
                 //strcpy(x, (const char*)incoming_packet.data);
                 //setTimer(0.1, x, interest_convergence_timeout);
 
                 //setTimer(0.1, t->s, source_interest_convergence_timeout);
 
                 // Alternative longer method?
-                //unsigned char* x = (unsigned char*)malloc(incoming_packet.length+1);
+                //unsigned char* x = (unsigned char*)smalloc(incoming_packet.length+1);
 
                 // CHECK MEMCPY IS MEMORY SOUND IF UNCOMMENTINBELOW
                 //memcpy(x, incoming_packet.data, incoming_packet.length);
@@ -5954,6 +6286,10 @@ void handle_neighbor_ucast(control_data cd)
 
 void StartUp()
 {
+    if ( moduleIndex == 0 )
+    {
+        setTimer(0.25, 0, listMemAlloc_cb);
+    }
 
 	// not sure if this is necessary for ansii c
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
@@ -6186,7 +6522,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 
 state* state_new()
 {
-   state *s = (state*)malloc(sizeof(state));
+   state *s = (state*)smalloc(sizeof(state));
    s->full_name[0] = '\0';
    s->eg2 = 2;
    s->eg3 = 3;
@@ -6199,9 +6535,9 @@ state* state_new()
 //struct StateNode* newStateNode(int stateDataname)
 struct State* newStateObject()
 {
-	//struct StateNode* n = (struct StateNode *)malloc(sizeof(struct StateNode));
-	//n->s = (struct State *)malloc(sizeof(struct State));
-	struct State* s = (struct State *)malloc(sizeof(struct State));
+	//struct StateNode* n = (struct StateNode *)smalloc(sizeof(struct StateNode));
+	//n->s = (struct State *)smalloc(sizeof(struct State));
+	struct State* s = (struct State *)smalloc(sizeof(struct State));
 	//n->s->dataName._dataname_struct1.the_dataname = stateDataname;
 	s->bestGradientToObtain = NULL;
 	s->bestGradientToDeliver = NULL;
@@ -6241,7 +6577,7 @@ void freeStateObject(State* s)
         // not removing actual 'Interface' here, use freeInterfaceNode()
         freeInterfaceList(s->deliveryInterfaces);
         freeInterfaceList(s->obtainInterfaces);
-        free (s);
+        sfree (s);
     }
 }
 
@@ -6258,7 +6594,7 @@ void freeStateObject(State* s)
 
 context* context_new()
 {
-   context *c = (context*)malloc(sizeof(context));
+   context *c = (context*)smalloc(sizeof(context));
    c->full_name[0] = '\0';
    c->eg2 = 2;
    c->eg3 = 3;
@@ -6271,7 +6607,7 @@ void context_free(context* c)
 {
     if (c)
     {
-        free(c);
+        sfree(c);
     }
 }
 
@@ -6283,8 +6619,8 @@ void context_free(context* c)
 
 trie* trie_new()
 {
-   trie *t = (trie*)malloc(sizeof(trie));
-   //t->substr = (char*)malloc(10);
+   trie *t = (trie*)smalloc(sizeof(trie));
+   //t->substr = (char*)smalloc(10);
    t->s = NULL;
    t->c = NULL;
    t->keyelem = 0;
@@ -6307,7 +6643,7 @@ void trie_free(trie* t)
        trie_free(t->next_sibling);
        freeStateObject(t->s);
        context_free(t->c);
-       free(t);
+       sfree(t);
    }
 }
 
@@ -6546,7 +6882,7 @@ void new_one(trie *t, unsigned char *str, NEIGHBOUR_ADDR _if)
 void addName(NameNode** Head, char* name)
 {
 	struct NameNode *temp;
-	temp=(struct NameNode *)malloc(sizeof(struct NameNode));
+	temp=(struct NameNode *)smalloc(sizeof(struct NameNode));
 	temp->Data = name;
 	temp->Next=(*Head);
 	(*Head)=temp;

@@ -9,6 +9,7 @@
 #define DataCentricNetworkLayer_H
 
 #include <omnetpp.h>
+#include "BasicBattery.h"
 
 #include "DataCentricAppPkt_D.h"
 #include "Ieee802154NetworkCtrlInfo_m.h"
@@ -17,6 +18,8 @@
 #include "Ieee802154Phy.h"
 #include "DataCentricNetworkMan.h"
 #include "DropTailQueue.h"
+
+
 
 
 #define IMAGEPATH "C:/omnetpp-4.2.1/images/"
@@ -83,6 +86,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     //cModule* macModule;
     //cModule* mPhyModule;
     Ieee802154Phy* mPhyModule;
+    BasicBattery* mBatteryModule;
     DropTailQueue* mQueueModule;
     DataCentricNetworkMan* mNetMan;
 

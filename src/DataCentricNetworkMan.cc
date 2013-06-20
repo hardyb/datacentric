@@ -380,6 +380,38 @@ void DataCentricNetworkMan::setSinkOrSources(string &sinksString, bool isSources
 
 
 
+
+double DataCentricNetworkMan::sumEnergyUsage(const cModule& m)
+{
+    double sumUsage_mW_sec = 0;
+    double capacity_mW_sec;
+    double residualCapacity_mW_sec;
+    double usage_mW_sec;
+    for (cSubModIterator iter(m); !iter.end(); iter++)
+    {
+        ev << "Traversing:    " << iter()->getFullName() << endl;
+        cModule* sm = dynamic_cast<cModule*>(iter());
+        if ( sm )
+        {
+            BasicBattery* bat = dynamic_cast<BasicBattery*>(sm->getSubmodule("battery"));
+            if ( bat )
+            {
+                ev << "Found:    " << bat->getFullName() << endl;
+                capacity_mW_sec = bat->par("capacity").doubleValue() * 60 * 60 * bat->par("voltage").doubleValue();
+                residualCapacity_mW_sec = bat->GetEnergy();
+                usage_mW_sec = capacity_mW_sec - residualCapacity_mW_sec;
+                sumUsage_mW_sec += usage_mW_sec;
+            }
+        }
+    }
+    return sumUsage_mW_sec;
+}
+
+
+
+
+
+
 void DataCentricNetworkMan::traverseModule(const cModule& m)
 {
     for (cSubModIterator iter(m); !iter.end(); iter++)
@@ -524,6 +556,8 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
 
 void DataCentricNetworkMan::finish()
 {
+    listMemAlloc();
+
     this->cancelAndDelete(mpControlPacketFrequencyMessage);
     this->cancelAndDelete(mpDemandMessage);
 
@@ -620,6 +654,7 @@ void DataCentricNetworkMan::finish()
     recordScalar("BPSCollectionCount", bpsStats.getCount());
     //recordScalar("SumBPS", bpsStats.getSum());
     recordScalar("grandTotalBits", grandTotalBits);
+    recordScalar("sumEnergyUsage", sumEnergyUsage(*getParentModule()));
 
     // PERFORMANCE
 

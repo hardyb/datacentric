@@ -15,6 +15,10 @@
 
 #define XXXXXX
 
+#define smalloc(x) mymalloc(x, __LINE__)
+#define sfree(x) myfree(x)
+//#define smalloc(x) malloc(x)
+//#define sfree(x) free(x)
 
 
 #define NAMEEND 0
@@ -34,7 +38,7 @@
 #define LIGHT               3
 
 #define BID                 1
-#define CURRENT             2
+//#define CURRENT             2
 
 
 #define EVENTBASED                  128
@@ -255,6 +259,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 extern unsigned char nodeConstraint;
 extern char nodeScope;
 extern NEIGHBOUR_ADDR thisAddress;
+extern unsigned int moduleIndex;
 
 
 ////////////////////////////////////////////////////////
@@ -495,6 +500,9 @@ typedef struct Interface
 };
 
 
+
+
+
 typedef struct KDGradientNode;
 
 struct InterfaceList
@@ -509,6 +517,11 @@ typedef struct InterfaceList InterfaceList;
 
 
 
+
+
+
+
+
 struct PacketQueue
 {
      struct new_packet* i;
@@ -516,6 +529,12 @@ struct PacketQueue
 };
 
 
+struct MemList
+{
+     void* m;
+     unsigned int l;
+     struct MemList *link;
+};
 
 
 
@@ -752,6 +771,11 @@ extern "C" {
 
 void removeIF(struct InterfaceList** l, struct Interface* _i);
 void add(struct InterfaceList** q, struct Interface* _i);
+void* mymalloc(size_t _s, unsigned int _l);
+void myfree(void* _m);
+void addMem(struct MemList** l, void* _m, unsigned int _l);
+void removeMem(struct MemList** l, void* _m);
+void listMemAlloc();
 void delete_queued_data(void* relevantObject);
 StateNode* newStateNode(int stateDataname);
 InterfaceNode* newInterfaceNode(int interfaceName);
@@ -788,6 +812,7 @@ int getNewState(int input);
 int SearchForKDNodeTransition(int input);
 
 struct KDGradientNode* insertKDGradientNode2(State* s, Interface* i, int costType, int pCost, struct KDGradientNode* treeNode, int lev, char seqno);
+struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costType, int pCost, char seqno);
 
 int consider_reinforce_interest(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if);
 

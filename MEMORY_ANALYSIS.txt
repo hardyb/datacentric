@@ -1,0 +1,361 @@
+Found:    battery
+Traversing:    host[10]
+Found:    battery
+Traversing:    host[11]
+Found:    battery
+Traversing:    host[12]
+Found:    battery
+Traversing:    host[13]
+Found:    battery
+Traversing:    host[14]
+Found:    battery
+Traversing:    host[15]
+Found:    battery
+Traversing:    host[16]
+Found:    battery
+Traversing:    host[17]
+Found:    battery
+Traversing:    host[18]
+Found:    battery
+Traversing:    host[19]
+Found:    battery
+Traversing:    host[20]
+Found:    battery
+Traversing:    host[21]
+Found:    battery
+Traversing:    host[22]
+Found:    battery
+Traversing:    host[23]
+Found:    battery
+Traversing:    host[24]
+Found:    battery
+Traversing:    host[25]
+Found:    battery
+Traversing:    host[26]
+Found:    battery
+Traversing:    host[27]
+Found:    battery
+Traversing:    host[28]
+Found:    battery
+Traversing:    host[29]
+Found:    battery
+Traversing:    host[30]
+Found:    battery
+Traversing:    host[31]
+Found:    battery
+Traversing:    host[32]
+Found:    battery
+Traversing:    host[33]
+Found:    battery
+Traversing:    host[34]
+Found:    battery
+Traversing:    host[35]
+Found:    battery
+Traversing:    host[36]
+Found:    battery
+Traversing:    host[37]
+Found:    battery
+Traversing:    host[38]
+Found:    battery
+Traversing:    host[39]
+Found:    battery
+Traversing:    host[40]
+Found:    battery
+Traversing:    host[41]
+Found:    battery
+Traversing:    host[42]
+Found:    battery
+Traversing:    host[43]
+Found:    battery
+Traversing:    host[44]
+Found:    battery
+Traversing:    host[45]
+Found:    battery
+Traversing:    host[46]
+Found:    battery
+Traversing:    host[47]
+Found:    battery
+Traversing:    host[48]
+Found:    battery
+Traversing:    host[49]
+Found:    battery
+Traversing:    host[50]
+Found:    battery
+Traversing:    dataCentricNetworkMan
+Traversing:    channelControl
+##########################
+CSMA-Ack
+DataCentricAppPkt
+DataCentricControlPkt
+##########################
+
+End.
+../src/datacentric -u Cmdenv -n .:../src:../csma802154:../../inetmanet_a/examples:../../inetmanet_a/src -f DataCentric_2.ini -c DataC_E
+xperiment_One_to_One_Binding -r 1
+OMNeT++ Discrete Event Simulation  (C) 1992-2011 Andras Varga, OpenSim Ltd.
+Version: 4.2.2, build: 120327-7947143, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+See the license for distribution terms and warranty disclaimer
+Setting up Cmdenv...
+Loading NED files from .: 1
+Loading NED files from ..\src: 11
+Loading NED files from ..\csma802154: 1
+Loading NED files from ..\..\inetmanet_a\examples: 179
+Loading NED files from ..\..\inetmanet_a\src: 365
+
+Preparing for running configuration DataC_Experiment_One_to_One_Binding, run #1...
+Scenario: $numNodes=51, $repetition=1
+Assigned runID=DataC_Experiment_One_to_One_Binding-1-20130620-13:53:58-3220
+Setting up network `DataCentricNet'...
+Initializing...
+
+Running simulation...
+** Event #1   T=0   Elapsed: 0.000s (0m 00s)  0% completed
+     Speed:     ev/sec=0   simsec/sec=0   ev/simsec=0
+     Messages:  created: 923   present: 923   in FES: 258
+: No change
+Allocated memory: 6622, 6622, 6622, 6597, 6622, 6622, 6622, 6622, 6540, 673, 674, 1653, 535, 537, 3042, 3265, 673, 674, 1653,
+
+
+
+
+
+Allocated memory: 
+
+context?
+6622, 6622, 6622, 6597, 
+
+state
+6622, 6622, 6622, 6622, 6540, 
+
+interface node
+673, 674, 
+
+gradient node
+1653, 
+
+
+packetcopy, into q, del object
+535, 537, 3042, 3265, 
+
+interface node
+673, 674, 
+
+gradient node
+1653,
+
+
+
+memory: 
+
+6622, 6622, 6622, 6597, 
+
+
+6622, 6622, 6622, 6622, 6540, 
+
+interface and grad
+673, 674, 1653, 
+
+del object still present
+3265, 
+
+
+two more interface and grad
+673, 674, 1653, 
+673, 674, 1653, 
+
+two interface list items
+2882, 2882,
+
+
+
+
+
+
+
+
+
+
+## sending: 2 from:  aaa00000002 (net) to: aaa0000000e
+## sending: 2 from:  aaa0000000e (net) to: aaa00000001
+## sending: 3 from:  aaa00000001 (net) to: aaa0000000e
+## sending: 3 from:  aaa0000000e (net) to: aaa00000002
+: No change
+## aaa00000002 (net) received data from:  aaa0000000e
+: No change
+** Event #24673   T=0.30480836927   Elapsed: 0.718s (0m 00s)  1% completed
+     Speed:     ev/sec=34363.5   simsec/sec=0.424524   ev/simsec=80945.9
+     Messages:  created: 33170   present: 1420   in FES: 163
+
+<!> Module (DataCentricTestApp) DataCentricNet.host[1].app (id=195) at event #24673, t=0.30480836927: Stopping simulation after first d
+ata packet.
+
+
+Calling finish() at end of Run #1...
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899992
+residual capacity = 899993
+residual capacity = 899995
+residual capacity = 899994
+residual capacity = 899992
+residual capacity = 899993
+residual capacity = 899992
+residual capacity = 899991
+residual capacity = 899993
+residual capacity = 899994
+residual capacity = 899992
+residual capacity = 899992
+residual capacity = 899991
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899994
+residual capacity = 899994
+residual capacity = 899994
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899992
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899991
+residual capacity = 899992
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899993
+residual capacity = 899992
+residual capacity = 899994
+residual capacity = 899993
+residual capacity = 899994
+residual capacity = 899991
+residual capacity = 899992
+residual capacity = 899992
+residual capacity = 899992
+residual capacity = 899993
+residual capacity = 899991
+residual capacity = 899992
+residual capacity = 899991
+residual capacity = 899993
+residual capacity = 899994
+residual capacity = 899994
+residual capacity = 899992
+residual capacity = 899991
+residual capacity = 899993
+residual capacity = 899995
+Allocated memory: 6622, 6622, 6622, 6597, 6622, 6622, 6622, 6622, 6540, 673, 674, 1653, 3265, 673, 674, 1653, 673, 674, 1653, 2882, 288
+2,
+Traversing:    region[0]
+Traversing:    host[0]
+Found:    battery
+Traversing:    host[1]
+Found:    battery
+Traversing:    host[2]
+Found:    battery
+Traversing:    host[3]
+Found:    battery
+Traversing:    host[4]
+Found:    battery
+Traversing:    host[5]
+Found:    battery
+Traversing:    host[6]
+Found:    battery
+Traversing:    host[7]
+Found:    battery
+Traversing:    host[8]
+Found:    battery
+Traversing:    host[9]
+Found:    battery
+Traversing:    host[10]
+Found:    battery
+Traversing:    host[11]
+Found:    battery
+Traversing:    host[12]
+Found:    battery
+Traversing:    host[13]
+Found:    battery
+Traversing:    host[14]
+Found:    battery
+Traversing:    host[15]
+Found:    battery
+Traversing:    host[16]
+Found:    battery
+Traversing:    host[17]
+Found:    battery
+Traversing:    host[18]
+Found:    battery
+Traversing:    host[19]
+Found:    battery
+Traversing:    host[20]
+Found:    battery
+Traversing:    host[21]
+Found:    battery
+Traversing:    host[22]
+Found:    battery
+Traversing:    host[23]
+Found:    battery
+Traversing:    host[24]
+Found:    battery
+Traversing:    host[25]
+Found:    battery
+Traversing:    host[26]
+Found:    battery
+Traversing:    host[27]
+Found:    battery
+Traversing:    host[28]
+Found:    battery
+Traversing:    host[29]
+Found:    battery
+Traversing:    host[30]
+Found:    battery
+Traversing:    host[31]
+Found:    battery
+Traversing:    host[32]
+Found:    battery
+Traversing:    host[33]
+Found:    battery
+Traversing:    host[34]
+Found:    battery
+Traversing:    host[35]
+Found:    battery
+Traversing:    host[36]
+Found:    battery
+Traversing:    host[37]
+Found:    battery
+Traversing:    host[38]
+Found:    battery
+Traversing:    host[39]
+Found:    battery
+Traversing:    host[40]
+Found:    battery
+Traversing:    host[41]
+Found:    battery
+Traversing:    host[42]
+Found:    battery
+Traversing:    host[43]
+Found:    battery
+Traversing:    host[44]
+Found:    battery
+Traversing:    host[45]
+Found:    battery
+Traversing:    host[46]
+Found:    battery
+Traversing:    host[47]
+Found:    battery
+Traversing:    host[48]
+Found:    battery
+Traversing:    host[49]
+Found:    battery
+Traversing:    host[50]
+Found:    battery
+Traversing:    dataCentricNetworkMan
+Traversing:    channelControl
+##########################
+CSMA-Ack
+DataCentricAppPkt
+DataCentricControlPkt
+##########################
+
+End.
+
+AndrewHardy@novatech ~/my_workspace/datacentric/simulations
+$

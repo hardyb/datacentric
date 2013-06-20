@@ -44,6 +44,52 @@ opp_runall -j1 ../src/datacentric -u Cmdenv -f DataCentric_2.ini -c DataC__Paral
 
 
 
+opp_runall -j1 ../src/datacentric -u Cmdenv -n ../csma802154;.;../src;../../inetmanet_a/examples;../../inetmanet_a/src -f DataCentric_2.ini -c DataC_Experiment_One_to_One_Binding -r 0..3
+
+
+opp_runall -j1 ../src/datacentric -u Cmdenv -n .;../src;../../inetmanet_a/src -f DataCentric_2.ini -c DataC_Experiment_One_to_One_Binding -r 0..3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FINAL:
+===================
+
+PATH=$PATH:/c/omnetpp-4.2.2/my_workspace/inetmanet_a/src
+
+then
+
+cd ./my_workspace/datacentric/simulations
+
+$ opp_runall -j1 ../src/datacentric -u Cmdenv  -n .:../src:../csma802154:../../inetmanet_a/examples:../../inetmanet_a/src -f DataCentric_2.ini -c DataC_Experiment_One_to_One_Binding -r 0..3
+
+or 
+
+cd ./my_workspace/datacentric/csma802154
+
+$ opp_runall -j1 ../src/datacentric -u Cmdenv  -n .:../src:../simulations:../../inetmanet_a/examples:../../inetmanet_a/src -f DataCentric_2.ini -c DataC_Experiment_One_to_One_Binding -r 0..3
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

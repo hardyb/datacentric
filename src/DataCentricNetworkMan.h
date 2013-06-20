@@ -36,6 +36,8 @@ class DataCentricNetworkMan : public cSimpleModule
     //signed int getDemand();
     void setSinkOrSources(std::string &sinksString, bool isSources);
     void traverseModule(const cModule& m);
+    double sumEnergyUsage(const cModule& m);
+
     void addAppliance(DataCentricTestApp* _appliance);
     signed short totalDemand(); // local version
     signed short getTotalDemand(); // remote version

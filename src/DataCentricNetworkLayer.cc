@@ -33,6 +33,7 @@ Define_Module( DataCentricNetworkLayer );
 static unsigned char forwardingRole[14] = {14, 4, 4, 8, 2, 3, 0, 0, 0, 0, 9, 4, 6, 0};
 unsigned char nodeConstraint;
 NEIGHBOUR_ADDR thisAddress;
+unsigned int moduleIndex;
 
 extern NEIGHBOUR_ADDR excludedInterface; // used as the incoming i/f for debug
 extern int stateCount;
@@ -88,6 +89,8 @@ static void cb_recordNeighbourLqi(Interface* i, State* s);
 void DataCentricNetworkLayer::initialize(int aStage)
 {
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
+
+    SetCurrentModuleInCLanguageFramework();
     if (0 == aStage)
     {
         numSent = 0;
@@ -193,6 +196,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
     if (1 == aStage)
     {
         testValue = 0;
+        mBatteryModule = (BasicBattery*)this->getParentModule()->getSubmodule("battery");
         cModule* nicModule = this->getParentModule()->getSubmodule("nic");
         cModule* macModule = check_and_cast<cModule*>(nicModule->getSubmodule("mac"));
         mPhyModule = check_and_cast<Ieee802154Phy*>(nicModule->getSubmodule("phy"));
@@ -279,6 +283,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
 void DataCentricNetworkLayer::finish()
 {
     SetCurrentModuleInCLanguageFramework();
+
+    double capacity_mW_sec = mBatteryModule->par("capacity").doubleValue() * 60 * 60 * mBatteryModule->par("voltage").doubleValue();
+    double residualCapacity_mW_sec = mBatteryModule->GetEnergy();
+    double usage_mW_sec = capacity_mW_sec - residualCapacity_mW_sec;
 
     recordScalar("num of pkts forwarded", numForward);
 
@@ -434,6 +442,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                     }
                     break;
             }
+            free(pkt);
         }
         break;
     case NF_RADIOSTATE_CHANGED:
@@ -704,6 +713,7 @@ void DataCentricNetworkLayer::SetCurrentModuleInCLanguageFramework()
     //nodeConstraint = (unsigned int)(255.0 * mStability);
     nodeConstraint = (unsigned int)mStability;
     currentModuleId = this->getId();
+    moduleIndex = this->getParentModule()->getIndex();
     thisAddress = mAddress;
     rd = &(moduleRD);
 }
@@ -1436,7 +1446,7 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
 
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
-    free(_msg);
+    sfree(_msg);
 }
 
 
@@ -1615,7 +1625,7 @@ static void cb_bcast_message(unsigned char* _msg)
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
-    free(_msg);
+    sfree(_msg);
 }
 
 
