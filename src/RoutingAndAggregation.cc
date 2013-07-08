@@ -1007,9 +1007,88 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
 
 
 
+
+#ifdef GRAD_FILES
+
+static std::ofstream myfile;
+
+
+
+static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
+{
+    myfile << "CONNECTION" << std::endl;
+    myfile << std::hex << std::uppercase << thisAddress << std::endl;
+    for ( int i = 0; _name[i] != 0; i++ )
+    {
+        //unsigned char ch = (unsigned char)_name[i];
+        myfile.width(2);
+        myfile.fill('0');
+        myfile << std::hex << std::uppercase << (unsigned int)_name[i];
+    }
+    //if ( strlen((const char*)_name) == 8 )
+    //{
+    //    int x = 0;
+    //    RD( "x: " << x << "\n" );
+    //}
+    myfile << std::endl;
+    myfile << std::dec << g->key1->action << std::endl;
+    myfile << std::hex << std::uppercase << g->key2->iName << std::endl;
+    myfile << std::dec << "seqno: " << (unsigned int)g->seqno << std::endl;
+    myfile << std::boolalpha << (bool)g->key2->up << std::endl;
+    myfile << std::dec << g->costToDeliver << std::endl;
+    myfile << std::dec<< g->costToObtain << std::endl;
+    myfile << std::boolalpha << (g->key1->bestGradientToDeliver == g) << std::endl;
+    myfile << std::boolalpha <<  deliverReinforced(g) << std::endl;
+    myfile << std::boolalpha << (g->key1->bestGradientToObtain == g) << std::endl;
+    myfile << std::boolalpha <<  obtainReinforced(g) << std::endl;
+
+}
+
+
+
+void UpdateGradientFile()
+{
+    std::string s;
+    std::ostringstream ss;
+    ss.clear();
+    ss.str(s);
+    ss << "C:\\GradientData\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
+
+    //int remove_failure = std::remove(ss.str().c_str());
+    //if ( remove_failure )
+    //{
+    //    EV << "File removal failure " << remove_failure << " \n";
+    //}
+    myfile.open (ss.str().c_str(), std::ios::trunc);
+
+    // need to improve this
+    //write_connections(write_one_connection);
+    write_gradients(write_one_gradient);
+    myfile.close();
+
+}
+
+#endif
+
+
+
+
+
+void myprocess(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+{
+    write_one_gradient(s->bestGradientToDeliver, _data);
+    write_one_gradient(s->bestGradientToObtain, _data);
+
+}
+
+
 bool write_gradients(void process(KDGradientNode* g, unsigned char* _name))
 {
-     return TraversGradientNodes(rd->grTree, process);
+     //return TraversGradientNodes(rd->grTree, process);
+     // If using insertKDGradientNode3 then use next 2 lines
+     traverse(rd->top_state, queue, 0, myprocess);
+     return true;
+
 
 }
 
@@ -2198,8 +2277,8 @@ struct KDGradientNode* insertKDGradientNode1(unsigned char* fullyqualifiedname, 
 	int inserted;
 	Interface* i = InsertInterfaceNode(&(rd->interfaceTree), iName, &inserted)->i;
 
-	return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev, seqno);
-	//return insertKDGradientNode3(s, i, costType, pCost, seqno);
+	//return insertKDGradientNode2(s, i, costType, pCost, treeNode, lev, seqno);
+	return insertKDGradientNode3(s, i, costType, pCost, seqno);
 
 }
 
@@ -4188,67 +4267,6 @@ void weAreCollaboratorInitiatorFor(char* _data)
 
 
 
-#ifdef GRAD_FILES
-
-static std::ofstream myfile;
-
-
-
-static void write_one_gradient(KDGradientNode* g, unsigned char* _name)
-{
-    myfile << "CONNECTION" << std::endl;
-    myfile << std::hex << std::uppercase << thisAddress << std::endl;
-    for ( int i = 0; _name[i] != 0; i++ )
-    {
-        //unsigned char ch = (unsigned char)_name[i];
-        myfile.width(2);
-        myfile.fill('0');
-        myfile << std::hex << std::uppercase << (unsigned int)_name[i];
-    }
-    //if ( strlen((const char*)_name) == 8 )
-    //{
-    //    int x = 0;
-    //    RD( "x: " << x << "\n" );
-    //}
-    myfile << std::endl;
-    myfile << std::dec << g->key1->action << std::endl;
-    myfile << std::hex << std::uppercase << g->key2->iName << std::endl;
-    myfile << std::dec << "seqno: " << (unsigned int)g->seqno << std::endl;
-    myfile << std::boolalpha << (bool)g->key2->up << std::endl;
-    myfile << std::dec << g->costToDeliver << std::endl;
-    myfile << std::dec<< g->costToObtain << std::endl;
-    myfile << std::boolalpha << (g->key1->bestGradientToDeliver == g) << std::endl;
-    myfile << std::boolalpha <<  deliverReinforced(g) << std::endl;
-    myfile << std::boolalpha << (g->key1->bestGradientToObtain == g) << std::endl;
-    myfile << std::boolalpha <<  obtainReinforced(g) << std::endl;
-
-}
-
-
-
-void UpdateGradientFile()
-{
-    std::string s;
-    std::ostringstream ss;
-    ss.clear();
-    ss.str(s);
-    ss << "C:\\GradientData\\" << std::hex << std::uppercase << thisAddress << "Connections.txt";
-
-    //int remove_failure = std::remove(ss.str().c_str());
-    //if ( remove_failure )
-    //{
-    //    EV << "File removal failure " << remove_failure << " \n";
-    //}
-    myfile.open (ss.str().c_str(), std::ios::trunc);
-
-    // need to improve this
-    //write_connections(write_one_connection);
-    write_gradients(write_one_gradient);
-    myfile.close();
-
-}
-
-#endif
 
 
 void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID)

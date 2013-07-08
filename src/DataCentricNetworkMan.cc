@@ -566,7 +566,16 @@ void DataCentricNetworkMan::finish()
      * Would like to estimate this right-censored data using maximum likelyhood
      * but so far cannot find / manage to implement the right algorythms
      */
-    unsigned int numCensoredData = mExpectedDataArrivals - E2EDelayStats.getCount();
+    unsigned int l_numArrivals = E2EDelayStats.getCount();
+    unsigned int numCensoredData;
+    if ( l_numArrivals > mExpectedDataArrivals )
+    {
+        numCensoredData = 0;
+    }
+    else
+    {
+        numCensoredData = mExpectedDataArrivals - l_numArrivals;
+    }
     for ( int i = 0; i < numCensoredData; i++ )
     {
         switch ( estimationMethod )

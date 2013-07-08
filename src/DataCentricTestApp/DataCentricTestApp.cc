@@ -13,6 +13,7 @@
 
 #include "SimulationTerminator.h"
 
+//#define OLDFRAMEWORK
 
 
 #define UNKNOWN_ACTIVITY 0
@@ -861,7 +862,9 @@ void DataCentricTestApp::processDemandData(unsigned char* pkt)
         processBidData(++pkt);
         break;
     case 0x02: // Watts
+#ifndef OLDFRAMEWORK
         processWattsData(++pkt);
+#endif
         break;
     }
 
@@ -1214,7 +1217,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     mOriginalNextDemandActionTime = finalSeconds + ScheduleStartTime();
     mDemandActionMessage = i->first;
 
-    bool operatingBidSystem = true;
+    bool operatingBidSystem = false;
     if ( operatingBidSystem )
     {
         unsigned short lengthToBidFor;

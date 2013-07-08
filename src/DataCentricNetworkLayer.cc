@@ -13,6 +13,8 @@
 
 #include "SpecialDebug.h"
 
+//#define OLDFRAMEWORK
+
 
 //#include "InterfaceTableAccess.h"
 //#include "MACAddress.h"
@@ -36,7 +38,11 @@ NEIGHBOUR_ADDR thisAddress;
 unsigned int moduleIndex;
 
 extern NEIGHBOUR_ADDR excludedInterface; // used as the incoming i/f for debug
+
+#ifndef OLDFRAMEWORK
 extern int stateCount;
+#endif
+
 extern char queue[100];
 
 
@@ -68,10 +74,16 @@ static char messageName[9][24] =
 
 
 
-static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
+#ifndef OLDFRAMEWORK
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID);
-static void cb_bcast_message(unsigned char* _msg);
 static void cb_handle_application_data(unsigned char* _msg, double _creationTime, uint64_t ID);
+#else
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime);
+static void cb_handle_application_data(unsigned char* _msg, unsigned int len, double _creationTime);
+#endif
+
+static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callback(void* relevantObject));
+static void cb_bcast_message(unsigned char* _msg);
 //static void write_one_connection(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if);
 static void cb_recordNeighbourLqi(Interface* i, State* s);
 //static void cb_printNeighbour(Interface* i, State* s);
@@ -300,9 +312,11 @@ void DataCentricNetworkLayer::finish()
         unsigned int minlqi = (unsigned int)rd->interfaceTree->i->lqi;
         MinMaxNeighborLqi(rd->interfaceTree, &maxlqi, &minlqi);
 
+#ifndef OLDFRAMEWORK
         stateCount = 0; // no semantic error, but don't we need an extern
         traverse(rd->top_state, queue, 0, countState);
         recordScalar("NumberOfStates", stateCount);
+#endif
 
         double averageLqi = (totalLqi / totNeighbors);
         recordScalar("TotalNeighborLqi", totalLqi);
@@ -434,10 +448,16 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                     switch ( (pkt[2] & MSB2) )
                     {
                         case PUBLICATION:
+#ifndef OLDFRAMEWORK
                             advert_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl(), ID);
+#endif
                             break;
                         case RECORD:
+#ifndef OLDFRAMEWORK
                             interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl(), ID);
+#else
+                            interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
+#endif
                             break;
                     }
                     break;
@@ -583,7 +603,10 @@ void DataCentricNetworkLayer::handleMessage(cMessage* msg)
         getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
         weAreSinkFor(x, ++testSeqNo);
 
+        // mMessageForTesting_1 not used any way
+#ifndef OLDFRAMEWORK
         UcastAllBestGradients(rd->top_state, 0);
+#endif
 
         scheduleAt(simTime() + 10.0, mMessageForTesting_1);
 
@@ -806,7 +829,11 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     seenLqis.collect((double)lqi);
     seenLqisInTime.record((double)lqi);
 
+#ifndef OLDFRAMEWORK
     handle_message(pkt, previousAddress, lqi, creationTime, ID);
+#else
+    handle_message(pkt, previousAddress, lqi, creationTime);
+#endif
     free(pkt);
     delete appPkt;
 }
@@ -857,7 +884,11 @@ void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
     uint64_t msgId64 = (int)appPkt->par("msgId");
     uint64_t ID = (moduleId64 << 32) | msgId64;
 
+#ifndef OLDFRAMEWORK
     send_data(appPkt->getPktData().size(), data, simTime().dbl(), ID);
+#else
+    send_data(appPkt->getPktData().size(), data, simTime().dbl());
+#endif
     free(data);
 }
 
@@ -883,7 +914,11 @@ void DataCentricNetworkLayer::SendDataWithLongestContext(DataCentricAppPkt* appP
     uint64_t msgId64 = (int)appPkt->par("msgId");
     uint64_t ID = (moduleId64 << 32) | msgId64;
 
+#ifndef OLDFRAMEWORK
     send_data(stateLen, data, simTime().dbl(), ID);
+#else
+    send_data(stateLen, data, simTime().dbl());
+#endif
     free(data);
 }
 
@@ -1285,8 +1320,11 @@ static void setTimer(TIME_TYPE timeout, void* relevantObject, void timeout_callb
 
 
 
-
+#ifndef OLDFRAMEWORK
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime, uint64_t ID)
+#else
+static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime)
+#endif
 {
     /*
      * This is a generic call back for the data centric routing framework
@@ -1325,8 +1363,10 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
             break;
     }
 
+#ifndef OLDFRAMEWORK
     appPkt->addPar("sourceId").setLongValue((int)(ID >> 32));
     appPkt->addPar("msgId").setLongValue((int)(ID & 0xFFFFFFFF));
+#endif
 
     switch ( *_msg )
     {
@@ -1630,7 +1670,11 @@ static void cb_bcast_message(unsigned char* _msg)
 
 
 
+#ifndef OLDFRAMEWORK
 static void cb_handle_application_data(unsigned char* _msg, double _creationTime, uint64_t ID)
+#else
+static void cb_handle_application_data(unsigned char* _msg, unsigned int len, double _creationTime)
+#endif
 {
     // work still to do here
     // packetbuf_copyto(_msg, MESSAGE_SIZE);
@@ -1652,11 +1696,13 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
     double now = simTime().dbl();
     double pktTime = _creationTime;
 
+#ifndef OLDFRAMEWORK
     int moduleId = (int)(ID >> 32);
     int msgId = (int)(ID & 0xFFFFFFFF);
 
     if ( !currentModule->duplicate(moduleId, msgId) )//, appPkt) )
     {
+#endif
         currentModule->getParentModule()->bubble(bubbleText);
         cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
                 hex << excludedInterface << endl;
@@ -1668,10 +1714,13 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
         DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
         appPkt->setKind(DATA_PACKET);
         appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+strlen((const char*)_msg));
+#ifndef OLDFRAMEWORK
         appPkt->addPar("sourceId").setLongValue(moduleId);
         appPkt->addPar("msgId").setLongValue(msgId);
+#endif
 
         currentModule->send(appPkt, currentModule->mUpperLayerOut);
+#ifndef OLDFRAMEWORK
     }
     else
     {
@@ -1679,6 +1728,7 @@ static void cb_handle_application_data(unsigned char* _msg, double _creationTime
                 hex << excludedInterface << endl;
 
     }
+#endif
 
 }
 
