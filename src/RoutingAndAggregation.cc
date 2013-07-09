@@ -12,7 +12,7 @@ unsigned char current_prefix_name[100];
 #include <stdio.h>
 #include <string.h>
 
-//#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
+#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
 
 #ifdef ROUTING_DEBUG
 #define RD(x) std::cout << x
@@ -1076,8 +1076,11 @@ void UpdateGradientFile()
 
 void myprocess(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 {
-    write_one_gradient(s->bestGradientToDeliver, _data);
-    write_one_gradient(s->bestGradientToObtain, _data);
+    if ( s->bestGradientToDeliver )
+        write_one_gradient(s->bestGradientToDeliver, _data);
+
+    if ( s->bestGradientToObtain )
+        write_one_gradient(s->bestGradientToObtain, _data);
 
 }
 

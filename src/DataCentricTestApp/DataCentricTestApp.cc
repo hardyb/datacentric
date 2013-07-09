@@ -194,6 +194,10 @@ void DataCentricTestApp::initialize(int aStage)
         }
 
 
+        // Relevant parameters should be set directly or via regionHost
+        // never both.  The code below tests whether ANY parameter has been
+        // set directly and sets a flag so that this app is never set as the
+        // underlying module of a region host
         mBeenSetDirect = false;
 
         mBeenSetDirect = !mBeenSetDirect ? par("setParametersDirectly").boolValue() : true;
@@ -212,6 +216,10 @@ void DataCentricTestApp::initialize(int aStage)
         mBeenSetDirect =  !mBeenSetDirect ? par("scheduleStartTime").doubleValue() : true;
         mBeenSetDirect =  !mBeenSetDirect ? par("mains").boolValue() : true;
         mBeenSetDirect =  !mBeenSetDirect ? par("probabilityDown").doubleValue() : true;
+        mBeenSetDirect =  !mBeenSetDirect ? par("simAppTerminationReason").longValue() : true;
+
+
+
 
         // nodeContext is always set from region
 
@@ -387,6 +395,11 @@ void DataCentricTestApp::initialize(int aStage)
                                 if ( !hr->hasUnderlyingModule() )
                                 {
                                     ev << "Adding this app to:    " << iter2()->getFullPath() << endl;
+                                    if ( iter()->getIndex() == 1 )
+                                    {
+                                        cout  << "Adding this app to:    " << iter2()->getFullPath();
+                                        cout << endl;
+                                    }
                                     hr->setUnderlyingModule(this);
                                     break;
                                 }

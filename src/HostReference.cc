@@ -18,10 +18,40 @@ void HostReference::initialize(int aStage)
     {
         if ( underlyingModule )
         {
-            if ( !strcmp(underlyingModule->getParentModule()->getFullName(), "fixhost[4]") )
+            if ( !strcmp(getFullPath().c_str(), "csma802154net.region[1].regionHost[0]") ||
+                    !strcmp(getFullPath().c_str(), "DataCentricNet.region[1].regionHost[0]") )
             {
                 string fn = getFullPath();
-                cout << "We are here!" << endl;
+                cout << "We are here " << fn << endl;
+                cout << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
+                for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
+                {
+                    //char cval1 =  (*i);
+                    unsigned char cval2 =  (*i);
+                    unsigned int val = (unsigned int)cval2;
+                    cout << std::hex << std::uppercase << "\\" << val;
+                }
+                cout << std::endl;
+
+
+            }
+
+            if ( !strcmp(getFullPath().c_str(), "csma802154net.region[1].regionHost[1]") ||
+                    !strcmp(getFullPath().c_str(), "DataCentricNet.region[1].regionHost[1]") )
+            {
+                string fn = getFullPath();
+                cout << "We are here" << fn << endl;
+
+                cout << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
+                for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
+                {
+                    //char cval1 =  (*i);
+                    unsigned char cval2 =  (*i);
+                    unsigned int val = (unsigned int)cval2;
+                    cout << std::hex << std::uppercase << "\\" << val;
+                }
+                cout << std::endl;
+
             }
 
             if ( underlyingModule->par("setParametersDirectly").boolValue()
@@ -74,15 +104,6 @@ void HostReference::initialize(int aStage)
 
 
 
-                ev << "underlyingModule->contextData = ";// << underlyingModule->contextData <<
-                for ( std::string::iterator i = underlyingModule->contextData.begin(); i != underlyingModule->contextData.end(); i++ )
-                {
-                    //char cval1 =  (*i);
-                    unsigned char cval2 =  (*i);
-                    unsigned int val = (unsigned int)cval2;
-                    ev << std::hex << std::uppercase << "\\" << val;
-                }
-                ev << std::endl;
 
 
                 //underlyingModule->par("sinkFor").setStringValue(sinkFor);
@@ -129,6 +150,9 @@ void HostReference::initialize(int aStage)
 
                 //underlyingModule->par("isAppliance").setBoolValue(par("isAppliance").boolValue());
                 this->SetBool(underlyingModule->par("isAppliance"), par("isAppliance").boolValue());
+
+                this->SetInt(underlyingModule->par("simAppTerminationReason"), par("simAppTerminationReason").longValue());
+
             }
 
 
