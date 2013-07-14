@@ -369,6 +369,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 {
     rd = &(moduleRD);
 
+    double cTime = simTime().dbl();
+
     if (msg == mpUpDownMessage )
     {
         if ( mPhyModule->isEnabled() )
@@ -651,6 +653,10 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          * initialisation and enables it when the STARTUP_MESSAGE is received
          */
         //StartUpModule();
+        if ( this->getParentModule()->getIndex() == 3 )
+            cout << "Ind 3" << endl;
+        //if ( simTime().dbl() > 0 )
+        //    cout << "Index: " << this->getParentModule()->getIndex() << endl;
         mPhyModule->enableModule();
         //generatePacket(mBcastAddr, "ServiceDiscovery", FIND_CONTROL_UNIT, "", "");
         //mNetMan->recordOnePacket(DISCOVERY_STAT);
@@ -675,6 +681,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
          *
          */
         //SetSourceWithLongestContext(appPkt);
+        if ( this->getParentModule()->getIndex() == 3 )
+            cout << "Ind 3" << endl;
 
         // TEMP COMMENT OUT
 
@@ -710,6 +718,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         //mNetMan->recordOnePacket(REGISTER_STAT);
         break;
     case SINK_MESSAGE:
+        //if ( simTime().dbl() > 0 )
+        //    cout << "Index: " << this->getParentModule()->getIndex() << endl;
         sinkData.resize(appPkt->getPktData().size(), 0);
         std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
         getLongestContextTrie(rd->top_context, temp, temp, x);

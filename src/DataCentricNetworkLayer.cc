@@ -841,6 +841,7 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
 
 void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
 {
+    int inde;
     switch ( appPkt->getKind() )
     {
         case DATA_PACKET:
@@ -851,12 +852,17 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             SendDataWithLongestContext(appPkt); // ownership NOT passed on
             break;
         case STARTUP_MESSAGE:
+            if ( this->getParentModule()->getIndex() == 3 )
+                cout << "Ind 3" << endl;
             StartUpModule();
             break;
         case CONTEXT_MESSAGE:
             SetContext(appPkt); // ownership not passed on
             break;
         case SOURCE_MESSAGE:
+            if ( this->getParentModule()->getIndex() == 3 )
+                cout << "Ind 3" << endl;
+            //inde = this->getParentModule()->getIndex();
             SetSourceWithLongestContext(appPkt); // ownership NOT passed on
             break;
         case SINK_MESSAGE:

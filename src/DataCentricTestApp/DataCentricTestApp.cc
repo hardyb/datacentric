@@ -230,10 +230,6 @@ void DataCentricTestApp::initialize(int aStage)
             COUT << "We are here!" << "\n";
         }
 
-        DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
-        appPkt3->setKind(STARTUP_MESSAGE);
-        sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
-
         /*
         if ( par("nodeStartTime").isSet() )
         {
@@ -471,6 +467,12 @@ void DataCentricTestApp::initialize(int aStage)
 
     if (3 == aStage)
     {
+        DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
+        appPkt3->setKind(STARTUP_MESSAGE);
+        if ( mAppMode == DATACENTRIC_MODE )
+            appPkt3->setSchedulingPriority(1);
+        sendDelayed(appPkt3, NodeStartTime(), mLowerLayerOut);
+
         isAppliance = par("isAppliance").boolValue();
         if ( isAppliance )
         {
@@ -547,10 +549,12 @@ void DataCentricTestApp::processSinkFor(string &temp2)
         if ( mAppMode == AODV_MODE )
         {
             //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
-            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            //sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
         }
         else
         {
+            //appPkt2->setSchedulingPriority(-1);
             send(appPkt2, mLowerLayerOut);
         }
     }
@@ -587,10 +591,12 @@ void DataCentricTestApp::processCollaboratorInitiatorFor(string &temp2)
         if ( mAppMode == AODV_MODE )
         {
             //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
-            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            //sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
         }
         else
         {
+            //appPkt2->setSchedulingPriority(-1);
             send(appPkt2, mLowerLayerOut);
         }
     }
@@ -623,10 +629,12 @@ void DataCentricTestApp::processCollaboratorFor(string &temp2)
         if ( mAppMode == AODV_MODE )
         {
             //sendDelayed(appPkt2, NodeStartTime()+42.0, mLowerLayerOut);
-            sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            //sendDelayed(appPkt2, TimeSinkRegisterWithControlUnit(), mLowerLayerOut);
+            sendDelayed(appPkt2, NodeStartTime(), mLowerLayerOut);
         }
         else
         {
+            //appPkt2->setSchedulingPriority(-1);
             send(appPkt2, mLowerLayerOut);
         }
     }
@@ -659,10 +667,12 @@ void DataCentricTestApp::processSourceFor(string &temp1)
         if ( mAppMode == AODV_MODE )
         {
             //sendDelayed(appPkt1, NodeStartTime()+42.0, mLowerLayerOut);
-            sendDelayed(appPkt1, TimeSourceRegisterWithControlUnit(), mLowerLayerOut);
+            //sendDelayed(appPkt1, TimeSourceRegisterWithControlUnit(), mLowerLayerOut);
+            sendDelayed(appPkt1, NodeStartTime(), mLowerLayerOut);
         }
         else
         {
+            //appPkt1->setSchedulingPriority(-1);
             send(appPkt1, mLowerLayerOut);
         }
     }
@@ -716,7 +726,9 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
                 COUT << "fail" << "\n";
             }
             finalSeconds = (hours*3600)+(minutes*60)+seconds;
+            m->setSchedulingPriority(2);
             scheduleAt(finalSeconds + ScheduleStartTime(), m);
+
             //scheduleAt(simTime() + ScheduleStartTime(), m);
             // may be this should be right away then read time first
         }

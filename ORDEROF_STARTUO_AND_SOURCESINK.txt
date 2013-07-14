@@ -1,0 +1,100 @@
+
+
+
+
+DC
+=====
+startup first
+
+source (or sink) 2nd
+
+- startup doesn't send pub source grad cos its not been added in yet
+it just sends neighbour bcast
+it's not until another neighbour's neighbour bcast is received very shortly after
+that this node sends the pub source grad
+
+This only works because all the others are starting up at the same time
+If the pub source / record sink node started up last it would not send its grads
+because wearesource or wearesink would not be executed until AFTER startup is called!!!
+
+However if we put it the other way round then will it affect AODV cos it will be attempted
+to send service discovery etc BEFORE radio is ON.  Or will it just bufferin the mac?
+
+***** NEED TO FIND A WAY TO CORRECT THIS SOON.
+
+It works OK in Waspmote necause the weAre functions are all called BEFORE the startup
+
+
+AODV
+=====
+
+startup first
+
+source (or sink) 2nd
+
+
+- startup just turns on radio
+- for aodv with bind with source on, the sink will issue a service discovery
+message then send a bind req to the subsequent source
+
+
+In the case of initialise stages I think it is clear that later stage
+sends with no delay will get delivered later
+actually I think if the event has the same delivery time then it is really when the event is added
+that influences the order of delivery so even if at the same stage the order of send is important
+
+THE BUG - that we encountered is that startup is done at stage 1 and so parameter nodeStartTime is read
+at stage 1 but if region reference host is used then it is still default ie zero
+
+
+
+
+
+
+
+
+
+
+
+=================================
+Try to think whether current DC results will be wrong
+=================================
+
+Not quite the same 
+
+the gradient sending and route establishment would have all been at time
+zero because the nodestarttime parameter is accessed before it is set through region host
+
+but
+
+SO...  It is worth doing them again.
+
+
+
+========================
+AND ANOTHER THING
+========================
+
+WE have made it possible for first come first served best route like the aodv used 
+with zigbee simulation but we think we still operate the wait for time limit reached
+between better gradient notifications
+
+NEED TO CHECK whether this is placing more than appropriate time constraint 
+and thereby scewing results
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
