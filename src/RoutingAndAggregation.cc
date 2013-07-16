@@ -14,6 +14,13 @@ unsigned char current_prefix_name[100];
 
 #define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
 
+#ifdef FIRST_COME_ONLY
+#undef CONVERGENCE_TIMEOUT
+#define CONVERGENCE_TIMEOUT 0
+#endif
+
+
+
 #ifdef ROUTING_DEBUG
 #define RD(x) std::cout << x
 #else
@@ -5055,7 +5062,7 @@ void handle_advert(control_data cd)
 
             // try doing timeout for ALL nodes
             t->s->converged = 0;
-            setTimer(0.2, t->s, advert_convergence_timeout);
+            setTimer(CONVERGENCE_TIMEOUT, t->s, advert_convergence_timeout);
 
 
 
@@ -5374,7 +5381,7 @@ void handle_collaboration(control_data cd)
 
             // try doing timeout for ALL nodes
             t->s->converged = 0;
-            setTimer(0.2, t->s, collaboration_convergence_timeout);
+            setTimer(CONVERGENCE_TIMEOUT, t->s, collaboration_convergence_timeout);
 
             t->s->bestGradientToDeliverUpdated = false;
             outgoing_packet.message_type = COLLABORATION;
@@ -5764,15 +5771,15 @@ void handle_interest(control_data cd)
 
             // try doing timeout for ALL nodes
             t->s->converged = 0;
-            setTimer(0.2, t->s, interest_convergence_timeout);
+            setTimer(CONVERGENCE_TIMEOUT, t->s, interest_convergence_timeout);
 
             //if ( t->s->prefix == FORWARD_AND_SOURCEPREFIX )
             //{
                 //char* x = (char*)smalloc(strlen((const char*)incoming_packet.data)+1);
                 //strcpy(x, (const char*)incoming_packet.data);
-                //setTimer(0.1, x, interest_convergence_timeout);
+                //setTimer(CONVERGENCE_TIMEOUT, x, interest_convergence_timeout);
 
-                //setTimer(0.1, t->s, source_interest_convergence_timeout);
+                //setTimer(CONVERGENCE_TIMEOUT, t->s, source_interest_convergence_timeout);
 
                 // Alternative longer method?
                 //unsigned char* x = (unsigned char*)smalloc(incoming_packet.length+1);
@@ -5783,7 +5790,7 @@ void handle_interest(control_data cd)
             //}
             //else
             //{
-                //setTimer(0.1, t->s, interest_convergence_timeout);
+                //setTimer(CONVERGENCE_TIMEOUT, t->s, interest_convergence_timeout);
             //}
 
 
