@@ -16,7 +16,9 @@ unsigned char current_prefix_name[100];
 
 #ifdef FIRST_COME_ONLY
 #undef CONVERGENCE_TIMEOUT
-#define CONVERGENCE_TIMEOUT 0
+//#define CONVERGENCE_TIMEOUT 0
+//#define CONVERGENCE_TIMEOUT 0.001
+#define CONVERGENCE_TIMEOUT 0.05 // .001 too soon to send reinforcement(RREP), more failures
 #endif
 
 

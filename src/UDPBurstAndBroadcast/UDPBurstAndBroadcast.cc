@@ -637,8 +637,11 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
-            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            //generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //        theData.c_str(), (const char*)x, 0);
+            COUT << "Time: 0" << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            generatePacket(0, mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
                     theData.c_str(), (const char*)x, 0);
             mNetMan->addPendingDataPkt();
         }
