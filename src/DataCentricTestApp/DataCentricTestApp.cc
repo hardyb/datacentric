@@ -467,6 +467,13 @@ void DataCentricTestApp::initialize(int aStage)
 
     if (3 == aStage)
     {
+        cModule* mr = this->getParentModule()->getSubmodule("manetrouting");
+        if (mr && par("isRoot").boolValue())
+        {
+            mr->par("isRoot").setBoolValue(true);
+            mr->par("first_proactiveRreqTimeout").setLongValue(par("first_proactiveRreqTimeout").doubleValue() * 1000);
+        }
+
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);
         if ( mAppMode == DATACENTRIC_MODE )

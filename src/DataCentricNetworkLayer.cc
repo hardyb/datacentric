@@ -866,7 +866,8 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             SetSourceWithLongestContext(appPkt); // ownership NOT passed on
             break;
         case SINK_MESSAGE:
-            SetSinkWithShortestContext(appPkt); // ownership NOT passed on
+            SetSinkAsIs(appPkt); // ownership NOT passed on
+            //SetSinkWithShortestContext(appPkt); // ownership NOT passed on
             break;
         case COLLABORATOR_INITITOR_MESSAGE:
             SetCollaboratorInitiatorWithShortestContext(appPkt); // ownership NOT passed on
@@ -1006,6 +1007,27 @@ void DataCentricNetworkLayer::SetSinkWithShortestContext(DataCentricAppPkt* appP
 
 
 
+void DataCentricNetworkLayer::SetSinkAsIs(DataCentricAppPkt* appPkt)
+{
+    string sinkData;
+    sinkData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+    //int size = appPkt->getPktData().size();
+    //size = sinkData.size();
+    std::vector<std::string> sinksData = cStringTokenizer(sinkData.c_str(), "\xFE").asVector();
+    unsigned char temp[30];
+    for (std::vector<std::string>::iterator i = sinksData.begin();
+            i != sinksData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = 0;
+        weAreSinkFor(x, 0);
+    }
+
+}
 
 
 void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCentricAppPkt* appPkt)

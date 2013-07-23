@@ -592,6 +592,7 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             d.data = theData;
             d.context = (const char*)x;
             d.t = simulation.getSimTime();
+            //d.t = 0; // IMPROVE ZERO PKT START HACK
 
             for (BindingListIter i = mBindingList.begin();
                     i != mBindingList.end(); ++i)
@@ -619,6 +620,10 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
                                 generatePacket(*it, "EnergyData", HOME_ENERGY_DATA, "",
                                         theData.c_str(), (const char*)x, 0);
+                                // IMPROVE ZERO PKT START HACK
+                                //COUT << "Time: 0 At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
+                                //generatePacket(0, *it, "EnergyData", HOME_ENERGY_DATA, "",
+                                //        theData.c_str(), (const char*)x, 0);
                             }
                         }
                         break;
@@ -637,12 +642,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
-            //COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            //generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
-            //        theData.c_str(), (const char*)x, 0);
-            COUT << "Time: 0" << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            generatePacket(0, mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
                     theData.c_str(), (const char*)x, 0);
+            // IMPROVE ZERO PKT START HACK
+            //COUT << "Time: 0" << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            //generatePacket(0, mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //        theData.c_str(), (const char*)x, 0);
             mNetMan->addPendingDataPkt();
         }
         break;

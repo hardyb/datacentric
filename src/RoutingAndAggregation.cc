@@ -956,9 +956,9 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  	}
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == RECORD) )
  	{
- 		outgoing_packet.message_type = INTEREST;
  		outgoing_packet.length = strlen(queue); // strlen ok in this case
  		outgoing_packet.data = (unsigned char*)queue;
+        outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
         if (s->bestGradientToDeliver->key2->iName == SELF_INTERFACE)
         {
             outgoing_packet.path_value = 0;
@@ -4091,9 +4091,13 @@ void handle_breakage(control_data cd)
 
 /*================================ MESSAGE HANDLERS ==============================*/
 
+void handle_nothing(control_data cd)
+{
+
+}
 
 
-void (*h[12]) (control_data cd) =
+void (*h[14]) (control_data cd) =
 {
 handle_advert,
 handle_interest,
@@ -4106,7 +4110,9 @@ handle_collaboration,
 handle_reinforce_collaboration,
 handle_interest_correction,
 handle_breakage,
-handle_pubbreakage
+handle_pubbreakage,
+handle_nothing,
+handle_interest
 };
 
 
@@ -4478,6 +4484,9 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
 	cd.incoming_if = inf;
 	cd.incoming_lqi = 0xFF - lqi;
 	cd.incoming_lqi = cd.incoming_lqi == 0 ? 1 : cd.incoming_lqi;
+#ifdef SPECIAL_INTEREST
+	cd.msg_type = incoming_packet.message_type;
+#endif
 
 
 	//InterfaceNode* in = FindInterfaceNode(rd->interfaceTree, inf);
@@ -5607,9 +5616,31 @@ void send_queued_data(void* relevantObject)
 
 
 
+// First of all do it like with adverts
 
+unsigned char outgoingInterestType(unsigned char* _data)
+{
+#ifndef SPECIAL_INTEREST
+    return INTEREST;
+#endif
+    trie* t;
+    char dot = DOT;
+    unsigned char* ptr = (unsigned char*)strchr((char*)_data, dot);
+    if ( ptr )
+    {
+        t = trie_lookup2(rd->top_context, ptr+1);
+    }
 
+    if ( !t )
+    {
+        return INTEREST;
+    }
+    else
+    {
+        return REGION_INTEREST;
+    }
 
+}
 
 
 
@@ -5622,6 +5653,14 @@ void handle_interest(control_data cd)
     {
         //return;
     }
+
+#ifdef SPECIAL_INTEREST
+    if ( incoming_packet.message_type == REGION_INTEREST
+            && outgoingInterestType(incoming_packet.data) == INTEREST )
+    {
+        return;
+    }
+#endif
 
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
@@ -5667,10 +5706,10 @@ void handle_interest(control_data cd)
 
             //s->bestGradientToDeliverUpdated = 0;
 
-            outgoing_packet.message_type = INTEREST;
 
             outgoing_packet.length = incoming_packet.length;
             outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
 
             //outgoing_packet.length = strlen(queue); // strlen ok in this case
             //outgoing_packet.data = (unsigned char*)queue; // cannot get
@@ -5797,11 +5836,9 @@ void handle_interest(control_data cd)
 
 
 
-
-
 			t->s->bestGradientToDeliverUpdated = false;
-			outgoing_packet.message_type = INTEREST;
             outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
             outgoing_packet.length = incoming_packet.length;
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.path_value = outgoingLinkCost(cd);

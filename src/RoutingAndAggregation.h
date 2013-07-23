@@ -15,6 +15,8 @@
 
 #define XXXXXX
 
+#define SPECIAL_INTEREST
+
 #define smalloc(x) mymalloc(x, __LINE__)
 #define sfree(x) myfree(x)
 //#define smalloc(x) malloc(x)
@@ -202,6 +204,9 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define BREAKAGE 10
 #define PUBBREAKAGE 11
 #define REINFORCE_INTEREST_CANCEL 12
+#ifdef SPECIAL_INTEREST
+#define REGION_INTEREST 13
+#endif
 
 
 
@@ -452,6 +457,9 @@ struct control_data
 {
     NEIGHBOUR_ADDR incoming_if;
     unsigned char incoming_lqi;
+#ifdef SPECIAL_INTEREST
+    unsigned char msg_type;
+#endif
 };
 
 
@@ -865,6 +873,7 @@ unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
 unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
 void handle_advert(control_data cd);
+unsigned char outgoingInterestType(unsigned char* _data);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
 void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);

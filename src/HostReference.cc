@@ -153,10 +153,11 @@ void HostReference::initialize(int aStage)
 
                 this->SetInt(underlyingModule->par("simAppTerminationReason"), par("simAppTerminationReason").longValue());
 
+                this->SetBool(underlyingModule->par("isRoot"), par("isRoot").boolValue());
+
+                this->SetDouble(underlyingModule->par("first_proactiveRreqTimeout"), par("first_proactiveRreqTimeout").doubleValue());
+
             }
-
-
-
 
 
         }
