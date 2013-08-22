@@ -228,7 +228,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     void DataReceived(AppControlMessage* acm);
 
   protected:
-    virtual int numInitStages() const {return 4;}
+    virtual int numInitStages() const {return 5;}
     virtual void initialize(int stage);
     virtual void handleMessage(cMessage *msg);
     void handleUpperLayerMessage(DataCentricAppPkt* appPkt);

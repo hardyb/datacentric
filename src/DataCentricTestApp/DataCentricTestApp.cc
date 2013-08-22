@@ -474,6 +474,19 @@ void DataCentricTestApp::initialize(int aStage)
             mr->par("first_proactiveRreqTimeout").setLongValue(par("first_proactiveRreqTimeout").doubleValue() * 1000);
         }
 
+        cModule* ur = this->getParentModule()->getSubmodule("udpApp");
+        if ( ur && strcmp(par("controlUnit").stringValue(), "") )
+        {
+            HostReference* hr = dynamic_cast<HostReference*>(
+                    cSimulation::getActiveSimulation()->getModuleByPath(
+                            par("controlUnit").stringValue()   )    );
+            if ( hr )
+            {
+                ur->par("controlUnit").setStringValue(
+                        hr->underlyingModule->getParentModule()->getFullPath().c_str());
+            }
+        }
+
         DataCentricAppPkt* appPkt3 = new DataCentricAppPkt("DataCentricAppPkt");
         appPkt3->setKind(STARTUP_MESSAGE);
         if ( mAppMode == DATACENTRIC_MODE )

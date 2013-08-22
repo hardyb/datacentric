@@ -97,6 +97,7 @@ NameNode* SourceNames = NULL;
 
 
 char queue[100];
+unsigned char data_buffer[60];
 
 
 //static int dataRate = 0;
@@ -125,13 +126,106 @@ struct RoutingData* rd;
 //union rpacket incoming_packet;
 //union rpacket outgoing_packet;
 
+// FOR OMNET
+// in the case of incoming_packet, write_packet_buff etc I think the struct instance
+// can be shared across modules as it is already, just reused each time data comes in or out
 struct new_packet incoming_packet;
 struct new_packet outgoing_packet;
 struct new_packet broken_packet;
-
-
 struct new_packet* sending_packet;
+unsigned char write_packet_buff[81];
 
+
+
+// FOR OMNET
+// In the case of packet copy buffer, interfaces, gradients etc
+// These must be per node.  Having them global in Waspmote is fine
+// but for omnet to be per node (module) I think they must be inside rd
+
+/*
+#define MAX_COPY_PACKETS 6
+struct new_packet copy_packet[MAX_COPY_PACKETS];
+struct new_packet* copy_packet_ptr[MAX_COPY_PACKETS];
+
+#define MAX_INTERFACES 12
+struct InterfaceNode interface_node_array[MAX_INTERFACES];
+struct InterfaceNode* interface_node_ptrs_array[MAX_INTERFACES];
+struct Interface interface_array[MAX_INTERFACES];
+struct Interface* interface_ptrs_array[MAX_INTERFACES];
+
+#define MAX_GRADIENTS 15
+struct KDGradientNode gradients_array[MAX_GRADIENTS];
+struct KDGradientNode* gradient_ptrs_array[MAX_GRADIENTS];
+
+#define MAX_INTERFACE_LIST 15
+struct InterfaceList interface_list_array[MAX_INTERFACE_LIST];
+struct InterfaceList* interface_list_ptr_array[MAX_INTERFACE_LIST];
+
+struct PacketQueue packet_queue_array[MAX_COPY_PACKETS];
+struct PacketQueue* packet_queue_ptr_array[MAX_COPY_PACKETS];
+
+struct QueueDeletion deletion_packet[MAX_COPY_PACKETS];
+struct QueueDeletion* deletion_packet_ptr[MAX_COPY_PACKETS];
+
+#define MAX_STATES 7
+struct State state_array[MAX_STATES];
+struct State* state_array_ptr[MAX_STATES];
+
+#define MAX_CONTEXTS 9
+struct context context_array[MAX_CONTEXTS];
+struct context context_array_ptr[MAX_CONTEXTS];
+
+#define MAX_TRIES 16
+struct trie trie_array[MAX_TRIES];
+struct trie trie_array_ptr[MAX_TRIES];
+
+
+*/
+
+
+int sizeOfStaticMemeory()
+{
+
+int l1 = sizeof(rd->copy_packet);
+int l2 = sizeof(rd->copy_packet_ptr);
+
+int l3 = sizeof(rd->interface_node_array);
+int l4 = sizeof(rd->interface_node_ptrs_array);
+int l5 = sizeof(rd->interface_array);
+int l6 = sizeof(rd->interface_ptrs_array);
+
+int l7 = sizeof(rd->gradients_array);
+int l8 = sizeof(rd->gradient_ptrs_array);
+
+int l9 = sizeof(rd->interface_list_array);
+int l10 = sizeof(rd->interface_list_ptr_array);
+
+int l11 = sizeof(rd->packet_queue_array);
+int l12 = sizeof(rd->packet_queue_ptr_array);
+
+int l13 = sizeof(rd->deletion_packet);
+int l14 = sizeof(rd->deletion_packet_ptr);
+
+int l15 = sizeof(rd->state_array);
+int l16 = sizeof(rd->state_array_ptr);
+
+int l17 = sizeof(rd->context_array);
+int l18 = sizeof(rd->context_array_ptr);
+
+int l19 = sizeof(rd->trie_array);
+int l20 = sizeof(rd->trie_array_ptr);
+
+return (l1+l2+l3+l4+l5+l6+l7+l8+l9+l10+l11+l12+l13+l14+l15+l16+l17+l18+l19+l20);
+
+}
+
+
+
+
+
+
+
+//HERE
 
 //unsigned char rMessage[MESSAGE_SIZE];
 //for( unsigned i = 0; i < MESSAGE_SIZE; i++ )
@@ -305,9 +399,14 @@ void read_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 
 	incoming_packet.message_type = pkt[0];
 	incoming_packet.length = pkt[1];
-	sfree(incoming_packet.data);
-    incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+
+	//sfree(incoming_packet.data);
     //incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+
+    //incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1); // already commented
+
+    memset(data_buffer, 0, 60);
+    incoming_packet.data = data_buffer;
 	if (!incoming_packet.data)
 	{
 	    memcpy(incoming_packet.data, &(pkt[2]), incoming_packet.length);
@@ -349,8 +448,12 @@ void read_broken_packet(unsigned char* pkt, double creationTime, uint64_t ID)
 
     broken_packet.message_type = pkt[0];
     broken_packet.length = pkt[1];
-    sfree(broken_packet.data);
-    broken_packet.data = (unsigned char*)smalloc(broken_packet.length+1);
+
+    //sfree(broken_packet.data);
+    //broken_packet.data = (unsigned char*)smalloc(broken_packet.length+1);
+
+    memset(data_buffer, 0, 60);
+    broken_packet.data = data_buffer;
     if (!broken_packet.data)
     {
         memcpy(broken_packet.data, &(pkt[2]), broken_packet.length);
@@ -541,11 +644,18 @@ unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt)
 
 new_packet* packetCopy(new_packet* currentPkt)
 {
-    new_packet* savePkt = (new_packet*)smalloc(sizeof(new_packet));
-    *savePkt = *currentPkt;
-    savePkt->data = (unsigned char*)smalloc(currentPkt->length+1);
-    memcpy(savePkt->data, currentPkt->data, currentPkt->length);
-    savePkt->data[currentPkt->length] = 0;
+    //new_packet* savePkt = (new_packet*)smalloc(sizeof(new_packet));
+    new_packet* savePkt = 0;
+
+    ALLOCARRAY(MAX_COPY_PACKETS, rd->copy_packet_ptr, rd->copy_packet, savePkt);
+    if ( savePkt )
+    {
+        *savePkt = *currentPkt;
+    }
+
+    //savePkt->data = (unsigned char*)smalloc(currentPkt->length+1);
+    //memcpy(savePkt->data, currentPkt->data, currentPkt->length);
+    //savePkt->data[currentPkt->length] = 0;
 
     return savePkt;
 }
@@ -562,7 +672,9 @@ new_packet* packetCopy(new_packet* currentPkt)
 unsigned char* write_packet(new_packet* the_packet)
 {
     unsigned int size = size_needed_for_outgoing_packet(the_packet);
-	unsigned char* pkt = (unsigned char*)smalloc(size);
+    //unsigned char* pkt = (unsigned char*)smalloc(size);
+    unsigned char* pkt = write_packet_buff;
+
 	unsigned int pkt_index = 0;
 
 	pkt[pkt_index] = the_packet->message_type;
@@ -600,7 +712,7 @@ unsigned char* write_packet(new_packet* the_packet)
 
 
 
-
+// NOT USED
 /*
  * Prepare a buffer for passing to upper layer to send
  */
@@ -679,8 +791,13 @@ struct StateNode* newStateNode(int stateDataname)
  */
 struct InterfaceNode* newInterfaceNode(NEIGHBOUR_ADDR interfaceName)
 {
-	struct InterfaceNode* n = (struct InterfaceNode *)smalloc(sizeof(struct InterfaceNode));
-	n->i = (struct Interface *)smalloc(sizeof(struct Interface));
+	//struct InterfaceNode* n = (struct InterfaceNode *)smalloc(sizeof(struct InterfaceNode));
+	//n->i = (struct Interface *)smalloc(sizeof(struct Interface));
+
+    struct InterfaceNode* n;
+    ALLOCARRAY(MAX_INTERFACES, rd->interface_node_ptrs_array, rd->interface_node_array, n);
+    ALLOCARRAY(MAX_INTERFACES, rd->interface_ptrs_array, rd->interface_array, n->i);
+
 	n->i->iName = interfaceName;
 	n->i->up = TRUE;
 	n->i->type = 0;
@@ -696,10 +813,13 @@ void freeInterfaceNode(InterfaceNode* n)
 {
     if ( n )
     {
-        sfree(n->i);
+        //sfree(n->i);
+        int success;
+        FREEARRAY(MAX_INTERFACES, rd->interface_ptrs_array, n->i, success);
         freeInterfaceNode(n->left);
         freeInterfaceNode(n->right);
-        sfree(n);
+        //sfree(n);
+        FREEARRAY(MAX_INTERFACES, rd->interface_node_ptrs_array, n, success);
     }
 }
 
@@ -1391,7 +1511,7 @@ void InterfaceDown(unsigned char* pkt, NEIGHBOUR_ADDR inf)
 
 
 
-
+// Not called any more because INTEREST_CORRECTION message type never set outside of this function
 // PROBABLY DOING AWAY WITH THIS
 void handle_interest_correction(control_data cd)
 {
@@ -1718,7 +1838,9 @@ void freeKDGradientNode(KDGradientNode* g)
         // not removing n->key2 here
         freeKDGradientNode(g->left);
         freeKDGradientNode(g->right);
-        sfree(g);
+        //sfree(g);
+        int success;
+        FREEARRAY(MAX_GRADIENTS, rd->gradient_ptrs_array, g, success);
     }
 }
 
@@ -1727,7 +1849,10 @@ void freeKDGradientNode(KDGradientNode* g)
 
 struct KDGradientNode* newKDGradientNode3(State* s, Interface* i, int obtain, int deliver, char seqno)
 {
-    struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
+    //struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
+    struct KDGradientNode* n = 0;
+    ALLOCARRAY(MAX_GRADIENTS, rd->gradient_ptrs_array, rd->gradients_array, n);
+
     n->key1 = s;
     n->key2 = i;
     n->costToObtain = obtain;
@@ -1741,7 +1866,10 @@ struct KDGradientNode* newKDGradientNode3(State* s, Interface* i, int obtain, in
 
 struct KDGradientNode* newKDGradientNode2(State* s, Interface* i, int obtain, int deliver, char seqno)
 {
-	struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
+    //struct KDGradientNode* n = (struct KDGradientNode *)smalloc(sizeof(struct KDGradientNode));
+    struct KDGradientNode* n = 0;
+    ALLOCARRAY(MAX_GRADIENTS, rd->gradient_ptrs_array, rd->gradients_array, n);
+
 	// we need to make it so that the same st cannot get created twice
 	// this is enforced in the same tree but not in different trees
 
@@ -1875,7 +2003,9 @@ void freeInterfaceList(struct InterfaceList* l)
     if (l)
     {
         freeInterfaceList(l->link);
-        sfree(l);
+        //sfree(l);
+        int success;
+        FREEARRAY(MAX_INTERFACE_LIST, rd->interface_list_ptr_array, l, success);
     }
 }
 
@@ -2885,8 +3015,8 @@ void displayState(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
 
 
 
-
-
+// TO BE REMOVED
+// Only called by handle_interest_correction() which is not called and is to be abolished
 void removeIF(struct InterfaceList** l, struct Interface* _i)
 {
     if(*l==NULL)
@@ -2970,7 +3100,10 @@ void add(struct InterfaceList** l, struct Interface* _i)
 	temp = *l;
 	if( *l == NULL )
 	{
-		temp = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
+        //temp = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
+        temp = 0;
+        ALLOCARRAY(MAX_INTERFACE_LIST, rd->interface_list_ptr_array,
+                rd->interface_list_array, temp);
 		temp->i = _i;
 		temp->link = NULL;
 		*l = temp;
@@ -2990,7 +3123,10 @@ void add(struct InterfaceList** l, struct Interface* _i)
                 return; // interface is already in list
 #endif
 		}
-		r = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
+        //r = (struct InterfaceList *)smalloc(sizeof(struct InterfaceList));
+        r = 0;
+        ALLOCARRAY(MAX_INTERFACE_LIST, rd->interface_list_ptr_array,
+                rd->interface_list_array, r);
 		r->i = _i;
 		r->link = NULL;
 		temp->link = r;
@@ -3079,6 +3215,7 @@ void addMem(struct MemList** l, void* _m, unsigned int _l)
 
 
 
+// NO LONGER USED
 // If new_packet* _i is already in the state's queue the does nothing
 // else creates copy, adds to queue and sets delete timer
 void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
@@ -3130,7 +3267,10 @@ void addPkt(struct PacketQueue** l, struct new_packet* _i)
     temp = *l;
     if( *l == NULL )
     {
-        temp = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
+        //temp = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
+        temp = 0;
+        ALLOCARRAY(MAX_COPY_PACKETS, rd->packet_queue_ptr_array,
+                rd->packet_queue_array, temp);
         temp->i = _i;
         temp->link = NULL;
         *l = temp;
@@ -3142,7 +3282,10 @@ void addPkt(struct PacketQueue** l, struct new_packet* _i)
         {
             temp = temp->link;
         }
-        r = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
+        //r = (struct PacketQueue *)smalloc(sizeof(struct PacketQueue));
+        r = 0;
+        ALLOCARRAY(MAX_COPY_PACKETS, rd->packet_queue_ptr_array,
+                rd->packet_queue_array, r);
         r->i = _i;
         r->link = NULL;
         temp->link = r;
@@ -3353,7 +3496,10 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             // always queue the pkt, will be deleted or send as soon as node is converged
             new_packet* savePkt = packetCopy(sending_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            //QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = 0;
+            ALLOCARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr,
+                    rd->deletion_packet, qd);
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(2.00, qd, delete_queued_data);
@@ -3390,7 +3536,10 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 
             new_packet* savePkt = packetCopy(sending_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            //QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = 0;
+            ALLOCARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr,
+                    rd->deletion_packet, qd);
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(1.00, qd, delete_queued_data);
@@ -3846,7 +3995,10 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
 
             new_packet* savePkt = packetCopy(&broken_packet);
             addPkt(&(s->pktQ), savePkt);
-            QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            //QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+            QueueDeletion* qd = 0;
+            ALLOCARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr,
+                    rd->deletion_packet, qd);
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
             setTimer(2.00, qd, delete_queued_data);
@@ -3898,7 +4050,10 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
     {
         new_packet* savePkt = packetCopy(&broken_packet);
         addPkt(&(t->s->pktQ), savePkt);
-        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+        //QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = 0;
+        ALLOCARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr,
+                rd->deletion_packet, qd);
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
         setTimer(2.00, qd, delete_queued_data);
@@ -4000,7 +4155,10 @@ void handle_pubbreakage(control_data cd)
     {
         new_packet* savePkt = packetCopy(&incoming_packet);
         addPkt(&(t->s->pktQ), savePkt);
-        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+        //QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+        QueueDeletion* qd = 0;
+        ALLOCARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr,
+                rd->deletion_packet, qd);
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
         setTimer(2.00, qd, delete_queued_data);
@@ -4291,8 +4449,10 @@ void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID)
 {
     incoming_packet.message_type = DATA;
     incoming_packet.length = len;
-    sfree(incoming_packet.data);
-    incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+    //sfree(incoming_packet.data);
+    //incoming_packet.data = (unsigned char*)smalloc(incoming_packet.length+1);
+    memset(data_buffer, 0, 60);
+    incoming_packet.data = data_buffer;
     memcpy(incoming_packet.data, _data, incoming_packet.length);
     incoming_packet.data[incoming_packet.length] = 0;
     incoming_packet.path_value = 0;
@@ -5466,7 +5626,7 @@ void handle_collaboration(control_data cd)
 
 
 
-
+// NO LONGER USED
 void removePktFromQueue(struct PacketQueue** l, struct new_packet* _i)
 {
     if(*l==NULL)
@@ -5538,9 +5698,12 @@ void delete_queued_data(void* relevantObject)
         if ( temp->i == qd->pktToDelete )
         {
             *l = temp->link;
-            sfree(temp->i->data);
-            sfree(temp->i);
-            sfree(temp);
+            //sfree(temp->i->data);
+            //sfree(temp->i);
+            int success;
+            FREEARRAY(MAX_COPY_PACKETS, rd->copy_packet_ptr, temp->i, success);
+            //sfree(temp);
+            FREEARRAY(MAX_COPY_PACKETS, rd->packet_queue_ptr_array, temp, success);
             temp = *l; // don't break, iterate entire list just in case duplicates
         }
         else
@@ -5550,7 +5713,9 @@ void delete_queued_data(void* relevantObject)
         }
     }
 
-    sfree(qd);
+    //sfree(qd);
+    int success;
+    FREEARRAY(MAX_COPY_PACKETS, rd->deletion_packet_ptr, qd, success);
 
     return;
 }
@@ -5578,9 +5743,12 @@ void send_queued_data(void* relevantObject)
             if ( consider_sending_data(s, data, 0) )
             {
                 *l = temp->link;
-                sfree(temp->i->data);
-                sfree(temp->i);
-                sfree(temp);
+                //sfree(temp->i->data);
+                //sfree(temp->i);
+                int success;
+                FREEARRAY(MAX_COPY_PACKETS, rd->copy_packet_ptr, temp->i, success);
+                //sfree(temp);
+                FREEARRAY(MAX_COPY_PACKETS, rd->packet_queue_ptr_array, temp, success);
                 temp = *l;
             }
             else
@@ -6354,10 +6522,12 @@ void handle_neighbor_ucast(control_data cd)
 
 void StartUp()
 {
-    if ( moduleIndex == 0 )
-    {
-        setTimer(0.25, 0, listMemAlloc_cb);
-    }
+    //if ( moduleIndex == 0 )
+    //{
+    //    setTimer(0.25, 0, listMemAlloc_cb);
+    //}
+
+    int statSize = sizeOfStaticMemeory();
 
 	// not sure if this is necessary for ansii c
 	memset(&incoming_packet, 0, sizeof(incoming_packet));
@@ -6587,7 +6757,7 @@ void consider_sending_data(State* s, char* _buf, NEIGHBOUR_ADDR _if)
 //context* context_new();
 //trie* trie_new();
 
-
+// NO LONGER USED
 state* state_new()
 {
    state *s = (state*)smalloc(sizeof(state));
@@ -6603,10 +6773,15 @@ state* state_new()
 //struct StateNode* newStateNode(int stateDataname)
 struct State* newStateObject()
 {
-	//struct StateNode* n = (struct StateNode *)smalloc(sizeof(struct StateNode));
+	// These 3 lines already commented out
+    //struct StateNode* n = (struct StateNode *)smalloc(sizeof(struct StateNode));
 	//n->s = (struct State *)smalloc(sizeof(struct State));
-	struct State* s = (struct State *)smalloc(sizeof(struct State));
 	//n->s->dataName._dataname_struct1.the_dataname = stateDataname;
+
+    //struct State* s = (struct State *)smalloc(sizeof(struct State));
+    struct State* s = 0;
+    ALLOCARRAY(MAX_STATES, rd->state_array_ptr,
+            rd->state_array, s);
 	s->bestGradientToObtain = NULL;
 	s->bestGradientToDeliver = NULL;
 	s->deliveryInterfaces = NULL;
@@ -6645,7 +6820,9 @@ void freeStateObject(State* s)
         // not removing actual 'Interface' here, use freeInterfaceNode()
         freeInterfaceList(s->deliveryInterfaces);
         freeInterfaceList(s->obtainInterfaces);
-        sfree (s);
+        //sfree (s);
+        int success;
+        FREEARRAY(MAX_STATES, rd->state_array_ptr, s, success);
     }
 }
 
@@ -6662,8 +6839,11 @@ void freeStateObject(State* s)
 
 context* context_new()
 {
-   context *c = (context*)smalloc(sizeof(context));
-   c->full_name[0] = '\0';
+   //context *c = (context*)smalloc(sizeof(context));
+   context *c = 0;
+   ALLOCARRAY(MAX_CONTEXTS, rd->context_array_ptr,
+           rd->context_array, c);
+   //c->full_name[0] = '\0';
    c->eg2 = 2;
    c->eg3 = 3;
    return c;
@@ -6675,7 +6855,9 @@ void context_free(context* c)
 {
     if (c)
     {
-        sfree(c);
+        //sfree(c);
+        int success;
+        FREEARRAY(MAX_CONTEXTS, rd->context_array_ptr, c, success);
     }
 }
 
@@ -6687,7 +6869,10 @@ void context_free(context* c)
 
 trie* trie_new()
 {
-   trie *t = (trie*)smalloc(sizeof(trie));
+   //trie *t = (trie*)smalloc(sizeof(trie));
+   trie *t = 0;
+   ALLOCARRAY(MAX_TRIES, rd->trie_array_ptr,
+           rd->trie_array, t);
    //t->substr = (char*)smalloc(10);
    t->s = NULL;
    t->c = NULL;
@@ -6711,7 +6896,9 @@ void trie_free(trie* t)
        trie_free(t->next_sibling);
        freeStateObject(t->s);
        context_free(t->c);
-       sfree(t);
+       //sfree(t);
+       int success;
+       FREEARRAY(MAX_TRIES, rd->trie_array_ptr, t, success);
    }
 }
 
@@ -6945,8 +7132,9 @@ void new_one(trie *t, unsigned char *str, NEIGHBOUR_ADDR _if)
 }
 
 
+// NO LONGER USED
 // The application related data names
-
+/*
 void addName(NameNode** Head, char* name)
 {
 	struct NameNode *temp;
@@ -6955,7 +7143,7 @@ void addName(NameNode** Head, char* name)
 	temp->Next=(*Head);
 	(*Head)=temp;
 }
-
+*/
 
 void iterateNameData(NameNode* Head)
 {

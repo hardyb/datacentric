@@ -23,6 +23,7 @@ class HostReference  : public cSimpleModule
     virtual void finish();
     void setUnderlyingModule(DataCentricTestApp* _underlyingModule);
     bool hasUnderlyingModule();
+    DataCentricTestApp* underlyingModule;
 
 
   protected:
@@ -43,7 +44,6 @@ class HostReference  : public cSimpleModule
     int     mLowerLayerIn;
     int     mLowerLayerOut;
 
-    DataCentricTestApp* underlyingModule;
 
 };
 

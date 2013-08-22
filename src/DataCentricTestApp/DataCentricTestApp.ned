@@ -42,6 +42,7 @@ simple DataCentricTestApp extends TrafGenPar
         int simAppTerminationReason @enum(none,firstPacket,allPackets,other) = default(none);
         bool isRoot = default(false); // Proactive RREQ
         double first_proactiveRreqTimeout = default(0);// 0 seconds
+        string controlUnit = default("");
         
         //sourceFor[5]: string;
         //int x[5];

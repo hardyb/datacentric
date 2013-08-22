@@ -157,7 +157,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
     //double bcD3 = mr->par("broadcastDelay").doubleValue();
 
 
-    if (stage != 3)
+    if (stage != 4)
         return;
 
     mServiceDiscoveryTimeOut = par("ServiceDiscoveryTimeOut");
@@ -417,8 +417,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     if ( msg->isName("BindingRetry") )
     {
         AData d;
-        d.data = msg->par("Data").str();
-        d.context = msg->par("Context").str();
+        d.data = msg->par("Data").stringValue();
+        d.context = msg->par("Context").stringValue();
         IPvXAddress addr;
         addr.set(msg->par("Address").stringValue());
         TriesIter bindIt = mBindingTries.find(d);
@@ -441,8 +441,8 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     if ( msg->isName("DiscoveryRetry") )
     {
         AData d;
-        d.data = msg->par("Data").str();
-        d.context = msg->par("Context").str();
+        d.data = msg->par("Data").stringValue();
+        d.context = msg->par("Context").stringValue();
         TriesIter discoverIt = mDiscoveryTries.find(d);
         if (discoverIt != mDiscoveryTries.end() )
         {
@@ -737,6 +737,8 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         {
             ////////////// NEW CODE
             generatePacket(mBcastAddr, "ServiceDiscovery",
+
+
                     SERVICE_DISCOVERY_REQUEST, sinkData.c_str(), "", (const char*)x, 0);
             if ( mServiceDiscoveryNumTries > 1 )
             {
@@ -745,8 +747,47 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                 d.context = (const char*)x;
                 mDiscoveryTries[d] = 1;
                 cMessage* m = new cMessage("DiscoveryRetry");
-                m->addPar("Data") = sinkData.c_str();
-                m->addPar("Context") = (const char*)x;
+
+                // One assignment method
+                //m->addPar("Data") = sinkData.c_str();
+                //m->addPar("Context") = (const char*)x;
+
+                // Another assignment method
+                //m->addPar("Data").setStringValue(sinkData.c_str());
+                //m->addPar("Context").setStringValue((const char*)x);
+
+                // Yet another assignment method
+                m->addPar("Data").setStringValue(d.data.c_str());
+                m->addPar("Context").setStringValue(d.context.c_str());
+
+                //m->addPar("Data") = sinkData;
+                //m->addPar("Context") = (const char*)x;
+                //std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), sinkData.begin());
+
+
+                // rewrite 1
+                //d.data = m->par("Data").str();
+                //d.context = m->par("Context").str();
+                //d.t = 0; // place holder
+
+
+                // rewrite 2
+                //d.data = m->par("Data");
+                //d.context = m->par("Context");
+                //d.t = 0; // place holder
+
+                // rewrite 3
+                //std::copy(d.data.begin(), d.data.end(), m->par("Data").str().begin());
+                //std::copy(d.context.begin(), d.context.end(), m->par("Context").str().begin());
+                //d.t = 0; // place holder
+
+                // rewrite 4
+                //addr.set(msg->par("Address").stringValue());
+                ///d.data = m->par("Data").stringValue();
+                //d.context = m->par("Context").stringValue();
+                //d.t = 0; // place holder
+
+                //HERE
                 scheduleAt(simTime()+mServiceDiscoveryTimeOut, m);
             }
             ////////////////////////////////////////////////////////////////

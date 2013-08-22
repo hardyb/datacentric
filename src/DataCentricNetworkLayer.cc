@@ -14,6 +14,7 @@
 #include "SpecialDebug.h"
 
 //#define OLDFRAMEWORK
+//#define STATIC_MEMORY
 
 
 //#include "InterfaceTableAccess.h"
@@ -172,6 +173,20 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
 
         // ORIGINAL DATA CENTRIC STUFF
+
+#ifdef STATIC_MEMORY
+        memset(moduleRD.context_array_ptr, 0, sizeof(moduleRD.context_array_ptr));
+        memset(moduleRD.copy_packet_ptr, 0, sizeof(moduleRD.copy_packet_ptr));
+        memset(moduleRD.deletion_packet_ptr, 0, sizeof(moduleRD.deletion_packet_ptr));
+        memset(moduleRD.gradient_ptrs_array, 0, sizeof(moduleRD.gradient_ptrs_array));
+        memset(moduleRD.interface_list_ptr_array, 0, sizeof(moduleRD.interface_list_ptr_array));
+        memset(moduleRD.interface_node_ptrs_array, 0, sizeof(moduleRD.interface_node_ptrs_array));
+        memset(moduleRD.interface_ptrs_array, 0, sizeof(moduleRD.interface_ptrs_array));
+        memset(moduleRD.packet_queue_ptr_array, 0, sizeof(moduleRD.packet_queue_ptr_array));
+        memset(moduleRD.state_array_ptr, 0, sizeof(moduleRD.state_array_ptr));
+        memset(moduleRD.trie_array_ptr, 0, sizeof(moduleRD.trie_array_ptr));
+#endif
+
         moduleRD.grTree = NULL;
         moduleRD.pktQ = NULL;
         moduleRD.interfaceTree = NULL;
@@ -185,6 +200,60 @@ void DataCentricNetworkLayer::initialize(int aStage)
         moduleRD.top_state = trie_new();
         moduleRD.pkts_received = 0;
         moduleRD.pkts_ignored = 0;
+
+
+
+
+/*
+#define MAX_COPY_PACKETS 6
+struct new_packet copy_packet[MAX_COPY_PACKETS];
+struct new_packet* copy_packet_ptr[MAX_COPY_PACKETS];
+
+#define MAX_INTERFACES 12
+struct InterfaceNode interface_node_array[MAX_INTERFACES];
+struct InterfaceNode* interface_node_ptrs_array[MAX_INTERFACES];
+struct Interface interface_array[MAX_INTERFACES];
+struct Interface* interface_ptrs_array[MAX_INTERFACES];
+
+#define MAX_GRADIENTS 15
+struct KDGradientNode gradients_array[MAX_GRADIENTS];
+struct KDGradientNode* gradient_ptrs_array[MAX_GRADIENTS];
+
+#define MAX_INTERFACE_LIST 20
+struct InterfaceList interface_list_array[MAX_INTERFACE_LIST];
+struct InterfaceList* interface_list_ptr_array[MAX_INTERFACE_LIST];
+
+struct PacketQueue packet_queue_array[MAX_COPY_PACKETS];
+struct PacketQueue* packet_queue_ptr_array[MAX_COPY_PACKETS];
+
+struct QueueDeletion deletion_packet[MAX_COPY_PACKETS];
+struct QueueDeletion* deletion_packet_ptr[MAX_COPY_PACKETS];
+
+#define MAX_STATES 7
+struct State state_array[MAX_STATES];
+struct State* state_array_ptr[MAX_STATES];
+
+#define MAX_CONTEXTS 9
+struct context context_array[MAX_CONTEXTS];
+struct context* context_array_ptr[MAX_CONTEXTS];
+
+#define MAX_TRIES 16
+struct trie trie_array[MAX_TRIES];
+struct trie* trie_array_ptr[MAX_TRIES];
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         rd = &(moduleRD);
         rd->role[0] = (unsigned char*)malloc(forwardingRole[0]);
@@ -1514,7 +1583,9 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
 
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
+#ifndef STATIC_MEMORY
     sfree(_msg);
+#endif
 }
 
 
@@ -1693,7 +1764,9 @@ static void cb_bcast_message(unsigned char* _msg)
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
     currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
+#ifndef STATIC_MEMORY
     sfree(_msg);
+#endif
 }
 
 
