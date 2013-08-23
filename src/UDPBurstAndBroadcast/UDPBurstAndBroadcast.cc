@@ -556,11 +556,11 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
  *      - Sinks send a data discovery for the data they want
  *      - then send a binding request so the source will send its data to them
  * If mBindWithSource is OFF (Default)
- *      - non CU sinks send registration to CU (like binding request to coordinator) at nodestart
- *      - CU sinks create a binding to themselves (like concentrator/monitor) at nodestart
- *      - if root set the CU generates pro-active RREQ. at specific time
- *      - Normal RREQ still applies if the source finds no route at scheddata time
- *      - Sources send data to CU at scheddata time
+ *      - non CU sinks send registration to CU (like binding request to coordinator) - at nodestart
+ *      - CU sinks create a binding to themselves (like concentrator/monitor) - at nodestart
+ *      - if root set the CU generates pro-active RREQ. - at specific time
+ *      - Normal RREQ still applies if the source finds no route - at scheddata time
+ *      - Sources send data to CU - at scheddata time
  *      - If CU not known then a CU discover can be used can delay timings
  */
 void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
