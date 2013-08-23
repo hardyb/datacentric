@@ -475,6 +475,11 @@ void DataCentricTestApp::initialize(int aStage)
         }
 
         cModule* ur = this->getParentModule()->getSubmodule("udpApp");
+        if (ur && par("isControlUnit").boolValue())
+        {
+            ur->par("isControlUnit").setBoolValue(true);
+        }
+
         if ( ur && strcmp(par("controlUnit").stringValue(), "") )
         {
             HostReference* hr = dynamic_cast<HostReference*>(

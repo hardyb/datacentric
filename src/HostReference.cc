@@ -158,6 +158,8 @@ void HostReference::initialize(int aStage)
                 this->SetDouble(underlyingModule->par("first_proactiveRreqTimeout"), par("first_proactiveRreqTimeout").doubleValue());
 
                 this->SetString(underlyingModule->par("controlUnit"), par("controlUnit").stringValue());
+
+                this->SetBool(underlyingModule->par("isControlUnit"), par("isControlUnit").boolValue());
             }
 
 
