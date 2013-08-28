@@ -784,7 +784,7 @@ void DataCentricTestApp::finish()
     for (ActionThreadsIterator i = mActionThreads.begin(); // free file name messages
             i != mActionThreads.end(); ++i)
     {
-        delete i->first;
+        this->cancelAndDelete(i->first);
         for ( list<ifstream*>::iterator j = i->second->begin();
                 j != i->second->end(); j++ )
         {
