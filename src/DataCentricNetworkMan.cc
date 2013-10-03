@@ -18,6 +18,9 @@
 #include "ChannelControl.h"
 
 
+extern int numSuccessfulReinforcements;
+
+
 #define BPS_INTERVAL_NOT_ONE
 
 #define ESTIMATION_UNKNOWN 0
@@ -77,6 +80,8 @@ Define_Module(DataCentricNetworkMan);
 void DataCentricNetworkMan::initialize(int aStage)
 {
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
+
+    numSuccessfulReinforcements = 0;
 
     if (0 == aStage)
     {
@@ -615,7 +620,8 @@ void DataCentricNetworkMan::finish()
     recordScalar("DataArrivals", (double)numDataArrivals);
     double percentageDataArrivals = ((double)numDataArrivals)/mExpectedDataArrivals * 100.0;
     recordScalar("PercentageArrivals", percentageDataArrivals);
-    unsigned int failures = mExpectedDataArrivals-numDataArrivals;
+    unsigned int failures = numDataArrivals <= mExpectedDataArrivals ?
+            mExpectedDataArrivals-numDataArrivals : 0;
     recordScalar("DataFailures", (double)(failures));
     double percentageFailures = ((double)failures)/mExpectedDataArrivals * 100.0;
     recordScalar("PercentageFailures", percentageFailures);
@@ -724,6 +730,7 @@ void DataCentricNetworkMan::finish()
     }
     std::cout << "##########################" << std::endl;
 
+    std::cout << "numSuccessfulReinforcements: " << numSuccessfulReinforcements << std::endl;
 
 
 
@@ -811,6 +818,8 @@ void DataCentricNetworkMan::addProactiveRREQ(uint32 _originator)
     Enter_Method("addProactiveRREQ(uint32 _originator)");
 
     mProactiveRREQSet.insert(_originator);
+    cout << "mProactiveRREQSet Size: " << mProactiveRREQSet.size() <<
+            " Time: " << simTime().dbl() << endl;
 
 }
 

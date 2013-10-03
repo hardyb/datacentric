@@ -106,8 +106,8 @@ class DataCentricTestApp : public TrafGenPar
     int getNextAction(ActionThreadsIterator& i);
     //int getReading(ifstream* ifs);
     void processWatts(ActionThreadsIterator& i);
-    void sendActualDemandPkt();
-    void sendAGivenBidPkt(unsigned short lengthToBidFor);
+    void sendActualDemandPkt(simtime_t t);
+    void sendAGivenBidPkt(unsigned short lengthToBidFor, simtime_t t);
 
     void startProgram(ActionThreadsIterator& i);
     //void actionReading(int reading);

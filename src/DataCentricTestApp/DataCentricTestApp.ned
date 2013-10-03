@@ -35,6 +35,12 @@ simple DataCentricTestApp extends TrafGenPar
         bool mains = default(false); // TO BE DISCONTINUED?
         double probabilityDown = default(0); // TO BE DISCONTINUED?
         string actionThreads = default("");
+        
+        // For collaborations
+        // If we want to measure the overall time taken to complete routing
+        // establishment AND send first data we must delay data but send at 
+        // the very earliest opportunity
+        int delayData = default(0); // wait for this many reinforcements to complete
         int none = 0;
         int firstPacket = 1;
         int allPackets = 2;

@@ -33,6 +33,10 @@
 
 #include "SpecialDebug.h"
 
+
+extern int numSuccessfulReinforcements;
+
+
 EXECUTE_ON_STARTUP(
     cEnum *e = cEnum::find("ChooseDestAddrMode");
     if (!e) enums.getInstance()->add(e = new cEnum("ChooseDestAddrMode"));
@@ -414,8 +418,9 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
 
     ////////////// NEW CODE
     // Check if message is in mDiscoveryTries or mBindingTries
-    if ( msg->isName("BindingRetry") )
+    if ( msg->isName("BindingRetry") || msg->isName("CUBindingRetry") )
     {
+        int ctrlType =  msg->isName("BindingRetry") ? BINDING_REQUEST : REGISTER_AS_SINK;
         AData d;
         d.data = msg->par("Data").stringValue();
         d.context = msg->par("Context").stringValue();
@@ -424,7 +429,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
         TriesIter bindIt = mBindingTries.find(d);
         if (bindIt != mBindingTries.end() )
         {
-            generatePacket(addr, "BindRequest", BINDING_REQUEST, d.data.c_str(), "",
+            generatePacket(addr, "BindRequest", ctrlType, d.data.c_str(), "",
                     d.context.c_str(), 0);
             bindIt->second++;
             if ( bindIt->second < mBindingNumTries )
@@ -633,9 +638,16 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                             for (std::vector<IPvXAddress>::iterator it = i->second.AddressList.begin();
                                     it != i->second.AddressList.end(); ++it)
                             {
-                                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
-                                generatePacket(*it, "EnergyData", HOME_ENERGY_DATA, "",
+                                // With App Layer NOT giving the data sending time
+                                //COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
+                                //generatePacket(*it, "EnergyData", HOME_ENERGY_DATA, "",
+                                //        theData.c_str(), (const char*)x, 0);
+
+                                // With App Layer giving the data sending time
+                                COUT << "Time: " << appPkt->getTimestamp().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
+                                generatePacket(appPkt->getTimestamp(), *it, "EnergyData", HOME_ENERGY_DATA, "",
                                         theData.c_str(), (const char*)x, 0);
+
                                 // IMPROVE ZERO PKT START HACK
                                 //COUT << "Time: 0 At: " << myAddr.get4() << ", Sending DATA to: " << (*it).get4() << "\n";
                                 //generatePacket(0, *it, "EnergyData", HOME_ENERGY_DATA, "",
@@ -658,9 +670,21 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
         }
         else
         {
-            COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            // With App Layer NOT giving the data sending time
+            //COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            //generatePacket(mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //        theData.c_str(), (const char*)x, 0);
+
+            // With App Layer giving the data sending time
+
+            // TEMP - Use undefined address to put packet in forserver queue
+            IPvXAddress undefinedAddr;
+            COUT << "Time: " << appPkt->getTimestamp().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
+            generatePacket(appPkt->getTimestamp(), undefinedAddr, "EnergyData", HOME_ENERGY_DATA, "",
                     theData.c_str(), (const char*)x, 0);
+            //generatePacket(appPkt->getTimestamp(), mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //        theData.c_str(), (const char*)x, 0);
+
             // IMPROVE ZERO PKT START HACK
             //COUT << "Time: 0" << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
             //generatePacket(0, mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
@@ -827,6 +851,20 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                         sinkData.c_str(), "", (const char*)x, 0);
                 mNetMan->addPendingRegistration(myAddr.get4().getInt());
                 mNetMan->recordOnePacket(REGISTER_STAT);
+
+                if ( mBindingNumTries > 1 )
+                {
+                    AData d;
+                    d.data = sinkData.c_str();
+                    d.context = (const char*)x;
+                    mBindingTries[d] = 1;
+                    cMessage* m;
+                    m = new cMessage("CUBindingRetry");
+                    m->addPar("Data").setStringValue(d.data.c_str());
+                    m->addPar("Context").setStringValue(d.context.c_str());
+                    m->addPar("Address").setStringValue(mServerAddr.str().c_str());
+                    scheduleAt(simTime()+mBindingTimeOut, m);
+                }
             }
         }
         break;
@@ -1494,6 +1532,14 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case REGISTER_AS_SINK_CONFIRMATION:
             COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                     << ", Received reg conf from: " << origAddr.get4() << "\n";
+            d.data = acm->getInterests();
+            d.context = acm->getContext();
+            mBindingTries.erase(d);
+            for (std::vector<AppControlMessage*>::iterator i = mPktsForServer.begin();
+                    i != mPktsForServer.end(); ++i)
+            {
+                sendPacket(*i, mServerAddr);
+            }
             break;
         case FIND_CONTROL_UNIT:
             if ( mIsControlUnit )
@@ -1622,8 +1668,27 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
         case REGISTER_AS_SOURCE:
             break;
         case REGISTER_AS_SINK:
+            // Asumes is map, but ideally ought to be multi-map
+            if (mInterestedNodes.find(origAddr) != mInterestedNodes.end() )
+            {
+                return;
+            }
             mInterestedNodes[origAddr].interest = acm->getInterests();
             mInterestedNodes[origAddr].context = acm->getContext();
+            numSuccessfulReinforcements++;
+
+            // partially worked on for multimap case
+            // but we also want to consider the case there are NONE for origAddr
+            //for ( std::map<IPvXAddress, TheInterest>::iterator i =
+            //        mInterestedNodes.lower_bound(origAddr);
+            //        i != mInterestedNodes.upper_bound(origAddr); i++ )
+            //{
+            //    if ( mInterestedNodes[origAddr].interest != acm->getInterests() ||
+            //            mInterestedNodes[origAddr].context != acm->getContext() )
+            //    {
+            //    }
+            //}
+
             //origAddr.get4().getInt()
             //IPv4Address pending(origAddr.get4());
             mNetMan->removePendingRegistration(origAddr.get4().getInt());
@@ -1639,7 +1704,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                 COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                         << ", Sending REGISTER_AS_SINK_CONFIRMATION to: " << origAddr.get4() << "\n";
                 generatePacket(origAddr, "BindResponse", REGISTER_AS_SINK_CONFIRMATION,
-                        acm->getInterests(), "", "", 0);
+                        acm->getInterests(), "", acm->getContext(), 0);
                 mNetMan->recordOnePacket(REGISTER_STAT);
             }
             break;
@@ -1649,6 +1714,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             {
                 sd = acm->getSourceData();
                 con = acm->getContext();
+                // Ideally mInterestedNodes ought to be a multimap
                 for (std::map<IPvXAddress, TheInterest>::iterator i = mInterestedNodes.begin();
                         i != mInterestedNodes.end(); ++i)
                 {
@@ -1669,11 +1735,24 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                             {
                                 //socket.sendTo(acm->dup(), i->first, destPort, outputInterface);
                                 // THINK THE ABOVE IS OLD AND SHOULD HAVE BEEN REMOVED
-                                mNetMan->addPendingDataPkt();
-                                sendPacket(acm->dup(), i->first);
-                                COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
-                                        << ", Forwarding to: " << i->first.get4() << "\n";
-                                //numSent++;
+                                //static int numDataPacketsCollected = 0;
+                                //numDataPacketsCollected++;
+                                //if ( numDataPacketsCollected == 5 )
+                                //{
+                                //}
+                                if ( i->first != origAddr )
+                                {
+                                    mNetMan->addPendingDataPkt();
+                                    sendPacket(acm->dup(), i->first);
+                                    COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
+                                            << ", Forwarding to: " << i->first.get4() << "\n";
+                                    //numSent++;
+                                }
+                                else
+                                {
+                                    cout << "Do not send commands to originator" << "\n";
+                                }
+
                             }
                         }
                     }

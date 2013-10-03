@@ -15,6 +15,8 @@
 
 //#define OLDFRAMEWORK
 
+extern int numSuccessfulReinforcements;
+
 
 #define UNKNOWN_ACTIVITY 0
 #define SENSOR_READING 1
@@ -26,7 +28,7 @@
 
 
 
-
+#define DELAY_DATA
 
 
 //#undef EV
@@ -752,6 +754,7 @@ void DataCentricTestApp::processActionsFor(string &actionThreadsString)
             }
             finalSeconds = (hours*3600)+(minutes*60)+seconds;
             m->setSchedulingPriority(2);
+            m->setTimestamp(finalSeconds + ScheduleStartTime());
             scheduleAt(finalSeconds + ScheduleStartTime(), m);
 
             //scheduleAt(simTime() + ScheduleStartTime(), m);
@@ -988,7 +991,7 @@ void DataCentricTestApp::processBidData(unsigned char* pkt)
     bid = bd.theUnSignedShort;
 
     processABid(applianceId, bid);
-    sendActualDemandPkt();
+    sendActualDemandPkt(simTime());
 
 }
 
@@ -1025,6 +1028,7 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
         {
             COUT << "#" << myAddr << "# We are going into IDLE state" << "\n";
             setCurrentDemand(0);
+            mDemandActionMessage->setTimestamp(mOriginalNextDemandActionTime + mDownTime);
             scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
             appState = APPSTATE_IDLE;
             return;
@@ -1049,6 +1053,7 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
                     COUT << "#" << myAddr << "# Appliance " << _applianceId <<
                             " bid " << _bid << ", RUNNING" << "\n";
                     setCurrentDemand(mRequestedDemand);
+                    mDemandActionMessage->setTimestamp(mOriginalNextDemandActionTime + mDownTime);
                     scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                     appState = APPSTATE_RUNNING;
                 }
@@ -1081,6 +1086,7 @@ void DataCentricTestApp::processABid(unsigned short _applianceId, unsigned short
                 mLastOnTime = simTime().dbl();
                 mDownTime += (mLastOnTime - mLastOffTime);
                 setCurrentDemand(mRequestedDemand);
+                mDemandActionMessage->setTimestamp(mOriginalNextDemandActionTime + mDownTime);
                 scheduleAt(mOriginalNextDemandActionTime + mDownTime, mDemandActionMessage);
                 appState = APPSTATE_RUNNING;
             }
@@ -1134,7 +1140,25 @@ void DataCentricTestApp::handleSelfMsg(cMessage *apMsg)
     if (i != mActionThreads.end() )
     {
         double t = simTime().dbl();
+        double msg_t = apMsg->getTimestamp().dbl();
         NullStream() << "Current Time: " << t << "\n";
+
+#ifdef DELAY_DATA
+        if ( par("delayData").longValue() && numSuccessfulReinforcements != par("delayData").longValue() )
+        {
+            //par("scheduleStartTime").setDoubleValue( t + 0.01 );
+            //apMsg->setTimestamp(0);
+            //scheduleAt(ScheduleStartTime(), apMsg);
+
+            scheduleAt(simTime()+0.01, apMsg);
+            TrafGenPar::handleSelfMsg(apMsg);
+            return;
+        }
+        else
+        {
+            t = simTime().dbl();
+        }
+#endif
 
         switch ( getNextAction(i) )
         {
@@ -1262,10 +1286,12 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
     *ifs >> seconds;
     finalSeconds = (hours*3600)+(minutes*60)+seconds;
 
+    simtime_t nextMessageTime = finalSeconds + ScheduleStartTime();
+    nextMessageTime = nextMessageTime < simTime() ? simTime() : nextMessageTime;
 
-
-    mOriginalNextDemandActionTime = finalSeconds + ScheduleStartTime();
+    mOriginalNextDemandActionTime = nextMessageTime.dbl();
     mDemandActionMessage = i->first;
+    simtime_t trueSendingTime = mDemandActionMessage->getTimestamp();
 
     bool operatingBidSystem = false;
     if ( operatingBidSystem )
@@ -1282,16 +1308,16 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
         }
         unsigned short myAddr = netModule->mAddress & 0xFFFF;
 
-
         processABid(myAddr, lengthToBidFor);
-        sendActualDemandPkt();
-        sendAGivenBidPkt(lengthToBidFor);
+        sendActualDemandPkt(trueSendingTime);
+        sendAGivenBidPkt(lengthToBidFor, trueSendingTime);
 
     }
     else
     {
         setCurrentDemand(watts);
-        sendActualDemandPkt();
+        sendActualDemandPkt(trueSendingTime);
+        mDemandActionMessage->setTimestamp(mOriginalNextDemandActionTime);
         scheduleAt(mOriginalNextDemandActionTime, mDemandActionMessage);
     }
 
@@ -1302,7 +1328,7 @@ void DataCentricTestApp::processWatts(ActionThreadsIterator& i)
 
 
 
-void DataCentricTestApp::sendActualDemandPkt()
+void DataCentricTestApp::sendActualDemandPkt(simtime_t t)
 {
     DataCentricAppPkt* appPkt = new DataCentricAppPkt("Watts");
     std::ostringstream ss;
@@ -1321,6 +1347,9 @@ void DataCentricTestApp::sendActualDemandPkt()
     //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    appPkt->setTimestamp(t);
+
+
     //appPkt->addPar("sourceId") = getId();
     //appPkt->addPar("msgId") = numSent++;
 
@@ -1328,7 +1357,7 @@ void DataCentricTestApp::sendActualDemandPkt()
 }
 
 
-void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor)
+void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor, simtime_t t)
 {
     unsigned short myAddr = netModule->mAddress & 0xFFFF;
 
@@ -1355,6 +1384,9 @@ void DataCentricTestApp::sendAGivenBidPkt(unsigned short lengthToBidFor)
     //unsigned int a = s.size();
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    appPkt->setTimestamp(t);
+
+
     //appPkt->addPar("sourceId") = getId();
     //appPkt->addPar("msgId") = numSent++;
 
@@ -1416,13 +1448,20 @@ void DataCentricTestApp::SensorReading(ActionThreadsIterator& i, const char* sen
     std::string s(ss.str());
     appPkt->getPktData().insert(appPkt->getPktData().end(), s.begin(), s.end());
     appPkt->setKind(DATA_PACKET);
+    appPkt->setTimestamp(i->first->getTimestamp());
+
     //appPkt->addPar("sourceId") = getId();
     //appPkt->addPar("msgId") = numSent++;
 
     send(appPkt, mLowerLayerOut);
 
     //scheduleAt(simTime() + period, i->first);
-    scheduleAt(finalSeconds + ScheduleStartTime(), i->first);
+
+    simtime_t nextMessageTime = finalSeconds + ScheduleStartTime();
+    nextMessageTime = nextMessageTime < simTime() ? simTime() : nextMessageTime;
+
+    i->first->setTimestamp(nextMessageTime);
+    scheduleAt(nextMessageTime, i->first);
 }
 
 

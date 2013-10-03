@@ -114,7 +114,9 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     void SetSourceWithLongestContext(DataCentricAppPkt* appPkt);
     void SetSinkWithShortestContext(DataCentricAppPkt* appPkt);
     void SetSinkAsIs(DataCentricAppPkt* appPkt);
+    void SetCollaboratorInitiatorAsIs(DataCentricAppPkt* appPkt);
     void SetCollaboratorInitiatorWithShortestContext(DataCentricAppPkt* appPkt);
+    void SetCollaboratorAsIs(DataCentricAppPkt* appPkt);
     void SetCollaboratorWithShortestContext(DataCentricAppPkt* appPkt);
 
 

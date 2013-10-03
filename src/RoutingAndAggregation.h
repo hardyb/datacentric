@@ -206,6 +206,7 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define REINFORCE_INTEREST_CANCEL 12
 #ifdef SPECIAL_INTEREST
 #define REGION_INTEREST 13
+#define REGION_COLLABORATION 14
 #endif
 
 
@@ -874,6 +875,7 @@ unsigned int sizeof_existing_packet(unsigned char* pkt);
 unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);
 void handle_advert(control_data cd);
 unsigned char outgoingInterestType(unsigned char* _data);
+unsigned char outgoingcollaborationType(unsigned char* _data);
 void handle_interest(control_data cd);
 void handle_reinforce(control_data cd);
 void start_reinforce(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR _if, char seqno);

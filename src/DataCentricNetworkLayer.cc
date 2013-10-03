@@ -939,10 +939,12 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             //SetSinkWithShortestContext(appPkt); // ownership NOT passed on
             break;
         case COLLABORATOR_INITITOR_MESSAGE:
-            SetCollaboratorInitiatorWithShortestContext(appPkt); // ownership NOT passed on
+            SetCollaboratorInitiatorAsIs(appPkt);
+            //SetCollaboratorInitiatorWithShortestContext(appPkt); // ownership NOT passed on
             break;
         case COLLABORATOR_MESSAGE:
-            SetCollaboratorWithShortestContext(appPkt); // ownership NOT passed on
+            SetCollaboratorAsIs(appPkt);
+            //SetCollaboratorWithShortestContext(appPkt); // ownership NOT passed on
             break;
         default:
             break;
@@ -1099,6 +1101,34 @@ void DataCentricNetworkLayer::SetSinkAsIs(DataCentricAppPkt* appPkt)
 }
 
 
+
+
+void DataCentricNetworkLayer::SetCollaboratorInitiatorAsIs(DataCentricAppPkt* appPkt)
+{
+    string collabData;
+    collabData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
+    //int size = appPkt->getPktData().size();
+    //size = collabData.size();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str(), "\xFE").asVector();
+    unsigned char temp[30];
+    for (std::vector<std::string>::iterator i = collabsData.begin();
+            i != collabsData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = 0;
+        weAreCollaboratorInitiatorFor(x, 0);
+    }
+
+}
+
+
+
+
+
 void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCentricAppPkt* appPkt)
 {
     string collabData;
@@ -1118,6 +1148,31 @@ void DataCentricNetworkLayer::SetCollaboratorInitiatorWithShortestContext(DataCe
         x[datalen] = DOT;
         getShortestContextTrie(rd->top_context, temp, temp, &(x[datalen+1]));
         weAreCollaboratorInitiatorFor(x, 0);
+    }
+
+}
+
+
+
+
+void DataCentricNetworkLayer::SetCollaboratorAsIs(DataCentricAppPkt* appPkt)
+{
+    string collabData;
+    collabData.resize(appPkt->getPktData().size(), 0);
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), collabData.begin());
+    //int size = appPkt->getPktData().size();
+    //size = collabData.size();
+    std::vector<std::string> collabsData = cStringTokenizer(collabData.c_str(), "\xFE").asVector();
+    unsigned char temp[30];
+    for (std::vector<std::string>::iterator i = collabsData.begin();
+            i != collabsData.end(); ++i)
+    {
+        // MOVE THIS BIT INTO FRAMEWORK
+        unsigned char x[20];
+        int datalen = strlen(i->c_str());
+        memcpy(x, i->c_str(), datalen);
+        x[datalen] = 0;
+        weAreCollaboratorFor(x, 0);
     }
 
 }
@@ -1808,7 +1863,9 @@ static void cb_handle_application_data(unsigned char* _msg, unsigned int len, do
         cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
                 hex << excludedInterface << endl;
 
-        simtime_t endToEndDelay = simTime() - _creationTime;
+        //simtime_t endToEndDelay = simTime() - _creationTime;
+        // Collaboration with delayed data packets
+        simtime_t endToEndDelay = simTime();
         COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
         currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
 

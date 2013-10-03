@@ -21,6 +21,7 @@ unsigned char current_prefix_name[100];
 #define CONVERGENCE_TIMEOUT 0.01 // .001 too soon to send reinforcement(RREP), more failures
 #endif
 
+int numSuccessfulReinforcements;
 
 
 #ifdef ROUTING_DEBUG
@@ -986,9 +987,9 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  	 */
  	if ( s->bestGradientToDeliver && (((*_data) & MSB2) == COLLABORATIONBASED) )
     {
-        outgoing_packet.message_type = COLLABORATION;
         outgoing_packet.length = strlen(queue); // strlen ok in this case
         outgoing_packet.data = (unsigned char*)queue;
+        outgoing_packet.message_type = outgoingcollaborationType(outgoing_packet.data);
         if (s->bestGradientToDeliver->key2->iName == SELF_INTERFACE)
         {
             outgoing_packet.path_value = 0;
@@ -1956,6 +1957,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
                     s->bestGradientToObtain->costToObtain = pCost;
                     s->bestGradientToObtain->seqno = seqno;
                 }
+#ifndef FIRST_COME_ONLY
                 else
                 {
                     if ( seqno == s->bestGradientToObtain->seqno )
@@ -1968,7 +1970,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
                         }
                     }
                 }
-
+#endif
             }
             break;
         case DELIVER:
@@ -1986,6 +1988,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
                     s->bestGradientToDeliver->costToDeliver = pCost;
                     s->bestGradientToDeliver->seqno = seqno;
                 }
+#ifndef FIRST_COME_ONLY
                 else
                 {
                     if ( seqno == s->bestGradientToDeliver->seqno )
@@ -1999,7 +2002,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
                         }
                     }
                 }
-
+#endif
             }
             break;
         case REINFORCE_DELIVER:
@@ -3273,6 +3276,16 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
         //handle_data(SELF_INTERFACE);
 
 
+#ifdef FIRST_COLLAB_DATA
+        new_packet* savePkt = packetCopy(sending_packet);
+        addPkt(&(s->pktQ), savePkt);
+        QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
+        qd->pktToDelete = savePkt;
+        qd->associatedState = s;
+        setTimer(2.00, qd, delete_queued_data);
+#endif
+
+
         if ( event_based )
         {
             if (       (s->bestGradientToObtain && s->obtainInterfaces)
@@ -4097,7 +4110,7 @@ void handle_nothing(control_data cd)
 }
 
 
-void (*h[14]) (control_data cd) =
+void (*h[15]) (control_data cd) =
 {
 handle_advert,
 handle_interest,
@@ -4112,7 +4125,8 @@ handle_interest_correction,
 handle_breakage,
 handle_pubbreakage,
 handle_nothing,
-handle_interest
+handle_interest,
+handle_collaboration
 };
 
 
@@ -5310,10 +5324,35 @@ void handle_collaboration(control_data cd)
 
     NEIGHBOUR_ADDR _interface = cd.incoming_if;
 
+#ifdef SPECIAL_INTEREST
+    if ( incoming_packet.message_type == REGION_COLLABORATION
+            && outgoingcollaborationType(incoming_packet.data) == COLLABORATION )
+    {
+        return;
+    }
+#endif
+
+
+
+
+
     trie* t = trie_add(rd->top_state, incoming_packet.data, STATE);
 
     // CHECK THIS IS RIGHT - ITS TO DO WITH OLD SEQNO
     State* s = t->s;
+
+
+
+
+
+
+// HERECOLLAB
+
+
+
+
+
+
 
     if ( incoming_packet.seqno < s->seqno )
     {
@@ -5352,11 +5391,12 @@ void handle_collaboration(control_data cd)
             s->seqno = incoming_packet.seqno+1;
             s->reinforcementRetries = 0;
             s->rrqRetries = 0;
-
-            outgoing_packet.message_type = COLLABORATION;
+            //outgoing_packet.message_type = COLLABORATION;
 
             outgoing_packet.length = incoming_packet.length;
             outgoing_packet.data = incoming_packet.data;
+            outgoing_packet.message_type = outgoingcollaborationType(outgoing_packet.data);
+
             outgoing_packet.path_value = 0;
             outgoing_packet.excepted_interface = UNKNOWN_INTERFACE; // not used now?
             outgoing_packet.down_interface = UNKNOWN_INTERFACE; // not used now?
@@ -5396,9 +5436,12 @@ void handle_collaboration(control_data cd)
             setTimer(CONVERGENCE_TIMEOUT, t->s, collaboration_convergence_timeout);
 
             t->s->bestGradientToDeliverUpdated = false;
-            outgoing_packet.message_type = COLLABORATION;
+            //outgoing_packet.message_type = COLLABORATION;
+
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.message_type = outgoingcollaborationType(outgoing_packet.data);
+
             outgoing_packet.path_value = outgoingLinkCost(cd);
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
@@ -5432,9 +5475,11 @@ void handle_collaboration(control_data cd)
         if ( t->s->bestGradientToDeliverUpdated )
         {
             t->s->bestGradientToDeliverUpdated = false;
-            outgoing_packet.message_type = COLLABORATION;
+            //outgoing_packet.message_type = COLLABORATION;
             outgoing_packet.data = incoming_packet.data;
             outgoing_packet.length = incoming_packet.length;
+            outgoing_packet.message_type = outgoingcollaborationType(outgoing_packet.data);
+
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
             outgoing_packet.path_value = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
             outgoing_packet.excepted_interface = _interface;
@@ -5614,16 +5659,22 @@ void send_queued_data(void* relevantObject)
 
 
 
+//(((*_data) & MSB2) == RECORD)
 
 
+//        (((*_data) & MSB2) == COLLABORATIONBASED)
 
 // First of all do it like with adverts
 
+
+
+
 unsigned char outgoingInterestType(unsigned char* _data)
 {
-#ifndef SPECIAL_INTEREST
+    #ifndef SPECIAL_INTEREST
     return INTEREST;
-#endif
+    #endif
+
     trie* t;
     char dot = DOT;
     unsigned char* ptr = (unsigned char*)strchr((char*)_data, dot);
@@ -5642,6 +5693,38 @@ unsigned char outgoingInterestType(unsigned char* _data)
     }
 
 }
+
+
+
+
+
+unsigned char outgoingcollaborationType(unsigned char* _data)
+{
+    #ifndef SPECIAL_INTEREST
+    return COLLABORATION;
+    #endif
+
+    trie* t;
+    char dot = DOT;
+    unsigned char* ptr = (unsigned char*)strchr((char*)_data, dot);
+    if ( ptr )
+    {
+        t = trie_lookup2(rd->top_context, ptr+1);
+    }
+
+    if ( !t )
+    {
+        return COLLABORATION;
+    }
+    else
+    {
+        return REGION_COLLABORATION;
+    }
+
+}
+
+
+
 
 
 
@@ -6068,6 +6151,7 @@ void handle_reinforce_collaboration(control_data cd)
                 // we have queued data and reinforced delivery addres(es)
                 setTimer(0.01, t->s, send_queued_data); // NN
             }
+            numSuccessfulReinforcements++;
             return;
         }
 
@@ -6087,6 +6171,7 @@ void handle_reinforce_collaboration(control_data cd)
         // If interface is self do not send message on
         if ( interface == SELF_INTERFACE )
         {
+            numSuccessfulReinforcements++;
             return;
         }
 
