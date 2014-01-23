@@ -71,6 +71,8 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     map<void*, cMessage*> mTimeoutMessages;
     set<cMessage*> mTimeoutMessages2;
 
+    //MyNoiseGenerator* myNoise;
+
 
 
     cStdDev seenLqis;
@@ -109,6 +111,7 @@ class DataCentricNetworkLayer : public cSimpleModule, public INotifiable
     void handleUpperLayerMessage(DataCentricAppPkt* appPkt);
     void SendDataAsIs(DataCentricAppPkt* appPkt);
     void SendDataWithLongestContext(DataCentricAppPkt* appPkt);
+    void SendMiscDataWithLongestContext(DataCentricAppPkt* appPkt);
     void StartUpModule();
     void SetContext(DataCentricAppPkt* appPkt);
     void SetSourceWithLongestContext(DataCentricAppPkt* appPkt);

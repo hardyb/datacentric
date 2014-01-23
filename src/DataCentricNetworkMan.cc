@@ -77,15 +77,34 @@ void cb_collect_AirFrame(cPacket* p)
 
 Define_Module(DataCentricNetworkMan);
 
+
+DataCentricNetworkMan::DataCentricNetworkMan()
+{
+    netWkMan = this;
+
+}
+
+
+
 void DataCentricNetworkMan::initialize(int aStage)
 {
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
+
+    for ( int i = -30; i > -100; i-- )
+    {
+        cout << "Db: " << i << endl;
+        cout << "Mw: " << FWMath::dBm2mW(i) << endl;
+    }
+
 
     numSuccessfulReinforcements = 0;
 
     if (0 == aStage)
     {
         string tempPar = par("estimationMethod");//.str();
+        noiseStart = par("noiseStart");
+        noiseLower = par("noiseLower");
+        noiseUpper = par("noiseUpper");
 
         //for (int i = 0; i < 10; i++)
         //{
@@ -128,6 +147,8 @@ void DataCentricNetworkMan::initialize(int aStage)
 #endif
 
         numDataArrivals = 0;
+        numFirstDataArrivals = 0;
+        numSubsequentDataArrivals = 0;
         std::string fName = this->getFullPath();
         std::string fName2 = this->getFullPath();
         numControlPackets = 0;
@@ -166,6 +187,7 @@ void DataCentricNetworkMan::initialize(int aStage)
         controlPacketFrequency.setName("controlPacketFrequency");
         mpControlPacketFrequencyMessage = new cMessage("ControlPacketFrequencyMessage");
         mpDemandMessage = new cMessage("DemandMessage");
+        mpNoiseMessage = new cMessage("NoiseMessage");
 
 
         helloPacketFrequency.setName("helloPacketFrequency");
@@ -303,6 +325,9 @@ void DataCentricNetworkMan::initialize(int aStage)
 
         traverseModule(*getParentModule());
 
+        scheduleAt(simTime() + noiseStart + 0.00032*3, mpNoiseMessage);
+
+
 
 
     }
@@ -399,7 +424,7 @@ double DataCentricNetworkMan::sumEnergyUsage(const cModule& m)
         if ( sm )
         {
             BasicBattery* bat = dynamic_cast<BasicBattery*>(sm->getSubmodule("battery"));
-            if ( bat )
+            if ( bat && sm->par("batteryNode").boolValue() )
             {
                 ev << "Found:    " << bat->getFullName() << endl;
                 capacity_mW_sec = bat->par("capacity").doubleValue() * 60 * 60 * bat->par("voltage").doubleValue();
@@ -426,8 +451,12 @@ void DataCentricNetworkMan::traverseModule(const cModule& m)
         if ( sm )
         {
             DataCentricTestApp* dcApp = dynamic_cast<DataCentricTestApp*>(sm->getSubmodule("app"));
-            if ( dcApp )
+            if ( sm->isVector() && dcApp )
             {
+                if ( sm->getIndex() < m.par("numMainsNodes").longValue() )
+                {
+                    sm->par("batteryNode").setBoolValue(false);
+                }
                 ev << "Found:    " << dcApp->getFullName() << endl;
                 mNodeArray.push_back(dcApp);
                 //mNodeArray[mNodeArrayIndex++] = mn;
@@ -505,6 +534,31 @@ void DataCentricNetworkMan::handleMessage(cMessage* msg)
     if ( msg == mpDemandMessage )
     {
         recordDemandLocal();
+    }
+
+    if ( msg == mpNoiseMessage )
+    {
+        for ( std::vector<MyNoiseGenerator*>::iterator i = myNoiseGenerators.begin(); i != myNoiseGenerators.end(); i++ )
+        {
+            double db;
+
+            if ( !strcmp(par("noiseDistribution").stringValue(), "uniform") )
+            {
+                double db = uniform(noiseLower, noiseUpper);
+                (*i)->setNoiseLevel(db);
+            }
+
+            if ( !strcmp(par("noiseDistribution").stringValue(), "rayleigh") )
+            {
+                float location = 0;
+                float scale = 1;
+                double x = location + scale * sqrt( -log(uniform(0,1)) );
+                db = noiseLower + ( (x/3) * (noiseUpper - noiseLower) );
+                (*i)->setNoiseLevel(db);
+            }
+
+        }
+        scheduleAt(simTime() + 0.00032*3, mpNoiseMessage);
     }
 
 
@@ -618,6 +672,9 @@ void DataCentricNetworkMan::finish()
 
     // ACCURACY
     recordScalar("DataArrivals", (double)numDataArrivals);
+    recordScalar("FirstDataArrivals", (double)numFirstDataArrivals);
+    recordScalar("SubsequentDataArrivals", (double)numSubsequentDataArrivals);
+
     double percentageDataArrivals = ((double)numDataArrivals)/mExpectedDataArrivals * 100.0;
     recordScalar("PercentageArrivals", percentageDataArrivals);
     unsigned int failures = numDataArrivals <= mExpectedDataArrivals ?
@@ -630,7 +687,8 @@ void DataCentricNetworkMan::finish()
     recordScalar("MaxE2EDelay", E2EDelayStats.getMax());
     recordScalar("MinE2EDelay", E2EDelayStats.getMin());
 
-
+    recordScalar("MeanE2EDelayFirstArrivals", E2EDelayStatsFirstArrivals.getMean());
+    recordScalar("MeanE2EDelaySubsequentArrivals", E2EDelayStatsSubsequentArrivals.getMean());
 
     /*
     for (int i = 0; i < 10; i++)
@@ -748,17 +806,40 @@ void DataCentricNetworkMan::finish()
     //recordScalar("goodput (Bytes/s)", totalByteRecv / (simTime() - FirstPacketTime()));
 }
 
-void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
+//void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
+//-void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay)
+//void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay, uint64_t _sourceAndDest)
+void DataCentricNetworkMan::addADataPacketE2EDelay(simtime_t delay, int msgID)
 {
     Enter_Method("addADataPacketE2EDelay(simtime_t delay)");
+
+    //if ( sourcesSeen.find(_sourceAndDest) == sourcesSeen.end() )
+    if ( !msgID )
+    {
+        //int sourceId = (int)(_sourceAndDest >> 32);
+        //int destinationId = (int)(_sourceAndDest & 0xFFFFFFFF);
+        //sourcesSeen.insert(_sourceAndDest);
+        E2EDelayStatsFirstArrivals.collect(delay);
+        numFirstDataArrivals++;
+    }
+    else
+    {
+        E2EDelayStatsSubsequentArrivals.collect(delay);
+        numSubsequentDataArrivals++;
+    }
+
 
     if ( true ) // Add a condition to the definition of successful delivery
     {
         numDataArrivals++; // Total data arrivals in the run
-        DataArrivalsVector.record(numDataArrivals); // num packets over time
+        //DataArrivalsVector.record(numDataArrivals); // num packets over time
+        //-        DataArrivalsVector.record(numDataArrivals); // num packets over time
+        DataArrivalsVector.record(numDataArrivals); // NOT USED MUCH num packets over time
     }
 
-    dataPacketE2EDelay.record(delay); // occurrence of delay over time
+    //dataPacketE2EDelay.record(delay); // occurrence of delay over time
+    //-    dataPacketE2EDelay.record(delay); // occurrence of delay over time
+    dataPacketE2EDelay.record(delay); // NOT USED MUCH  occurrence of delay over time
 
     E2EDelayStats.collect(delay); // delay stats
 

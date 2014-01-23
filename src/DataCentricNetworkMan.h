@@ -12,6 +12,9 @@
 //#include "DataCentricTestApp.h"
 #include "IPvXAddressResolver.h"
 
+#include "MyNoiseGenerator.h"
+
+
 class DataCentricTestApp;
 
 
@@ -26,11 +29,17 @@ class UDPBurstAndBroadcast;
 class DataCentricNetworkMan : public cSimpleModule
 {
   public:
+    DataCentricNetworkMan();
     virtual void initialize(int);
     virtual int numInitStages() const  {return 3;}
     virtual void finish();
     void recordOnePacket(unsigned char type);
-    void addADataPacketE2EDelay(simtime_t delay);
+
+    //-    void addADataPacketE2EDelay(simtime_t delay);
+    //void addADataPacketE2EDelay(simtime_t delay, uint64_t _sourceAndDest);
+    void addADataPacketE2EDelay(simtime_t delay, int msgID);
+
+    //void addADataPacketE2EDelay(simtime_t delay);
     void changeInModulesDown(double adjustment);
     void addDemand(signed int _demand);
     //signed int getDemand();
@@ -87,6 +96,9 @@ class DataCentricNetworkMan : public cSimpleModule
     AppModules mAppModules;
     cOutVector lqiVec;
 
+    std::vector<MyNoiseGenerator*> myNoiseGenerators;
+
+
   protected:
     void handleMessage(cMessage*);
 
@@ -113,6 +125,8 @@ class DataCentricNetworkMan : public cSimpleModule
     double numAODVAllLineBreaks;
     //double numDataArrival;
     unsigned int numDataArrivals;
+    unsigned int numFirstDataArrivals;
+    unsigned int numSubsequentDataArrivals;
     double numPendingDataPackets;
 
     unsigned int mExpectedDataArrivals;
@@ -124,7 +138,9 @@ class DataCentricNetworkMan : public cSimpleModule
 
     signed int mDemand;
     int estimationMethod;
-
+    double noiseStart;
+    double noiseLower;
+    double noiseUpper;
 
     std::vector<DataCentricTestApp*> mNodeArray;
 
@@ -176,7 +192,14 @@ class DataCentricNetworkMan : public cSimpleModule
     cOutVector advertPacketFrequency;
     cOutVector reinforcementPacketFrequency;
     cOutVector dataPacketE2EDelay;
-    cStdDev E2EDelayStats;
+    //cStdDev E2EDelayStats;
+
+    //-    cStdDev E2EDelayStats;
+    cStdDev E2EDelayStats; // All Arrivals
+    std::set<uint64_t> sourcesSeen;
+    cStdDev E2EDelayStatsFirstArrivals; // Just first from each source
+    cStdDev E2EDelayStatsSubsequentArrivals; // All except first from each source
+
     cStdDev bpsStats;
 
     cOutVector breakagePacketFrequency;
@@ -202,6 +225,7 @@ class DataCentricNetworkMan : public cSimpleModule
 
     cMessage *mpControlPacketFrequencyMessage;
     cMessage *mpDemandMessage;
+    cMessage *mpNoiseMessage;
     // OPERATIONS
     //virtual void handleSelfMsg(cMessage*);
     //virtual void handleLowerMsg(cMessage*);

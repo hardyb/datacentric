@@ -109,6 +109,12 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
         }
     };
 
+    //std::set<AData, Compare> mRegConfirmed;
+
+    std::set<AData, Compare> mRegistrationList;
+    typedef std::set<AData, Compare>::iterator RegistrationIt;
+
+
     std::map<AData, ABinding, Compare> mBindingList;
     typedef std::map<AData, ABinding, Compare>::iterator BindingListIter;
 
@@ -164,8 +170,14 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
 
     int destAddrRNG;
 
-    typedef std::map<int,int> SourceSequence;
+    //typedef std::map<int,int> SourceSequence;
+    //SourceSequence sourceSequence;
+
+    typedef std::map<int,std::set<int> > SourceSequence;
+
     SourceSequence sourceSequence;
+
+
     simtime_t delayLimit;
     cMessage *timerNext;
     simtime_t stopTime;
@@ -193,6 +205,7 @@ class INET_API UDPBurstAndBroadcast : public cSimpleModule
     static int counter; // counter for generating a global number for each packet
 
     int numSent;
+    int numDataSent;
     int numReceived;
     int numDeleted;
     int numDuplicated;

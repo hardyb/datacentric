@@ -29,6 +29,7 @@ import datacentric.Region;
 network DataCentricNet
 {
     parameters:
+        int experimentSet = default(0);
         int numRegions = default(4);
         double numHosts;
         double nodeSeparation @unit("m")=default (3m);
@@ -37,6 +38,7 @@ network DataCentricNet
         int iVar3 = default(0);
         int iVar4 = default(0);
         string nodeParsUsed = default("");
+        int numMainsNodes = default(0);
     submodules:
         region[numRegions]: Region;
         host[numHosts]: DataCentricNode {

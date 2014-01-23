@@ -1,0 +1,571 @@
+
+
+
+
+
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanE2EDelay)' -g 'module,name' -O test.csv 
+C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AoDV_121_250\\simulations\\results\\*.sca
+
+
+
+
+
+C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC121_250_NMScalarsOnly\\simulations\\results\\*.sca
+
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanE2EDelay)' -g 'module,name' -O test.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AoDV_121_250\\simulations\\results\\*.sca
+
+
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanE2EDelay)' -g 'module,name' -O test2.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC121_250_NMScalarsOnly\\simulations\\results\\*.sca
+
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanBPS) OR name(MaxBPS) OR name(MinBPS)' -g 'module,name' -O DC_BPS.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC121_250_NMScalarsOnly\\simulations\\results\\*.sca
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanBPS) OR name(MaxBPS) OR name(MinBPS)' -g 'module,name' -O AOFV_BPS.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AoDV_121_250\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+scavetool s -V -p 'name(numNodes) OR name(MeanBPS) OR name(MaxBPS) OR name(MinBPS)' -g 'module,name' -O AOFV_BPS.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_121_250_TwoFloors\\csma802154\\results\\*.sca
+
+
+
+
+
+
+AODV_121_250_TwoFloors.zip
+scavetool s -V -g 'module,name' -O AODV_2FLOORS.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_121_250_TwoFloors\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV121_250_2Flr_TmtPower.zip
+scavetool s -V -g 'module,name' -O AODV121_250_2Flr_TmtPower.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV121_250_2Flr_TmtPower\\csma802154\\results\\*.sca
+
+
+
+Maybe just choose these DataArrivals	MaxBPS	MeanBPS	MeanE2EDelay
+
+
+
+
+AODV_121_250_Antenna.zip
+scavetool s -V -g 'module,name' -O AODV_121_250_Antenna.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_121_250_Antenna\\csma802154\\results\\*.sca
+
+
+
+AODV121_250_2Flr_RxSensOnly.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV121_250_2Flr_RxSensOnly.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV121_250_2Flr_RxSensOnly\\csma802154\\results\\*.sca
+
+
+
+
+DC121_250_2Flr_numNodes.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC121_250_2Flr_numNodes.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC121_250_2Flr_numNodes\\simulations\\results\\*.sca
+
+
+
+
+DataC__Parallel_121_BindingEq.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC__Parallel_121_BindingEq.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC__Parallel_121_BindingEq\\simulations\\results\\*.sca
+
+
+Zigbee_Parallel_121_withBinding.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Zigbee_Parallel_121_withBinding.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Zigbee_Parallel_121_withBinding\\csma802154\\results\\*.sca
+
+
+
+DataC__Pathloss_121_BindingEq.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC__Pathloss_121_BindingEq.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC__Pathloss_121_BindingEq\\simulations\\results\\*.sca
+
+
+
+
+Zigbee__Pathloss_121_Binding.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Zigbee__Pathloss_121_Binding.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Zigbee__Pathloss_121_Binding\\csma802154\\results\\*.sca
+
+
+
+
+
+
+Sending_One_to_One_withBinding_251_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Sending_One_to_One_withBinding_251_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Sending_One_to_One_withBinding_251_500\\csma802154\\results\\*.sca
+
+
+
+
+Zigbee_Parallel_121_withBinding_TEN.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Zigbee_Parallel_121_withBinding_TEN.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Zigbee_Parallel_121_withBinding_TEN\\csma802154\\results\\*.sca
+
+
+
+
+DataC__Parallel_121_BindingEq_TEN.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC__Parallel_121_BindingEq_TEN.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC__Parallel_121_BindingEq_TEN\\simulations\\results\\*.sca
+
+
+
+DataC__Parallel_121_BindingEq_Fixed.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC__Parallel_121_BindingEq_Fixed.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC__Parallel_121_BindingEq_Fixed\\simulations\\results\\*.sca
+
+
+
+
+Zigbee_Parallel_121_withBinding_Fixed.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Zigbee_Parallel_121_withBinding_Fixed.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Zigbee_Parallel_121_withBinding_Fixed\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+
+
+DataC_Experiment_One_to_One_Binding_Fixed.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC_Experiment_One_to_One_Binding_Fixed.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC_Experiment_One_to_One_Binding_Fixed\\simulations\\results\\*.sca
+
+
+
+
+
+
+
+Sending_One_to_One_withBinding_Fixed.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Sending_One_to_One_withBinding_Fixed.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Sending_One_to_One_withBinding_Fixed\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+
+Sending_One_to_One_withBinding_Fixed_251_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Sending_One_to_One_withBinding_Fixed_251_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Sending_One_to_One_withBinding_Fixed_251_500\\csma802154\\results\\*.sca
+
+
+
+
+
+DataC_Experiment_One_to_One_Binding_Fixed_251_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC_Experiment_One_to_One_Binding_Fixed_251_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC_Experiment_One_to_One_Binding_Fixed_251_500\\simulations\\results\\*.sca
+
+
+
+
+DataC_Experiment_One_to_One_Binding_FirstCome_51_250.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC_Experiment_One_to_One_Binding_FirstCome_51_250.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC_Experiment_One_to_One_Binding_FirstCome_51_250\\simulations\\results\\*.sca
+
+
+
+
+Sending_One_to_One_withBinding_SumBits_51_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Sending_One_to_One_withBinding_SumBits_51_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Sending_One_to_One_withBinding_SumBits_51_500\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+
+
+DataC_Experiment_One_to_One_Binding_51500_FIRST_ENERGY.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DataC_Experiment_One_to_One_Binding_51500_FIRST_ENERGY.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DataC_Experiment_One_to_One_Binding_51500_FIRST_ENERGY\\simulations\\results\\*.sca
+
+
+
+
+Sending_One_to_One_withBinding_51500_ENERGY.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\Sending_One_to_One_withBinding_51500_ENERGY.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\Sending_One_to_One_withBinding_51500_ENERGY\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_4Rooms_RingON.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_4Rooms_RingON.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_4Rooms_RingON\\csma802154\\results\\*.sca
+
+
+
+AODV_4Rooms_RingOFF.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_4Rooms_RingOFF.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_4Rooms_RingOFF\\csma802154\\results\\*.sca
+
+
+DC_4Rooms.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_4Rooms.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_4Rooms\\simulations\\results\\*.sca
+
+
+
+====
+
+
+
+AODV_4Rooms_RingON_b.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_4Rooms_RingON_b.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_4Rooms_RingON_b\\csma802154\\results\\*.sca
+
+
+
+AODV_4Rooms_RingOFF_b.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_4Rooms_RingOFF_b.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_4Rooms_RingOFF_b\\csma802154\\results\\*.sca
+
+
+DC_4Rooms_b.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_4Rooms_b.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_4Rooms_b\\simulations\\results\\*.sca
+
+
+
+AODV_ExpandingRegionRingON.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_ExpandingRegionRingON.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_ExpandingRegionRingON\\csma802154\\results\\*.sca
+
+
+
+DC_ExpandingRegion.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_ExpandingRegion.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_ExpandingRegion\\simulations\\results\\*.sca
+
+
+
+DC_ExpandingRegion_ZEROCTIMEOUT.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_ExpandingRegion_ZEROCTIMEOUT.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_ExpandingRegion_ZEROCTIMEOUT\\simulations\\results\\*.sca
+
+
+
+
+
+DC_ExpandingRegion_LOWCTIMEOUT.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_ExpandingRegion_LOWCTIMEOUT.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_ExpandingRegion_LOWCTIMEOUT\\simulations\\results\\*.sca
+
+
+
+
+USING_SCAVE_TOOL.txt - Not Saved - laptop crashed
+This text left:
+	DC_4Rooms_LOWCTIMEOUT
+	AODV_ExpandingRegionRingOFF
+
+
+These csvs (and xl) have been created, but no saved command line (see above):
+	AODV_ExpandingRegionRingOFF.csv
+	DC_4Rooms_LOWCTIMEOUT.csv
+	DC_ExpandingRegion_LOWCTIMEOUT.csv
+
+
+
+NOW...
+
+
+
+
+
+
+
+
+AODV_QueryBased4.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBased4.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBased4\\csma802154\\results\\*.sca
+
+
+DC_QueryBased4.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBased4.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBased4\\simulations\\results\\*.sca
+
+
+DC_QueryBased4_FromZero.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBased4_FromZero.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBased4_FromZero\\simulations\\results\\*.sca
+
+
+
+DC_ExpandingRegionAllProp.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_ExpandingRegionAllProp.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_ExpandingRegionAllProp\\simulations\\results\\*.sca
+
+
+AODV_ExpandingRegionAllProp_RingON.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_ExpandingRegionAllProp_RingON.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_ExpandingRegionAllProp_RingON\\csma802154\\results\\*.sca
+
+===???
+
+
+AODV_ExpandingRegionAllProp_RingON_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_ExpandingRegionAllProp_RingON_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_ExpandingRegionAllProp_RingON_500\\csma802154\\results\\*.sca
+
+
+DC_ExpandingRegionAllProp_500.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_ExpandingRegionAllProp_500.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_ExpandingRegionAllProp_500\\simulations\\results\\*.sca
+
+
+
+
+
+====
+
+
+
+
+
+
+
+AODV_QueryBasedRegions.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions\\csma802154\\results\\*.sca
+
+
+
+
+
+
+DC_QueryBasedRegions.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBasedRegions.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBasedRegions\\simulations\\results\\*.sca
+
+
+
+
+DC_QueryBasedRegions_Fix.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBasedRegions_Fix.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBasedRegions_Fix\\simulations\\results\\*.sca
+
+
+
+
+
+
+AODV_QueryBasedRegions_longIncr.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_longIncr.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_longIncr\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_QueryBasedRegions_longIncr_Fix.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_longIncr_Fix.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_longIncr_Fix\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_QueryBasedRegions_longIncr_2.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_longIncr_2.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_longIncr_2\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+
+AODV_QueryBasedRegions_RREPsOFF.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_RREPsOFF.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_RREPsOFF\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_QueryBasedRegions_7s.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_7s.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_7s\\csma802154\\results\\*.sca
+
+
+
+
+
+DC_QueryBasedRegions_VarySource.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBasedRegions_VarySource.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBasedRegions_VarySource\\simulations\\results\\*.sca
+
+
+
+
+
+
+
+AODV_QueryBasedRegions_VarySource.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_QueryBasedRegions_VarySource.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_QueryBasedRegions_VarySource\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_CollaborationBased_1.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_CollaborationBased_1.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_CollaborationBased_1\\csma802154\\results\\*.sca
+
+
+
+
+
+DC_CollabBasedRegions_1.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_CollabBasedRegions_1.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_CollabBasedRegions_1\\simulations\\results\\*.sca
+
+
+DC_CollabBasedRegions_2.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_CollabBasedRegions_2.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_CollabBasedRegions_2\\simulations\\results\\*.sca
+
+
+
+
+
+
+
+AODV_CollaborationBased_4.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_CollaborationBased_4.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_CollaborationBased_4\\csma802154\\results\\*.sca
+
+
+
+
+
+AODV_CollaborationBased_5b.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_CollaborationBased_5b.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_CollaborationBased_5b\\csma802154\\results\\*.sca
+
+
+
+
+DC_CollabBasedRegions_5c.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_CollabBasedRegions_5c.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_CollabBasedRegions_5c\\simulations\\results\\*.sca
+
+
+
+
+AODV_CollaborationBased_6b.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_CollaborationBased_6b.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_CollaborationBased_6b\\csma802154\\results\\*.sca
+
+
+
+
+
+
+
+DC_CollabBasedRegions_one_and_multi.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_CollabBasedRegions_one_and_multi.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_CollabBasedRegions_one_and_multi\\simulations\\results\\*.sca
+
+
+
+
+
+
+
+
+
+AODV_CollaborationBased_one_and_multi.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\AODV_CollaborationBased_one_and_multi.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\AODV_CollaborationBased_one_and_multi\\csma802154\\results\\*.sca
+
+
+
+DC_QueryBased_OnHardware.zip
+scavetool s -V -g 'module,name' -O ..\\Csvs\\DC_QueryBased_OnHardware.csv C:\\omnetpp-4.2.1\\my_workspace\\MyResults\\simulations\\DC_QueryBased_OnHardware\\simulations\\results\\*.sca
+
+
+
+
+
+
+
+HERE
+
+
+
+
+
+
+File,Run,
+._numNodes,
+
+DataCentricicNet.dataCentricNetworkMan_MeanE2EDelay,
+DataCentricNet.dataCentricNetworkMan_MeanE2EDelay,
+DataCentricNet.dataCentricNetwtaCentricNetworkMan_MeanE2EDelay
+
+
+
+Why do the scas with extra stuff in produce funny headings?
+
+
+
+$ scavetool
+scavetool -- part of OMNeT++, (C) 2006-2008 Andras Varga, OpenSim Ltd.
+Version: 4.2.1, build: 120118-94e2a29, edition: Academic Public License -- NOT FOR COMMERCIAL USE
+
+Usage: scavetool <command> [options] <files>...
+
+For processing result files written by simulations: vector files (.vec) and
+scalar files (.sca).
+
+Commands:
+    v, vector   filter and process data in vector files
+    s, scalar   filter and process data in scalar files
+    l, list     list summary info about input files
+    i, info     print list of available functions (to be used with `-a')
+    x, index    generate index files for vector files
+Options:
+ `vector' command:
+    -p <pattern>    the filter expression (see syntax below)
+    -a <function>   apply the given processing to the selected vectors (see syntax below);
+                    the `info' command prints the names of available operations. This option
+                    may occur multiple times.
+    -O <filename>   output file name
+    -F <formatname> format of output file: vec (default), splitvec, matlab, octave, csv, splitcsv
+    -V              print info about progress (verbose)
+ `scalar' command:
+    -p <pattern>    the filter expression (see syntax below)
+    -a <function>   apply the given processing to the selected scalars (see syntax below);
+                    the `info' command prints the names of available operations. This option
+                    may occur multiple times.
+    -g <grouping>   specifies how the scalars are grouped. It is a comma separated list of field
+                    names ('file','run','module','name'). Scalars are grouped by the values of these
+                    fields and written into separate columns (csv) or variables.
+                    Default is '' (empty list), meaning that each row contains only one scalar value.
+    -O <filename>   output file name
+    -F <formatname> format of output file: csv (default), matlab, octave
+    -V              print info about progress (verbose)
+ `list' command:
+    -n   print list of unique statistics names
+    -m   print list of unique module name
+    -r   print list of unique run Ids
+    -c   print list of unique configuration Ids (aka run numbers)
+ `info' command:
+    -b   list filter names only (brief)
+    -s   list filter names with parameter list (summary)
+    -v   include descriptions in the output (default)
+ `index' command:
+    -r   rebuild vector file (rearranges records into blocks)
+    -V   print info about progress (verbose)
+
+Function syntax (for `vector -a'): <name>(<parameterlist>).
+Examples: winavg(10), mean()
+
+Pattern syntax: one or more <fieldname>(<pattern>) pairs, combined with AND,
+OR, NOT operators.
+  <fieldname> is one of:
+    file:             full path of the result file
+    run:              unique run Id
+    module:           module full path
+    name:             name of the statistic
+    attr:experiment:  the experiment attribute of the run
+    attr:measurement: the measurement attribute of the run
+    attr:replication: the replication attribute of the run
+  <pattern> is a glob-like pattern:
+    ?             matches any character except '.'
+    *             matches zero or more characters, except '.'
+    **            matches zero or more characters (any character)
+    {a-z}         matches a character in range a-z
+    {^a-z}        matches a character NOT in range a-z
+    {32..255}     any number (ie. sequence of digits) in range 32..255  (e.g. "99")
+    [32..255]     any number in square brackets in range 32..255 (e.g. "[99]")
+    \ (backslash) takes away the special meaning of the subsequent character
+Pattern example:
+    module("**.sink") AND (name("queueing time") OR name("transmission time"))
+
+Examples:
+    scavetool vector -p "queueing time" -a winavg(10) -O out.vec *.vec
+        Saves the queueing time vectors to out.vec, after applying a window
+        average filter.
+
+    scavetool scalar -p "module(sink) OR module(queue)" -a "scatter(.,load,queue,\"queue length\")" -O out.csv -F csv *.sca
+        Creates a scatter plot with the load attribute on the x axis, and queue length
+        for iso lines.
+
+Andrew Hardy@AndrewHardy ~/bin
+$

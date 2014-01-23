@@ -44,12 +44,27 @@
 
 #ifdef THE_OMNET_SIMULATION
 
+
+#define MAX_NEIGHBOURS 5
+#define LQI_THRESHOLD_STEP 35
+#define LQI_NEIGHBOUR_THRESHOLD 2
+#define LQI_THRESHOLD_MAX 100
+
+
+//#define MAX_NEIGHBOURS 9
+//#define LQI_THRESHOLD_STEP 20
+//#define LQI_NEIGHBOUR_THRESHOLD 4
+//#define LQI_THRESHOLD_MAX 100
+
+
 // tailored types
 #define NEIGHBOUR_ADDR uint64_t
 #define TIME_TYPE double
 
 #define CANCEL_TIMER -1
 
+#define DELETE_TIMEOUT 4.00 // previously 2.00
+#define DELETE_TIMEOUT2 4.00 // previously 1.00
 #define CONVERGENCE_TIMEOUT 0.2
 #define REINFORCE_TIMEOUT 0.4
 #define ADVERT_TIMEOUT 5 //1.2

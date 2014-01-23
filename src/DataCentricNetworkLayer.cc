@@ -13,6 +13,10 @@
 
 #include "SpecialDebug.h"
 
+//#include "MyNoiseGenerator.h"
+
+#include "math.h"
+
 //#define OLDFRAMEWORK
 //#define STATIC_MEMORY
 
@@ -40,12 +44,16 @@ unsigned int moduleIndex;
 
 extern NEIGHBOUR_ADDR excludedInterface; // used as the incoming i/f for debug
 
+extern unsigned char pathCostMethod;
+
+
 #ifndef OLDFRAMEWORK
 extern int stateCount;
 #endif
 
 extern char queue[100];
 
+struct new_packet myoutgoing_packet;
 
 double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
@@ -73,6 +81,11 @@ static char messageName[9][24] =
 */
 
 
+union signedShortData
+{
+    unsigned char theBytes[2];
+    signed short theSignedShort;
+};
 
 
 #ifndef OLDFRAMEWORK
@@ -104,8 +117,10 @@ void DataCentricNetworkLayer::initialize(int aStage)
     cSimpleModule::initialize(aStage); //DO NOT DELETE!!
 
     SetCurrentModuleInCLanguageFramework();
+
     if (0 == aStage)
     {
+        //MyNoiseGenerator::setNoiseLevel(-94);
         numSent = 0;
 
         //mpStartMessage = new cMessage("StartMessage");
@@ -146,6 +161,9 @@ void DataCentricNetworkLayer::initialize(int aStage)
 
         m_debug                     = par("debug");
         isPANCoor                   = par("isPANCoor");
+        pathCostMethod              = par("pathCostMethod");
+
+
 
         mMeanDownTime = par("meanDownTime");
         if ( mMeanDownTime == 0.2 )
@@ -200,6 +218,7 @@ void DataCentricNetworkLayer::initialize(int aStage)
         moduleRD.top_state = trie_new();
         moduleRD.pkts_received = 0;
         moduleRD.pkts_ignored = 0;
+
 
 
 
@@ -354,6 +373,8 @@ struct trie* trie_array_ptr[MAX_TRIES];
 
 
 
+        moduleRD.batteryNode = this->getParentModule()->par("batteryNode").boolValue();
+        moduleRD.batteryNode = this->getParentModule()->par("batteryNode").boolValue();
 
 
     }
@@ -483,6 +504,48 @@ static void cb_recordNeighbourLqi(Interface* i, State* s)
 
 }
 
+int unescapeBuffer2(unsigned char* pkt, unsigned char* out)
+{
+bool escaped = false;
+int i = 0;
+while ( *pkt )
+{
+    if ( !escaped )
+    {
+        if ( *(pkt) == 0x27 )
+        {
+            escaped = true;
+        }
+        else
+        {
+            out[i++] = *(pkt);
+        }
+    }
+    else
+    {
+        switch (*(pkt))
+        {
+            case 0x27:
+                out[i++] = 0x27;
+                break;
+            case 0x1:
+                out[i++] = 0x00;
+                break;
+            case 0x2:
+                out[i++] = 0xFF;
+                break;
+            default:
+                out[i++] = *pkt;
+                break;
+        }
+        escaped = false;
+    }
+    pkt++;
+}
+
+return i;
+}
+
 
 
 void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPolymorphic *details)
@@ -498,7 +561,7 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
     switch (category)
     {
     case NF_LINK_BREAK:
-        f = check_and_cast<Ieee802154Frame *>(details);
+        f = 0;//check_and_cast<Ieee802154Frame *>(details);
         if ( f )
         {
             MACAddress destMac = f->getDstAddr();
@@ -523,6 +586,18 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
                             break;
                         case RECORD:
 #ifndef OLDFRAMEWORK
+                            signed short d;
+                            signedShortData w;
+                            unsigned char out[4];
+                            *(strchr((char*)&(pkt[4]), 0xFF)) = 0;
+                            unsigned int len = unescapeBuffer2(&(pkt[4]), out);
+                            if ( len != 2 )
+                                throw cRuntimeError("Watts must be 2 bytes signed short");
+                            w.theBytes[0] = out[0];
+                            w.theBytes[1] = out[1];
+                            //w.theBytes[0] = pkt[4];
+                            //w.theBytes[1] = pkt[5];
+                            d = w.theSignedShort;
                             interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl(), ID);
 #else
                             interest_breakage_just_ocurred(pkt, destIF, appPkt->getCreationTime().dbl());
@@ -564,6 +639,17 @@ void DataCentricNetworkLayer::receiveChangeNotification(int category, const cPol
 void DataCentricNetworkLayer::sendDownTheNIC()
 {
     Enter_Method("sendDownTheNIC()");
+
+    //Rayleigh
+    //To generate samples from a Rayleigh distribution with scale b,
+    //generate a uniform sample u from (0, 1) and return sqrt(-2 b2 log(u)).
+
+    //FWMath::
+    float b = 10;
+    sqrt(-2 * pow(b,2) * log(uniform(0,1)) );
+
+    //uniform(0,1)
+
 
     double randomStability = uniform(1,255);
     if ( randomStability <= mStability  )
@@ -825,6 +911,13 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
     unsigned int rssi = incomingControlInfo->getRssi();
     unsigned char lqi = incomingControlInfo->getLqi();
 
+    int real_rssi;
+    if ( par("RSSI_Test").boolValue() )
+    {
+        // Just for RSSI test.
+        real_rssi = -92 + (40*rssi/100);
+    }
+
     string fn(this->getParentModule()->getFullName());
     EV << "=====================================================" << endl;
     EV << "To: " << fn << endl;
@@ -881,6 +974,14 @@ void DataCentricNetworkLayer::handleLowerLayerMessage(DataCentricAppPkt* appPkt)
                 }
             }
             break;
+        case DATA:
+            if ( par("RSSI_Test").boolValue() )
+            {
+                // Just for RSSI test.
+                std::cout << "Real RSSI: " << std::dec << real_rssi << std::endl;
+                recordScalar("RSSI", real_rssi);
+            }
+            break;
         default:
             break;
     }
@@ -914,11 +1015,23 @@ void DataCentricNetworkLayer::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
     switch ( appPkt->getKind() )
     {
         case DATA_PACKET:
+            // In the case of DC - sourceId & msgId are only used for
+            // data packets.  Other unicast packets have sourceId = 0, msgId = 0
+            //MyNoiseGenerator::setNoiseLevel(-84);
             appPkt->addPar("sourceId") = getId();
             appPkt->addPar("msgId") = numSent++;
             currentPktCreationTime = simTime();
             COUT << "\n" << "DATA SENT ORIG CREATE TIME:     " << currentPktCreationTime << "\n";
-            SendDataWithLongestContext(appPkt); // ownership NOT passed on
+
+            if ( par("RSSI_Test").boolValue() )
+            {
+                // alternative Just for RSSI test.
+                SendMiscDataWithLongestContext(appPkt); // ownership NOT passed on
+            }
+            else
+            {
+                SendDataWithLongestContext(appPkt); // ownership NOT passed on
+            }
             break;
         case STARTUP_MESSAGE:
             if ( this->getParentModule()->getIndex() == 3 )
@@ -969,6 +1082,72 @@ void DataCentricNetworkLayer::SendDataAsIs(DataCentricAppPkt* appPkt)
 #endif
     free(data);
 }
+
+
+
+
+
+
+void DataCentricNetworkLayer::SendMiscDataWithLongestContext(DataCentricAppPkt* appPkt)
+{
+    // MOVE THIS BIT INTO FRAMEWORK
+    unsigned char temp[30];
+    unsigned char x[20];
+    unsigned char* index = x;
+    int stateLen = appPkt->getPktData().size();
+    std::copy(appPkt->getPktData().begin(), appPkt->getPktData().end(), index);
+    index += stateLen++;
+    *index = DOT;
+    //x[stateLen] = DOT;
+    //getLongestContextTrie(rd->top_context, temp, temp, &(x[stateLen+1]));
+    getLongestContextTrie(rd->top_context, temp, temp, ++index);
+    stateLen += strlen((const char*)index);
+    unsigned char* data = (unsigned char*)malloc(stateLen);
+    memcpy(data, x, stateLen);
+    uint64_t moduleId64 = (int)appPkt->par("sourceId");
+    uint64_t msgId64 = (int)appPkt->par("msgId");
+    uint64_t ID = (moduleId64 << 32) | msgId64;
+
+    // HERE
+
+
+
+
+    myoutgoing_packet.message_type = DATA;
+    myoutgoing_packet.length = stateLen;
+    sfree(myoutgoing_packet.data);
+    myoutgoing_packet.data = (unsigned char*)smalloc(myoutgoing_packet.length+1);
+    memcpy(myoutgoing_packet.data, data, myoutgoing_packet.length);
+    myoutgoing_packet.data[myoutgoing_packet.length] = 0;
+    myoutgoing_packet.path_value = 0;
+    myoutgoing_packet.down_interface = UNKNOWN_INTERFACE;
+    myoutgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
+    myoutgoing_packet.creation_time = 0;
+
+    cSimulation* sim =  cSimulation::getActiveSimulation();
+    cModule* macModule = check_and_cast<cModule*>(
+            sim->getModuleByPath("DataCentricNet.host[0].nic.mac"));
+    string tempAddressString = macModule->par("address");
+    MACAddress addrObj(tempAddressString.c_str());
+    std::string destString = addrObj.str();
+    uint64 dest = addrObj.getInt();
+    cb_send_message(dest, write_packet(&myoutgoing_packet), simTime().dbl(), ID);
+
+
+
+
+
+//#ifndef OLDFRAMEWORK
+//    send_data(stateLen, data, simTime().dbl(), ID);
+//#else
+//    send_data(stateLen, data, simTime().dbl());
+//#endif
+    free(data);
+}
+
+
+
+
 
 
 
@@ -1096,6 +1275,12 @@ void DataCentricNetworkLayer::SetSinkAsIs(DataCentricAppPkt* appPkt)
         memcpy(x, i->c_str(), datalen);
         x[datalen] = 0;
         weAreSinkFor(x, 0);
+
+        if ( par("RSSI_Test").boolValue() )
+        {
+            // Just for RSSI test.  Don't rely on delivery of interest and reinforcement
+            reinforceDeliverGradient(x, SELF_INTERFACE, 0);
+        }
     }
 
 }
@@ -1478,6 +1663,9 @@ static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, doub
 static void cb_send_message(NEIGHBOUR_ADDR _interface, unsigned char* _msg, double _creationTime)
 #endif
 {
+
+    //MyNoiseGenerator::setNoiseLevel(-80);
+
     /*
      * This is a generic call back for the data centric routing framework
      * It's implementation in this case is specifically tailored to Omnet++
@@ -1691,8 +1879,20 @@ static void cb_bcast_message(unsigned char* _msg)
     //appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+(_msg[1] + 4));
     appPkt->getPktData().insert(appPkt->getPktData().end(), _msg, _msg+sizeof_existing_packet(_msg));
     unsigned long long int pktSize = sizeof_existing_packet_withoutDownIF(_msg);
-    appPkt->setByteLength(pktSize);
 
+    if ( currentModule->par("XBeeModule").boolValue() )
+    {
+        /*
+         * Simulate XBee module by increasing the size of single packet
+         * Example DC PDU size 9 would be mac packet 18
+         * Here it would increase to (9+2+9) * 4 = 80
+         */
+        pktSize+=2; // XBee Digi Header per packet
+        pktSize = pktSize * 4; // XBee RR Command set to 2, so 4 broadcast packets sent
+        pktSize += (9 * 3); // So, 3 802154 header sizes additional to the size added by mac
+    }
+
+    appPkt->setByteLength(pktSize);
 
     switch ( *_msg )
     {
@@ -1856,18 +2056,42 @@ static void cb_handle_application_data(unsigned char* _msg, unsigned int len, do
     int moduleId = (int)(ID >> 32);
     int msgId = (int)(ID & 0xFFFFFFFF);
 
+    if ( currentModule->par("ignoreFirstDataPackets").boolValue() && msgId == 0 )
+    {
+        // When we want to measure delay and failures of many ongoing transmissions
+        // over a period (in order to assess the choice of route)
+        // ignore the very first which may have (in some cases very large)
+        // routing overhead
+        return;
+    }
+
     if ( !currentModule->duplicate(moduleId, msgId) )//, appPkt) )
     {
 #endif
         currentModule->getParentModule()->bubble(bubbleText);
         cout << "## " << hex << currentModule->mAddress << " (" << fn << ") received data from:  " <<
                 hex << excludedInterface << endl;
-
         //simtime_t endToEndDelay = simTime() - _creationTime;
+        //-        //simtime_t endToEndDelay = simTime() - _creationTime;
+        simtime_t endToEndDelay = simTime() - _creationTime;
         // Collaboration with delayed data packets
-        simtime_t endToEndDelay = simTime();
+        //simtime_t endToEndDelay = simTime();
         COUT <<         "END TO END DELAY:               " << endToEndDelay << "\n";
-        currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
+        //currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
+        //-        currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay);
+
+        if ( moduleId )
+        {
+            //uint64_t sourceId64 = (int)moduleId;
+            //uint64_t destinationId64 = (int)(currentModule->getId());
+            //uint64_t ID = (sourceId64 << 32) | destinationId64;
+            //currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay, ID);
+            currentModule->mNetMan->addADataPacketE2EDelay(endToEndDelay, msgId);
+        }
+        else
+        {
+            throw cRuntimeError("Data/Application packet must have a source Id for stats to work");
+        }
 
         DataCentricAppPkt* appPkt = new DataCentricAppPkt("Data_DataCentricAppPkt");
         appPkt->setKind(DATA_PACKET);

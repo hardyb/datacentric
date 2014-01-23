@@ -200,6 +200,7 @@ void UDPBurstAndBroadcast::initialize(int stage)
 
     counter = 0;
     numSent = 0;
+    numDataSent = 0;
     numReceived = 0;
     numDeleted = 0;
     numDuplicated = 0;
@@ -363,8 +364,16 @@ AppControlMessage *UDPBurstAndBroadcast::createPacket2(const char *name)
     //payload->setInterests("\x83\x2\x0");
     //payload->setSourceData("");
     payload->setByteLength(3);
-    payload->addPar("sourceId") = getId();
-    payload->addPar("msgId") = numSent++;
+
+
+    //payload->addPar("sourceId") = getId();
+    //payload->addPar("msgId") = numSent++;
+
+    //-    payload->addPar("sourceId") = getId();
+    //-    payload->addPar("msgId") = numSent++;
+    int sid = getId();
+    payload->addPar("sourceId") = sid;
+    //payload->addPar("msgId") = numSent++;
 
     return payload;
 }
@@ -471,6 +480,7 @@ void UDPBurstAndBroadcast::handleMessage(cMessage *msg)
     {
         IPvXAddress addr = mSendLaterMessageMap[msg].destAddr;
         cPacket *pkt = mSendLaterMessageMap[msg].pkt;
+        //pkt->addPar("msgId") = numSent++;
         sendPacket(pkt, addr);
         mSendLaterMessageMap.erase(msg);
         delete msg;
@@ -678,9 +688,42 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
             // With App Layer giving the data sending time
 
             // TEMP - Use undefined address to put packet in forserver queue
-            IPvXAddress undefinedAddr;
+            //IPvXAddress undefinedAddr;
+            //-            IPvXAddress undefinedAddr;
+
+
+            //============================================================
+            //============================================================
+
+            IPvXAddress addrToUse;
+            AData d;
+            d.data = theData;
+            d.context = (const char*)x;
+            for (RegistrationIt i = mRegistrationList.begin();
+                    i != mRegistrationList.end(); ++i)
+            {
+                pair<std::string::iterator,std::string::iterator> res;
+                std::string currentData = i->data; // i->first.data.begin() returns unwanted const_iter
+                res = std::mismatch(currentData.begin(), currentData.end(), d.data.begin());
+                if (res.first == currentData.end())
+                {
+                    std::string currentContext = i->context; // i->first.context.begin() returns unwanted const_iter
+                    res = std::mismatch(currentContext.begin(), currentContext.end(), d.context.begin());
+                    if (res.first == currentContext.end())
+                    {
+                        addrToUse = mServerAddr;
+                    }
+                }
+            }
+
+            //============================================================
+            //============================================================
+
             COUT << "Time: " << appPkt->getTimestamp().dbl() << " At: " << myAddr.get4() << ", Sending DATA to: " << mServerAddr.get4() << "\n";
-            generatePacket(appPkt->getTimestamp(), undefinedAddr, "EnergyData", HOME_ENERGY_DATA, "",
+
+            //-            generatePacket(appPkt->getTimestamp(), undefinedAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            //generatePacket(appPkt->getTimestamp(), undefinedAddr, "EnergyData", HOME_ENERGY_DATA, "",
+            generatePacket(appPkt->getTimestamp(), addrToUse, "EnergyData", HOME_ENERGY_DATA, "",
                     theData.c_str(), (const char*)x, 0);
             //generatePacket(appPkt->getTimestamp(), mServerAddr, "EnergyData", HOME_ENERGY_DATA, "",
             //        theData.c_str(), (const char*)x, 0);
@@ -852,11 +895,13 @@ void UDPBurstAndBroadcast::handleUpperLayerMessage(DataCentricAppPkt* appPkt)
                 mNetMan->addPendingRegistration(myAddr.get4().getInt());
                 mNetMan->recordOnePacket(REGISTER_STAT);
 
+                AData d;
+                d.data = sinkData.c_str();
+                d.context = (const char*)x;
+                //mAwaitRegConf.insert(d);
+
                 if ( mBindingNumTries > 1 )
                 {
-                    AData d;
-                    d.data = sinkData.c_str();
-                    d.context = (const char*)x;
                     mBindingTries[d] = 1;
                     cMessage* m;
                     m = new cMessage("CUBindingRetry");
@@ -964,6 +1009,8 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
     // Unicast packet for us so handle if not already handled
     if ( dynamic_cast<AppControlMessage*>(pk) )
     {
+        //if ( dynamic_cast<AppControlMessage*>(pk)->getCntrlType() == HOME_ENERGY_DATA
+        //        && !duplicate(moduleId, msgId, pk) )
         if ( !duplicate(moduleId, msgId, pk) )
         {
             ProcessPacket(dynamic_cast<AppControlMessage*>(pk)); // pk deleted by function
@@ -1053,11 +1100,20 @@ void UDPBurstAndBroadcast::handlePacket(cPacket *pk)
 
 bool UDPBurstAndBroadcast::duplicate(int moduleId, int msgId, cPacket *pk)
 {
+    int sid = getId();
+    int cntrlType = dynamic_cast<AppControlMessage*>(pk)->getCntrlType();
+    double t = simTime().dbl();
+
     SourceSequence::iterator it = sourceSequence.find(moduleId);
     if (it != sourceSequence.end())
     {
-        if (it->second >= msgId)
+        //if (it->second >= msgId)
+        //if (it->second >= msgId)
+        if ( it->second.find(msgId) != it->second.end() )
+        //if (it->second >= msgId)
         {
+            std::cout << "At: " << sid << " Rejected: " << moduleId << "-" << msgId
+                    << " (" << cntrlType << ") " << t << std::endl;
             //EV << "Out of order packet: " << UDPSocket::getReceivedPacketInfo(pk) << endl;
             //emit(outOfOrderPkSignal, pk);
             delete pk;
@@ -1066,13 +1122,24 @@ bool UDPBurstAndBroadcast::duplicate(int moduleId, int msgId, cPacket *pk)
         }
         else
         {
-            it->second = msgId;
+            //it->second = msgId;
+            std::cout << "At: " << sid << " Accepted: " << moduleId << "-" << msgId
+                    << " (" << cntrlType << ") " << t << std::endl;
+            //it->second = msgId;
+            it->second.insert(msgId);
+            //it->second = msgId;
 
         }
     }
     else
     {
-        sourceSequence[moduleId] = msgId;
+        //sourceSequence[moduleId] = msgId;
+        //sourceSequence[moduleId] = msgId;
+        std::cout << "At: " << sid << " Accepted: " << moduleId << "-" << msgId
+                << " (" << cntrlType << ") " << t << std::endl;
+        //sourceSequence[moduleId] = msgId;
+        sourceSequence[moduleId].insert(msgId);
+
     }
 
     return false;
@@ -1167,6 +1234,38 @@ void UDPBurstAndBroadcast::sendDownTheNIC()
 
 void UDPBurstAndBroadcast::sendPacket(cPacket *payload, const IPvXAddress &_destAddr)
 {
+    int sid = getId();
+    double t = simTime().dbl();
+    int cntrlType = dynamic_cast<AppControlMessage*>(payload)->getCntrlType();
+
+    if ( cntrlType == HOME_ENERGY_DATA )
+    {
+        payload->addPar("dataId") = numDataSent++;
+    }
+
+    if ( payload->hasPar("sourceId") )
+    {
+        payload->par("sourceId") = sid;
+    }
+    else
+    {
+        payload->addPar("sourceId") = sid;
+    }
+
+    std::cout << "At: " << sid << " Sending: " << numSent
+            << " (" << cntrlType << ") " << t << std::endl;
+
+    if ( payload->hasPar("msgId") )
+    {
+        payload->par("msgId") = numSent++;
+    }
+    else
+    {
+        payload->addPar("msgId") = numSent++;
+    }
+
+
+
     /*
     if ( dynamic_cast<AppControlMessage*>(payload) )
     {
@@ -1272,6 +1371,7 @@ void UDPBurstAndBroadcast::generatePacket(simtime_t t, IPvXAddress &_destAddr, c
     }
     else
     {
+        //payload->addPar("msgId") = numSent++;
         sendPacket(payload, _destAddr);
         emit(sentPkSignal, payload);
         //numSent++;
@@ -1462,7 +1562,18 @@ void UDPBurstAndBroadcast::DataReceived(AppControlMessage* acm)
 
     simtime_t e2eDelay = simTime() - acm->getTimestamp();
     e2eDelayVec.record(SIMTIME_DBL(e2eDelay));
-    mNetMan->addADataPacketE2EDelay(e2eDelay);
+    //mNetMan->addADataPacketE2EDelay(e2eDelay);
+    //-    mNetMan->addADataPacketE2EDelay(e2eDelay);
+
+    if ( acm->hasPar("dataId") )
+    {
+        mNetMan->addADataPacketE2EDelay(e2eDelay, (int)acm->par("dataId"));
+    }
+    else
+    {
+        throw cRuntimeError("Data/Application packet must have a data Id counter");
+    }
+
     //mNetMan->recordOnePacket(AODV_DATA_ARRIVAL);
 
     this->getParentModule()->bubble("Received data packet");
@@ -1527,6 +1638,9 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
     unsigned char temp[30];
     unsigned char x[20];
     std::vector<IPvXAddress> jj;
+    //int s;
+    //std::set<AData>::iterator bindIt;
+    //TriesIter bindIt;
     switch ( acm->getCntrlType() )
     {
         case REGISTER_AS_SINK_CONFIRMATION:
@@ -1534,11 +1648,35 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                     << ", Received reg conf from: " << origAddr.get4() << "\n";
             d.data = acm->getInterests();
             d.context = acm->getContext();
+
+            //bindIt = mAwaitRegConf.find(d);
+            //if (bindIt != mAwaitRegConf.end() )
+            //{
+            //    std::cout << "not end" << std::endl;
+            //}
+            //s = mAwaitRegConf.size();
+
             mBindingTries.erase(d);
+            mRegistrationList.insert(d);
+
+            //mAwaitRegConf.erase(d);
+
+            //s = mAwaitRegConf.size();
+            //bindIt = mAwaitRegConf.find(d);
+            //if (bindIt == mAwaitRegConf.end() )
+            //{
+            //    std::cout << "end" << std::endl;
+            //}
+
             for (std::vector<AppControlMessage*>::iterator i = mPktsForServer.begin();
                     i != mPktsForServer.end(); ++i)
             {
-                sendPacket(*i, mServerAddr);
+                //sendPacket(*i, mServerAddr);
+                //-                sendPacket(*i, mServerAddr);
+                //(*i)->setTimestamp(simTime());
+                //(*i)->addPar("msgId") = numSent++;
+                int sid = getId();
+                sendPacket(*i, mServerAddr); // *i ownership passed we think
             }
             break;
         case FIND_CONTROL_UNIT:
@@ -1548,6 +1686,7 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                         getParentModule()->getFullPath().c_str(), "", "", 0);
                 mNetMan->recordOnePacket(DISCOVERY_STAT);
             }
+            mPktsForServer.clear();
             break;
         case CONTROL_UNIT_DETAILS:
             mServerAddr = IPvXAddressResolver().resolve(acm->getInterests());
@@ -1556,9 +1695,13 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
             {
                 //socket.sendTo(*i, mServerAddr, destPort, outputInterface);
                 //int ctrlT = (*i)->getCntrlType();
-                sendPacket(*i, mServerAddr);
+                //sendPacket(*i, mServerAddr);
+                //-                sendPacket(*i, mServerAddr);
+                //(*i)->addPar("msgId") = numSent++;
+                sendPacket(*i, mServerAddr); // *i ownership passed we think
                 //numSent++;
             }
+            mPktsForServer.clear();
             break;
         case SERVICE_DISCOVERY_REQUEST: // comes by bcast
             ////////////// NEW CODE
@@ -1743,10 +1886,10 @@ void UDPBurstAndBroadcast::ProcessPacket(cPacket *pk)
                                 if ( i->first != origAddr )
                                 {
                                     mNetMan->addPendingDataPkt();
+                                    IPvXAddress tempIP = i->first;
                                     sendPacket(acm->dup(), i->first);
                                     COUT << "Time: " << simTime().dbl() << " At: " << myAddr.get4()
                                             << ", Forwarding to: " << i->first.get4() << "\n";
-                                    //numSent++;
                                 }
                                 else
                                 {

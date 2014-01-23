@@ -47,6 +47,7 @@ module nodecsma802154
 {
     parameters:
         @node();
+        bool batteryNode = default(true);
         int numTcpApps = default(0);
         //int numUdpApps = default(0);
         int numPingApps = default(0);  // no of PING apps. Specify the app types in INI file with pingApp[0..1].typename="PingApp" syntax       

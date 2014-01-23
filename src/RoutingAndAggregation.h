@@ -15,7 +15,7 @@
 
 #define XXXXXX
 
-#define SPECIAL_INTEREST
+//#define SPECIAL_INTEREST
 
 #define smalloc(x) mymalloc(x, __LINE__)
 #define sfree(x) myfree(x)
@@ -204,10 +204,10 @@ UNDER_THRESHOLD, GRABBING, IMPENDING_THRESHOLD, ?, ?
 #define BREAKAGE 10
 #define PUBBREAKAGE 11
 #define REINFORCE_INTEREST_CANCEL 12
-#ifdef SPECIAL_INTEREST
+//#ifdef SPECIAL_INTEREST // include just don't use
 #define REGION_INTEREST 13
 #define REGION_COLLABORATION 14
-#endif
+//#endif
 
 
 
@@ -756,6 +756,7 @@ typedef struct RoutingData
 	struct trie* top_context;
     unsigned int pkts_received;
     unsigned int pkts_ignored;
+    unsigned short batteryNode;
 
 
 
@@ -807,7 +808,8 @@ InterfaceNode* FindInterfaceNode(InterfaceNode* tree, NEIGHBOUR_ADDR val);
 struct KDGradientNode* newKDGradientNode(int sName, int iName, int obtain, int deliver);
 void freeKDGradientNode(KDGradientNode* g);
 struct KDGradientNode* insertKDGradientNode( int sName, int iName, int costType, int pCost, struct KDGradientNode* treeNode, int lev );
-void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName);
+//void reinforceDeliverGradient(char* fullyqualifiedname, NEIGHBOUR_ADDR iName);
+void reinforceDeliverGradient(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR iName, char seqno);
 void reinforceObtainGradient(int sName, NEIGHBOUR_ADDR iName);
 void setObtainGradient(int sName, int iName, int pCost);
 void setDeliverGradient(int sName, int iName, int pCost);
@@ -870,6 +872,7 @@ void weAreCollaboratorInitiatorFor(unsigned char* _data, char seqno);
 void send_data(int len, unsigned char* _data, double _creationTime, uint64_t ID);
 void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, double creationTime, uint64_t ID);
 void read_packet(unsigned char* pkt);
+unsigned char* write_packet(new_packet* the_packet);
 unsigned int size_needed_for_outgoing_packet();
 unsigned int sizeof_existing_packet(unsigned char* pkt);
 unsigned int sizeof_existing_packet_withoutDownIF(unsigned char* pkt);

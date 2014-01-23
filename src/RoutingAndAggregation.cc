@@ -5,6 +5,13 @@
 
 unsigned char current_prefix_name[100];
 
+unsigned char pathCostMethod;
+
+#define PC_ADD_LQI 0
+#define PC_MULT_LQI 1
+#define PC_LOWEST_MAX_LINK 2
+//#define PC_ADD_LQI 0
+
 
 
 #include "RoutingAndAggregation.h"
@@ -12,13 +19,17 @@ unsigned char current_prefix_name[100];
 #include <stdio.h>
 #include <string.h>
 
-#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
+//#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
 
 #ifdef FIRST_COME_ONLY
 #undef CONVERGENCE_TIMEOUT
 //#define CONVERGENCE_TIMEOUT 0
 //#define CONVERGENCE_TIMEOUT 0.001
-#define CONVERGENCE_TIMEOUT 0.01 // .001 too soon to send reinforcement(RREP), more failures
+//#define CONVERGENCE_TIMEOUT 0.01 // .001 too soon to send reinforcement(RREP), more failures
+
+// For simultaneous collaborations
+#define CONVERGENCE_TIMEOUT 0.15
+
 #endif
 
 int numSuccessfulReinforcements;
@@ -234,7 +245,7 @@ void listMemAlloc()
 
 void listMemAlloc_cb(void* relevantObject)
 {
-    listMemAlloc();
+    //listMemAlloc();
     setTimer(0.25, 0, listMemAlloc_cb);
 }
 
@@ -566,7 +577,7 @@ unsigned char* write_packet(new_packet* the_packet)
 	unsigned char* pkt = (unsigned char*)smalloc(size);
 	unsigned int pkt_index = 0;
 
-	pkt[pkt_index] = the_packet->message_type;
+	pkt[pkt_index] = (the_packet->message_type & 0x7F); // ignore MSB
 	pkt_index+=sizeof(the_packet->message_type);
 
 	if ( (the_packet->message_type == 1) && !the_packet->length )
@@ -962,7 +973,21 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
         if (s->bestGradientToDeliver->key2->iName == SELF_INTERFACE)
         {
-            outgoing_packet.path_value = 0;
+            switch ( pathCostMethod )
+            {
+                case PC_ADD_LQI:
+                    outgoing_packet.path_value = 0;
+                    break;
+                case PC_MULT_LQI:
+                    outgoing_packet.path_value = 255;
+                    break;
+                case PC_LOWEST_MAX_LINK:
+                    outgoing_packet.path_value = 0;
+                    break;
+                default:
+                    outgoing_packet.path_value = 0;
+                    break;
+            }
         }
         else
         {
@@ -1928,8 +1953,8 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
                 s->seqno = seqno;
                 s->reinforcementRetries = 0;
                 s->broken = 0;
-                s->bestGradientToDeliver = NULL;
-                s->bestGradientToObtain = NULL;
+                s->bestGradientToDeliver = NULL; // memory leak?
+                s->bestGradientToObtain = NULL; // memory leak?
                 freeInterfaceList(s->deliveryInterfaces);
                 freeInterfaceList(s->obtainInterfaces);
                 s->deliveryInterfaces = NULL;
@@ -1943,6 +1968,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
     switch ( costType )
     {
         case OBTAIN:
+            s->bestGradientToObtainUpdated = FALSE; // don't assume already false
             if ( !(s->bestGradientToObtain) )
             {
                 s->bestGradientToObtain = newKDGradientNode3(s, i, pCost, MAX_COST, seqno);
@@ -1950,7 +1976,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
             }
             else
             {
-                if ( seqno > s->bestGradientToObtain->seqno )
+                if ( seqno > s->bestGradientToObtain->seqno ) // check this!
                 {
                     RD( "New seqno: " << seqno << ", first obt cost: " << pCost << std::endl );
                     s->bestGradientToObtain->key2 = i;
@@ -1974,6 +2000,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
             }
             break;
         case DELIVER:
+            s->bestGradientToDeliverUpdated = FALSE; // don't assume already false
             if ( !(s->bestGradientToDeliver) )
             {
                 s->bestGradientToDeliver = newKDGradientNode3(s, i, MAX_COST, pCost, seqno);
@@ -1981,7 +2008,7 @@ struct KDGradientNode* insertKDGradientNode3(State* s, Interface* i, int costTyp
             }
             else
             {
-                if ( seqno > s->bestGradientToDeliver->seqno )
+                if ( seqno > s->bestGradientToDeliver->seqno ) // check this!
                 {
                     RD( "New seqno: " << seqno << ", first deliv cost: " << pCost << std::endl );
                     s->bestGradientToDeliver->key2 = i;
@@ -3096,7 +3123,7 @@ void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
         QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = temp->i;
         qd->associatedState = s;
-        setTimer(2.00, qd, delete_queued_data);
+        setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
         temp->link = NULL;
         *l = temp;
     }
@@ -3117,7 +3144,7 @@ void addCopyToQIfNotPresent(State* s, struct new_packet* _i)
         QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = r->i;
         qd->associatedState = s;
-        setTimer(2.00, qd, delete_queued_data);
+        setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
         r->link = NULL;
         temp->link = r;
     }
@@ -3242,6 +3269,7 @@ bool copyMessageIn(void* p1, void* p2)
 
 
 
+
 NEIGHBOUR_ADDR excludedInterface;
 int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
 {
@@ -3282,7 +3310,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
         QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
         qd->associatedState = s;
-        setTimer(2.00, qd, delete_queued_data);
+        setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
 #endif
 
 
@@ -3323,6 +3351,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
                     // some how we need to know whether this send
                     // from the queue
                     sendAMessage(temp->i->iName, write_packet(sending_packet), sending_packet->creation_time, sending_packet->id);
+                    sending_packet->message_type |= 0x80; // set MSB
                     sent = 1;
                     // length taken from incoming/outgoing message not strlen
 
@@ -3369,7 +3398,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
-            setTimer(2.00, qd, delete_queued_data);
+            setTimer(DELETE_TIMEOUT2, qd, delete_queued_data);
 
             // If data arrives at a converged node with no reinforcement then initiate
             // reinforcement from here.  This can occur following a breakage
@@ -3406,7 +3435,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
-            setTimer(1.00, qd, delete_queued_data);
+            setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
 
 
 
@@ -3491,7 +3520,7 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
             //    QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             //    qd->pktToDelete = savePkt;
             //    qd->associatedState = s;
-            //    setTimer(1.00, qd, delete_queued_data);
+            //    setTimer(DELETE_TIMEOUT2, qd, delete_queued_data);
 
             //}
 
@@ -3534,6 +3563,20 @@ int consider_sending_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
     return sent;
 
 }
+
+
+
+
+
+int consider_sending_queued_data(State* s, unsigned char* _buf, NEIGHBOUR_ADDR _if)
+{
+    if ( s->deliveryInterfaces )
+    {
+        return consider_sending_data(s, _buf, _if);
+    }
+    return 0;
+}
+
 
 
 
@@ -3862,7 +3905,7 @@ int interest_breakage_process_prefix(State* s, unsigned char* _buf, NEIGHBOUR_AD
             QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
             qd->pktToDelete = savePkt;
             qd->associatedState = s;
-            setTimer(2.00, qd, delete_queued_data);
+            setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
 
             outgoing_packet.message_type = BREAKAGE;
             outgoing_packet.data = _buf;
@@ -3914,7 +3957,7 @@ void advert_breakage_just_ocurred(unsigned char* pkt, NEIGHBOUR_ADDR inf, double
         QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
-        setTimer(2.00, qd, delete_queued_data);
+        setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
 
         setTimer(0.03, t->s, initiate_new_advert);
         return;
@@ -4016,7 +4059,7 @@ void handle_pubbreakage(control_data cd)
         QueueDeletion* qd = (QueueDeletion*)smalloc(sizeof(QueueDeletion));
         qd->pktToDelete = savePkt;
         qd->associatedState = t->s;
-        setTimer(2.00, qd, delete_queued_data);
+        setTimer(DELETE_TIMEOUT, qd, delete_queued_data);
 
         setTimer(0.03, t->s, initiate_new_advert);
         return;
@@ -4429,7 +4472,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
             if ( !FindInterfaceNode(rd->interfaceTree, inf) )
             {
                 unsigned int numNeighbours = CountInterfaceNodes(rd->interfaceTree);
-                if ( numNeighbours > 9 )
+                if ( numNeighbours > MAX_NEIGHBOURS )
                 {
                     // NEW CODE - BUT ABANDON THIS FOR THE MOMENT
                     //trie* t = trie_lookup2(rd->top_state, incoming_packet.data);
@@ -4449,7 +4492,7 @@ void handle_message(unsigned char* _msg, NEIGHBOUR_ADDR inf, unsigned char lqi, 
                 }
                 else
                 {
-                    unsigned char lqiThreshold = numNeighbours > 4 ? 100 : numNeighbours * 20;
+                    unsigned char lqiThreshold = numNeighbours > LQI_NEIGHBOUR_THRESHOLD ? LQI_THRESHOLD_MAX : numNeighbours * LQI_THRESHOLD_STEP;
                     if ( lqi < lqiThreshold )
                     {
                         if ( _msg[3] == 1 && incoming_packet.message_type == ADVERT )
@@ -4547,6 +4590,7 @@ unsigned short outgoingLinkCost(control_data cd)
     unsigned short outgoingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi+(unsigned short)nodeConstraint;
 #else
     unsigned short outgoingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+
 #endif
 
 
@@ -4560,10 +4604,51 @@ unsigned short outgoingLinkCost(control_data cd)
 
 unsigned short incomingLinkCost(control_data cd)
 {
+    unsigned short incomingLink_cost;
+    unsigned char prob_link_success;
 #ifdef USE_NODE_STABILITY_COST
-    unsigned short incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+    incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
 #else
-    unsigned short incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+    /*
+     * case PC_MULT_LQI:
+     *
+     * We want an aproximation to the probability of link success which is
+     * double this_prob = (255-incoming_lqi)/255
+     *
+     * but what if we store the prob fraction as a value 0 - 255
+     * so we can do the fraction multiplication like this if we have shorts (2 bytes)
+     *
+     * new_current_prob = current_prob * this_prob / 255
+     *
+     * 0.90 = 229 so...
+     * 0.90 * 0.90 * 0.90 = 0.729
+     *
+     * 229 * 229 / 255 = 205 (exactly ignore remainder)
+     * 205 * 229 / 255 = 184
+     * 184 / 255 = 0.721
+     */
+
+    switch ( pathCostMethod )
+    {
+        case PC_ADD_LQI:
+            incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            break;
+        case PC_MULT_LQI:
+            // approximate probability of link success as 0 - 255 out of 255
+            prob_link_success = 255 - cd.incoming_lqi;
+            incomingLink_cost = incoming_packet.path_value * (unsigned short)prob_link_success / 255;
+            break;
+        case PC_LOWEST_MAX_LINK:
+            // use maximum link as path cost
+            // ie choose path with the lowest maximum link cost
+            incomingLink_cost = (unsigned short)cd.incoming_lqi > incoming_packet.path_value ?
+                    (unsigned short)cd.incoming_lqi : incoming_packet.path_value;
+            break;
+        default:
+            incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
+            break;
+    }
+
 #endif
     return incomingLink_cost;
 }
@@ -5602,6 +5687,56 @@ void delete_queued_data(void* relevantObject)
 
 
 
+//void send_queued_data2(void* relevantObject)
+void send_queued_data2(State* s, unsigned char* _data, NEIGHBOUR_ADDR _if)
+{
+    if ( s->pktQ )
+    {
+        PacketQueue** l = &(s->pktQ);
+        PacketQueue* temp = *l;
+        while( temp !=NULL )
+        {
+            sending_packet = temp->i;
+            action_all_prefixes(rd->top_state, 0, sending_packet->length, sending_packet->data,
+                        current_prefix_name, 0, consider_sending_queued_data);
+            if ( sending_packet->message_type & 0x80 )
+            {
+                *l = temp->link;
+                sfree(temp->i->data);
+                sfree(temp->i);
+                sfree(temp);
+                temp = *l;
+            }
+            else
+            {
+                l = &(temp->link);
+                temp = temp->link;
+            }
+        }
+
+        return;
+    }
+    else
+    {
+        std::cout << "no queued data" << std::endl;
+    }
+
+
+
+
+}
+
+
+
+void send_any_queued_data(void* relevantObject)
+{
+    traverse(rd->top_state, queue, 0, send_queued_data2);
+
+}
+
+
+
+
 
 
 // use this when a reinforcement has just occurred
@@ -5925,7 +6060,8 @@ void handle_interest(control_data cd)
             outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
             outgoing_packet.length = incoming_packet.length;
             //outgoing_packet.path_value = incoming_packet.path_value+nodeConstraint;
-            outgoing_packet.path_value = outgoingLinkCost(cd);
+            //outgoing_packet.path_value = outgoingLinkCost(cd);
+            outgoing_packet.path_value = t->s->bestGradientToDeliver->costToDeliver;
             outgoing_packet.excepted_interface = _interface;
             outgoing_packet.down_interface = UNKNOWN_INTERFACE;
             outgoing_packet.seqno = incoming_packet.seqno; // IS THIS RIGHT - WHAT IF CHANGED BY setDeliverGradient?
@@ -6239,11 +6375,12 @@ void start_reinforce_interest(unsigned char* fullyqualifiedname, NEIGHBOUR_ADDR 
         // also reinforce the path to the source for breakage messages
 		// even if it is self
 		reinforceDeliverGradient(fullyqualifiedname, interface, seqno);
-        if ( t->s->pktQ && t->s->deliveryInterfaces )
-        {
+        //if ( t->s->pktQ && t->s->deliveryInterfaces )
+        //{
             // we have queued data and reinforced delivery addres(es)
-            setTimer(0.01, t->s, send_queued_data); // NN
-        }
+        //    setTimer(0.01, t->s, send_queued_data); // NN
+        //}
+        setTimer(0.01, 0, send_any_queued_data); // NN
 
 		// If interface is self do not send message on
 		if ( interface == SELF_INTERFACE )

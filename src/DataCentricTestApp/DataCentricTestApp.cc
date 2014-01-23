@@ -941,7 +941,7 @@ union unSignedShortData
 
 void DataCentricTestApp::processWattsData(unsigned char* pkt)
 {
-    //signed short d;
+    signed short d;
     signedShortData w;
     unsigned char out[4];
     *(strchr((char*)pkt, 0xFF)) = 0;
@@ -960,7 +960,7 @@ void DataCentricTestApp::processWattsData(unsigned char* pkt)
 
     w.theBytes[0] = out[0];
     w.theBytes[1] = out[1];
-    //d = w.theSignedShort;
+    d = w.theSignedShort;
 }
 
 

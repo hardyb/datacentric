@@ -33,6 +33,7 @@ module DataCentricNode
 {
     parameters:
         @node();
+        bool batteryNode = default(true);
         //int x @unit("m");
         //int y @unit("m");
         //int ss;
@@ -48,6 +49,11 @@ module DataCentricNode
         
     gates:
         input radioIn;
+    types:
+        channel C extends ned.DelayChannel {
+            //delay = 0.035s;
+            delay = uniform(0.040s,0.042s);
+        }
     submodules:
         notificationBoard: NotificationBoard {
             parameters:
@@ -93,7 +99,8 @@ module DataCentricNode
         }
     connections allowunconnected:
         radioIn --> nic.radioIn;
-        nic.upperLayerOut --> net.lowerLayerIn;
+        nic.upperLayerOut --> C --> net.lowerLayerIn;
+        //nic.upperLayerOut --> net.lowerLayerIn;
         nic.upperLayerIn <-- net.lowerLayerOut;
         net.upperLayerOut --> app.lowerLayerIn;
         net.upperLayerIn <-- app.lowerLayerOut;

@@ -24,6 +24,10 @@ simple DataCentricNetworkMan
         string sources = default("");
         int expectedDataArrivals = default(0);
         double bpsInterval = default(0.1);
+        double noiseStart = default(0);
+        string noiseDistribution = default("");
+        double noiseLower = default(-94.0);
+        double noiseUpper = default(-91.0);
         string estimationMethod = default("");
         
     gates:

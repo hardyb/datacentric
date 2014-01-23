@@ -35,6 +35,7 @@ network csma802154net
         int iVar3 = default(0);
         string nodeParsUsed = default("");
         double nodeSeparation @unit("m")=default (3m); // 3m for home network
+        int numMainsNodes = default(0);
     submodules:
         region[numRegions]: Region;
         fixhost[numFixHosts]: nodecsma802154 {
