@@ -4618,6 +4618,7 @@ unsigned short incomingLinkCost(control_data cd)
     double test1;
     double test2;
     double test3;
+    double percentageCost;
 #ifdef USE_NODE_STABILITY_COST
     incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
 #else
@@ -4651,26 +4652,44 @@ unsigned short incomingLinkCost(control_data cd)
             incomingLink_cost = incoming_packet.path_value * (unsigned short)prob_link_success / 255;
             break;
         case PC_LOWEST_MAX_LINK:
+
+
+            //unsigned short x = incoming_packet.path_value && 0x00FF;
+
+            //unsigned short y = incoming_packet.path_value >> 8;
+
+
+
             // use maximum link as path cost
             // ie choose path with the lowest maximum link cost
             incomingLink_cost = (unsigned short)cd.incoming_lqi > incoming_packet.path_value ?
                     (unsigned short)cd.incoming_lqi : incoming_packet.path_value;
+
+
+
+
             break;
         case PC_ZIGBEE:
         case PC_ZIGBEE_LOWEST_MAX_LINK:
             lqi = 0xFF - cd.incoming_lqi; // need probability of delivery not COST of delivery
             lqi = lqi == 0 ? 1 : lqi;
-            //lqi = cd.incoming_lqi;
-            //prob = cd.incoming_lqi/255;
             prob = lqi/255;
-            test1 = round(0.4);
-            test2 = round(0.5);
-            test3 = round(0.6);
-            //test2 = 1.0;
-            //test1 = pow(prob, 4);
-            //test1 = test2/(prob^4);
             zigbeeProb = round(1/pow(prob, 4));
             zigbeeLC = (7 < zigbeeProb) ? 7 : zigbeeProb;
+
+
+            // now try 1..7 based linearly on incoming_lqi COST
+            percentageCost = ((double)cd.incoming_lqi)/256;
+            test1 = 10;
+            test2 = 255;
+            test1 = test1/256;
+            zigbeeLC = trunc(test1*7)+1; // check behaviour
+            test2 = test2/256;
+            zigbeeLC = trunc(test2*7)+1; // check behaviour
+            zigbeeLC = trunc(percentageCost*7)+1;
+
+
+
             switch ( zigbeeLC )
             {
                 case 1:
