@@ -99,8 +99,8 @@ module DataCentricNode
         }
     connections allowunconnected:
         radioIn --> nic.radioIn;
-        nic.upperLayerOut --> C --> net.lowerLayerIn;
-        //nic.upperLayerOut --> net.lowerLayerIn;
+        //nic.upperLayerOut --> C --> net.lowerLayerIn;
+        nic.upperLayerOut --> net.lowerLayerIn;
         nic.upperLayerIn <-- net.lowerLayerOut;
         net.upperLayerOut --> app.lowerLayerIn;
         net.upperLayerIn <-- app.lowerLayerOut;

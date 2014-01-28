@@ -1,0 +1,108 @@
+
+
+
+range 1 - 9
+
+
+multiply by path cost
+which if we use the outgoing path cost will always be at least 1
+
+
+
+
+
+oh hang on the path cost is not just 1..7 or 0..7 it will be much larger
+
+so how do we arrive at a suitable jitter?
+
+let us say the network size is 250 and the rough maximum hops is 16
+
+
+we could divide 64 by 16
+
+= 4
+
+
+
+so 1 hop @ cost 1 = 1
+16 hops @ cost 7 = 112
+
+
+
+nwk size 1000
+rough max hops = 32
+32 * 7 = 224
+
+
+
+500 size = 22 hops
+
+22 * 7 = 154
+
+
+so 64 / 154
+
+
+
+154/64 = 2.4
+
+
+
+CHANGE OF PLAN
+==================
+
+We don't think it means this.
+
+We now think it means adjust the jitter BASED ON THE LINK COST
+
+SO THAT!
+
+frames arriving with high path cost will have been delayed more than those with lower
+path cost
+
+
+So...
+
+if we use the incoming link cost
+i.e. 1..7
+
+we should still do random jitter but in seven ranges
+
+so the range should be
+
+1..9
+10..18
+19..27
+28..36
+37..45
+46..54
+55..63
+
+
+so the calculation is
+
+from = 1 + (lc-1)*9
+to   = lc * 9
+
+jitter = 2 * intuniform(1 + (lc-1)*9, lc * 9)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

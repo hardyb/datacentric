@@ -11,6 +11,12 @@
 #include<fstream>
 #endif
 
+#define PC_ADD_LQI 0
+#define PC_MULT_LQI 1
+#define PC_LOWEST_MAX_LINK 2
+#define PC_ZIGBEE 3
+#define PC_ZIGBEE_LOWEST_MAX_LINK 4
+
 
 
 #define XXXXXX

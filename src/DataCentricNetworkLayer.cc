@@ -55,6 +55,10 @@ extern char queue[100];
 
 struct new_packet myoutgoing_packet;
 
+extern struct new_packet outgoing_packet;
+extern int zigbeeLCExternal;
+
+
 double countIFLqiValuesRecorded;
 unsigned int routingDelayCount;
 char testSeqNo;
@@ -2017,7 +2021,23 @@ static void cb_bcast_message(unsigned char* _msg)
 
     //currentModule->send(appPkt, currentModule->mLowerLayerOut);
     ev << "BRDCAST to " << currentModule->getParentModule()->getFullName() << endl;
-    currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
+
+
+    //HEREHERE
+    double jitterS = currentModule->mRoutingDelay;
+    if ( pathCostMethod == PC_ZIGBEE )
+    {
+        int PCjitterMs = 0;
+        if ( zigbeeLCExternal )
+        {
+            PCjitterMs = 2 * intuniform(1 + (zigbeeLCExternal-1)*9, zigbeeLCExternal * 9);
+        }
+
+        jitterS = PCjitterMs / 1000;
+    }
+
+    currentModule->sendDelayed(appPkt, jitterS, currentModule->mLowerLayerOut);
+    //currentModule->sendDelayed(appPkt, currentModule->mRoutingDelay, currentModule->mLowerLayerOut);
 
 #ifndef STATIC_MEMORY
     sfree(_msg);

@@ -6,11 +6,7 @@
 unsigned char current_prefix_name[100];
 
 unsigned char pathCostMethod;
-
-#define PC_ADD_LQI 0
-#define PC_MULT_LQI 1
-#define PC_LOWEST_MAX_LINK 2
-//#define PC_ADD_LQI 0
+int zigbeeLCExternal;
 
 
 
@@ -18,6 +14,8 @@ unsigned char pathCostMethod;
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
+
 
 //#define FIRST_COME_ONLY // static cost routing lik AODV best is first arrival
 
@@ -949,6 +947,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
  		outgoing_packet.data = (unsigned char*)queue;
  		if (s->bestGradientToObtain->key2->iName == SELF_INTERFACE)
  		{
+            zigbeeLCExternal = 0;
  	        outgoing_packet.path_value = 0;
  		}
  		else
@@ -973,6 +972,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         outgoing_packet.message_type = outgoingInterestType(outgoing_packet.data);
         if (s->bestGradientToDeliver->key2->iName == SELF_INTERFACE)
         {
+            zigbeeLCExternal = 0;
             switch ( pathCostMethod )
             {
                 case PC_ADD_LQI:
@@ -982,6 +982,10 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
                     outgoing_packet.path_value = 255;
                     break;
                 case PC_LOWEST_MAX_LINK:
+                    outgoing_packet.path_value = 0;
+                    break;
+                case PC_ZIGBEE:
+                case PC_ZIGBEE_LOWEST_MAX_LINK:
                     outgoing_packet.path_value = 0;
                     break;
                 default:
@@ -1017,6 +1021,7 @@ struct InterfaceNode* InsertInterfaceNode(struct InterfaceNode** treeNode, NEIGH
         outgoing_packet.message_type = outgoingcollaborationType(outgoing_packet.data);
         if (s->bestGradientToDeliver->key2->iName == SELF_INTERFACE)
         {
+            zigbeeLCExternal = 0;
             outgoing_packet.path_value = 0;
         }
         else
@@ -4606,6 +4611,13 @@ unsigned short incomingLinkCost(control_data cd)
 {
     unsigned short incomingLink_cost;
     unsigned char prob_link_success;
+    double lqi;
+    double prob;
+    double zigbeeProb;
+    unsigned int zigbeeLC;
+    double test1;
+    double test2;
+    double test3;
 #ifdef USE_NODE_STABILITY_COST
     incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
 #else
@@ -4643,6 +4655,59 @@ unsigned short incomingLinkCost(control_data cd)
             // ie choose path with the lowest maximum link cost
             incomingLink_cost = (unsigned short)cd.incoming_lqi > incoming_packet.path_value ?
                     (unsigned short)cd.incoming_lqi : incoming_packet.path_value;
+            break;
+        case PC_ZIGBEE:
+        case PC_ZIGBEE_LOWEST_MAX_LINK:
+            lqi = 0xFF - cd.incoming_lqi; // need probability of delivery not COST of delivery
+            lqi = lqi == 0 ? 1 : lqi;
+            //lqi = cd.incoming_lqi;
+            //prob = cd.incoming_lqi/255;
+            prob = lqi/255;
+            test1 = round(0.4);
+            test2 = round(0.5);
+            test3 = round(0.6);
+            //test2 = 1.0;
+            //test1 = pow(prob, 4);
+            //test1 = test2/(prob^4);
+            zigbeeProb = round(1/pow(prob, 4));
+            zigbeeLC = (7 < zigbeeProb) ? 7 : zigbeeProb;
+            switch ( zigbeeLC )
+            {
+                case 1:
+                    std::cout << "case 1" << std::endl;
+                    break;
+                case 2:
+                    std::cout << "case 2" << std::endl;
+                    break;
+                case 3:
+                    std::cout << "case 3" << std::endl;
+                    break;
+                case 4:
+                    std::cout << "case 4" << std::endl;
+                    break;
+                case 5:
+                    std::cout << "case 5" << std::endl;
+                    break;
+                case 6:
+                    std::cout << "case 6" << std::endl;
+                    break;
+                case 7:
+                    std::cout << "case 7" << std::endl;
+                    break;
+                default:
+                    std::cout << "case default" << std::endl;
+                    break;
+            }
+            zigbeeLCExternal = zigbeeLC;
+            if ( pathCostMethod == PC_ZIGBEE )
+            {
+                incomingLink_cost = incoming_packet.path_value+(unsigned short)zigbeeLC;
+            }
+            if ( pathCostMethod == PC_ZIGBEE_LOWEST_MAX_LINK )
+            {
+                incomingLink_cost = (unsigned short)zigbeeLC > incoming_packet.path_value ?
+                        (unsigned short)zigbeeLC : incoming_packet.path_value;
+            }
             break;
         default:
             incomingLink_cost = incoming_packet.path_value+(unsigned short)cd.incoming_lqi;
@@ -6594,6 +6659,7 @@ void StartUp()
     outgoing_packet.down_interface = UNKNOWN_INTERFACE;
     outgoing_packet.excepted_interface = UNKNOWN_INTERFACE;
 	outgoing_packet.path_value = 0;
+	zigbeeLCExternal = 0;
 	bcastAMessage(write_packet(&outgoing_packet));
 
 }
